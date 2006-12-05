@@ -17,6 +17,9 @@ class Atom
     uint idresid; ///< residue number
     uint atomnumber; ///< atom number
     double charge; ///< charge of the atom
+	double x; ///< x coordinate
+	double y; ///< y coordinate
+	double z; ///< z coordinate
 
     public:
     
