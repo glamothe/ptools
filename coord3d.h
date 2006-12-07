@@ -4,7 +4,7 @@
 
 namespace PTools{
 
-struct Coord3D
+struct coord3D
 {
 double x,y,z;
 };

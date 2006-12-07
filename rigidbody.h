@@ -16,7 +16,7 @@ class Rigidbody
 private:
 
     std::vector<Atom>     mArrayAtoms ;
-    std::vector<Coord3D>  mcoords ;
+    std::vector<coord3D>  mCoords ;
 
 
 public:
