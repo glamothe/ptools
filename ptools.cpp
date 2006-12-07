@@ -16,6 +16,10 @@ BOOST_PYTHON_MODULE(ptools)
         .def(init< const PTools::Atom& >())
         .def("GetType", &PTools::Atom::GetType)
         .def("SetType", &PTools::Atom::SetType)
+        .def("GetCharge", &PTools::Atom::GetCharge)
+        .def("SetCharge", &PTools::Atom::SetCharge)
+        .def("GetCoords", &PTools::Atom::GetCoords)
+        .def("SetCoords", &PTools::Atom::SetCoords)
     ;
 
 }
