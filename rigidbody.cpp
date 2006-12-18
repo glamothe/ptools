@@ -4,20 +4,21 @@
 namespace PTools{
 
 
-void Rigidbody::AddAtom(const Atom& at)
+void Rigidbody::AddAtom(const Atomproperty& at, Coord3D co)
 {
-Atom at2(at);
-
-mCoords.push_back(at.GetCoords());
-at2.SetOwner(this,size());
-mArrayAtoms.push_back(at2);
-
+mCoords.push_back(co);
+mArrayAtomProp.push_back(at);
 }
 
 
 
+Atom Rigidbody::CopyAtom(uint i) const 
+{
+    Atom at(mArrayAtomProp[i], mCoords[i]);
+    return at;
 
 }
 
+}
 
 

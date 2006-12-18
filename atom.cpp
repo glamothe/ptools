@@ -4,7 +4,7 @@
 
 namespace PTools{
 
-coord3D Atom::GetCoords() const {if (!hasOwner) return mCoords; else return mOwner->GetCoord(mIndex); };
+Coord3D Atom::GetCoords() const {return mCoords;};
 
 
 }

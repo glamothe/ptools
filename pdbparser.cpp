@@ -1,4 +1,5 @@
 #include "pdbparser.h"
+#include "atom.h"
 
 
 #include <algorithm>
@@ -116,18 +117,18 @@ void readPDB(ifstream& fichier, Rigidbody& protein)
             sy=ligne.substr(38,8);
             sz=ligne.substr(46,8);
 
-            coord3D pos;
+            Coord3D pos;
             pos.x=atof(sx.c_str());
             pos.y=atof(sy.c_str());
             pos.z=atof(sz.c_str());
 
-            Atom a;
+            Atomproperty a;
             a.SetType( readatomtype(ligne));
             a.SetResidType(readresidtype(ligne));
             a.SetChainId(ligne.substr(21,1));
             a.SetResidId(atoi(ligne.substr(22,4).c_str()));
-            a.SetAtomNumber(atoi(ligne.substr(7,4).c_str()));
-            a.SetCoords(pos);
+            a.SetAtomId(atoi(ligne.substr(7,4).c_str()));
+            
 
 
 //             if (proteine.GetType()==AttractType)
@@ -137,7 +138,7 @@ void readPDB(ifstream& fichier, Rigidbody& protein)
 //             }
  
 
-            protein.AddAtom(a);
+            protein.AddAtom(a,pos);
 
         }
 

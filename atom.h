@@ -15,40 +15,34 @@ namespace PTools{
 class Rigidbody;
 
 
-class Atom
+class Atomproperty
 {
 
 private:
-    Rigidbody* mOwner;
-    bool hasOwner;
-    uint mIndex; ///< internal index in Rigidbody object
-
-    std::string mType;  ///< CA, H, N, ...
+    std::string mAtomType;  ///< CA, N, HN1, ...
+    std::string mAtomElement; /// C, N, H, O, etc.
     std::string mResidType; ///< LEU, ARG, ...
     std::string mChainId; ///< A, B, etc.
     uint mResidId; ///< residue number
-    uint mAtomNumber; ///< atom number
-    double mCharge; ///< charge of the atom
-    coord3D mCoords; ///< cartesian coordinates of the atom
+    uint mAtomId; ///< atom number
+    double mAtomCharge; ///< charge of the atom
+   
 
 
 public:
 
-    Atom(){hasOwner=false; mOwner=0; };
+    Atomproperty(){};
 
-    std::string GetType() const {return mType;};
-    void SetType(std::string newtype) { mType = newtype;}
+    std::string GetType() const {return mAtomType;};
+    void SetType(std::string newtype) { mAtomType = newtype;}
 
     std::string GetResidType() const {return mResidType;};
     void SetResidType(std::string residtype){mResidType=residtype;};
 
+    inline double GetAtomCharge() const {return mAtomCharge;};
+    inline void SetAtomCharge(double ch) {mAtomCharge=ch;};
 
-
-    inline double GetCharge() const {return mCharge;};
-    inline void SetCharge(double ch) {mCharge=ch;};
-
-    coord3D GetCoords() const;
-    inline void SetCoords(coord3D& coords) {mCoords=coords;};
+    
 
     inline std::string GetChainId() const {return mChainId;};
     inline void SetChainId(std::string chainid) {mChainId=chainid;};
@@ -56,13 +50,35 @@ public:
     inline uint GetResidId() const {return mResidId;};
     inline void SetResidId(uint id) {mResidId = id;};
 
-    inline uint GetAtomNumber() const {return mAtomNumber;};
-    inline void SetAtomNumber(uint atomnumber) {mAtomNumber=atomnumber;};
+    inline uint GetAtomId() const {return mAtomId;};
+    inline void SetAtomId(uint atomnumber) {mAtomId=atomnumber;};
 
-    inline void SetOwner(Rigidbody* owner, uint index)
-        {hasOwner=true; mOwner=owner;mIndex=index;};
 
 };
+
+
+class Atom : public Atomproperty
+{
+
+private:
+Coord3D mCoords; ///< Atom cartesian coordinates
+
+
+public:
+
+Atom(Atomproperty ap, Coord3D co)
+   : Atomproperty(ap), mCoords(co) {};
+
+
+Coord3D GetCoords() const;
+inline void SetCoords(Coord3D& coords) {mCoords=coords;};
+
+
+};
+
+
+
+
 
 };
 
