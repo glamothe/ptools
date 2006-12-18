@@ -13,7 +13,7 @@ env = Environment()
 bld = Builder(action = 'pyste --module=ptools -I. $SOURCE')
 env.Append(BUILDERS = {'Pyste' : bld})
 
-
-env.Pyste('ptools.pyste')
+# uncomment this line if pyste is installed
+#env.Pyste('ptools.pyste')
 
 env.SharedLibrary(File('ptools.so'), list, LIBS=libs, CPPPATH=['/usr/include/python2.4/','.'])
