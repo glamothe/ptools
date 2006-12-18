@@ -16,15 +16,17 @@ class Rigidbody
 private:
 
     std::vector<Atom>     mArrayAtoms ;
-    std::vector<coord3D>  mCoords ;
+    std::vector<coord3D>  mCoords ;  ///< Array of cartesian coordinates
 
 
 public:
+    Rigidbody(){};
+    ~Rigidbody(){};
 
-    inline Atom & GetAtom(uint i) {return mArrayAtoms[i] ;};
-    inline uint size() {return mArrayAtoms.size();}
-
-
+    inline Atom GetAtom(uint i) const {return mArrayAtoms[i] ;};
+    inline uint size() const {return mArrayAtoms.size();};   ///< return number of atoms
+    void AddAtom(const Atom& at); ///< add an atom to the molecule (deep copy)
+    coord3D GetCoord(uint i){return mCoords[i];};
 };
 
 
