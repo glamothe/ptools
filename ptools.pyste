@@ -1,1 +1,4 @@
-Class("PTools::Atom", "atom.h")
+Class("PTools::Coord3D", "coord3d.h")
+Atom=Class("PTools::Atom", "atom.h")
+Class("PTools::Rigidbody", "rigidbody.h")
+Function("PTools::readPDB", "pdbparser.h")
