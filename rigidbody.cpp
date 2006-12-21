@@ -19,6 +19,17 @@ Atom Rigidbody::CopyAtom(uint i) const
 
 }
 
+
+void Rigidbody::AddAtom(const Atom& at)
+{
+Atomproperty atp(at);
+Coord3D co = at.GetCoords();
+
+AddAtom(atp,co);
+
+
+}
+
 }
 
 
