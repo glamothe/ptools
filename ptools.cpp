@@ -21,6 +21,7 @@ BOOST_PYTHON_MODULE(ptools)
         .def_readwrite("y", &PTools::Coord3D::y)
         .def_readwrite("z", &PTools::Coord3D::z)
         .def( self * other< double >() )
+        .def( other< double >() * self )
         .def( self + self )
         .def( self - self )
     ;

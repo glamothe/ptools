@@ -8,15 +8,8 @@ namespace PTools{
 
 struct Coord3D
 {
-double x,y,z;
-
-
+    double x,y,z;
     
-//     inline double Norm(const coord3D & A);
-//     inline double Norm2(const coord3D& A);
-//     inline coord3D operator* (const coord3D& A, double scal);
-//     inline coord3D operator* (double scal, const coord3D& A);
-//     inline coord3D operator/ (const coord3D& A, double scal);
     inline Coord3D & operator= (const Coord3D &);
 
 };
@@ -69,19 +62,10 @@ inline Coord3D operator* (const Coord3D& A, double scal)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+inline Coord3D operator* (double scal, const Coord3D& A)
+{
+      return A * scal ; 
+}
 
 
 
