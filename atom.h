@@ -26,7 +26,7 @@ private:
     uint mResidId; ///< residue number
     uint mAtomId; ///< atom number
     double mAtomCharge; ///< charge of the atom
-   
+
 
 
 public:
@@ -42,7 +42,7 @@ public:
     inline double GetAtomCharge() const {return mAtomCharge;};
     inline void SetAtomCharge(double ch) {mAtomCharge=ch;};
 
-    
+
 
     inline std::string GetChainId() const {return mChainId;};
     inline void SetChainId(std::string chainid) {mChainId=chainid;};
@@ -61,17 +61,17 @@ class Atom : public Atomproperty
 {
 
 private:
-Coord3D mCoords; ///< Atom cartesian coordinates
+    Coord3D mCoords; ///< Atom cartesian coordinates
 
 
 public:
 
-Atom(Atomproperty ap, Coord3D co)
-   : Atomproperty(ap), mCoords(co) {};
+    Atom(Atomproperty ap, Coord3D co)
+            : Atomproperty(ap), mCoords(co) {};
 
 
-Coord3D GetCoords() const;
-inline void SetCoords(Coord3D& coords) {mCoords=coords;};
+    Coord3D GetCoords() const;
+    inline void SetCoords(Coord3D& coords) {mCoords=coords;};
 
 
 };

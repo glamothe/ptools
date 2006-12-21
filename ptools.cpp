@@ -45,7 +45,8 @@ BOOST_PYTHON_MODULE(ptools)
         .def("CopyAtom", &PTools::Rigidbody::CopyAtom)
         .def("size", &PTools::Rigidbody::size)
         .def("AddAtom", &PTools::Rigidbody::AddAtom)
-        .def("GetCoord", &PTools::Rigidbody::GetCoord)
+        .def("GetCoords", &PTools::Rigidbody::GetCoords)
+        .def("SetCoords", &PTools::Rigidbody::SetCoords)
     ;
 
     def("readPDB", (void (*)(std::ifstream&, PTools::Rigidbody&))&PTools::readPDB);
