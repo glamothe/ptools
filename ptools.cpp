@@ -17,6 +17,7 @@ BOOST_PYTHON_MODULE(ptools)
 {
     class_< PTools::Coord3D >("Coord3D", init<  >())
         .def(init< const PTools::Coord3D& >())
+        .def(init< double, double, double >())
         .def_readwrite("x", &PTools::Coord3D::x)
         .def_readwrite("y", &PTools::Coord3D::y)
         .def_readwrite("z", &PTools::Coord3D::z)
@@ -26,6 +27,8 @@ BOOST_PYTHON_MODULE(ptools)
         .def( self - self )
     ;
 
+    def("Norm", &PTools::Norm);
+    def("Norm2", &PTools::Norm2);
     class_< PTools::Atom >("Atom", init< const PTools::Atom& >())
         .def(init< PTools::Atomproperty, PTools::Coord3D >())
         .def("GetCoords", &PTools::Atom::GetCoords)
