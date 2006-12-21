@@ -78,6 +78,17 @@ public:
 
 
 
+inline double Dist(const Atom& at1, const Atom& at2)
+{
+   return Norm(at1.GetCoords()-at2.GetCoords());
+}
+
+
+inline double Dist2(const Atom& at1, const Atom& at2)
+{
+   return Norm2(at1.GetCoords()-at2.GetCoords());
+}
+
 
 
 };

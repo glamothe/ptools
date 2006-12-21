@@ -24,7 +24,7 @@ public:
     ~Rigidbody(){};
 
     Atom CopyAtom(uint i) const ; ///< Make a deep copy of one atom (the Atom extracted is then totally independent)
-    inline uint size() const {return mArrayAtomProp.size();};   ///< return number of atoms
+    inline uint Size() const {return mArrayAtomProp.size();};   ///< return number of atoms
     void AddAtom(const Atomproperty& at, Coord3D co); ///< add an atom to the molecule (deep copy)
     void AddAtom(const Atom& at);
     Coord3D GetCoords(uint i){return mCoords[i];}; ///< returns the coordinates of atom i

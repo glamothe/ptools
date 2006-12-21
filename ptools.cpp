@@ -6,6 +6,7 @@
 // Includes ====================================================================
 #include <atom.h>
 #include <coord3d.h>
+#include <pdbout.h>
 #include <pdbparser.h>
 #include <rigidbody.h>
 
@@ -47,10 +48,12 @@ BOOST_PYTHON_MODULE(ptools)
         .def("SetAtomId", &PTools::Atomproperty::SetAtomId)
     ;
 
+    def("Dist", &PTools::Dist);
+    def("Dist2", &PTools::Dist2);
     class_< PTools::Rigidbody >("Rigidbody", init<  >())
         .def(init< const PTools::Rigidbody& >())
         .def("CopyAtom", &PTools::Rigidbody::CopyAtom)
-        .def("size", &PTools::Rigidbody::size)
+        .def("Size", &PTools::Rigidbody::Size)
         .def("AddAtom", (void (PTools::Rigidbody::*)(const PTools::Atomproperty&, PTools::Coord3D) )&PTools::Rigidbody::AddAtom)
         .def("AddAtom", (void (PTools::Rigidbody::*)(const PTools::Atom&) )&PTools::Rigidbody::AddAtom)
         .def("GetCoords", &PTools::Rigidbody::GetCoords)
@@ -59,5 +62,6 @@ BOOST_PYTHON_MODULE(ptools)
 
     def("readPDB", (void (*)(std::ifstream&, PTools::Rigidbody&))&PTools::readPDB);
     def("readPDB", (void (*)(const std::string, PTools::Rigidbody&))&PTools::readPDB);
+    def("WritePDB", &PTools::WritePDB);
 }
 
