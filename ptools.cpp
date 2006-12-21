@@ -20,6 +20,9 @@ BOOST_PYTHON_MODULE(ptools)
         .def_readwrite("x", &PTools::Coord3D::x)
         .def_readwrite("y", &PTools::Coord3D::y)
         .def_readwrite("z", &PTools::Coord3D::z)
+        .def( self * other< double >() )
+        .def( self + self )
+        .def( self - self )
     ;
 
     class_< PTools::Atom >("Atom", init< const PTools::Atom& >())
