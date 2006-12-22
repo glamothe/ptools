@@ -27,8 +27,23 @@ Coord3D co = at.GetCoords();
 
 AddAtom(atp,co);
 
+}
+
+
+Coord3D Rigidbody::FindCenter()
+{
+  Coord3D center(0.0,0.0,0.0);
+  for(uint i=0; i< this->Size() ; i++)
+  {
+     center =  center + GetCoords(i);  
+  }
+
+  return ( (1.0/this->Size())*center);
 
 }
+
+
+
 
 }
 

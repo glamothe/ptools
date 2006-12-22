@@ -29,6 +29,9 @@ public:
     void AddAtom(const Atom& at);
     Coord3D GetCoords(uint i){return mCoords[i];}; ///< returns the coordinates of atom i
     void SetCoords(uint i, Coord3D& co){mCoords[i]=co;};
+    Coord3D FindCenter(); ///< return geometric center of all atoms
+    
+    
 };
 
 

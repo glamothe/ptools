@@ -58,6 +58,7 @@ BOOST_PYTHON_MODULE(ptools)
         .def("AddAtom", (void (PTools::Rigidbody::*)(const PTools::Atom&) )&PTools::Rigidbody::AddAtom)
         .def("GetCoords", &PTools::Rigidbody::GetCoords)
         .def("SetCoords", &PTools::Rigidbody::SetCoords)
+        .def("FindCenter", &PTools::Rigidbody::FindCenter)
     ;
 
     def("readPDB", (void (*)(std::ifstream&, PTools::Rigidbody&))&PTools::readPDB);
