@@ -11,6 +11,8 @@ std::string Atom::Print() {
 	std::stringstream info;
 	info<<GetAtomId()<<" "<<GetType()<<" ";
 	info<<GetResidType()<<" "<<GetChainId()<<" "<<GetResidId();
+	Coord3D coord = GetCoords();
+	info<<" "<<coord.x<<" "<<coord.y<<" "<<coord.z;
 	return info.str();
 };
 
