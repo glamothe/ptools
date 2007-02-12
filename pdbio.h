@@ -15,7 +15,7 @@ namespace PTools
 
 void readPDB(std::ifstream& fichier,Rigidbody& protein ); ///< read a PDB file from a file pointer and load datas in Rigidbody
 void readPDB(const std::string name,Rigidbody& protein ); ///< read a PDB file from a filename and load datas in Rigidbody
-void WritePDB(const Rigidbody& rigid, std::string filename); ///< write a PDB file given a Rigidbody and a filename
+void writePDB(const Rigidbody& rigid, std::string filename); ///< write a PDB file given a Rigidbody and a filename
 
 }
 

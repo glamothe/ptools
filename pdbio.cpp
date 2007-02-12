@@ -150,7 +150,7 @@ void readPDB(const std::string name,Rigidbody& protein ) {
 
 }
 
-void WritePDB(const Rigidbody& rigid, std::string filename)
+void writePDB(const Rigidbody& rigid, std::string filename)
 {
 
  
