@@ -27,7 +27,7 @@ void ProdVect(const Coord3D& u,const Coord3D& v, Coord3D& UvectV);
 
 void printmat44(const double mat[4][4]);
 
-// TODO: metre ces fonctions dans un autre fichier, avec un namespace et tout et tout.
+
 inline double prodscal( const Coord3D& a, const Coord3D& b )
 {
     return a.x * b.x + a.y * b.y + a.z * b.z ;

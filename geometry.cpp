@@ -383,7 +383,7 @@ void printmat44( const double mat[ 4 ][ 4 ] )
 }
 
 
-void Vect( const Coord3D& a, const Coord3D& b, Coord3D& result )
+void MakeVect( const Coord3D& a, const Coord3D& b, Coord3D& result )
 {
     result.x = b.x - a.x;
     result.y = b.y - a.y;
@@ -405,13 +405,13 @@ double dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coo
 
     //vecteur ba :
     Coord3D BA;
-    Vect( b, a, BA );
+    MakeVect( b, a, BA );
 
 
     Coord3D CD;
-    Vect( c, d, CD );
+    MakeVect( c, d, CD );
     Coord3D BC;
-    Vect( b, c, BC );
+    MakeVect( b, c, BC );
     Coord3D n1, n2 ;
 
     ProdVect( BC, BA, n1 ); // n1=
