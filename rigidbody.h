@@ -27,7 +27,7 @@ public:
     inline uint Size() const {return mArrayAtomProp.size();};   ///< return number of atoms
     void AddAtom(const Atomproperty& at, Coord3D co); ///< add an atom to the molecule (deep copy)
     void AddAtom(const Atom& at);
-    Coord3D GetCoords(uint i){return mCoords[i];}; ///< returns the coordinates of atom i
+    Coord3D GetCoords(uint i) const {return mCoords[i];}; ///< returns the coordinates of atom i
     void SetCoords(uint i, Coord3D& co){mCoords[i]=co;};
     Coord3D FindCenter(); ///< return geometric center of all atoms
     

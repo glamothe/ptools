@@ -3,6 +3,7 @@ list = Split ("""atom.cpp
                  ptools.cpp
                  pdbparser.cpp
                  pdbout.cpp
+                 geometry.cpp
              """)
 
 
