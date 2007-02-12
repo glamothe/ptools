@@ -6,6 +6,7 @@
 // Includes ====================================================================
 #include <atom.h>
 #include <coord3d.h>
+#include <geometry.h>
 #include <pdbio.h>
 #include <rigidbody.h>
 
@@ -63,5 +64,6 @@ BOOST_PYTHON_MODULE(ptools)
     def("readPDB", (void (*)(std::ifstream&, PTools::Rigidbody&))&PTools::readPDB);
     def("readPDB", (void (*)(const std::string, PTools::Rigidbody&))&PTools::readPDB);
     def("WritePDB", &PTools::WritePDB);
+    def("ABrotate", &PTools::ABrotate);
 }
 
