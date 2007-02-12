@@ -5,6 +5,5 @@ Atom=Class("PTools::Atom", "atom.h")
 Function("PTools::Dist","atom.h")
 Function("PTools::Dist2","atom.h")
 Class("PTools::Rigidbody", "rigidbody.h")
-Function("PTools::readPDB", "pdbparser.h")
-
-Function("PTools::WritePDB", "pdbout.h")
+Function("PTools::readPDB", "pdbio.h")
+Function("PTools::WritePDB", "pdbio.h")

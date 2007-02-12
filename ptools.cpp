@@ -6,8 +6,7 @@
 // Includes ====================================================================
 #include <atom.h>
 #include <coord3d.h>
-#include <pdbout.h>
-#include <pdbparser.h>
+#include <pdbio.h>
 #include <rigidbody.h>
 
 // Using =======================================================================

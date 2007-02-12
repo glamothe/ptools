@@ -26,7 +26,7 @@ public:
     Atom CopyAtom(uint i) const ; ///< Make a deep copy of one atom (the Atom extracted is then totally independent)
     inline uint Size() const {return mArrayAtomProp.size();};   ///< return number of atoms
     void AddAtom(const Atomproperty& at, Coord3D co); ///< add an atom to the molecule (deep copy)
-    void AddAtom(const Atom& at);
+    void AddAtom(const Atom& at); ///< add an atom to the molecule
     Coord3D GetCoords(uint i) const {return mCoords[i];}; ///< returns the coordinates of atom i
     void SetCoords(uint i, Coord3D& co){mCoords[i]=co;};
     Coord3D FindCenter(); ///< return geometric center of all atoms
