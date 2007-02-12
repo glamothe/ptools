@@ -1,8 +1,7 @@
 list = Split ("""atom.cpp
                  rigidbody.cpp
                  ptools.cpp
-                 pdbparser.cpp
-                 pdbout.cpp
+                 pdbio.cpp
                  geometry.cpp
              """)
 
