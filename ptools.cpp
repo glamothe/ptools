@@ -61,8 +61,8 @@ BOOST_PYTHON_MODULE(ptools)
         .def("FindCenter", &PTools::Rigidbody::FindCenter)
     ;
 
-    def("readPDB", (void (*)(std::ifstream&, PTools::Rigidbody&))&PTools::readPDB);
-    def("readPDB", (void (*)(const std::string, PTools::Rigidbody&))&PTools::readPDB);
+    def("ReadPDB", (void (*)(std::ifstream&, PTools::Rigidbody&))&PTools::ReadPDB);
+    def("ReadPDB", (void (*)(const std::string, PTools::Rigidbody&))&PTools::ReadPDB);
     def("WritePDB", &PTools::WritePDB);
     def("ABrotate", &PTools::ABrotate);
 }

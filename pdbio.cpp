@@ -82,7 +82,7 @@ std::string readresidtype(const std::string &ligne) {
 }
 
 
-void readPDB(ifstream& fichier, Rigidbody& protein) {
+void ReadPDB(ifstream& fichier, Rigidbody& protein) {
 
     std::string ligne ;
     int compteur = 0 , compteur1=0;
@@ -135,7 +135,7 @@ void readPDB(ifstream& fichier, Rigidbody& protein) {
 
 
 
-void readPDB(const std::string name,Rigidbody& protein ) {
+void ReadPDB(const std::string name,Rigidbody& protein ) {
     std::string nomfich=name ;
     ifstream fichier(nomfich.c_str()); //pointeur vers nom fichier donne en argument constructeur
     if (!fichier)
@@ -144,13 +144,13 @@ void readPDB(const std::string name,Rigidbody& protein ) {
         exit(-1);
     }
 
-    readPDB(fichier, protein);
+    ReadPDB(fichier, protein);
     fichier.close();
     return;
 
 }
 
-void writePDB(const Rigidbody& rigid, std::string filename)
+void WritePDB(const Rigidbody& rigid, std::string filename)
 {
 
  
