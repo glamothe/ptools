@@ -1,18 +1,19 @@
 #include <sstream>
 #include "atom.h"
 #include "coord3d.h"
-#include "rigidbody.h"
+
+using namespace std;
 
 namespace PTools{
-
+		
 Coord3D Atom::GetCoords() const {return mCoords;};
 
-std::string Atom::Print() {
+string Atom::Print() const {
 	std::stringstream info;
 	info<<GetAtomId()<<" "<<GetType()<<" ";
 	info<<GetResidType()<<" "<<GetChainId()<<" "<<GetResidId();
 	Coord3D coord = GetCoords();
-	info<<" "<<coord.x<<" "<<coord.y<<" "<<coord.z;
+	info<<PrintCoord(coord); 
 	return info.str();
 };
 

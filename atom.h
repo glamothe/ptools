@@ -15,9 +15,7 @@ namespace PTools{
 class Rigidbody;
 
 
-class Atomproperty
-{
-
+class Atomproperty {
 private:
     std::string mAtomType;  ///< CA, N, HN1, ...
     std::string mAtomElement; /// C, N, H, O, etc.
@@ -28,10 +26,16 @@ private:
     double mAtomCharge; ///< charge of the atom
 
 public:
-    Atomproperty(){};
+    inline Atomproperty(){ mAtomType="X", 
+						   mAtomElement="X", 
+						   mResidType="XXX", 
+						   mChainId="X", 
+						   mResidId=1,
+						   mAtomId=1,
+						   mAtomCharge=0.0;};
 
     std::string GetType() const {return mAtomType;};
-    void SetType(std::string newtype) { mAtomType = newtype;}
+    void SetType(std::string newtype) { mAtomType = newtype;};
 
     std::string GetResidType() const {return mResidType;};
     void SetResidType(std::string residtype){mResidType=residtype;};
@@ -47,8 +51,6 @@ public:
 
     inline uint GetAtomId() const {return mAtomId;};
     inline void SetAtomId(uint atomnumber) {mAtomId=atomnumber;};
-
-
 };
 
 
@@ -63,7 +65,7 @@ public:
             : Atomproperty(ap), mCoords(co) {};
     Coord3D GetCoords() const;
     inline void SetCoords(Coord3D& coords) {mCoords=coords;};
-	std::string Print();
+	std::string Print() const;
 };
 
 

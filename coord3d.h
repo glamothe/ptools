@@ -4,6 +4,10 @@
 
 #include <math.h>
 #include <string>
+#include <sstream> // stringstreap
+#include <iomanip> // setw(), setprecision()
+
+using namespace std;
 
 namespace PTools{
 
@@ -66,10 +70,17 @@ inline Coord3D operator* (const Coord3D& A, double scal)
 }
 
 
-inline Coord3D operator* (double scal, const Coord3D& A)
-{
-      return A * scal ; 
+inline Coord3D operator* (double scal, const Coord3D& A) {
+	return A * scal ; 
 }
+
+inline string PrintCoord(const Coord3D& A) {
+	int size=100;
+	char info[size];
+	snprintf(info, size, "%8.3f %8.3f %8.3f", A.x, A.y, A.z);
+	return info;
+}
+
 
 };
 
