@@ -447,5 +447,19 @@ return acos(costheta);
 }
 
 
+
+void Translate(const Rigidbody& source, Rigidbody& target, const Coord3D& trans)
+{
+      assert(source.Size()==target.Size());
+      for (uint i=0; i < source.Size(); i ++)
+      {
+            Coord3D translated = target.GetCoords(i)+trans ; 
+            target.SetCoords(i, translated);
+
+      }
+
+}
+
+
 }
 

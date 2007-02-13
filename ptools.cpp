@@ -65,5 +65,6 @@ BOOST_PYTHON_MODULE(ptools)
     def("ReadPDB", (void (*)(const std::string, PTools::Rigidbody&))&PTools::ReadPDB);
     def("WritePDB", &PTools::WritePDB);
     def("ABrotate", &PTools::ABrotate);
+    def("Translate", &PTools::Translate);
 }
 
