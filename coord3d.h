@@ -9,6 +9,7 @@ using namespace std;
 
 namespace PTools{
 
+
 struct Coord3D
 {
     double x,y,z;
@@ -17,6 +18,7 @@ struct Coord3D
     Coord3D(double nx, double ny, double nz){x=nx;y=ny;z=nz;};
 
     inline Coord3D & operator= (const Coord3D &);
+    Coord3D&  Normalize(); ///< Normalize vector to unity
 
 };
 
@@ -61,15 +63,6 @@ inline double Norm2(const Coord3D & A)
     return  (A.x*A.x + A.y*A.y + A.z*A.z);
 }
 
-/// Normalize vector to unity
-inline Coord3D Normalize(const Coord3D& A) {
-	Coord3D P;
-	double norm = Norm(A);
-	P.x = A.x / norm;
-	P.y = A.y / norm;
-	P.z = A.z / norm;
-	return P;
-}
 
 /// define * operator : Coord3D x double
 inline Coord3D operator* (const Coord3D& A, double scal)

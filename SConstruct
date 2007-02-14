@@ -1,5 +1,6 @@
 list = Split ("""atom.cpp
                  rigidbody.cpp
+		 coord3d.cpp
                  ptools.cpp
                  pdbio.cpp
                  geometry.cpp

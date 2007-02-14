@@ -399,6 +399,7 @@ double dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coo
     //The method is described in: J.K Rainey, Ph.D. Thesis,
     // University of Toronto, 2003. Collagen structure and preferential assembly explored by parallel microscopy and
     //bioinformatics.
+    //and also described here: http://structbio.biochem.dal.ca/jrainey/dihedralcalc.html
 
 
     //Here we go !
