@@ -8,8 +8,6 @@
 #include <iostream>
 #include "coord3d.h"
 
-
-
 namespace PTools{
 
 class Rigidbody;

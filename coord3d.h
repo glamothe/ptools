@@ -20,7 +20,7 @@ struct Coord3D
 
 };
 
-
+/// Define = operator : Coord3D = Coord3D
 inline Coord3D & Coord3D::operator= (const Coord3D & C)
 {
     x = C.x;
@@ -29,7 +29,7 @@ inline Coord3D & Coord3D::operator= (const Coord3D & C)
     return *this;
 }
 
-
+/// Define + operator : Coord3D + Coord3D
 inline Coord3D operator+ (const Coord3D& A,const Coord3D& B)
 {
     Coord3D P;
@@ -39,25 +39,39 @@ inline Coord3D operator+ (const Coord3D& A,const Coord3D& B)
     return P;
 }
 
+/// define - operator : Coord3D - Coord3D
 inline Coord3D operator- (const Coord3D& A,const Coord3D& B)
 {
     Coord3D P;
     P.x = A.x - B.x ;
-    P.y = A.y -  B.y ;
+    P.y = A.y - B.y ;
     P.z = A.z - B.z ;
     return P;
 }
 
+/// Vector Norm
 inline double Norm(const Coord3D & A)
 {
     return sqrt (A.x*A.x + A.y*A.y + A.z*A.z) ;
 }
 
+/// Vector norm * norm
 inline double Norm2(const Coord3D & A)
 {
     return  (A.x*A.x + A.y*A.y + A.z*A.z);
 }
 
+/// Normalize vector to unity
+inline Coord3D Normalize(const Coord3D& A) {
+	Coord3D P;
+	double norm = Norm(A);
+	P.x = A.x / norm;
+	P.y = A.y / norm;
+	P.z = A.z / norm;
+	return P;
+}
+
+/// define * operator : Coord3D x double
 inline Coord3D operator* (const Coord3D& A, double scal)
 {
     Coord3D P;
@@ -67,12 +81,13 @@ inline Coord3D operator* (const Coord3D& A, double scal)
     return P;
 }
 
-
+/// define * operator : double * Coord3D
 inline Coord3D operator* (double scal, const Coord3D& A) {
 	return A * scal ; 
 }
 
-inline string PrintCoord(const Coord3D& A) { ///< print coordinates
+/// print coordinates in string
+inline string PrintCoord(const Coord3D& A) {
 	int size=100;
 	char info[size];
 	snprintf(info, size, "%8.3f %8.3f %8.3f", A.x, A.y, A.z);
