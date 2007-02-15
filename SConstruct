@@ -26,7 +26,7 @@ lib1=python.SharedLibrary(File('ptools.so'),COMMON_CPP+PYTHON_CPP)
 lib2=nopython.SharedLibrary('ptools',COMMON_CPP)
 
 Alias('python',lib1)
-Alias('nopython',lib2)
+Alias('cpp',lib2)
 print "BUILD_TARGETS is", map(str, BUILD_TARGETS)
       
            
