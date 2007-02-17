@@ -16,14 +16,17 @@ common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH)
 python=common.Copy()
 nopython=common.Copy()
 
+objects=common.SharedObject(COMMON_CPP)
+
+
 python.Append(LIBS=['boost_python', "python2.4"])
 #python.Replace(CPPPATH=['.','/usr/include/python2.4'])
 python.Append(CPPPATH=['/usr/include/python2.4'])
 
 print "CPPPATH =", python['CPPPATH']
 
-lib1=python.SharedLibrary(File('ptools.so'),COMMON_CPP+PYTHON_CPP)
-lib2=nopython.SharedLibrary('ptools',COMMON_CPP)
+lib1=python.SharedLibrary(File('ptools.so'),source=[objects,PYTHON_CPP])
+lib2=nopython.SharedLibrary('ptools',source=[objects])
 
 Alias('python',lib1)
 Alias('cpp',lib2)
