@@ -1,4 +1,5 @@
-Class("PTools::Coord3D", "coord3d.h")
+coord=Class("PTools::Coord3D", "coord3d.h")
+set_policy(coord.Normalize, return_internal_reference())
 Function("PTools::Norm","coord3d.h")
 Function("PTools::Norm2","coord3d.h")
 Atom=Class("PTools::Atom", "atom.h")
@@ -9,3 +10,4 @@ Function("PTools::ReadPDB", "pdbio.h")
 Function("PTools::WritePDB", "pdbio.h")
 Function("PTools::ABrotate", "geometry.h")
 Function("PTools::Translate", "geometry.h")
+
