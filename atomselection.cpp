@@ -4,11 +4,7 @@
 // Description:
 //
 //
-// Author: Adrien Saladin <adrien.saladin@gmail.com>, (C) 2007
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
+
 #include "atomselection.h"
 
 namespace PTools {
