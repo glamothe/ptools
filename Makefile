@@ -1,4 +1,6 @@
 ptools:
-	scons
+	scons cpp
+all:
+	scons cpp python
 clean:
 	scons -c
