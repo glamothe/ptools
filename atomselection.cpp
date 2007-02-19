@@ -6,6 +6,8 @@
 //
 
 #include "atomselection.h"
+#include <algorithm> //required for set_union|intersection
+
 
 namespace PTools {
 
@@ -26,51 +28,70 @@ AtomSelection::~AtomSelection()
 AtomSelection::AtomSelection(const AtomSelection& oldsel)
 {
     this->m_rigid = oldsel.m_rigid;
+    this->m_list = oldsel.m_list;
 }
 
 
-// AtomSelection AtomSelection::operator = (const AtomSelection& atsel)
-// {
-//     if (this != &atsel)
-//     {
-//         this->m_rigid = atsel.m_rigid;
-//         this->m_list  = atsel.m_list;
-// 
-//     }
-// 
-// }
 
-
-
-AtomSelection SelectAllAtoms( Rigidbody& rigid)
+Rigidbody AtomSelection::CreateRigid()
 {
-    AtomSelection select(rigid);
-    for (uint i=0; i < rigid.Size(); i++)
+    Rigidbody newrigid;
+    for (uint i=0; i<this->Size(); i++)
     {
-        select.AddAtomIndex(i);
+        Atom at = m_rigid->CopyAtom(m_list[i]);
+        newrigid.AddAtom(at);
     }
 
-
-    return select;
-
+    return newrigid;
 }
 
 
 
-
-AtomSelection SelectAtomType(AtomSelection& select, std::string type)
+AtomSelection operator& (const AtomSelection& atsel1,const  AtomSelection& atsel2)
 {
-    AtomSelection newsel(select);
-
-    for (uint i=0; i<select.Size(); i++)
+    AtomSelection selout;
+    if (atsel1.m_rigid != atsel2.m_rigid)
     {
-        if (select[i].GetType()==type)
-            newsel.AddAtomIndex(i);
+        selout.m_rigid=0;
+        std::cout << "Warning: tring to find the intersection of two different rigidbody" << std::endl;
+        return selout;
     }
+    //else:
 
+    selout.m_rigid = atsel1.m_rigid;
+    set_intersection(atsel1.m_list.begin(), atsel1.m_list.end(),
+                     atsel2.m_list.begin(), atsel2.m_list.end(), back_inserter(selout.m_list));
+
+    return selout;
 }
 
 
+
+AtomSelection operator| (const AtomSelection& atsel1,const AtomSelection& atsel2)
+{
+    AtomSelection selout;
+    AtomSelection cpatsel1(atsel1); //makes a copy of atsel1
+    AtomSelection cpatsel2(atsel2); // makes a copy of atsel2
+
+    if (atsel1.m_rigid != atsel2.m_rigid)
+    {
+        selout.m_rigid=0;
+        return selout;
+        std::cout<<"Warning: for now you should not make union of two different rigidbody this way!" << std::endl;
+    }
+    //else:
+    selout.m_rigid = atsel1.m_rigid;
+    sort(cpatsel1.m_list.begin(), cpatsel1.m_list.end());
+    sort(cpatsel2.m_list.begin(), cpatsel2.m_list.end());
+    set_union(cpatsel1.m_list.begin(), cpatsel1.m_list.end(),
+              cpatsel2.m_list.begin(), cpatsel2.m_list.end(), back_inserter(selout.m_list));
+
+    std::vector<uint> list2;
+    unique_copy(selout.m_list.begin(),selout.m_list.end(),back_inserter(list2));
+    swap(selout.m_list, list2);
+
+    return selout;
+}
 
 
 

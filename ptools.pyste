@@ -12,3 +12,4 @@ Function("PTools::WritePDB", "pdbio.h")
 Function("PTools::ABrotate", "geometry.h")
 Function("PTools::Translate", "geometry.h")
 
+AtomSelection=Class ("PTools::AtomSelection", "atomselection.h")

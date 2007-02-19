@@ -5,6 +5,7 @@
 
 // Includes ====================================================================
 #include <atom.h>
+#include <atomselection.h>
 #include <coord3d.h>
 #include <geometry.h>
 #include <pdbio.h>
@@ -65,6 +66,11 @@ BOOST_PYTHON_MODULE(ptools)
         .def("SetCoords", &PTools::Rigidbody::SetCoords)
         .def("FindCenter", &PTools::Rigidbody::FindCenter)
         .def("Translate", &PTools::Rigidbody::Translate)
+        .def("SelectAllAtoms", &PTools::Rigidbody::SelectAllAtoms)
+        .def("SelectAtomType", &PTools::Rigidbody::SelectAtomType)
+        .def("SelectResidType", &PTools::Rigidbody::SelectResidType)
+        .def("SelectResRange", &PTools::Rigidbody::SelectResRange)
+        .def("CA", &PTools::Rigidbody::CA)
     ;
 
     def("ReadPDB", (void (*)(const std::string, PTools::Rigidbody&))&PTools::ReadPDB);
@@ -72,5 +78,16 @@ BOOST_PYTHON_MODULE(ptools)
     def("WritePDB", &PTools::WritePDB);
     def("ABrotate", &PTools::ABrotate);
     def("Translate", &PTools::Translate);
+    class_< PTools::AtomSelection >("AtomSelection", init<  >())
+        .def(init< const PTools::AtomSelection& >())
+        .def(init< PTools::Rigidbody& >())
+        .def("Size", &PTools::AtomSelection::Size)
+        .def("SetRigid", &PTools::AtomSelection::SetRigid)
+        .def("AddAtomIndex", &PTools::AtomSelection::AddAtomIndex)
+        .def("CreateRigid", &PTools::AtomSelection::CreateRigid)
+        .def( self & self )
+        .def( self | self )
+    ;
+
 }
 

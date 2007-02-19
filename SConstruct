@@ -14,6 +14,9 @@ COMMON_LIBS=[]
 COMMON_CPPPATH=['.']
                
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH)
+common.Append(CCFLAGS='-Wall')
+
+
 python=common.Copy()
 nopython=common.Copy()
 

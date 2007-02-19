@@ -83,7 +83,6 @@ inline double Dist2(const Atom& at1, const Atom& at2) ///< distance**2 between t
 }
 
 
-
 };
 
 #endif
