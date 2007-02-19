@@ -36,6 +36,7 @@ BOOST_PYTHON_MODULE(ptools)
         .def("GetCoords", &PTools::Atom::GetCoords)
         .def("SetCoords", &PTools::Atom::SetCoords)
         .def("Print", &PTools::Atom::Print)
+        .def("Translate", &PTools::Atom::Translate)
         .def("GetType", &PTools::Atomproperty::GetType)
         .def("SetType", &PTools::Atomproperty::SetType)
         .def("GetResidType", &PTools::Atomproperty::GetResidType)
@@ -55,6 +56,7 @@ BOOST_PYTHON_MODULE(ptools)
     class_< PTools::Rigidbody >("Rigidbody", init<  >())
         .def(init< const PTools::Rigidbody& >())
         .def("CopyAtom", &PTools::Rigidbody::CopyAtom)
+        .def("GetAtom", &PTools::Rigidbody::GetAtom, return_internal_reference< 1 >())
         .def("Size", &PTools::Rigidbody::Size)
         .def("AddAtom", (void (PTools::Rigidbody::*)(const PTools::Atomproperty&, PTools::Coord3D) )&PTools::Rigidbody::AddAtom)
         .def("AddAtom", (void (PTools::Rigidbody::*)(const PTools::Atom&) )&PTools::Rigidbody::AddAtom)
@@ -62,10 +64,11 @@ BOOST_PYTHON_MODULE(ptools)
         .def("GetCoordsFromType", &PTools::Rigidbody::GetCoordsFromType)
         .def("SetCoords", &PTools::Rigidbody::SetCoords)
         .def("FindCenter", &PTools::Rigidbody::FindCenter)
+        .def("Translate", &PTools::Rigidbody::Translate)
     ;
 
-    def("ReadPDB", (void (*)(std::ifstream&, PTools::Rigidbody&))&PTools::ReadPDB);
     def("ReadPDB", (void (*)(const std::string, PTools::Rigidbody&))&PTools::ReadPDB);
+    def("ReadPDB", (void (*)(std::ifstream&, PTools::Rigidbody&))&PTools::ReadPDB);
     def("WritePDB", &PTools::WritePDB);
     def("ABrotate", &PTools::ABrotate);
     def("Translate", &PTools::Translate);

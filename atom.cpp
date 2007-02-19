@@ -17,5 +17,12 @@ string Atom::Print() const {
 	return info.str();
 };
 
+
+void Atom::Translate(const Coord3D& tr)
+{
+   mCoords=mCoords+tr;
+}
+
+
 }
 

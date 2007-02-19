@@ -24,7 +24,7 @@ private:
     double mAtomCharge; ///< charge of the atom
 
 public:
-    inline Atomproperty(){ mAtomType="X", ///< default constructor 
+    Atomproperty(){ mAtomType="X", ///< default constructor 
 						   mAtomElement="X", 
 						   mResidType="XXX", 
 						   mChainId="X", 
@@ -59,11 +59,14 @@ private:
     Coord3D mCoords; ///< Atom cartesian coordinates
 
 public:
+
     Atom(Atomproperty ap, Coord3D co)
             : Atomproperty(ap), mCoords(co) {};
     Coord3D GetCoords() const; ///< return atom coordinates
     inline void SetCoords(Coord3D& coords) {mCoords=coords;}; ///< define atom coordinates
-	std::string Print() const; ///< print atom properties and coordinates
+    std::string Print() const; ///< print atom properties and coordinates
+    void Translate(const Coord3D& tr); ///< Translation of an atom
+
 };
 
 

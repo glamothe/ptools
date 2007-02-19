@@ -3,6 +3,7 @@ COMMON_CPP = Split ("""atom.cpp
                        coord3d.cpp
                        pdbio.cpp
                        geometry.cpp
+                       atomselection.cpp
                     """)
 
 PYTHON_CPP=["ptools.cpp"]
@@ -31,9 +32,8 @@ lib2=nopython.SharedLibrary('ptools',source=[objects])
 Alias('python',lib1)
 Alias('cpp',lib2)
 print "BUILD_TARGETS is", map(str, BUILD_TARGETS)
-      
-           
-      
+
+
 
 #to be able to compile using pyste:
 #env = Environment()
