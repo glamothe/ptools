@@ -92,6 +92,22 @@ AtomSelection Rigidbody::SelectResidType(std::string residtype)
 }
 
 
+AtomSelection Rigidbody::SelectChainId(std::string chainId) {
+    AtomSelection newsel;
+    newsel.SetRigid(*this);
+    for (uint i=0; i<Size(); i++)
+    {
+        if (GetAtom(i).GetChainId()==chainId)
+            newsel.AddAtomIndex(i);
+    }
+    return newsel;
+}
+
+
+
+
+
+
 AtomSelection Rigidbody::SelectResRange(uint start, uint stop)
 {
     AtomSelection newsel;

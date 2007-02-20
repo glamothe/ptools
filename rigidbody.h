@@ -57,6 +57,7 @@ public:
     AtomSelection SelectAllAtoms(Rigidbody& rigid);
     AtomSelection SelectAtomType(std::string atomtype);
     AtomSelection SelectResidType(std::string residtype);
+    AtomSelection SelectChainId(std::string chainid);
     AtomSelection SelectResRange(uint start, uint stop);
     //selections shortcuts:
     AtomSelection CA(); ///< returns a C-alpha list
