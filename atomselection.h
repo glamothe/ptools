@@ -30,9 +30,10 @@ public:
     AtomSelection(Rigidbody& rigid); ///< translate a Rigidbody object into an AtomSelection
     ~AtomSelection();
 
-    uint Size() {return m_list.size();}; ///< returns the size of the selection
+    uint Size() const {return m_list.size();}; ///< returns the size of the selection
     void SetRigid(Rigidbody& rig) {m_rigid=&rig;};
     Atom& operator[] (uint i) {return m_rigid->GetAtom(m_list[i]);}; ///< return the i-th atom of the list
+    Atom CopyAtom(uint i) const {return m_rigid->CopyAtom(m_list[i]);}
     void AddAtomIndex(uint i) {m_list.push_back(i);}; ///< adds an Atom index
     Rigidbody CreateRigid(); ///< makes a new rigidcopy (independant copy) from an AtomsSlection object.
 

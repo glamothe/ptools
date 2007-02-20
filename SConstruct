@@ -4,6 +4,7 @@ COMMON_CPP = Split ("""atom.cpp
                        pdbio.cpp
                        geometry.cpp
                        atomselection.cpp
+		       rmsd.cpp
                     """)
 
 PYTHON_CPP=["ptools.cpp"]
