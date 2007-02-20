@@ -45,9 +45,6 @@ public:
     Coord3D GetCoords(uint i) const {return mAtoms[i].GetCoords();};
     /// returns the coordinates of atom i
 
-    Coord3D GetCoordsFromType(std::string);
-    /// returns the coordinates of the first atom of type t
-
     void SetCoords(uint i, Coord3D& co){mAtoms[i].SetCoords(co);};
     /// define the coordinates of atom i
 

@@ -40,17 +40,6 @@ Coord3D Rigidbody::FindCenter()
 }
 
 
-Coord3D Rigidbody::GetCoordsFromType(std::string searchType) {
-    Coord3D coord(0.0, 0.0, 0.0);
-    for(uint i=0; i< this->Size(); i++) {
-        if (mAtoms[i].GetType() == searchType) {
-            coord = mAtoms[i].GetCoords();
-            break;
-        }
-    }
-    return coord;
-}
-
 
 void Rigidbody::Translate(const Coord3D& tr)
 {
