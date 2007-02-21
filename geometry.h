@@ -23,12 +23,12 @@ void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double 
 void MultMat4x4(double R1[4][4], double R2[4][4], double out[4][4]);
 
 
-void ProdVect(const Coord3D& u,const Coord3D& v, Coord3D& UvectV);
+void VectProd(const Coord3D& u,const Coord3D& v, Coord3D& UvectV);
 
 void printmat44(const double mat[4][4]);
 
 
-inline double prodscal( const Coord3D& a, const Coord3D& b )
+inline double ScalProd( const Coord3D& a, const Coord3D& b )
 {
     return a.x * b.x + a.y * b.y + a.z * b.z ;
 }

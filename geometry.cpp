@@ -361,7 +361,7 @@ cible.SetCoords(at,target) ;
 
 
 
-void ProdVect( const Coord3D& u, const Coord3D& v, Coord3D& UvectV )
+void VectProd( const Coord3D& u, const Coord3D& v, Coord3D& UvectV )
 {
     UvectV.x = u.y * v.z - u.z * v.y ;
     UvectV.y = u.z * v.x - u.x * v.z ;
@@ -415,19 +415,19 @@ double dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coo
     MakeVect( b, c, BC );
     Coord3D n1, n2 ;
 
-    ProdVect( BC, BA, n1 ); // n1=
-    ProdVect( BC, CD, n2 );
+    VectProd( BC, BA, n1 ); // n1=
+    VectProd( BC, CD, n2 );
 
-    //std::cout <<"prodscal: " <<prodscal(BA,n1)<< "\n" ;
+    //std::cout <<"ScalProd: " <<ScalProd(BA,n1)<< "\n" ;
 
-    double n1n2 = prodscal( n1, n2 );
-    double cost = n1n2 / sqrt( prodscal( n1, n1 ) * prodscal( n2, n2 ) );
+    double n1n2 = ScalProd( n1, n2 );
+    double cost = n1n2 / sqrt( ScalProd( n1, n1 ) * ScalProd( n2, n2 ) );
 
     double theta = acos( cost );
     std::cout << "Theta: " << theta / 3.14159265*180 << "\n" ;
 
     Coord3D n3;
-    ProdVect( n2, n1, n3 );
+    VectProd( n2, n1, n3 );
     
     throw "incomplete implemenation of dihedral";
     
@@ -439,9 +439,9 @@ double dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coo
 
 double Angle(const Coord3D& vector1, const Coord3D& vector2)
 {
-double pdtscal=prodscal(vector1,vector2);
-double A = sqrt(prodscal(vector1,vector1)) ; 
-double B = sqrt(prodscal(vector2,vector2));
+double pdtscal=ScalProd(vector1,vector2);
+double A = sqrt(ScalProd(vector1,vector1)) ; 
+double B = sqrt(ScalProd(vector2,vector2));
 
 double costheta = pdtscal / (A*B) ; 
 return acos(costheta);
