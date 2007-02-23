@@ -21,9 +21,7 @@ void Rigidbody::AddAtom(const Atom& at)
 {
     Atomproperty atp(at);
     Coord3D co = at.GetCoords();
-
     AddAtom(atp,co);
-
 }
 
 
@@ -34,9 +32,7 @@ Coord3D Rigidbody::FindCenter()
     {
         center =  center + GetCoords(i);
     }
-
     return ( (1.0/this->Size())*center);
-
 }
 
 
@@ -103,11 +99,6 @@ AtomSelection Rigidbody::SelectChainId(std::string chainId) {
     return newsel;
 }
 
-
-
-
-
-
 AtomSelection Rigidbody::SelectResRange(uint start, uint stop)
 {
     AtomSelection newsel;
@@ -122,7 +113,24 @@ AtomSelection Rigidbody::SelectResRange(uint start, uint stop)
 }
 
 
-AtomSelection Rigidbody::CA() {return SelectAtomType("CA");};
+AtomSelection Rigidbody::CA() {return SelectAtomType("CA");}
+
+/// operator =
+Rigidbody& Rigidbody::operator=(const Rigidbody& rig) {
+	mAtoms.clear();
+	mAtoms = rig.mAtoms;
+	return *this;
+}
+
+/// operator +
+Rigidbody Rigidbody::operator+(const Rigidbody& rig) {
+	Rigidbody rigFinal;
+	rigFinal.mAtoms = mAtoms;
+    for(uint i=0; i< rig.Size() ; i++) {
+        rigFinal.mAtoms.push_back(rig.mAtoms[i]);
+    }
+	return rigFinal;
+}
 
 
 } //namespace PTools
