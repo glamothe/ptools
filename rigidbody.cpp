@@ -117,19 +117,18 @@ AtomSelection Rigidbody::CA() {return SelectAtomType("CA");}
 
 /// operator =
 Rigidbody& Rigidbody::operator=(const Rigidbody& rig) {
-	mAtoms.clear();
-	mAtoms = rig.mAtoms;
-	return *this;
+    mAtoms = rig.mAtoms;
+    return *this;
 }
 
 /// operator +
 Rigidbody Rigidbody::operator+(const Rigidbody& rig) {
-	Rigidbody rigFinal;
-	rigFinal.mAtoms = mAtoms;
+    Rigidbody rigFinal;
+    rigFinal.mAtoms = mAtoms;
     for(uint i=0; i< rig.Size() ; i++) {
         rigFinal.mAtoms.push_back(rig.mAtoms[i]);
     }
-	return rigFinal;
+    return rigFinal;
 }
 
 

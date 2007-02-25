@@ -17,10 +17,7 @@ class Rigidbody
 {
 
 private:
-//  std::vector<Atomproperty>  mArrayAtomProp; ///< array of atom properties
-//	std::vector<Coord3D>  mCoords; ///< Array of cartesian coordinates
-    
-	std::vector<Atom> mAtoms; ///< vector of Atoms
+    std::vector<Atom> mAtoms; ///< vector of Atoms
 
 public:
     Rigidbody(){};
@@ -30,10 +27,10 @@ public:
     Atom CopyAtom(uint i) const ;
 
     ///  get the Atom of index i (with direct access to modifications)
-    Atom& GetAtom(uint pos) {return mAtoms[pos];}; 
-    
-	/// synonym of GetAtom
-	Atom& operator[](uint pos) {return GetAtom(pos);}; 
+    Atom& GetAtom(uint pos) {return mAtoms[pos];};
+
+    /// synonym of GetAtom
+    Atom& operator[](uint pos) {return GetAtom(pos);};
 
     /// return number of atoms
     inline uint Size() const {return mAtoms.size();};
@@ -58,28 +55,28 @@ public:
     /// selection : complete
     AtomSelection SelectAllAtoms(Rigidbody& rigid);
 
-	/// selection : by atom type
+    /// selection : by atom type
     AtomSelection SelectAtomType(std::string atomtype);
 
-	/// selection by residue type
+    /// selection by residue type
     AtomSelection SelectResidType(std::string residtype);
 
-	/// selection by chain ID
+    /// selection by chain ID
     AtomSelection SelectChainId(std::string chainid);
 
-	/// selection by range of residue ID
+    /// selection by range of residue ID
     AtomSelection SelectResRange(uint start, uint stop);
-	
+
     /// selection shortcut for C-alpha
     AtomSelection CA();
 
-	/// operator =
-	Rigidbody& operator= (const Rigidbody& rig);
-	
-	/// operator +
-	Rigidbody operator+ (const Rigidbody& rig);
-	
-    }; // end class Rigidbody
+    /// operator =
+    Rigidbody& operator= (const Rigidbody& rig);
+
+    /// operator +
+    Rigidbody operator+ (const Rigidbody& rig);
+
+}; // end class Rigidbody
 
 } // end namespace PTools
 
