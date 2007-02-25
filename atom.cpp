@@ -8,7 +8,7 @@ namespace PTools{
 		
 Coord3D Atom::GetCoords() const {return mCoords;};
 
-string Atom::Print() const { 
+std::string Atom::ToString() const { 
 	std::stringstream info;
 	info<<GetAtomId()<<" "<<GetType()<<" ";
 	info<<GetResidType()<<" "<<GetChainId()<<" "<<GetResidId();
