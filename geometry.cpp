@@ -250,17 +250,17 @@ void XRotation( const Rigidbody& source, Rigidbody& result, double alpha )
     rotmatrix[ 0 ][ 1 ] = 0;
     rotmatrix[ 0 ][ 2 ] = 0;
     rotmatrix[ 0 ][ 3 ] = 0 ;
-    
+
     rotmatrix[ 1 ][ 0 ] = 0;
     rotmatrix[ 1 ][ 1 ] = cosa ;
     rotmatrix[ 1 ][ 2 ] = sina;
     rotmatrix[ 1 ][ 3 ] = 0;
-    
+
     rotmatrix[ 2 ][ 0 ] = 0;
     rotmatrix[ 2 ][ 1 ] = -sina;
     rotmatrix[ 2 ][ 2 ] = cosa;
     rotmatrix[ 2 ][ 3 ] = 0;
-    
+
     rotmatrix[ 3 ][ 0 ] = 0;
     rotmatrix[ 3 ][ 1 ] = 0;
     rotmatrix[ 3 ][ 2 ] = 0;
@@ -272,7 +272,7 @@ void XRotation( const Rigidbody& source, Rigidbody& result, double alpha )
     {
         Coord3D res;
         Coord3D vect = source.GetCoords(iatom);
-   
+
         mat44xVect( rotmatrix, vect, res ) ;
         result.SetCoords(iatom, res) ;
 
@@ -292,8 +292,8 @@ void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4
         Coord3D res;
         Coord3D vect = source.GetCoords(iatom);
         mat44xVect( mat, vect, res ) ;
-        
-        result.SetCoords(iatom, res) ; 
+
+        result.SetCoords(iatom, res) ;
     }
 
 }
@@ -303,6 +303,11 @@ void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4
 
 void ABrotate( Coord3D A, Coord3D B, const Rigidbody& source, Rigidbody& result, double theta )
 {
+
+    if (source.Size() != result.Size())
+    {
+        result = source ;
+    }
     double matrix[ 4 ][ 4 ];
     MakeRotationMatrix( A, B, theta, matrix );
     mat44xrigid( source, result, matrix );
@@ -319,30 +324,30 @@ TODO: tests !
 void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double phi, double psi)
 {
 
-double ct = cos(theta);
-double st = sin(theta);
-double cp = cos(phi);
-double sp = sin(phi);
-double cs = cos(psi);
-double ss = sin(psi);
+    double ct = cos(theta);
+    double st = sin(theta);
+    double cp = cos(phi);
+    double sp = sin(phi);
+    double cs = cos(psi);
+    double ss = sin(psi);
 
-for (uint at=0; at<source.Size(); at++)
-{
-Coord3D vec = source.GetCoords(at);
-double x = vec.x;
-double y = vec.y;
-double z = vec.z;
-
-
-Coord3D target;
-target.x = ct*( sp*z + cp*(cs*x-ss*y)) -st*(cs*y+ss*x) ;
-target.x = st*( sp*z + cp*(cs*x-ss*y)) +ct*(cs*y+ss*x) ;
-target.z = cp*z-sp*(cs*x-ss*y) ;
-
-cible.SetCoords(at,target) ;
+    for (uint at=0; at<source.Size(); at++)
+    {
+        Coord3D vec = source.GetCoords(at);
+        double x = vec.x;
+        double y = vec.y;
+        double z = vec.z;
 
 
-}
+        Coord3D target;
+        target.x = ct*( sp*z + cp*(cs*x-ss*y)) -st*(cs*y+ss*x) ;
+        target.x = st*( sp*z + cp*(cs*x-ss*y)) +ct*(cs*y+ss*x) ;
+        target.z = cp*z-sp*(cs*x-ss*y) ;
+
+        cible.SetCoords(at,target) ;
+
+
+    }
 
 
 }
@@ -428,9 +433,9 @@ double dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coo
 
     Coord3D n3;
     VectProd( n2, n1, n3 );
-    
+
     throw "incomplete implemenation of dihedral";
-    
+
     return 0.0;
 
 }
@@ -439,25 +444,25 @@ double dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coo
 
 double Angle(const Coord3D& vector1, const Coord3D& vector2)
 {
-double pdtscal=ScalProd(vector1,vector2);
-double A = sqrt(ScalProd(vector1,vector1)) ; 
-double B = sqrt(ScalProd(vector2,vector2));
+    double pdtscal=ScalProd(vector1,vector2);
+    double A = sqrt(ScalProd(vector1,vector1)) ;
+    double B = sqrt(ScalProd(vector2,vector2));
 
-double costheta = pdtscal / (A*B) ; 
-return acos(costheta);
+    double costheta = pdtscal / (A*B) ;
+    return acos(costheta);
 }
 
 
 
 void Translate(const Rigidbody& source, Rigidbody& target, const Coord3D& trans)
 {
-      assert(source.Size()==target.Size());
-      for (uint i=0; i < source.Size(); i ++)
-      {
-            Coord3D translated = target.GetCoords(i)+trans ; 
-            target.SetCoords(i, translated);
+    assert(source.Size()==target.Size());
+    for (uint i=0; i < source.Size(); i ++)
+    {
+        Coord3D translated = target.GetCoords(i)+trans ;
+        target.SetCoords(i, translated);
 
-      }
+    }
 
 }
 
