@@ -7,7 +7,7 @@ COMMON_CPP = Split ("""atom.cpp
 		       rmsd.cpp
                     """)
 
-PYTHON_CPP=["ptools.cpp"]
+PYTHON_CPP=["_ptools.cpp"]
                     
                     
 COMMON_LIBS=[]
@@ -30,7 +30,7 @@ python.Append(CPPPATH=['/usr/include/python2.4'])
 
 print "CPPPATH =", python['CPPPATH']
 
-lib1=python.SharedLibrary(File('ptools.so'),source=[objects,PYTHON_CPP])
+lib1=python.SharedLibrary(File('_ptools.so'),source=[objects,PYTHON_CPP])
 lib2=nopython.SharedLibrary('ptools',source=[objects])
 
 Alias('python',lib1)
@@ -41,7 +41,7 @@ print "BUILD_TARGETS is", map(str, BUILD_TARGETS)
 
 #to be able to compile using pyste:
 #env = Environment()
-#bld = Builder(action = 'pyste --module=ptools -I. $SOURCE')
+#bld = Builder(action = 'pyste --module=_ptools -I. $SOURCE')
 #env.Append(BUILDERS = {'Pyste' : bld})
 
 # uncomment this line if pyste is installed

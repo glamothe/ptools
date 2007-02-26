@@ -15,7 +15,7 @@
 using namespace boost::python;
 
 // Module ======================================================================
-BOOST_PYTHON_MODULE(ptools)
+BOOST_PYTHON_MODULE(_ptools)
 {
     class_< PTools::Coord3D >("Coord3D", init<  >())
         .def(init< const PTools::Coord3D& >())
