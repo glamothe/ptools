@@ -65,6 +65,8 @@ public:
     Coord3D GetCoords() const; ///< return atom coordinates
     inline void SetCoords(Coord3D& coords) {mCoords=coords;}; ///< define atom coordinates
     std::string ToString() const; ///< convert atom properties and coordinates to std::string
+    std::string ToPdbString() const ; ///< converts atom to classical PDB-like string
+
     void Translate(const Coord3D& tr); ///< Translation of an atom
 
 };
