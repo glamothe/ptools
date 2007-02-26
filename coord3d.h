@@ -12,7 +12,7 @@ struct Coord3D
 {
     double x,y,z;
  
-    Coord3D() {x=0; y=0;z=0;};
+    Coord3D() {x=0.0; y=0.0;z=0.0;};
     Coord3D(double nx, double ny, double nz){x=nx;y=ny;z=nz;};
 
     inline Coord3D & operator= (const Coord3D &);
