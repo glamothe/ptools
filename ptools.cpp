@@ -72,6 +72,7 @@ BOOST_PYTHON_MODULE(ptools)
         .def("SelectChainId", &PTools::Rigidbody::SelectChainId)
         .def("SelectResRange", &PTools::Rigidbody::SelectResRange)
         .def("CA", &PTools::Rigidbody::CA)
+        .def("ABrotate", &PTools::Rigidbody::ABrotate)
         .def( self + self )
     ;
 

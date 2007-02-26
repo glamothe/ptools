@@ -76,6 +76,9 @@ public:
     /// operator +
     Rigidbody operator+ (const Rigidbody& rig);
 
+    void ABrotate(const Coord3D& A, const Coord3D& B, double theta); ///< rotation around (AB) axis.
+
+
 }; // end class Rigidbody
 
 } // end namespace PTools

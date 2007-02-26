@@ -1,5 +1,6 @@
 #include "rigidbody.h"
 #include "atomselection.h"
+#include "geometry.h"
 
 namespace PTools{
 
@@ -129,6 +130,12 @@ Rigidbody Rigidbody::operator+(const Rigidbody& rig) {
         rigFinal.mAtoms.push_back(rig.mAtoms[i]);
     }
     return rigFinal;
+}
+
+
+void Rigidbody::ABrotate(const Coord3D& A, const Coord3D& B, double theta)
+{
+PTools::ABrotate(A,B,*this, *this, theta);
 }
 
 
