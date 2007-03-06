@@ -32,7 +32,7 @@ void Rigidbody::AddAtom(const Atom& at)
 }
 
 
-Coord3D Rigidbody::FindCenter()
+Coord3D Rigidbody::FindCenter() const
 {
     Coord3D center(0.0,0.0,0.0);
     for(uint i=0; i< this->Size() ; i++)

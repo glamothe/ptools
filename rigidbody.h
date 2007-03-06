@@ -50,7 +50,7 @@ public:
     void SetCoords(uint i, Coord3D& co){mAtoms[i].SetCoords(co);};
 
     /// return geometric center of all atoms
-    Coord3D FindCenter();
+    Coord3D FindCenter() const;
 
     void Translate(const Coord3D& tr); ///< Translate the whole object
 
