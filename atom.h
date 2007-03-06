@@ -22,6 +22,7 @@ private:
     uint mResidId; ///< residue number
     uint mAtomId; ///< atom number
     double mAtomCharge; ///< charge of the atom
+    std::string mExtra; ///< extra data
 
 public:
     Atomproperty(){ mAtomType="X", ///< default constructor 
@@ -49,6 +50,10 @@ public:
 
     inline uint GetAtomId() const {return mAtomId;}; ///< return atom ID
     inline void SetAtomId(uint atomnumber) {mAtomId=atomnumber;}; ///< define atom ID
+
+    inline void SetExtra(std::string extra){mExtra=extra;}; ///< set the extra data field
+    inline std::string GetExtra(){return mExtra;}; ///< get the extra data field
+
 };
 
 

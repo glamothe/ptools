@@ -21,6 +21,8 @@ private:
 
 public:
     Rigidbody(){};
+    Rigidbody(std::string filename);
+
     ~Rigidbody(){};
 
     /// Make a deep copy of one atom (the Atom extracted is then totally independent)

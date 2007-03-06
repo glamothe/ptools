@@ -1,8 +1,14 @@
 #include "rigidbody.h"
 #include "atomselection.h"
 #include "geometry.h"
+#include "pdbio.h"
 
 namespace PTools{
+
+Rigidbody::Rigidbody(std::string filename)
+{
+ReadPDB(filename,*this);
+}
 
 
 void Rigidbody::AddAtom(const Atomproperty& at, Coord3D co)
