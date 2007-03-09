@@ -133,8 +133,9 @@ void ReadPDB(const std::string name,Rigidbody& protein ) {
     ifstream fichier(nomfich.c_str()); //pointeur vers nom fichier donne en argument constructeur
     if (!fichier)
     {
-        std::cout << "##### ERROR:Could not open file \"" << nomfich << "\" #####"<< std::endl ;
-        exit(-1);
+        std::ostringstream oss;
+        throw "##### ERROR:Could not open file \"" + nomfich + "\" #####" ;
+//        exit(-1);
     }
 
     ReadPDB(fichier, protein);

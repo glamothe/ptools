@@ -18,6 +18,7 @@ void mat44xVect(double mat[4][4], const Coord3D& vect, Coord3D& out);
 void mat44xrigid(const Rigidbody& source, Rigidbody& result, double mat[4][4]);
 void ABrotate(Coord3D A, Coord3D B, const Rigidbody& source, Rigidbody& result, double theta);
 void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double phi, double psi);
+void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot);
 
 
 void MultMat4x4(double R1[4][4], double R2[4][4], double out[4][4]);

@@ -349,20 +349,53 @@ void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double 
 
     }
 
-
 }
 
 
+void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot)
+{
+    /*
+        !  makes an Euler rotation of source and stores result
+        !  in dest.
+        !  source is not centered so you might want to do it before
+        !  calling this subroutine
+        !  You must also verify that 'dest' is correctly initialised by
+        !  the command  dest = source. If not grave problems will happen
+    */
 
 
+    double  cp, cs, ss, sp, cscp, sscp, sssp, crot, srot, xar, yar, cssp ;
+
+    cs=cos(ssi);
+    cp=cos(phi);
+    ss=sin(ssi);
+    sp=sin(phi);
+    cscp=cs*cp;
+    cssp=cs*sp;
+    sscp=ss*cp;
+    sssp=ss*sp;
+    crot=cos(rot);
+    srot=sin(rot);
+
+    for (uint i=1; i<source.Size(); i++)
+    {
+        Coord3D coords = source.GetCoords(i);
 
 
+        double X = coords.x;
+        double Y = coords.y;
+        double Z = coords.z;
+        xar = X *crot+ Y*srot;
+        yar = -X*srot+Y*crot ;
+        Coord3D final( xar*cscp-yar*sp+ Z*sscp,
+                       xar*cssp+yar*cp+ Z*sssp,
+                       -xar*ss+Z*cs);
 
+        dest.SetCoords(i,final);
 
+    }
 
-
-
-
+}
 
 
 

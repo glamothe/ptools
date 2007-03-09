@@ -4,7 +4,8 @@ COMMON_CPP = Split ("""atom.cpp
                        pdbio.cpp
                        geometry.cpp
                        atomselection.cpp
-		       rmsd.cpp
+                       rmsd.cpp
+                       forcefield.cpp
                     """)
 
 PYTHON_CPP=["_ptools.cpp"]
@@ -15,7 +16,7 @@ COMMON_LIBS=[]
 COMMON_CPPPATH=['.']
                
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH)
-common.Append(CCFLAGS='-Wall')
+common.Append(CCFLAGS='-Wall -g')
 
 
 python=common.Copy()

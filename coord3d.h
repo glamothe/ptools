@@ -86,6 +86,18 @@ inline std::string PrintCoord(const Coord3D& A) {
 }
 
 
+inline Coord3D minus(const Coord3D& orig)
+{
+    Coord3D min;
+    min.x = -orig.x;
+    min.y = -orig.y;
+    min.z = -orig.z;
+    return min;
+}
+
+
+
+
 };
 
 #endif //CORRD3D_H

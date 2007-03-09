@@ -2,8 +2,9 @@
 #define RIGIDBODY_H
 
 
-#include <boost/shared_ptr.hpp>
 #include <vector>
+#include <cassert>
+
 
 #include "coord3d.h"
 #include "atom.h"
@@ -29,7 +30,10 @@ public:
     Atom CopyAtom(uint i) const ;
 
     ///  get the Atom of index i (with direct access to modifications)
-    Atom& GetAtom(uint pos) {return mAtoms[pos];};
+    Atom& GetAtom(uint pos) {
+    assert(pos>=0);
+    assert(pos<Size());
+    return mAtoms[pos];};
 
     /// synonym of GetAtom
     Atom& operator[](uint pos) {return GetAtom(pos);};
@@ -44,7 +48,10 @@ public:
     void AddAtom(const Atom& at);
 
     /// returns the coordinates of atom i
-    Coord3D GetCoords(uint i) const {return mAtoms[i].GetCoords();};
+    Coord3D GetCoords(uint i) const {
+    assert(i>=0);
+    assert(i<Size());
+    return mAtoms[i].GetCoords();};
 
     /// define the coordinates of atom i
     void SetCoords(uint i, Coord3D& co){mAtoms[i].SetCoords(co);};

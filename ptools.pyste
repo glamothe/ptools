@@ -2,6 +2,9 @@ coord=Class("PTools::Coord3D", "coord3d.h")
 set_policy(coord.Normalize, return_internal_reference())
 Function("PTools::Norm","coord3d.h")
 Function("PTools::Norm2","coord3d.h")
+Function("PTools::PrintCoord","coord3d.h")
+
+
 Atom=Class("PTools::Atom", "atom.h")
 Function("PTools::Dist","atom.h")
 Function("PTools::Dist2","atom.h")
@@ -13,3 +16,6 @@ Function("PTools::ABrotate", "geometry.h")
 Function("PTools::Translate", "geometry.h")
 
 AtomSelection=Class ("PTools::AtomSelection", "atomselection.h")
+
+#ForceField = Class("PTools::ForceField", "forcefield.h")
+ForceFieldAttract = Class("PTools::AttractForceField","forcefield.h")
