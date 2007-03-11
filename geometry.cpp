@@ -377,7 +377,7 @@ void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double s
     crot=cos(rot);
     srot=sin(rot);
 
-    for (uint i=1; i<source.Size(); i++)
+    for (uint i=0; i<source.Size(); i++)
     {
         Coord3D coords = source.GetCoords(i);
 

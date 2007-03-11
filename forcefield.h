@@ -41,6 +41,7 @@ public:
     virtual double Function() {return Energy();};
     virtual double Function(const double* stateVars) {return Energy(stateVars);};
     virtual void Derivatives(const double* stateVars, double* delta){return Gradient(stateVars, delta);};
+    virtual void NumDerivatives(const double* stateVars, double* delta);
 
 
 
@@ -64,6 +65,7 @@ private:
     //private data
     Rigidbody m_refreceptor, m_refligand;
     Rigidbody m_receptor, m_ligand;
+    Rigidbody m_savligand;
 
     std::vector<long double> m_rad ; //rad parameter ... RADius?
     std::vector<long double> m_amp ; //amp parameter ... AMPlitude??
@@ -91,7 +93,24 @@ private:
 } ;
 
 
+class TestForceField: public ForceField
+{
 
+virtual double Function() {return 0.0;}; 
+
+virtual double Function(const double* X)
+   {
+        return X[0]*X[0] + (X[1]-2)*(X[1]-2) ;
+   }
+
+   virtual void Derivatives(const double* X, double* grad)
+   {
+        grad[0]=2*X[0];
+        grad[1]=2*(X[1]-2);
+   }
+
+
+};
 
 
 

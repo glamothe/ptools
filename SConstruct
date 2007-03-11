@@ -6,24 +6,29 @@ COMMON_CPP = Split ("""atom.cpp
                        atomselection.cpp
                        rmsd.cpp
                        forcefield.cpp
+                       minimizers/lbfgs_interface.cpp
+                       minimizers/routines.f
                     """)
 
 PYTHON_CPP=["_ptools.cpp"]
                     
                     
-COMMON_LIBS=[]
+COMMON_LIBS=["g2c"]
 
 COMMON_CPPPATH=['.']
+FFLAGS="-g"
+
                
-common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH)
-common.Append(CCFLAGS='-Wall -g')
+common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH,  FORTRAN = 'g77 -g',  FORTRANFLAGS="-g" )
+common.Append(CCFLAGS='-Wall -g -O3')
+
 
 
 python=common.Copy()
 nopython=common.Copy()
 
 objects=common.SharedObject(COMMON_CPP)
-
+#statics=common.StaticObject(COMMON_CPP)  #to make a static library
 
 python.Append(LIBS=['boost_python', "python2.4"])
 #python.Replace(CPPPATH=['.','/usr/include/python2.4'])
@@ -33,6 +38,8 @@ print "CPPPATH =", python['CPPPATH']
 
 lib1=python.SharedLibrary(File('_ptools.so'),source=[objects,PYTHON_CPP])
 lib2=nopython.SharedLibrary('ptools',source=[objects])
+#lib2=nopython.StaticLibrary('ptools',source=[statics]) #this makes the library static
+
 
 Alias('python',lib1)
 Alias('cpp',lib2)

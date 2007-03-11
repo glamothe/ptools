@@ -55,7 +55,7 @@ struct PTools_AttractForceField_Wrapper: PTools::AttractForceField
     }
 
     void default_NumDerivatives(const double* p0, double* p1) {
-        PTools::ForceField::NumDerivatives(p0, p1);
+        PTools::AttractForceField::NumDerivatives(p0, p1);
     }
 
     PyObject* py_self;
@@ -153,7 +153,7 @@ BOOST_PYTHON_MODULE(_ptools)
         .def("Function", (double (PTools::AttractForceField::*)() )&PTools::AttractForceField::Function, (double (PTools_AttractForceField_Wrapper::*)())&PTools_AttractForceField_Wrapper::default_Function)
         .def("Function", (double (PTools::AttractForceField::*)(const double*) )&PTools::AttractForceField::Function, (double (PTools_AttractForceField_Wrapper::*)(const double*))&PTools_AttractForceField_Wrapper::default_Function)
         .def("Derivatives", (void (PTools::AttractForceField::*)(const double*, double*) )&PTools::AttractForceField::Derivatives, (void (PTools_AttractForceField_Wrapper::*)(const double*, double*))&PTools_AttractForceField_Wrapper::default_Derivatives)
-        .def("NumDerivatives", (void (PTools::ForceField::*)(const double*, double*) )&PTools::ForceField::NumDerivatives, (void (PTools_AttractForceField_Wrapper::*)(const double*, double*))&PTools_AttractForceField_Wrapper::default_NumDerivatives)
+        .def("NumDerivatives", (void (PTools::AttractForceField::*)(const double*, double*) )&PTools::AttractForceField::NumDerivatives, (void (PTools_AttractForceField_Wrapper::*)(const double*, double*))&PTools_AttractForceField_Wrapper::default_NumDerivatives)
         .def("Energy", (double (PTools::AttractForceField::*)() )&PTools::AttractForceField::Energy)
         .def("Energy", (double (PTools::AttractForceField::*)(const double*) )&PTools::AttractForceField::Energy)
         .def("Electrostatic", &PTools::AttractForceField::Electrostatic)

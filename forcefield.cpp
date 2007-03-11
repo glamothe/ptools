@@ -1,9 +1,11 @@
 #include "forcefield.h"
 #include "geometry.h"
+#include "rmsd.h"
 
 
 #include <fstream>
 #include <math.h>  //for fabs()
+
 
 
 
@@ -55,7 +57,7 @@ void extractExtra(Rigidbody& rig, std::vector<uint>& vCat, std::vector<double>& 
 
 
 AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& lig)
-        :m_refreceptor(recept), m_refligand(lig), m_receptor(recept), m_ligand(lig)
+        :m_refreceptor(recept), m_refligand(lig), m_receptor(recept), m_ligand(lig),m_savligand(lig)
 {
     m_ligcenter = m_ligand.FindCenter();
     m_refligand.Translate(PTools::minus(m_ligcenter)); //center the ligand (for later Euler rotation)
@@ -77,8 +79,40 @@ AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& li
 
 
 
+void AttractForceField::NumDerivatives(const double* stateVars, double* delta)
+{
+int pbsize=6;
+
+
+for(uint j=0; j<6; j++)
+{
+double newvars1[pbsize];
+double newvars2[pbsize];
+for(uint i=0; i<6; i++)
+{ 
+newvars1[i]=stateVars[i];
+newvars2[i]=stateVars[i];
+}
+
+double h=1e-6;
+
+newvars1[j]+=h;
+double F1=Function(newvars1);
+newvars2[j]-=h;
+double F2=Function(newvars2);
+double diff=(F1-F2)/(2*h) ;
+delta[j]=diff;
+}
+
+}
+
+
+
+
+
 double AttractForceField::Energy() 
 {
+ResetForces();
 double energy = LennardJones() +  Electrostatic();
 m_energycalled=true;
 return energy;
@@ -88,9 +122,9 @@ return energy;
 
 double AttractForceField::Energy(const double* stateVars)
 {
-    AttractEuler(m_refligand, m_ligand, stateVars[3], stateVars[4], stateVars[5]);
+    AttractEuler(m_refligand, m_ligand, stateVars[0], stateVars[1], stateVars[2]);
     m_ligand.Translate(m_ligcenter);
-    m_ligand.Translate(Coord3D(stateVars[0],stateVars[1],stateVars[2]));
+    m_ligand.Translate(Coord3D(stateVars[3],stateVars[4],stateVars[5]));
     return Energy();
 }
 
@@ -132,8 +166,6 @@ double AttractForceField::LennardJones()
 {
 
     double sumLJ=0.0 ;
-    std::cout << "LennardJones() begins" << std::endl;
-    std::cout << "receptor size: " << m_receptor.Size() << "   ligand size: " << m_ligand.Size() << "\n" ;
 
     for (uint ir=0; ir<m_receptor.Size(); ++ir )
         for (uint jl=0; jl < m_ligand.Size(); ++jl)
@@ -172,7 +204,6 @@ double AttractForceField::LennardJones()
 double AttractForceField::Electrostatic()
 {
     double sumElectrostatic=0.0 ;
-    std::cout << "Electrostatic() begins" << std::endl;
 
     for (uint ir=0; ir<m_receptor.Size(); ++ir )
         for (uint jl=0; jl < m_ligand.Size(); ++jl)
@@ -211,6 +242,8 @@ void AttractForceField::Gradient(const double* stateVars, double* delta)
 
     ResetForces();
     m_energycalled = false;
+    // return 1-delta:
+    for(uint i=0; i<6;i++) delta[i]=-delta[i];
 }
 
 

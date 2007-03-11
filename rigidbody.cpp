@@ -39,7 +39,7 @@ Coord3D Rigidbody::FindCenter() const
     {
         center =  center + GetCoords(i);
     }
-    return ( (1.0/this->Size())*center);
+    return ( (1.0/(double)this->Size())*center);
 }
 
 
