@@ -9,6 +9,7 @@
 #include <coord3d.h>
 #include <forcefield.h>
 #include <geometry.h>
+#include <minimizers/lbfgs_interface.h>
 #include <pdbio.h>
 #include <rigidbody.h>
 
@@ -18,44 +19,75 @@ using namespace boost::python;
 // Declarations ================================================================
 namespace  {
 
+struct PTools_ForceField_Wrapper: PTools::ForceField
+{
+    PTools_ForceField_Wrapper(PyObject* py_self_, const PTools::ForceField& p0):
+        PTools::ForceField(p0), py_self(py_self_) {}
+
+    PTools_ForceField_Wrapper(PyObject* py_self_):
+        PTools::ForceField(), py_self(py_self_) {}
+
+    double Function(const Vdouble& p0) {
+        return call_method< double >(py_self, "Function", p0);
+    }
+
+    void Derivatives(const Vdouble& p0, Vdouble& p1) {
+        call_method< void >(py_self, "Derivatives", p0, p1);
+    }
+
+    void NumDerivatives(const Vdouble& p0, Vdouble& p1) {
+        call_method< void >(py_self, "NumDerivatives", p0, p1);
+    }
+
+    void default_NumDerivatives(const Vdouble& p0, Vdouble& p1) {
+        PTools::ForceField::NumDerivatives(p0, p1);
+    }
+
+    uint ProblemSize() {
+        return call_method< uint >(py_self, "ProblemSize");
+    }
+
+    PyObject* py_self;
+};
+
 struct PTools_AttractForceField_Wrapper: PTools::AttractForceField
 {
     PTools_AttractForceField_Wrapper(PyObject* py_self_, const PTools::AttractForceField& p0):
         PTools::AttractForceField(p0), py_self(py_self_) {}
 
-    PTools_AttractForceField_Wrapper(PyObject* py_self_, const PTools::Rigidbody& p0, const PTools::Rigidbody& p1):
-        PTools::AttractForceField(p0, p1), py_self(py_self_) {}
+    PTools_AttractForceField_Wrapper(PyObject* py_self_, const PTools::Rigidbody& p0, const PTools::Rigidbody& p1, double p2):
+        PTools::AttractForceField(p0, p1, p2), py_self(py_self_) {}
 
-    double Function() {
-        return call_method< double >(py_self, "Function");
-    }
-
-    double default_Function() {
-        return PTools::AttractForceField::Function();
-    }
-
-    double Function(const double* p0) {
+    double Function(const Vdouble& p0) {
         return call_method< double >(py_self, "Function", p0);
     }
 
-    double default_Function(const double* p0) {
+    double default_Function(const Vdouble& p0) {
         return PTools::AttractForceField::Function(p0);
     }
 
-    void Derivatives(const double* p0, double* p1) {
+    void Derivatives(const Vdouble& p0, Vdouble& p1) {
         call_method< void >(py_self, "Derivatives", p0, p1);
     }
 
-    void default_Derivatives(const double* p0, double* p1) {
+    void default_Derivatives(const Vdouble& p0, Vdouble& p1) {
         PTools::AttractForceField::Derivatives(p0, p1);
     }
 
-    void NumDerivatives(const double* p0, double* p1) {
+    void NumDerivatives(const Vdouble& p0, Vdouble& p1) {
         call_method< void >(py_self, "NumDerivatives", p0, p1);
     }
 
-    void default_NumDerivatives(const double* p0, double* p1) {
+    void default_NumDerivatives(const Vdouble& p0, Vdouble& p1) {
         PTools::AttractForceField::NumDerivatives(p0, p1);
+    }
+
+    uint ProblemSize() {
+        return call_method< uint >(py_self, "ProblemSize");
+    }
+
+    uint default_ProblemSize() {
+        return PTools::AttractForceField::ProblemSize();
     }
 
     PyObject* py_self;
@@ -68,6 +100,7 @@ struct PTools_AttractForceField_Wrapper: PTools::AttractForceField
 // Module ======================================================================
 BOOST_PYTHON_MODULE(_ptools)
 {
+ class_< Vdouble >("std_vector_double");
     class_< PTools::Coord3D >("Coord3D", init<  >())
         .def(init< const PTools::Coord3D& >())
         .def(init< double, double, double >())
@@ -148,19 +181,34 @@ BOOST_PYTHON_MODULE(_ptools)
         .def( self | self )
     ;
 
-    class_< PTools::AttractForceField, PTools_AttractForceField_Wrapper >("AttractForceField", init< const PTools::AttractForceField& >())
-        .def(init< const PTools::Rigidbody&, const PTools::Rigidbody& >())
-        .def("Function", (double (PTools::AttractForceField::*)() )&PTools::AttractForceField::Function, (double (PTools_AttractForceField_Wrapper::*)())&PTools_AttractForceField_Wrapper::default_Function)
-        .def("Function", (double (PTools::AttractForceField::*)(const double*) )&PTools::AttractForceField::Function, (double (PTools_AttractForceField_Wrapper::*)(const double*))&PTools_AttractForceField_Wrapper::default_Function)
-        .def("Derivatives", (void (PTools::AttractForceField::*)(const double*, double*) )&PTools::AttractForceField::Derivatives, (void (PTools_AttractForceField_Wrapper::*)(const double*, double*))&PTools_AttractForceField_Wrapper::default_Derivatives)
-        .def("NumDerivatives", (void (PTools::AttractForceField::*)(const double*, double*) )&PTools::AttractForceField::NumDerivatives, (void (PTools_AttractForceField_Wrapper::*)(const double*, double*))&PTools_AttractForceField_Wrapper::default_NumDerivatives)
+    class_< PTools::ForceField, boost::noncopyable, PTools_ForceField_Wrapper >("ForceField", init<  >())
+        .def("Function", pure_virtual(&PTools::ForceField::Function))
+        .def("Derivatives", pure_virtual(&PTools::ForceField::Derivatives))
+        .def("NumDerivatives", &PTools::ForceField::NumDerivatives, &PTools_ForceField_Wrapper::default_NumDerivatives)
+        .def("ProblemSize", pure_virtual(&PTools::ForceField::ProblemSize))
+    ;
+
+    class_< PTools::AttractForceField, bases< PTools::ForceField > , PTools_AttractForceField_Wrapper >("AttractForceField", init< const PTools::AttractForceField& >())
+        .def(init< const PTools::Rigidbody&, const PTools::Rigidbody&, double >())
+        .def("Function", (double (PTools::AttractForceField::*)(const Vdouble&) )&PTools::AttractForceField::Function, (double (PTools_AttractForceField_Wrapper::*)(const Vdouble&))&PTools_AttractForceField_Wrapper::default_Function)
+        .def("Derivatives", (void (PTools::AttractForceField::*)(const Vdouble&, Vdouble&) )&PTools::AttractForceField::Derivatives, (void (PTools_AttractForceField_Wrapper::*)(const Vdouble&, Vdouble&))&PTools_AttractForceField_Wrapper::default_Derivatives)
+        .def("NumDerivatives", (void (PTools::AttractForceField::*)(const Vdouble&, Vdouble&) )&PTools::AttractForceField::NumDerivatives, (void (PTools_AttractForceField_Wrapper::*)(const Vdouble&, Vdouble&))&PTools_AttractForceField_Wrapper::default_NumDerivatives)
+        .def("ProblemSize", (uint (PTools::AttractForceField::*)() )&PTools::AttractForceField::ProblemSize, (uint (PTools_AttractForceField_Wrapper::*)())&PTools_AttractForceField_Wrapper::default_ProblemSize)
         .def("Energy", (double (PTools::AttractForceField::*)() )&PTools::AttractForceField::Energy)
-        .def("Energy", (double (PTools::AttractForceField::*)(const double*) )&PTools::AttractForceField::Energy)
+        .def("Energy", (double (PTools::AttractForceField::*)(const Vdouble&) )&PTools::AttractForceField::Energy)
         .def("Electrostatic", &PTools::AttractForceField::Electrostatic)
         .def("LennardJones", &PTools::AttractForceField::LennardJones)
         .def("Gradient", &PTools::AttractForceField::Gradient)
         .def("ShowEnergyParams", &PTools::AttractForceField::ShowEnergyParams)
         .def("Trans", (void (PTools::AttractForceField::*)() )&PTools::AttractForceField::Trans)
+    ;
+
+    class_< PTools::Lbfgs >("Lbfgs", init< const PTools::Lbfgs& >())
+        .def(init< PTools::ForceField& >())
+        .def("minimize", &PTools::Lbfgs::minimize)
+        .def("setLbounds", &PTools::Lbfgs::setLbounds)
+        .def("setUbounds", &PTools::Lbfgs::setUbounds)
+        .def("setNBD", &PTools::Lbfgs::setNBD)
     ;
 
 }

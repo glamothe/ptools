@@ -14,11 +14,17 @@ inline void assign(char* dest, char* src)
 
 
 
-Lbfgs::Lbfgs( ForceField& toMinim,  int problemsize, double* initialvector)
+Lbfgs::Lbfgs( ForceField& toMinim)
         :objToMinimize(toMinim)
 {
-    N=problemsize;
-    X=initialvector; //this is not a copy!
+    N=toMinim.ProblemSize();
+    std::cerr  << "Problem size: " << N << std::endl;
+
+    X.reserve(N+10); //reserve needed memory (array of N doubles)
+    //X=new double[N];  //initial vector
+    for(int i=0; i<N; i++) X[i]=0.0;
+
+
     nMemCorr = 17 ; //default used by driver1.f
 //    FACTR = 1e7 ;
     FACTR = 1e7 ;
@@ -31,16 +37,14 @@ Lbfgs::Lbfgs( ForceField& toMinim,  int problemsize, double* initialvector)
     WA = new double[wa_size];
 
 
-
-    //memory allocation for L, H and NBD:
     //no lower or upper bound by default:
-//    L= new double[N];
-//    U= new double[N];
-//    NBD=new int[N];
-//    for (int i=0; i < N; i++) NBD[i]=0 ;
+    L= new double[N];
+    U= new double[N];
+    NBD=new int[N];
+    for (int i=0; i < N; i++) NBD[i]=0 ;
 
-    G=new double[N];
-    std::cout << G << std::endl;
+    //G=new double[N];
+    G.reserve(N+10);
     IWA = new int[3*N];
     IPRINT = 1 ; // one print every iteration
 
@@ -50,30 +54,36 @@ Lbfgs::Lbfgs( ForceField& toMinim,  int problemsize, double* initialvector)
 Lbfgs::~Lbfgs()
 {
     std::cerr << "Appel du destructeur\n" ;
-//    delete[] L;
-//    delete[] U;
-//    delete[] NBD;
-    std::cout << G << std::endl;
-    delete[] G;
+    delete[] L;
+    delete[] U;
+    delete[] NBD;
+
     delete[] WA ;
     delete[] IWA ;
 }
 
 
-void Lbfgs::minimize(int maxiter=100)
+void Lbfgs::minimize(int maxiter)
 {
+
+
     for (int i=0; i<60; i++) TASK[i]='\0' ;
     memcpy(TASK,"START",6);
 
     nMemCorr=5 ;
+    
 
 mainloop:
 
-    setulb_( &N, &nMemCorr, X, L,
-             U, NBD, &F , G ,
+
+
+    setulb_( &N, &nMemCorr, &X[0], L,               // yes &X[0] is a safe way to exchange a vector<double> with fortran
+             U, NBD, &F , &G[0] ,
              &FACTR, &PGTOL, WA, IWA,
              TASK, &IPRINT, CSAVE, LSAVE,
              ISAVE, DSAVE);
+
+
 
     //  std::cout << "contenu de task: " << TASK << std::endl ;
     if ( TASK[0]=='F' && TASK[1]=='G')
@@ -88,6 +98,7 @@ mainloop:
 //
         F = objToMinimize.Function(X);
         objToMinimize.Derivatives(X,G);
+
 
 
         goto mainloop;

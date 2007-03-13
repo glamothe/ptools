@@ -8,7 +8,6 @@
 
 
 
-
 //temporaire:
 //convertit une chaine de caracteres std::string en un autre type
 // si >> a ete correctement defini.
@@ -21,9 +20,6 @@ bool from_string( const std::string & Str, T & Dest )
     // tenter la conversion vers Dest
     return (iss >> Dest) != 0;
 }
-
-
-
 
 
 
@@ -56,8 +52,9 @@ void extractExtra(Rigidbody& rig, std::vector<uint>& vCat, std::vector<double>& 
 
 
 
-AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& lig)
-        :m_refreceptor(recept), m_refligand(lig), m_receptor(recept), m_ligand(lig),m_savligand(lig)
+AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& lig,double cutoff)
+        :m_refreceptor(recept), m_refligand(lig), m_receptor(recept), m_ligand(lig),m_savligand(lig),
+        plist(recept,lig,cutoff)
 {
     m_ligcenter = m_ligand.FindCenter();
     m_refligand.Translate(PTools::minus(m_ligcenter)); //center the ligand (for later Euler rotation)
@@ -79,20 +76,16 @@ AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& li
 
 
 
-void AttractForceField::NumDerivatives(const double* stateVars, double* delta)
+void AttractForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta)
 {
-int pbsize=6;
-
 
 for(uint j=0; j<6; j++)
 {
-double newvars1[pbsize];
-double newvars2[pbsize];
-for(uint i=0; i<6; i++)
-{ 
-newvars1[i]=stateVars[i];
-newvars2[i]=stateVars[i];
-}
+
+Vdouble newvars1 = stateVars;
+Vdouble newvars2 = stateVars;
+
+
 
 double h=1e-6;
 
@@ -120,7 +113,7 @@ return energy;
 
 
 
-double AttractForceField::Energy(const double* stateVars)
+double AttractForceField::Energy(const Vdouble& stateVars)
 {
     AttractEuler(m_refligand, m_ligand, stateVars[0], stateVars[1], stateVars[2]);
     m_ligand.Translate(m_ligcenter);
@@ -161,15 +154,18 @@ void AttractForceField::InitParams()
 
 
 
-//TODO: use pairlists !
 double AttractForceField::LennardJones()
 {
 
     double sumLJ=0.0 ;
 
-    for (uint ir=0; ir<m_receptor.Size(); ++ir )
-        for (uint jl=0; jl < m_ligand.Size(); ++jl)
+
+
+for (uint iter=0; iter<plist.Size(); iter++)
         {
+
+            uint ir = plist[iter].atrec;
+            uint jl = plist[iter].atlig;
             assert(m_rAtomCat[ir] >= 0);
             assert(m_rAtomCat[ir] <= 28);
             assert(m_lAtomCat[jl] >= 0);
@@ -205,9 +201,10 @@ double AttractForceField::Electrostatic()
 {
     double sumElectrostatic=0.0 ;
 
-    for (uint ir=0; ir<m_receptor.Size(); ++ir )
-        for (uint jl=0; jl < m_ligand.Size(); ++jl)
+for (uint iter=0; iter<plist.Size(); iter++)
         {
+            uint ir = plist[iter].atrec;
+            uint jl = plist[iter].atlig;
             double chargeR = m_rAtomCharge[ir];
             double chargeL = m_lAtomCharge[jl];
             double charge = chargeR * chargeL * (332.053986/20.0);
@@ -233,7 +230,7 @@ double AttractForceField::Electrostatic()
 
 
 
-void AttractForceField::Gradient(const double* stateVars, double* delta)
+void AttractForceField::Gradient(const Vdouble& stateVars, Vdouble& delta)
 {
     // !!!!!!!!!! WARNING: this function NEEDS Energy() to be called FIRST !!!!!!!!!!!!!!
 
@@ -247,7 +244,7 @@ void AttractForceField::Gradient(const double* stateVars, double* delta)
 }
 
 
-void AttractForceField::Trans(double* delta,bool print)
+void AttractForceField::Trans(Vdouble& delta,bool print)
 {
 //   In this subroutine the translational force components are calculated
     double flim = 1.0e18;
@@ -285,7 +282,7 @@ void AttractForceField::Trans(double* delta,bool print)
 
 
 
-void AttractForceField::Rota(double phi,double ssi, double rot, double* delta)
+void AttractForceField::Rota(double phi,double ssi, double rot, Vdouble& delta)
 {
     //delta array of doubles of dimension 6 ( 3 rotations, 3 translations)
 

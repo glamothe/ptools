@@ -1,3 +1,6 @@
+module_code(""" class_< Vdouble >("std_vector_double");
+""")
+
 coord=Class("PTools::Coord3D", "coord3d.h")
 set_policy(coord.Normalize, return_internal_reference())
 Function("PTools::Norm","coord3d.h")
@@ -17,5 +20,7 @@ Function("PTools::Translate", "geometry.h")
 
 AtomSelection=Class ("PTools::AtomSelection", "atomselection.h")
 
-#ForceField = Class("PTools::ForceField", "forcefield.h")
+ForceField = Class("PTools::ForceField", "forcefield.h")
 ForceFieldAttract = Class("PTools::AttractForceField","forcefield.h")
+
+LBFGS = Class("PTools::Lbfgs", "minimizers/lbfgs_interface.h")

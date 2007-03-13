@@ -6,6 +6,7 @@ COMMON_CPP = Split ("""atom.cpp
                        atomselection.cpp
                        rmsd.cpp
                        forcefield.cpp
+                       pairlist.cpp
                        minimizers/lbfgs_interface.cpp
                        minimizers/routines.f
                     """)

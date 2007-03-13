@@ -1,6 +1,7 @@
 #ifndef LBFGS_H
 #define LBFGS_H
 
+#include "../basetypes.h"
 #include "../forcefield.h"
 
 namespace PTools
@@ -18,7 +19,7 @@ extern "C" {void setulb_(int* n,int *m, double* x, double* l,
 class Lbfgs
 {
       public:
-            Lbfgs( ForceField& toMinim, int problemsize, double* initialvector);
+            Lbfgs( ForceField& toMinim);
             ~Lbfgs(); 
             void minimize(int maxiter);
 	    void setLbounds(double * tabbounds); // set lower bounds
@@ -38,12 +39,12 @@ class Lbfgs
 
             int N; // number of variables
             int nMemCorr ; // number of corrections in the limited memory matrix (cf driver1.f)
-            double * X; // size n .vector which contains variables values
+            Vdouble X; // size n .vector which contains variables values
             double * L; //size n .vector for lower bounds of each variable
             double * U; //size n. upper bounds
             int* NBD; //size n: which kind of bound for each var.
             double F; //function value
-            double* G; // gradient values G[i]=dF/dx[i]
+            Vdouble G; // gradient values G[i]=dF/dx[i]
             double FACTR; // tolerance in the termination test
             double PGTOL; // gradient tolerance
             double* WA ; // reserved memory for internal use by the minimizer
