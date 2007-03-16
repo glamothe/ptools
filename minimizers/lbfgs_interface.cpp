@@ -14,52 +14,19 @@ inline void assign(char* dest, char* src)
 
 
 
+
+
+
 Lbfgs::Lbfgs( ForceField& toMinim)
         :objToMinimize(toMinim)
 {
-    N=toMinim.ProblemSize();
-    std::cerr  << "Problem size: " << N << std::endl;
-
-    X.reserve(N+10); //reserve needed memory (array of N doubles)
-    //X=new double[N];  //initial vector
-    for(int i=0; i<N; i++) X[i]=0.0;
-
-
-    nMemCorr = 17 ; //default used by driver1.f
-//    FACTR = 1e7 ;
-    FACTR = 1e7 ;
-//    FACTR = 1e1 ;
-    PGTOL = 1.0e-3;
-
-
-    //memory allocation (needed by the minimizer)
-    int wa_size = 2*N*nMemCorr + 4*N + 12*N*N + 12*N ;
-    WA = new double[wa_size];
-
-
-    //no lower or upper bound by default:
-    L= new double[N];
-    U= new double[N];
-    NBD=new int[N];
-    for (int i=0; i < N; i++) NBD[i]=0 ;
-
-    //G=new double[N];
-    G.reserve(N+10);
-    IWA = new int[3*N];
-    IPRINT = 1 ; // one print every iteration
 
 };
 
 
 Lbfgs::~Lbfgs()
 {
-    std::cerr << "Appel du destructeur\n" ;
-    delete[] L;
-    delete[] U;
-    delete[] NBD;
 
-    delete[] WA ;
-    delete[] IWA ;
 }
 
 
@@ -67,73 +34,50 @@ void Lbfgs::minimize(int maxiter)
 {
 
 
-    for (int i=0; i<60; i++) TASK[i]='\0' ;
-    memcpy(TASK,"START",6);
+    int n = objToMinimize.ProblemSize();
+    std::cerr  << "Problem size: " << n << std::endl;
 
-    nMemCorr=5 ;
-    
+    double f;
+    int j;
 
-mainloop:
+    int icall;
+    //double x[N];
+    Vdouble x(n);
+    //double g[N];
+    Vdouble g(n);
 
+    lbfgs_t* opt;
 
-
-    setulb_( &N, &nMemCorr, &X[0], L,               // yes &X[0] is a safe way to exchange a vector<double> with fortran
-             U, NBD, &F , &G[0] ,
-             &FACTR, &PGTOL, WA, IWA,
-             TASK, &IPRINT, CSAVE, LSAVE,
-             ISAVE, DSAVE);
-
-
-
-    //  std::cout << "contenu de task: " << TASK << std::endl ;
-    if ( TASK[0]=='F' && TASK[1]=='G')
-    {
-// //  std::cout << "\ndemande appel valeur+grad\n" ;
-//           F = objToMinimize.Energy(X);
-//
-//         //calcul du gradient:
-// //          objToMinimize.NumGradient(X,G);
-//           objToMinimize.Gradient(X,G);
-//
-//
-        F = objToMinimize.Function(X);
-        objToMinimize.Derivatives(X,G);
+    opt = lbfgs_create(n, 5, 1.0E-3);  //n:proble size, 5: number of memory corrections, 1e-5: eps.
+    opt->iprint[0] = 1;  //be a little bit verbose
+    opt->iprint[1] = 0;  // TODO: add comment
+    opt->diagco = 0;    // ? -> TODO: add comment
 
 
-
-        goto mainloop;
+   for (j = 0; j < n; j++) {
+    x[j]=0.0;
     }
 
-    if (!strncmp(TASK,"NEW_X",5))
-    {
-        //     std::cout << "\n### et un NEW_X un\n" ;
-        if (ISAVE[30]>maxiter)
-        {
-            memcpy(TASK,"STOP: Reached max iterations limit",35);
-        }
+    icall = 0;
+    while (1) {
+              //f and g evaluation:
 
-        goto mainloop ;
+            f = objToMinimize.Function(x);
+                objToMinimize.Derivatives(x,g);
+        
+        if (lbfgs_run(opt, &x[0], &f, &g[0]) <= 0)
+            break;
+        ++icall;
+        /* We allow at most 2000 evaluations of F and G */
+        if (icall > 2000)
+            break;
     }
-    std::cout << "\n***fin: contenu de TASK: " << TASK << "\n" ;
+
+    lbfgs_destroy(opt);
+
 
 }
 
-
-void Lbfgs::setLbounds(double* tabbounds)
-{
-    L =  tabbounds ;
-}
-
-
-void Lbfgs::setUbounds (double* tabbounds)
-{
-    U=tabbounds ;
-}
-
-void Lbfgs::setNBD(int*  nbd)
-{
-    NBD = nbd ;
-}
 
 
 
@@ -146,40 +90,3 @@ void Lbfgs::setNBD(int*  nbd)
 
 
 
-
-
-
-/*
-int main() //test only !!!
-{
-    int taille = 25 ;
-    double x[taille];
-    double l[taille];
-    double u[taille];
-    int nbd[taille];
-
-for (int i=0; i < taille; i+=2)
-{
-nbd[i]=2;
-l[i]=1 ;
-u[i]=100;
-}
-
-for (int i=1; i < taille; i+=2)
-{
-nbd[i] = 2 ;
-l[i]= -100 ;
-u[i]= 100 ;
-
-}
-
-
-    for (int i=0; i < taille; i++) x[i]=3 ;
-    lbfgs::Lbfgs minf(taille,x ) ;
-	minf.setNBD(nbd);
-	minf.setLbounds(l);
-	minf.setUbounds(u);
-
-    minf.minimize();
-    return 0;
-}*/

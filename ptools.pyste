@@ -1,5 +1,15 @@
-module_code(""" class_< Vdouble >("std_vector_double");
+
+declaration_code(""" 
+#include <boost/python/suite/indexing/indexing_suite.hpp> 
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 """)
+
+
+module_code(""" class_< Vdouble >("std_vector_double") 
+        .def(vector_indexing_suite<std::vector<double> >());
+""")
+
+#Vdouble=Class("Vdouble","basetypes.h")
 
 coord=Class("PTools::Coord3D", "coord3d.h")
 set_policy(coord.Normalize, return_internal_reference())
@@ -22,5 +32,6 @@ AtomSelection=Class ("PTools::AtomSelection", "atomselection.h")
 
 ForceField = Class("PTools::ForceField", "forcefield.h")
 ForceFieldAttract = Class("PTools::AttractForceField","forcefield.h")
+TestForceField = Class("PTools::TestForceField","forcefield.h")
 
 LBFGS = Class("PTools::Lbfgs", "minimizers/lbfgs_interface.h")

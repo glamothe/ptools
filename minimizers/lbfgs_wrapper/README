@@ -1,0 +1,13 @@
+C wrapper code for Fortran lbfgs and lbfgsb code, see:
+http://www.netlib.org/opt/
+http://www.ece.northwestern.edu/~nocedal/lbfgs.html
+
+lbfgs.h and lbfgs_wrapper.c are for lbfgs, see example sdrive.c 
+lbfgsb.h and lbfgsb_wrapper.c are for lbfgsb, see example drive1.c 
+
+tested on Linux, should work fine elsewhere.
+
+sh build.sh to build the example code (you need both fortran (g77) and c compiler)
+
+Zhang Le
+2006-06-28 

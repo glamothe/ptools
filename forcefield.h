@@ -10,6 +10,9 @@ namespace PTools
 {
 
 
+void PrintVec(const Vdouble& vec);
+
+
 //! Generic forcefield (abstract class)
 /**
 
@@ -41,8 +44,13 @@ public:
 
     //this is to satisfy the abstract class:
     //virtual double Function() {return Energy();};
-    virtual double Function(const Vdouble& stateVars) {return Energy(stateVars);};
-    virtual void Derivatives(const Vdouble& stateVars, Vdouble& delta){return Gradient(stateVars, delta);};
+    virtual double Function(const Vdouble& stateVars) {
+    //std::cout << "Function: stateVars size: " << stateVars.size() << std::endl;
+    return Energy(stateVars);};
+    virtual void Derivatives(const Vdouble& stateVars, Vdouble& delta){
+    //std::cerr << "Derivatives: stateVars.size()"<<stateVars.size() << "\n" ;
+    //std::cerr << "Type de delta:" << (std::string) typeid(delta).name() << std::endl ;
+    return Gradient(stateVars, delta);};
     virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta);
     virtual uint ProblemSize() {return 6;};
 
@@ -67,7 +75,7 @@ private:
     void InitParams();
 
     void Trans(Vdouble& delta, bool print=false); // translational derivatives
-    void Rota(double phi,double ssi, double rot, Vdouble& delta);
+    void Rota(double phi,double ssi, double rot, Vdouble& delta, bool print=false);
     void ResetForces();
 
     //private data
@@ -107,11 +115,14 @@ virtual uint ProblemSize(){return 2;};
 
 virtual double Function(const Vdouble& X)
    {
+        PrintVec(X);
         return X[0]*X[0] + (X[1]-2)*(X[1]-2) ;
    }
 
    virtual void Derivatives(const Vdouble& X, Vdouble& grad)
    {
+        PrintVec(X);
+        PrintVec(grad);
         grad[0]=2*X[0];
         grad[1]=2*(X[1]-2);
    }

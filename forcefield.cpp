@@ -29,6 +29,18 @@ namespace PTools
 {
 
 
+
+void PrintVec(const Vdouble& vec)
+{
+std::cout << "Vector: " ;
+for(uint i=0; i<vec.size(); i++)
+    std::cout << vec[i] << "  " ;
+
+std::cout << "\n";
+
+}
+
+
 void extractExtra(Rigidbody& rig, std::vector<uint>& vCat, std::vector<double>& vCh)
 {
 
@@ -234,6 +246,10 @@ void AttractForceField::Gradient(const Vdouble& stateVars, Vdouble& delta)
 {
     // !!!!!!!!!! WARNING: this function NEEDS Energy() to be called FIRST !!!!!!!!!!!!!!
 
+    //std::cout << "size of stateVars:" << stateVars.size() << std::endl ;
+    assert(stateVars.size()>=ProblemSize());
+    assert(delta.size()>=ProblemSize());
+
     Trans(delta);
     Rota(stateVars[0], stateVars[1], stateVars[2], delta);
 
@@ -276,13 +292,14 @@ void AttractForceField::Trans(Vdouble& delta,bool print)
     delta[4]=ftr2;
     delta[5]=ftr3;
 
+    //debug:
     if (print) std::cout <<  "translational forces: " << ftr1 <<"  "<< ftr2 <<"  " << ftr3 << std::endl;
     return ;
 }
 
 
 
-void AttractForceField::Rota(double phi,double ssi, double rot, Vdouble& delta)
+void AttractForceField::Rota(double phi,double ssi, double rot, Vdouble& delta,bool print)
 {
     //delta array of doubles of dimension 6 ( 3 rotations, 3 translations)
 
@@ -344,6 +361,8 @@ void AttractForceField::Rota(double phi,double ssi, double rot, Vdouble& delta)
             delta[j] += pm[2][j] * m_ligforces[i].z ;
         }
     }
+
+    if (print) std::cout << "Rotational forces: " << delta[0] << " " << delta[1] << " " << delta[2] << std::endl;
 
     return;
 }

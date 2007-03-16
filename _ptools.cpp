@@ -17,37 +17,37 @@
 using namespace boost::python;
 
 // Declarations ================================================================
+ 
+#include <boost/python/suite/indexing/indexing_suite.hpp> 
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+
+#include <boost/python/module.hpp>
+#include <boost/python/class.hpp>
+#include <boost/python/wrapper.hpp>
+#include <boost/python/call.hpp>
+
+
+
+
 namespace  {
 
-struct PTools_ForceField_Wrapper: PTools::ForceField
+struct PTools_ForceField_Wrapper: PTools::ForceField, wrapper<PTools::ForceField>
 {
-    PTools_ForceField_Wrapper(PyObject* py_self_, const PTools::ForceField& p0):
-        PTools::ForceField(p0), py_self(py_self_) {}
-
-    PTools_ForceField_Wrapper(PyObject* py_self_):
-        PTools::ForceField(), py_self(py_self_) {}
 
     double Function(const Vdouble& p0) {
-        return call_method< double >(py_self, "Function", p0);
+        return this->get_override("Function")(boost::ref(p0));
     }
 
     void Derivatives(const Vdouble& p0, Vdouble& p1) {
-        call_method< void >(py_self, "Derivatives", p0, p1);
+        this->get_override("Derivatives")(boost::ref(p0), boost::ref(p1));
+        return;
     }
 
-    void NumDerivatives(const Vdouble& p0, Vdouble& p1) {
-        call_method< void >(py_self, "NumDerivatives", p0, p1);
-    }
-
-    void default_NumDerivatives(const Vdouble& p0, Vdouble& p1) {
-        PTools::ForceField::NumDerivatives(p0, p1);
-    }
 
     uint ProblemSize() {
-        return call_method< uint >(py_self, "ProblemSize");
+        return this->get_override("ProblemSize")();
     }
 
-    PyObject* py_self;
 };
 
 struct PTools_AttractForceField_Wrapper: PTools::AttractForceField
@@ -67,19 +67,19 @@ struct PTools_AttractForceField_Wrapper: PTools::AttractForceField
     }
 
     void Derivatives(const Vdouble& p0, Vdouble& p1) {
-        call_method< void >(py_self, "Derivatives", p0, p1);
+        call_method< void >(py_self, "Derivatives", boost::ref(p0), boost::ref(p1));
     }
 
     void default_Derivatives(const Vdouble& p0, Vdouble& p1) {
-        PTools::AttractForceField::Derivatives(p0, p1);
+        PTools::AttractForceField::Derivatives(boost::ref(p0), boost::ref(p1));
     }
 
     void NumDerivatives(const Vdouble& p0, Vdouble& p1) {
-        call_method< void >(py_self, "NumDerivatives", p0, p1);
+        call_method< void >(py_self, "NumDerivatives", boost::ref(p0), boost::ref(p1));
     }
 
     void default_NumDerivatives(const Vdouble& p0, Vdouble& p1) {
-        PTools::AttractForceField::NumDerivatives(p0, p1);
+        PTools::AttractForceField::NumDerivatives(boost::ref(p0), boost::ref(p1));
     }
 
     uint ProblemSize() {
@@ -94,13 +94,33 @@ struct PTools_AttractForceField_Wrapper: PTools::AttractForceField
 };
 
 
+struct PTools_TestForceField_Wrapper: PTools::TestForceField, wrapper<PTools::TestForceField>
+{
+    double Function(const Vdouble& vec)
+    {
+        return this->get_override("Function")(boost::ref(vec));
+    }
+
+    void Derivatives(const Vdouble& v1, Vdouble& v2)
+    {
+        this->get_override("Derivatives")(boost::ref(v1),boost::ref(v2));
+    }
+
+    uint ProblemSize()
+    {
+        return this->get_override("ProbleSize")();
+    }
+};
+
+
 }// namespace 
 
 
 // Module ======================================================================
 BOOST_PYTHON_MODULE(_ptools)
 {
- class_< Vdouble >("std_vector_double");
+ class_< Vdouble >("std_vector_double") 
+        .def(vector_indexing_suite<std::vector<double> >());
     class_< PTools::Coord3D >("Coord3D", init<  >())
         .def(init< const PTools::Coord3D& >())
         .def(init< double, double, double >())
@@ -181,10 +201,10 @@ BOOST_PYTHON_MODULE(_ptools)
         .def( self | self )
     ;
 
-    class_< PTools::ForceField, boost::noncopyable, PTools_ForceField_Wrapper >("ForceField", init<  >())
+    class_<PTools_ForceField_Wrapper , boost::noncopyable >("ForceField", init<  >())
         .def("Function", pure_virtual(&PTools::ForceField::Function))
         .def("Derivatives", pure_virtual(&PTools::ForceField::Derivatives))
-        .def("NumDerivatives", &PTools::ForceField::NumDerivatives, &PTools_ForceField_Wrapper::default_NumDerivatives)
+        //.def("NumDerivatives", &PTools::ForceField::NumDerivatives, &PTools_ForceField_Wrapper::default_NumDerivatives)
         .def("ProblemSize", pure_virtual(&PTools::ForceField::ProblemSize))
     ;
 
@@ -203,12 +223,17 @@ BOOST_PYTHON_MODULE(_ptools)
         .def("Trans", (void (PTools::AttractForceField::*)() )&PTools::AttractForceField::Trans)
     ;
 
+    class_< PTools::TestForceField, bases< PTools::ForceField >  >("TestForceField", init<  >())
+        .def(init< const PTools::TestForceField& >())
+        .def("Function", &PTools::ForceField::Function)
+        .def("Derivatives", &PTools::ForceField::Derivatives)
+        .def("ProblemSize", &PTools::ForceField::ProblemSize)
+    ;
+
     class_< PTools::Lbfgs >("Lbfgs", init< const PTools::Lbfgs& >())
         .def(init< PTools::ForceField& >())
         .def("minimize", &PTools::Lbfgs::minimize)
-        .def("setLbounds", &PTools::Lbfgs::setLbounds)
-        .def("setUbounds", &PTools::Lbfgs::setUbounds)
-        .def("setNBD", &PTools::Lbfgs::setNBD)
+
     ;
 
 }

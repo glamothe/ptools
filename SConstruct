@@ -8,8 +8,15 @@ COMMON_CPP = Split ("""atom.cpp
                        forcefield.cpp
                        pairlist.cpp
                        minimizers/lbfgs_interface.cpp
-                       minimizers/routines.f
+                     
+                       minimizers/lbfgs_wrapper/lbfgs_wrapper.c
+                       minimizers/lbfgs_wrapper/lbfgs.f
                     """)
+ #minimizers/routines.f  #older? version of lbfgs
+ #minimizers/lbfgs_wrapper/lbfgsb_wrapper.c   #with bounds
+ #minimizers/lbfgs_wrapper/lbfgsb.f    #with bounds
+
+
 
 PYTHON_CPP=["_ptools.cpp"]
                     
@@ -21,7 +28,7 @@ FFLAGS="-g"
 
                
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH,  FORTRAN = 'g77 -g',  FORTRANFLAGS="-g" )
-common.Append(CCFLAGS='-Wall -g -O3')
+common.Append(CCFLAGS='-Wall -g -O4')
 
 
 
