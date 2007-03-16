@@ -42,13 +42,13 @@ void Lbfgs::minimize(int maxiter)
 
     int icall;
     //double x[N];
-    Vdouble x(n);
+    x.resize(n);
     //double g[N];
-    Vdouble g(n);
+    g.resize(n);
 
     lbfgs_t* opt;
 
-    opt = lbfgs_create(n, 5, 1.0E-3);  //n:proble size, 5: number of memory corrections, 1e-5: eps.
+    opt = lbfgs_create(n, 5, 1.0E-4);  //n:proble size, 5: number of memory corrections, 1e-5: eps.
     opt->iprint[0] = 1;  //be a little bit verbose
     opt->iprint[1] = 0;  // TODO: add comment
     opt->diagco = 0;    // ? -> TODO: add comment
