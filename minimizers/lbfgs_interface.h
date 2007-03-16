@@ -23,12 +23,15 @@ class Lbfgs
             Lbfgs( ForceField& toMinim);
             ~Lbfgs(); 
             void minimize(int maxiter);
+            Vdouble GetX() {return x;}; // Quel nom donner a cette fonction ? 
 
 
 
       private:
 
-            ForceField& objToMinimize ; 
+            ForceField& objToMinimize ;
+            Vdouble x ; // position variables
+            Vdouble g ; // gradient
 
 
 

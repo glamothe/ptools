@@ -233,8 +233,12 @@ BOOST_PYTHON_MODULE(_ptools)
     class_< PTools::Lbfgs >("Lbfgs", init< const PTools::Lbfgs& >())
         .def(init< PTools::ForceField& >())
         .def("minimize", &PTools::Lbfgs::minimize)
-
+        .def("GetX", &PTools::Lbfgs::GetX)
     ;
+
+
+    def("AttractEuler", &PTools::AttractEuler);
+
 
 }
 

@@ -147,9 +147,7 @@ void ReadPDB(const std::string name,Rigidbody& protein ) {
 void WritePDB(const Rigidbody& rigid, std::string filename)
 {
 
- 
  FILE* file= fopen(filename.c_str(),"w") ;
-
 
     for(uint i=0; i<rigid.Size();i++)
     {
@@ -171,7 +169,7 @@ void WritePDB(const Rigidbody& rigid, std::string filename)
 
 
 
-        fprintf(file,"ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f",atomnumber,atomname,residName,chainID,residnumber,x,y,z);
+        fprintf(file,"ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f%s",atomnumber,atomname,residName,chainID,residnumber,x,y,z,at.GetExtra().c_str());
         fprintf(file,"\n");
     }
 
