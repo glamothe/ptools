@@ -155,9 +155,13 @@ void AttractForceField::InitParams()
         m_rad.push_back(rad) ;
         m_amp.push_back(amp) ;
     }
+
+    assert(m_rad.size()<40);
+
+
     //initialisation of the pre-calculated array of rc and ac
-    for (uint i=0; i<=28;i++)
-        for (uint j=0; j<=28; j++)
+    for (uint i=0; i<=m_rad.size();i++)
+        for (uint j=0; j<=m_rad.size(); j++)
         {
             m_rc[i][j]=m_amp[i]*m_amp[j]*pow((m_rad[i]+m_rad[j]),8);
             m_ac[i][j]=m_amp[i]*m_amp[j]*pow((m_rad[i]+m_rad[j]),6);
@@ -179,9 +183,9 @@ for (uint iter=0; iter<plist.Size(); iter++)
             uint ir = plist[iter].atrec;
             uint jl = plist[iter].atlig;
             assert(m_rAtomCat[ir] >= 0);
-            assert(m_rAtomCat[ir] <= 28);
+            assert(m_rAtomCat[ir] <= 39);
             assert(m_lAtomCat[jl] >= 0);
-            assert(m_lAtomCat[jl] <=28 );
+            assert(m_lAtomCat[jl] <= 39);
 
             double alen = m_ac[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
             double rlen = m_rc[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];

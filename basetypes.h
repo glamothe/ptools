@@ -6,6 +6,7 @@
 #include <iostream>
 
 typedef std::vector<int> Vint;
+typedef std::vector<uint> Vuint;
 typedef std::vector<double> Vdouble;
 
 

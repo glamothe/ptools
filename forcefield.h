@@ -83,21 +83,21 @@ private:
     Rigidbody m_receptor, m_ligand;
     Rigidbody m_savligand;
 
-    std::vector<long double> m_rad ; //rad parameter ... RADius?
-    std::vector<long double> m_amp ; //amp parameter ... AMPlitude??
+    Vdouble m_rad ; //rad parameter ... RADius?
+    Vdouble m_amp ; //amp parameter ... AMPlitude??
 
     std::vector<Coord3D> m_ligforces ; //forces
 
     Coord3D m_ligcenter; //center of mass of the ligand
 
-    std::vector<uint> m_rAtomCat; //receptor atom category (as seen in reduced pdb files)
-    std::vector<uint> m_lAtomCat; //ligand atom category
+    Vuint m_rAtomCat; //receptor atom category (as seen in reduced pdb files)
+    Vuint m_lAtomCat; //ligand atom category
 
-    std::vector<double> m_rAtomCharge;
-    std::vector<double> m_lAtomCharge;
+    Vdouble m_rAtomCharge;
+    Vdouble m_lAtomCharge;
 
-    double m_rc[29][29]; //some pre-calculated results
-    double m_ac[29][29]; //some pre-calculated results
+    double m_rc[40][40]; //some pre-calculated results
+    double m_ac[40][40]; //some pre-calculated results
 
     bool m_energycalled ;
 
