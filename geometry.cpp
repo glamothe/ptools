@@ -296,6 +296,8 @@ void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4
         result.SetCoords(iatom, res) ;
     }
 
+     mat44xmat44( mat , source.mat44, result.mat44);
+
 }
 
 
@@ -323,6 +325,9 @@ TODO: tests !
 */
 void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double phi, double psi)
 {
+
+    std::cout << "Warning: this function does not update the mat44 matrix of rigidbody. \n";
+
 
     double ct = cos(theta);
     double st = sin(theta);
@@ -394,6 +399,37 @@ void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double s
         dest.SetCoords(i,final);
 
     }
+
+
+      double eulermat[4][4];
+
+      eulermat[0][0] = crot*cscp + srot*sp;
+      eulermat[0][1] = srot*cscp - crot*sp;
+      eulermat[0][2] = sscp;
+      eulermat[0][3] = 0.0;
+      
+      eulermat[1][0] = crot*cssp-srot*cp ;
+      eulermat[1][1] = srot*cssp+crot*cp;
+      eulermat[1][2] = sssp;
+      eulermat[1][3] = 0.0;
+      
+      eulermat[2][0] = -crot*ss;
+      eulermat[2][1] = -srot*ss;
+      eulermat[2][2] = cs;
+      eulermat[2][3] = 0.0;
+      
+      eulermat[3][0] = 0.0;
+      eulermat[3][1] = 0.0;
+      eulermat[3][2] = 0.0;
+      eulermat[3][3] = 1.0;
+
+
+
+      
+      //matrix multiplication
+      mat44xmat44( eulermat , source.mat44, dest.mat44);
+
+
 
 }
 

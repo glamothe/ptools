@@ -9,7 +9,7 @@ COMMON_CPP = Split ("""atom.cpp
                        pairlist.cpp
                        minimizers/lbfgs_interface.cpp
                      
-                       minimizers/lbfgs_wrapper/lbfgs_wrapper.c
+                       minimizers/lbfgs_wrapper/lbfgs_wrapper.cpp
                        minimizers/lbfgs_wrapper/lbfgs.f
                     """)
  #minimizers/routines.f  #older? version of lbfgs
@@ -28,7 +28,7 @@ FFLAGS="-g"
 
                
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH,  FORTRAN = 'g77 -g',  FORTRANFLAGS="-g" )
-common.Append(CCFLAGS='-Wall -g -O4')
+common.Append(CCFLAGS='-Wall -O4 -g')
 
 
 

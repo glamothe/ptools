@@ -48,8 +48,8 @@ void Lbfgs::minimize(int maxiter)
 
     lbfgs_t* opt;
 
-    opt = lbfgs_create(n, 5, 1.0E-4);  //n:proble size, 5: number of memory corrections, 1e-5: eps.
-    opt->iprint[0] = 1;  //be a little bit verbose
+    opt = lbfgs_create(n, 10, 1.0E-3);  //n:proble size, 5: number of memory corrections, 1e-5: eps.
+    opt->iprint[0] = 0;  //be a little bit verbose
     opt->iprint[1] = 0;  // TODO: add comment
     opt->diagco = 0;    // ? -> TODO: add comment
 
@@ -63,7 +63,11 @@ void Lbfgs::minimize(int maxiter)
               //f and g evaluation:
 
             f = objToMinimize.Function(x);
+                //objToMinimize.NumDerivatives(x,g);
+                //std::cout << " numerical grad: "; for(uint i=0; i<6;i++) std::cout << g[i] << "  "; std::cout <<"\n";
                 objToMinimize.Derivatives(x,g);
+//                 std::cout << "analytical grad: "; for(uint i=0; i<6;i++) std::cout << g[i] << "  "; std::cout <<"\n";
+
         
         if (lbfgs_run(opt, &x[0], &f, &g[0]) <= 0)
             break;

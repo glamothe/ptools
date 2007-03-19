@@ -5,9 +5,35 @@
 
 namespace PTools{
 
+
+Rigidbody::Rigidbody()  
+{
+ResetMatrix();
+}
+
+
+
 Rigidbody::Rigidbody(std::string filename)
 {
 ReadPDB(filename,*this);
+ResetMatrix();
+}
+
+
+Rigidbody::Rigidbody(const Rigidbody& model)
+{
+//this copy constructor is needed because double[4][4] is not 
+// automatically copied with the default copy constructor
+
+this->mAtoms = model.mAtoms;
+this->mForces = model.mForces;
+
+//copy of the matrix:
+for(uint i=0; i<4; i++)
+    for (uint j=0; j<4; j++)
+        this->mat44[i][j]=model.mat44[i][j];
+
+
 }
 
 
@@ -48,6 +74,11 @@ void Rigidbody::Translate(const Coord3D& tr)
 {
     for (uint i=0; i<this->Size(); i++)
         this->GetAtom(i).Translate(tr);
+
+        //updates rotation/translation matrix:
+        this->mat44[3][0]+=tr.x;
+        this->mat44[3][1]+=tr.y;
+        this->mat44[3][2]+=tr.z;
 }
 
 
@@ -142,6 +173,39 @@ Rigidbody Rigidbody::operator+(const Rigidbody& rig) {
 void Rigidbody::ABrotate(const Coord3D& A, const Coord3D& B, double theta)
 {
 PTools::ABrotate(A,B,*this, *this, theta);
+}
+
+
+void Rigidbody::ResetMatrix()
+{
+    for (uint i=0; i<4; i++)
+        for (uint j=0; j<4; j++)
+            {
+                if (i!=j) mat44[i][j]=0;
+                else mat44[i][j]=1;
+            }
+
+}
+
+
+void Rigidbody::PrintMatrix()
+{
+    std::cout << "#############\n";
+    for(uint i=0; i<4; i++)
+    {
+        for(uint j=0; j<4; j++)
+        {
+            printf("%12.7f", this->mat44[i][j]) ;
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "#############\n";
+}
+
+
+void Rigidbody::ApplyMatrix(double mat[4][4])
+{
+    mat44xrigid(*this, *this, mat);
 }
 
 

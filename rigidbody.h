@@ -19,10 +19,13 @@ class Rigidbody
 
 private:
     std::vector<Atom> mAtoms; ///< vector of Atoms
+    std::vector<Coord3D> mForces; ///< forces for each atom
+    double mat44[4][4]; ///< rotation/tranlation matrix
 
 public:
-    Rigidbody(){};
+    Rigidbody();  ///< basic constructor
     Rigidbody(std::string filename);
+    Rigidbody(const Rigidbody& model); ///< copy
 
     ~Rigidbody(){};
 
@@ -87,7 +90,15 @@ public:
 
     void ABrotate(const Coord3D& A, const Coord3D& B, double theta); ///< rotation around (AB) axis.
 
+    void ResetMatrix(); ///< reset Rotation/translation matrix to identity.
+    void PrintMatrix(); ///< print the rotation/translation matrix
+    void ApplyMatrix(double mat[4][4]);
+    //const GetMatrix() {return mat44;};
+    
 
+
+    friend void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot);
+    friend void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4 ] );
 }; // end class Rigidbody
 
 } // end namespace PTools

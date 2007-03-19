@@ -181,6 +181,10 @@ BOOST_PYTHON_MODULE(_ptools)
         .def("SelectResRange", &PTools::Rigidbody::SelectResRange)
         .def("CA", &PTools::Rigidbody::CA)
         .def("ABrotate", &PTools::Rigidbody::ABrotate)
+        .def("ResetMatrix", &PTools::Rigidbody::ResetMatrix)
+        .def("PrintMatrix", &PTools::Rigidbody::PrintMatrix)
+        .def("ApplyMatrix", &PTools::Rigidbody::ApplyMatrix)
+
         .def( self + self )
     ;
 

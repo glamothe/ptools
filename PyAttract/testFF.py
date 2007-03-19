@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.4
 
 from ptools import *
 import sys
@@ -7,7 +7,7 @@ import sys
 rig = Rigidbody("1FIN_c_r.red")
 rig2 = Rigidbody("1FIN_c_l.red")
 
-FF=AttractForceField(rig2,rig,100)
+FF=AttractForceField(rig2,rig,10)
 
 #FF=TestForceField()
 
@@ -44,7 +44,7 @@ class PyForceField(ForceField):
 #print FF.Energy()
 
 minim=Lbfgs(FF)
-#minim.minimize(50)
+minim.minimize(50)
 
 X=std_vector_double()
 G=std_vector_double()

@@ -160,8 +160,8 @@ void AttractForceField::InitParams()
 
 
     //initialisation of the pre-calculated array of rc and ac
-    for (uint i=0; i<=m_rad.size();i++)
-        for (uint j=0; j<=m_rad.size(); j++)
+    for (uint i=0; i<m_rad.size();i++)
+        for (uint j=0; j<m_rad.size(); j++)
         {
             m_rc[i][j]=m_amp[i]*m_amp[j]*pow((m_rad[i]+m_rad[j]),8);
             m_ac[i][j]=m_amp[i]*m_amp[j]*pow((m_rad[i]+m_rad[j]),6);
