@@ -27,11 +27,11 @@ private:
 public:
     Atomproperty(){ mAtomType="X", ///< default constructor
                                   mAtomElement="X",
-                                               mResidType="XXX",
-                                                          mChainId="X",
-                                                                   mResidId=1,
-                                                                            mAtomId=1,
-                                                                                    mAtomCharge=0.0;
+                                  mResidType="XXX",
+                                  mChainId="X",
+                                  mResidId=1,
+                                  mAtomId=1,
+                                  mAtomCharge=0.0;
     };
 
     std::string GetType() const {return mAtomType;}; ///< return atom type
