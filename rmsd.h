@@ -9,7 +9,7 @@
 namespace PTools
 {
 
-double Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2); 
+double Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2);
 /// root mean square deviation without superposition
 
 }

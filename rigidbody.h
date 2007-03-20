@@ -34,9 +34,10 @@ public:
 
     ///  get the Atom of index i (with direct access to modifications)
     Atom& GetAtom(uint pos) {
-    assert(pos>=0);
-    assert(pos<Size());
-    return mAtoms[pos];};
+        assert(pos>=0);
+        assert(pos<Size());
+        return mAtoms[pos];
+    };
 
     /// synonym of GetAtom
     Atom& operator[](uint pos) {return GetAtom(pos);};
@@ -54,7 +55,8 @@ public:
     Coord3D GetCoords(uint i) const {
 //     assert(i>=0);
 //     assert(i<Size());
-    return mAtoms[i].GetCoords();};
+        return mAtoms[i].GetCoords();
+    };
 
     /// define the coordinates of atom i
     void SetCoords(uint i, Coord3D& co){mAtoms[i].SetCoords(co);};
@@ -94,7 +96,7 @@ public:
     void PrintMatrix(); ///< print the rotation/translation matrix
     void ApplyMatrix(double mat[4][4]);
     //const GetMatrix() {return mat44;};
-    
+
 
 
     friend void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot);

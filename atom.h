@@ -25,13 +25,14 @@ private:
     std::string mExtra; ///< extra data
 
 public:
-    Atomproperty(){ mAtomType="X", ///< default constructor 
-						   mAtomElement="X", 
-						   mResidType="XXX", 
-						   mChainId="X", 
-						   mResidId=1,
-						   mAtomId=1,
-						   mAtomCharge=0.0;};
+    Atomproperty(){ mAtomType="X", ///< default constructor
+                                  mAtomElement="X",
+                                               mResidType="XXX",
+                                                          mChainId="X",
+                                                                   mResidId=1,
+                                                                            mAtomId=1,
+                                                                                    mAtomCharge=0.0;
+    };
 
     std::string GetType() const {return mAtomType;}; ///< return atom type
     void SetType(std::string newtype) { mAtomType = newtype;}; ///< define atom type
@@ -80,13 +81,13 @@ public:
 
 inline double Dist(const Atom& at1, const Atom& at2) ///< distance between two atoms
 {
-   return Norm(at1.GetCoords()-at2.GetCoords());
+    return Norm(at1.GetCoords()-at2.GetCoords());
 }
 
 
 inline double Dist2(const Atom& at1, const Atom& at2) ///< distance**2 between two atoms
 {
-   return Norm2(at1.GetCoords()-at2.GetCoords());
+    return Norm2(at1.GetCoords()-at2.GetCoords());
 }
 
 

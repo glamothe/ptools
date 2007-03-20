@@ -6,32 +6,32 @@
 namespace PTools{
 
 
-Rigidbody::Rigidbody()  
+Rigidbody::Rigidbody()
 {
-ResetMatrix();
+    ResetMatrix();
 }
 
 
 
 Rigidbody::Rigidbody(std::string filename)
 {
-ReadPDB(filename,*this);
-ResetMatrix();
+    ReadPDB(filename,*this);
+    ResetMatrix();
 }
 
 
 Rigidbody::Rigidbody(const Rigidbody& model)
 {
-//this copy constructor is needed because double[4][4] is not 
+//this copy constructor is needed because double[4][4] is not
 // automatically copied with the default copy constructor
 
-this->mAtoms = model.mAtoms;
-this->mForces = model.mForces;
+    this->mAtoms = model.mAtoms;
+    this->mForces = model.mForces;
 
 //copy of the matrix:
-for(uint i=0; i<4; i++)
-    for (uint j=0; j<4; j++)
-        this->mat44[i][j]=model.mat44[i][j];
+    for (uint i=0; i<4; i++)
+        for (uint j=0; j<4; j++)
+            this->mat44[i][j]=model.mat44[i][j];
 
 
 }
@@ -61,7 +61,7 @@ void Rigidbody::AddAtom(const Atom& at)
 Coord3D Rigidbody::FindCenter() const
 {
     Coord3D center(0.0,0.0,0.0);
-    for(uint i=0; i< this->Size() ; i++)
+    for (uint i=0; i< this->Size() ; i++)
     {
         center =  center + GetCoords(i);
     }
@@ -75,10 +75,10 @@ void Rigidbody::Translate(const Coord3D& tr)
     for (uint i=0; i<this->Size(); i++)
         this->GetAtom(i).Translate(tr);
 
-        //updates rotation/translation matrix:
-        this->mat44[3][0]+=tr.x;
-        this->mat44[3][1]+=tr.y;
-        this->mat44[3][2]+=tr.z;
+    //updates rotation/translation matrix:
+    this->mat44[3][0]+=tr.x;
+    this->mat44[3][1]+=tr.y;
+    this->mat44[3][2]+=tr.z;
 }
 
 
@@ -163,7 +163,7 @@ Rigidbody& Rigidbody::operator=(const Rigidbody& rig) {
 Rigidbody Rigidbody::operator+(const Rigidbody& rig) {
     Rigidbody rigFinal;
     rigFinal.mAtoms = mAtoms;
-    for(uint i=0; i< rig.Size() ; i++) {
+    for (uint i=0; i< rig.Size() ; i++) {
         rigFinal.mAtoms.push_back(rig.mAtoms[i]);
     }
     return rigFinal;
@@ -172,7 +172,7 @@ Rigidbody Rigidbody::operator+(const Rigidbody& rig) {
 
 void Rigidbody::ABrotate(const Coord3D& A, const Coord3D& B, double theta)
 {
-PTools::ABrotate(A,B,*this, *this, theta);
+    PTools::ABrotate(A,B,*this, *this, theta);
 }
 
 
@@ -180,10 +180,10 @@ void Rigidbody::ResetMatrix()
 {
     for (uint i=0; i<4; i++)
         for (uint j=0; j<4; j++)
-            {
-                if (i!=j) mat44[i][j]=0;
-                else mat44[i][j]=1;
-            }
+        {
+            if (i!=j) mat44[i][j]=0;
+            else mat44[i][j]=1;
+        }
 
 }
 
@@ -191,9 +191,9 @@ void Rigidbody::ResetMatrix()
 void Rigidbody::PrintMatrix()
 {
     std::cout << "#############\n";
-    for(uint i=0; i<4; i++)
+    for (uint i=0; i<4; i++)
     {
-        for(uint j=0; j<4; j++)
+        for (uint j=0; j<4; j++)
         {
             printf("%12.7f", this->mat44[i][j]) ;
         }

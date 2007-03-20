@@ -45,12 +45,14 @@ public:
     //this is to satisfy the abstract class:
     //virtual double Function() {return Energy();};
     virtual double Function(const Vdouble& stateVars) {
-    //std::cout << "Function: stateVars size: " << stateVars.size() << std::endl;
-    return Energy(stateVars);};
+        //std::cout << "Function: stateVars size: " << stateVars.size() << std::endl;
+        return Energy(stateVars);
+    };
     virtual void Derivatives(const Vdouble& stateVars, Vdouble& delta){
-    //std::cerr << "Derivatives: stateVars.size()"<<stateVars.size() << "\n" ;
-    //std::cerr << "Type de delta:" << (std::string) typeid(delta).name() << std::endl ;
-    return Gradient(stateVars, delta);};
+        //std::cerr << "Derivatives: stateVars.size()"<<stateVars.size() << "\n" ;
+        //std::cerr << "Type de delta:" << (std::string) typeid(delta).name() << std::endl ;
+        return Gradient(stateVars, delta);
+    };
     virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta);
     virtual uint ProblemSize() {return 6;};
 
@@ -66,7 +68,7 @@ public:
     void Trans() {Vdouble delta(6) ; Trans(delta,true); };
 
 
-    
+
 
 
 
@@ -111,21 +113,21 @@ class TestForceField: public ForceField
 
 //virtual double Function() {return 0.0;};
 
-virtual uint ProblemSize(){return 2;};
+    virtual uint ProblemSize(){return 2;};
 
-virtual double Function(const Vdouble& X)
-   {
+    virtual double Function(const Vdouble& X)
+    {
         PrintVec(X);
         return X[0]*X[0] + (X[1]-2)*(X[1]-2) ;
-   }
+    }
 
-   virtual void Derivatives(const Vdouble& X, Vdouble& grad)
-   {
+    virtual void Derivatives(const Vdouble& X, Vdouble& grad)
+    {
         PrintVec(X);
         PrintVec(grad);
         grad[0]=2*X[0];
         grad[1]=2*(X[1]-2);
-   }
+    }
 
 
 };

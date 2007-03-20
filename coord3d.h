@@ -11,7 +11,7 @@ namespace PTools{
 struct Coord3D
 {
     double x,y,z;
- 
+
     Coord3D() {x=0.0; y=0.0;z=0.0;};
     Coord3D(double nx, double ny, double nz){x=nx;y=ny;z=nz;};
 
@@ -74,15 +74,15 @@ inline Coord3D operator* (const Coord3D& A, double scal)
 
 /// define * operator : double * Coord3D
 inline Coord3D operator* (double scal, const Coord3D& A) {
-	return A * scal ; 
+    return A * scal ;
 }
 
 /// print coordinates in string
 inline std::string PrintCoord(const Coord3D& A) {
-	int size=100;
-	char info[size];
-	snprintf(info, size, "%8.3f %8.3f %8.3f", A.x, A.y, A.z);
-	return info;
+    int size=100;
+    char info[size];
+    snprintf(info, size, "%8.3f %8.3f %8.3f", A.x, A.y, A.z);
+    return info;
 }
 
 

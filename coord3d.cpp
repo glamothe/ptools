@@ -7,9 +7,9 @@ Coord3D& Coord3D::Normalize(){
     double norm = Norm(*this);
     x = x / norm;
     y = y / norm;
-    z = z / norm; 
-    return *this;    
-    }
+    z = z / norm;
+    return *this;
+}
 
 }
 

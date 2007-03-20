@@ -32,11 +32,11 @@ namespace PTools
 
 void PrintVec(const Vdouble& vec)
 {
-std::cout << "Vector: " ;
-for(uint i=0; i<vec.size(); i++)
-    std::cout << vec[i] << "  " ;
+    std::cout << "Vector: " ;
+    for (uint i=0; i<vec.size(); i++)
+        std::cout << vec[i] << "  " ;
 
-std::cout << "\n";
+    std::cout << "\n";
 
 }
 
@@ -91,37 +91,37 @@ AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& li
 void AttractForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta)
 {
 
-for(uint j=0; j<6; j++)
-{
+    for (uint j=0; j<6; j++)
+    {
 
-Vdouble newvars1 = stateVars;
-Vdouble newvars2 = stateVars;
+        Vdouble newvars1 = stateVars;
+        Vdouble newvars2 = stateVars;
 
 
 
-double h=1e-6;
+        double h=1e-6;
 
-newvars1[j]+=h;
-double F1=Function(newvars1);
-newvars2[j]-=h;
-double F2=Function(newvars2);
-double diff=(F1-F2)/(2*h) ;
-delta[j]=diff;
+        newvars1[j]+=h;
+        double F1=Function(newvars1);
+        newvars2[j]-=h;
+        double F2=Function(newvars2);
+        double diff=(F1-F2)/(2*h) ;
+        delta[j]=diff;
+    }
+
 }
 
-}
 
 
 
 
-
-double AttractForceField::Energy() 
+double AttractForceField::Energy()
 {
-ResetForces();
-double energy = LennardJones() +  Electrostatic();
-m_energycalled=true;
-return energy;
-}; 
+    ResetForces();
+    double energy = LennardJones() +  Electrostatic();
+    m_energycalled=true;
+    return energy;
+};
 
 
 
@@ -177,37 +177,37 @@ double AttractForceField::LennardJones()
 
 
 
-for (uint iter=0; iter<plist.Size(); iter++)
-        {
+    for (uint iter=0; iter<plist.Size(); iter++)
+    {
 
-            uint ir = plist[iter].atrec;
-            uint jl = plist[iter].atlig;
-            assert(m_rAtomCat[ir] >= 0);
-            assert(m_rAtomCat[ir] <= 39);
-            assert(m_lAtomCat[jl] >= 0);
-            assert(m_lAtomCat[jl] <= 39);
+        uint ir = plist[iter].atrec;
+        uint jl = plist[iter].atlig;
+        assert(m_rAtomCat[ir] >= 0);
+        assert(m_rAtomCat[ir] <= 39);
+        assert(m_lAtomCat[jl] >= 0);
+        assert(m_lAtomCat[jl] <= 39);
 
-            double alen = m_ac[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
-            double rlen = m_rc[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
+        double alen = m_ac[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
+        double rlen = m_rc[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
 
-            Coord3D dx = m_ligand.GetCoords(jl) - m_receptor.GetCoords(ir) ;
-            double r2 = Norm2(dx);
+        Coord3D dx = m_ligand.GetCoords(jl) - m_receptor.GetCoords(ir) ;
+        double r2 = Norm2(dx);
 
-            if (r2 < 0.001 ) r2=0.001;
-            double rr2 = 1.0/r2;
-            dx = rr2*dx;
+        if (r2 < 0.001 ) r2=0.001;
+        double rr2 = 1.0/r2;
+        dx = rr2*dx;
 
-            double rr23 = rr2*rr2*rr2 ;
-            double rep =  rlen*rr2 ;
-            double vlj = (rep-alen)*rr23 ;
+        double rr23 = rr2*rr2*rr2 ;
+        double rep =  rlen*rr2 ;
+        double vlj = (rep-alen)*rr23 ;
 
-            sumLJ += vlj;
+        sumLJ += vlj;
 
-            double fb = 6.0*vlj+2.0*(rep*rr23) ;
-            Coord3D fdb = fb*dx ;
-            m_ligforces[jl] = m_ligforces[jl] + fdb ;
-            //receptor%forces%data(i) = receptor%forces%data(i) - fdb
-        }
+        double fb = 6.0*vlj+2.0*(rep*rr23) ;
+        Coord3D fdb = fb*dx ;
+        m_ligforces[jl] = m_ligforces[jl] + fdb ;
+        //receptor%forces%data(i) = receptor%forces%data(i) - fdb
+    }
     return sumLJ ;
 }
 
@@ -217,30 +217,30 @@ double AttractForceField::Electrostatic()
 {
     double sumElectrostatic=0.0 ;
 
-for (uint iter=0; iter<plist.Size(); iter++)
+    for (uint iter=0; iter<plist.Size(); iter++)
+    {
+        uint ir = plist[iter].atrec;
+        uint jl = plist[iter].atlig;
+        double chargeR = m_rAtomCharge[ir];
+        double chargeL = m_lAtomCharge[jl];
+        double charge = chargeR * chargeL * (332.053986/20.0);
+
+        Coord3D dx = m_ligand.GetCoords(jl) - m_receptor.GetCoords(ir) ;
+        double r2 = Norm2(dx);
+
+        if (r2 < 0.001 ) r2=0.001;
+        double rr2 = 1.0/r2;
+        dx = rr2*dx;
+
+        if (fabs(charge) > 0.0)
         {
-            uint ir = plist[iter].atrec;
-            uint jl = plist[iter].atlig;
-            double chargeR = m_rAtomCharge[ir];
-            double chargeL = m_lAtomCharge[jl];
-            double charge = chargeR * chargeL * (332.053986/20.0);
+            double et = charge*rr2;
+            sumElectrostatic+=et;
 
-            Coord3D dx = m_ligand.GetCoords(jl) - m_receptor.GetCoords(ir) ;
-            double r2 = Norm2(dx);
-
-            if (r2 < 0.001 ) r2=0.001;
-            double rr2 = 1.0/r2;
-            dx = rr2*dx;
-
-            if (fabs(charge) > 0.0)
-            {
-                double et = charge*rr2;
-                sumElectrostatic+=et;
-
-                Coord3D fdb = (2.0*et)*dx;
-                m_ligforces[jl] = m_ligforces[jl] + fdb ;
-            }
+            Coord3D fdb = (2.0*et)*dx;
+            m_ligforces[jl] = m_ligforces[jl] + fdb ;
         }
+    }
     return  sumElectrostatic ;
 }
 
@@ -260,7 +260,7 @@ void AttractForceField::Gradient(const Vdouble& stateVars, Vdouble& delta)
     ResetForces();
     m_energycalled = false;
     // return 1-delta:
-    for(uint i=0; i<6;i++) delta[i]=-delta[i];
+    for (uint i=0; i<6;i++) delta[i]=-delta[i];
 }
 
 

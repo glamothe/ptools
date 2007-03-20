@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include "atom.h"
-#include "stdio.h" 
+#include "stdio.h"
 #include "pdbio.h"
 
 using namespace std;
@@ -12,11 +12,11 @@ using namespace std;
 namespace PTools{
 
 std::string strip( std::string const& str, char const* sepSet ) {
-      std::string::size_type const first = str.find_first_not_of(sepSet);
-      return ( first==std::string::npos )
-                  ? std::string()
-      : str.substr(first, str.find_last_not_of(sepSet)-first+1);
-} 
+    std::string::size_type const first = str.find_first_not_of(sepSet);
+    return ( first==std::string::npos )
+           ? std::string()
+           : str.substr(first, str.find_last_not_of(sepSet)-first+1);
+}
 
 
 bool isAtom(const std::string & ligne ) {
@@ -147,9 +147,9 @@ void ReadPDB(const std::string name,Rigidbody& protein ) {
 void WritePDB(const Rigidbody& rigid, std::string filename)
 {
 
- FILE* file= fopen(filename.c_str(),"w") ;
+    FILE* file= fopen(filename.c_str(),"w") ;
 
-    for(uint i=0; i<rigid.Size();i++)
+    for (uint i=0; i<rigid.Size();i++)
     {
 
         const char * chainID="A" ;
@@ -173,8 +173,8 @@ void WritePDB(const Rigidbody& rigid, std::string filename)
         fprintf(file,"\n");
     }
 
-fclose(file);
-} 
+    fclose(file);
+}
 
 } //namespace PTools
 
