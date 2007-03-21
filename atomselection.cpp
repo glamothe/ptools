@@ -76,8 +76,8 @@ AtomSelection operator| (const AtomSelection& atsel1,const AtomSelection& atsel2
     if (atsel1.m_rigid != atsel2.m_rigid)
     {
         selout.m_rigid=0;
-        return selout;
         std::cout<<"Warning: for now you should not make union of two different rigidbody this way!" << std::endl;
+        return selout;
     }
     //else:
     selout.m_rigid = atsel1.m_rigid;
