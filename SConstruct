@@ -10,7 +10,9 @@ COMMON_CPP = Split ("""atom.cpp
                        minimizers/lbfgs_interface.cpp
                      
                        minimizers/lbfgs_wrapper/lbfgs_wrapper.cpp
+                       minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp
                        minimizers/lbfgs_wrapper/lbfgs.f
+                       minimizers/lbfgs_wrapper/lbfgsb.f
                     """)
  #minimizers/routines.f  #older? version of lbfgs
  #minimizers/lbfgs_wrapper/lbfgsb_wrapper.c   #with bounds

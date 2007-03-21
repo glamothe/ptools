@@ -22,10 +22,10 @@ def PrintVect(vect):
 
 
 
-def SingleMinim(rec, lig,cutoff):
+def SingleMinim(rec, lig,cutoff,niter):
     FF=AttractForceField(rec,lig,cutoff)
     lbfgs=Lbfgs(FF)
-    lbfgs.minimize(500)
+    lbfgs.minimize(niter)
     X=lbfgs.GetX()
     return X
 
@@ -99,6 +99,47 @@ class Translation:
         
 
 
+def skipComments(attach):
+    result=[]
+    for line in attach.readlines():
+        if line[0] not in ["#","!"]:
+            result.append(line)
+    return result
+
+
+
+def readParams(filename):
+    fich=open(filename,"r")
+    clean=skipComments(fich)
+    
+    #nb of minimizations to perform is first integer of cleaned lines
+    nbminim=int(clean.pop(0).split()[0])
+    print "%i series of minimizations"%nbminim
+    
+    
+    lignames=[]
+    while(True):
+        line=clean.pop(0).split()
+        if line[0]=="Lig":
+            lignames.append(line[2])
+        else:
+            break
+
+    ignored=line #one more line is read in the loop before.
+                 # (the xrst line which is ignored now)
+    
+    minimlist=[]
+    for i in range(nbminim):
+        line=clean.pop(0).split()
+        minim=(int(line[0]),float(line[-1]))
+        minimlist.append(minim)  #return a list of type (iter,squarecutoff)
+                                 #other parameters are ignored
+    return (nbminim, lignames, minimlist)
+
+
+
+
+
 
 
 
@@ -130,7 +171,8 @@ def main():
     print now,"(",now.strftime("%A %B %d %Y, %H:%M"),")"
 
 
-
+    (nbminim,lignames,minimlist) = readParams("attract.inp")
+    
 
 
 
@@ -156,33 +198,41 @@ def main():
         for rot in rotations:
             rotnb+=1
             print "Rotation nb %i"%rotnb
-            cutoff=math.sqrt(1500)
-            
+            minimcounter=0
             ligand=Rigidbody(lig)
-            center=ligand.FindCenter()
-            ligand.Translate(Coord3D()-center)
-            AttractEuler(ligand,ligand,rot[0],rot[1],rot[2])
-            ligand.Translate(trans)
-    
-            X=SingleMinim(rec,ligand,cutoff)
-    
-            PrintVect(X)
+            for minim in minimlist:
+                minimcounter+=1
+                print "minimization nb %i of %i"%(minimcounter,nbminim)
+                cutoff=math.sqrt(minim[1])
+                niter=minim[0]
 
-            output=Rigidbody(ligand)
-            center=output.FindCenter()
-            output.Translate(Coord3D()-center)
-            AttractEuler(output ,output, X[0], X[1], X[2])
-            output.Translate(Coord3D(X[3],X[4],X[5]))
-            output.Translate(center)
-            
-            output.PrintMatrix()
-            #WritePDB(output, "out.pdb")
-            
-            
+                
+                center=ligand.FindCenter()
+                ligand.Translate(Coord3D()-center)
+                AttractEuler(ligand,ligand,rot[0],rot[1],rot[2])
+                ligand.Translate(trans)
+
+                X=SingleMinim(rec,ligand,cutoff,niter)
+
+                PrintVect(X)
+
+                output=Rigidbody(ligand)
+                center=output.FindCenter()
+                output.Translate(Coord3D()-center)
+                AttractEuler(output ,output, X[0], X[1], X[2])
+                output.Translate(Coord3D(X[3],X[4],X[5]))
+                output.Translate(center)
+
+                output.PrintMatrix()
+                ligand=Rigidbody(output)
+                #WritePDB(output, "out.pdb")
+
+
             #check the rot/trans matrix:
             
 
-
+    now = datetime.datetime.now()
+    print "Finished at: ",now.strftime("%A %B %d %Y, %H:%M")
 
 
 if __name__=="__main__":

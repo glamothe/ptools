@@ -5,7 +5,7 @@
 #include "../forcefield.h"
 
 
-#include "lbfgs_wrapper/lbfgs.h"
+#include "lbfgs_wrapper/lbfgsb.h"
 
 
 

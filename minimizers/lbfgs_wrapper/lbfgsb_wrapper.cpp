@@ -81,7 +81,7 @@ lbfgsb_t* lbfgsb_create(int n, int m, double* l, double* u, int* nbd) {
     if (!opt)
         return 0;
 
-    opt->iwa = malloc(sizeof(int)*3*n);
+    opt->iwa = (int*) malloc(sizeof(int)*3*n);
     if (!opt->iwa) {
         free(opt);
         return 0;
@@ -117,7 +117,7 @@ lbfgsb_t* lbfgsb_create(int n, int m, double* l, double* u, int* nbd) {
             free(opt);
             return 0;
         }
-        opt->nbd_ = malloc(sizeof(int)*n);
+        opt->nbd_ = (int*) malloc(sizeof(int)*n);
 /*        opt->l_ = malloc(sizeof(double)*n);*/
 /*        opt->u_ = malloc(sizeof(double)*n);*/
         for (i = 0; i < n; ++i) {
@@ -175,7 +175,7 @@ int lbfgsb_run(lbfgsb_t* opt, double* x, double* f, double* g) {
             if (*f > opt->fun_min) {
                 fprintf(stderr, "(lbfgsb_run) max iter reached but fun val is not minimum, wait for another iteration\n");
             } else {
-                strncpy(opt->task, "STOP", 4);
+                strncpy(opt->task, "STOP, max iterations reached\0", 29);
             }
         }
         return 1;
