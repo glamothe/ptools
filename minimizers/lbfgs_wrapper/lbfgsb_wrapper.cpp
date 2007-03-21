@@ -175,7 +175,7 @@ int lbfgsb_run(lbfgsb_t* opt, double* x, double* f, double* g) {
             if (*f > opt->fun_min) {
                 fprintf(stderr, "(lbfgsb_run) max iter reached but fun val is not minimum, wait for another iteration\n");
             } else {
-                strncpy(opt->task, "STOP, max iterations reached\0", 29);
+                strncpy(opt->task, "STOP, max iterations reached", 28);
             }
         }
         return 1;

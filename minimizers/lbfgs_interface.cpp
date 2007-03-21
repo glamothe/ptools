@@ -125,7 +125,7 @@ void Lbfgs::minimize(int maxiter)
 
     double f = 0.0;
 
-/*    opt->maxiter = 10;*/
+    opt->maxiter = maxiter;
 /*    opt->iprint = 0;*/
     while (1) {
         rc = lbfgsb_run(opt, &x[0], &f, &g[0]);
