@@ -139,6 +139,28 @@ def readParams(filename):
 
 
 
+def rigidXstd_vector(rigid, mat_std):
+    
+    #create a 4x4 matrix from a linear std_vector_double
+    mat=[]
+    for iline in range(4):
+        line=[]
+        for icol in range(4):
+            line.append(mat_std[iline*4+icol])
+        mat.append(line)
+    
+    
+    out=Rigidbody(rigid)
+    for i in range(rigid.Size()):
+        coords=rigid.GetCoords(i)
+        coords2=Coord3D()
+        coords2.x = mat[0][0]*coords.x + mat[0][1]*coords.y + mat[0][2]*coords.z + mat[3][0]
+        coords2.y = mat[1][0]*coords.x + mat[1][1]*coords.y + mat[1][2]*coords.z + mat[3][1]
+        coords2.z = mat[2][0]*coords.x + mat[2][1]*coords.y + mat[2][2]*coords.z + mat[3][2]
+        out.SetCoords(i, coords2)
+    return out
+
+
 
 
 
@@ -226,8 +248,15 @@ def main():
                 output.PrintMatrix()
                 ligand=Rigidbody(output)
                 #WritePDB(output, "out.pdb")
-
-
+                vec=output.GetMatrix()
+                for i in range(4):
+                    for j in range(4):
+                        print vec[i*4+j],
+                    print ""
+                    
+                    
+                testout=rigidXstd_vector(lig, vec)
+                print "RMSD: ", Rmsd(testout.CA(), output.CA())
             #check the rot/trans matrix:
             
 

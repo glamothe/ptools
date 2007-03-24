@@ -8,6 +8,7 @@
 
 #include "coord3d.h"
 #include "atom.h"
+#include "basetypes.h"
 
 namespace PTools {
 
@@ -93,14 +94,15 @@ public:
     void ABrotate(const Coord3D& A, const Coord3D& B, double theta); ///< rotation around (AB) axis.
 
     void ResetMatrix(); ///< reset Rotation/translation matrix to identity.
-    void PrintMatrix(); ///< print the rotation/translation matrix
+    void PrintMatrix() const; ///< print the rotation/translation matrix
     void ApplyMatrix(double mat[4][4]);
-    //const GetMatrix() {return mat44;};
+    Vdouble GetMatrix() const;
 
 
 
     friend void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot);
     friend void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4 ] );
+    friend void Translate(const Rigidbody& source, Rigidbody& target, const Coord3D& trans);
 }; // end class Rigidbody
 
 } // end namespace PTools

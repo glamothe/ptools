@@ -27,7 +27,7 @@ double Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2)
         sum+=Dist2(atom1,atom2);
     }
 
-    return sqrt(sum)/(double) atsel1.Size() ;
+    return sqrt(sum/(double) atsel1.Size()) ;
 
 
 }

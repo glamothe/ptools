@@ -13,22 +13,27 @@ void mat44xVect( double mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D& out )
 
 void mat44xmat44( const double mat1[ 4 ][ 4 ], const double mat2[ 4 ][ 4 ], double result[ 4 ][ 4 ] )
 {
+// gives mat1*mat2 (mat2 left multiplied by mat1)
+
+    double temp[4][4];
+
+    //std::cout << mat1 << " " << mat2 << " " << result;
     //printmat44(mat1);
     //printmat44(mat2);
-
 
     for ( int rl = 0; rl < 4; rl++ )
         for ( int rc = 0; rc < 4; rc++ )
         {
             // calcul element result[rl][rc]:
-            double sum = 0 ;
+            double sum = 0.0 ;
             for ( int p = 0; p < 4; p++ )
                 sum += mat1[ rl ][ p ] * mat2[ p ][ rc ] ;
-            result[ rl ][ rc ] = sum ;
-
+            temp[ rl ][ rc ] = sum ;
         }
 
     //printmat44(result);
+    memcpy(result, temp, 16*sizeof(double));
+
 }
 
 
@@ -296,7 +301,7 @@ void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4
         result.SetCoords(iatom, res) ;
     }
 
-     mat44xmat44( mat , source.mat44, result.mat44);
+    mat44xmat44( mat , source.mat44, result.mat44);
 
 }
 
@@ -444,16 +449,17 @@ void VectProd( const Coord3D& u, const Coord3D& v, Coord3D& UvectV )
 
 void printmat44( const double mat[ 4 ][ 4 ] )
 {
-    for ( int i = 0; i < 4; i++ )
-    {
-        for ( int j = 0; j < 4; j++ )
-        {
-            std::cerr << mat[ i ][ j ] << "   " ;
-        }
-        std::cerr << "\n" ;
 
+    for (uint i=0; i<4; i++)
+    {
+        for (uint j=0; j<4; j++)
+        {
+            printf("%12.7f", mat[i][j]) ;
+        }
+        std::cout << std::endl;
     }
-    std::cerr << "\n\n";
+
+    std::cout << "\n\n";
 }
 
 
@@ -532,7 +538,9 @@ void Translate(const Rigidbody& source, Rigidbody& target, const Coord3D& trans)
         target.SetCoords(i, translated);
 
     }
-
+    target.mat44[0][3]=source.mat44[0][3]+trans.x;
+    target.mat44[1][3]=source.mat44[1][3]+trans.y;
+    target.mat44[2][3]=source.mat44[2][3]+trans.z;
 }
 
 

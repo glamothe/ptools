@@ -34,9 +34,6 @@ void Lbfgs::minimize(int maxiter)
 {
 
 
-    int n = objToMinimize.ProblemSize();
-    std::cout  << "Problem size: " << n << std::endl;
-
 //     double f;
 //     int j;
 // 
@@ -83,17 +80,8 @@ void Lbfgs::minimize(int maxiter)
 
 
 
-
-
-
-
-
-
-
-
-
-
-    double t1;
+    int n = objToMinimize.ProblemSize();
+    std::cout  << "Problem size: " << n << std::endl;
 
 
     Vdouble l(n);
@@ -125,7 +113,7 @@ void Lbfgs::minimize(int maxiter)
 
     double f = 0.0;
 
-    opt->maxiter = maxiter;
+    opt->max_iter = maxiter;
 /*    opt->iprint = 0;*/
     while (1) {
         rc = lbfgsb_run(opt, &x[0], &f, &g[0]);

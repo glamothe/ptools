@@ -12,6 +12,7 @@
 #include <minimizers/lbfgs_interface.h>
 #include <pdbio.h>
 #include <rigidbody.h>
+#include <rmsd.h>
 
 // Using =======================================================================
 using namespace boost::python;
@@ -184,7 +185,7 @@ BOOST_PYTHON_MODULE(_ptools)
         .def("ResetMatrix", &PTools::Rigidbody::ResetMatrix)
         .def("PrintMatrix", &PTools::Rigidbody::PrintMatrix)
         .def("ApplyMatrix", &PTools::Rigidbody::ApplyMatrix)
-
+        .def("GetMatrix", &PTools::Rigidbody::GetMatrix)
         .def( self + self )
     ;
 
@@ -242,6 +243,7 @@ BOOST_PYTHON_MODULE(_ptools)
 
 
     def("AttractEuler", &PTools::AttractEuler);
+    def("Rmsd", &PTools::Rmsd);
 
 
 }

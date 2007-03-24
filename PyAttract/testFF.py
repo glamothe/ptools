@@ -44,7 +44,7 @@ class PyForceField(ForceField):
 #print FF.Energy()
 
 minim=Lbfgs(FF)
-minim.minimize(50)
+minim.minimize(500)
 
 X=std_vector_double()
 G=std_vector_double()

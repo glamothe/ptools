@@ -76,9 +76,9 @@ void Rigidbody::Translate(const Coord3D& tr)
         this->GetAtom(i).Translate(tr);
 
     //updates rotation/translation matrix:
-    this->mat44[3][0]+=tr.x;
-    this->mat44[3][1]+=tr.y;
-    this->mat44[3][2]+=tr.z;
+    this->mat44[0][3]+=tr.x;
+    this->mat44[1][3]+=tr.y;
+    this->mat44[2][3]+=tr.z;
 }
 
 
@@ -188,7 +188,7 @@ void Rigidbody::ResetMatrix()
 }
 
 
-void Rigidbody::PrintMatrix()
+void Rigidbody::PrintMatrix() const
 {
     std::cout << "#############\n";
     for (uint i=0; i<4; i++)
@@ -207,6 +207,27 @@ void Rigidbody::ApplyMatrix(double mat[4][4])
 {
     mat44xrigid(*this, *this, mat);
 }
+
+
+Vdouble Rigidbody::GetMatrix() const
+{
+Vdouble result;
+const double * ptr;
+
+ptr=(double*)mat44;
+for(uint i=0; i<16; i++)
+{
+    result.push_back(*ptr++);
+}
+
+return result;
+
+}
+
+
+
+
+
 
 
 } //namespace PTools
