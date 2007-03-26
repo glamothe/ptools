@@ -165,27 +165,27 @@ def rigidXstd_vector(rigid, mat_std):
 
 
 def main():
-    
-    
+
+
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option("-s", action="store_true", dest="single",default=False)
     (options, args) = parser.parse_args()
 
-    
+
 
     receptor_name=args[0]
     ligand_name=args[1]
-    
+
     print """
     **********************************************************************
     **                ATTRACT  (Python edition)                         **
-    **                version: 0.2                                      **
+    **                version: 0.3                                      **
     ********************************************************************** """
-    
+
     import locale
     import datetime
-    
+
 
     #locale.setlocale(locale.LC_ALL, 'fr_FR')
     now = datetime.datetime.now()
@@ -193,45 +193,41 @@ def main():
 
 
     (nbminim,lignames,minimlist) = readParams("attract.inp")
-    
-
-
 
     rec=Rigidbody(receptor_name)
     lig=Rigidbody(ligand_name)
     print "Receptor (fixed) %s  has %d atoms" %(receptor_name,rec.Size())
     print "Ligand (mobile) %s  has %d atoms" %(ligand_name,lig.Size())
-    
-    
-    
+
+
     if (not options.single):
         translations=Translation()
         rotations=Rotation()
     else:
         translations=[lig.FindCenter()]
         rotations=[(0,0,0)]
-    
+
     transnb=0
     for trans in translations:
         transnb+=1
-        print "###Performing translation nb###", transnb
+        print "@@@@@@@ Translation nb %i @@@@@@@" %(transnb)
         rotnb=0
         for rot in rotations:
             rotnb+=1
-            print "Rotation nb %i"%rotnb
+            print "----- Rotation nb %i -----"%rotnb
             minimcounter=0
             ligand=Rigidbody(lig)
+
+            center=ligand.FindCenter()
+            ligand.Translate(Coord3D()-center)
+            AttractEuler(ligand,ligand,rot[0],rot[1],rot[2])
+            ligand.Translate(trans)
+
             for minim in minimlist:
                 minimcounter+=1
                 cutoff=math.sqrt(minim[1])
                 niter=minim[0]
                 print "minimization nb %i of %i ; cutoff=%.2f(A) ; maxiter=%d"%(minimcounter,nbminim,cutoff,niter)
-
-
-                center=ligand.FindCenter()
-                ligand.Translate(Coord3D()-center)
-                AttractEuler(ligand,ligand,rot[0],rot[1],rot[2])
-                ligand.Translate(trans)
 
                 X=SingleMinim(rec,ligand,cutoff,niter)
 
@@ -247,16 +243,17 @@ def main():
                 output.PrintMatrix()
                 ligand=Rigidbody(output)
                 #WritePDB(output, "out.pdb")
-                vec=output.GetMatrix()
-                for i in range(4):
-                    for j in range(4):
-                        print vec[i*4+j],
-                    print ""
+                #vec=output.GetMatrix()
 
 
-                testout=rigidXstd_vector(lig, vec)
+                #testout=rigidXstd_vector(lig, vec)
 
-                print "RMSD: ", Rmsd(testout.CA(), output.CA())
+                #print "RMSD: ", Rmsd(testout.CA(), output.CA())
+
+                #calculates true energy:
+                FF=AttractForceField(ligand, rec, 500)
+                print "True energy: ", FF.Energy()
+
             #check the rot/trans matrix:
 
 
