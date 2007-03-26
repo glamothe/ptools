@@ -91,7 +91,7 @@ void Lbfgs::minimize(int maxiter)
     x.resize(n);
     g.resize(n);
 
-    for (uint i=0;i<n; i++)
+    for (int i=0;i<n; i++)
     {
         l[i]=0;
         u[i]=0;
@@ -109,7 +109,7 @@ void Lbfgs::minimize(int maxiter)
     lbfgsb_t* opt = lbfgsb_create(n, m, &l[0], &u[0], &nbd[0]);
     assert(opt);
 
-    opt->iprint=0;
+    opt->iprint=-1; //no output
 
     double f = 0.0;
 
@@ -135,38 +135,18 @@ void Lbfgs::minimize(int maxiter)
             assert(!"can not reach here");
         }
     }
+
+
+    opt->task[59]='\0'; //add a null terminating character to task[]
+
+
+    std::cout << opt->task <<"\n";
     lbfgsb_destroy(opt);
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
-
-
 
 
 

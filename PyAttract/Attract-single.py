@@ -148,15 +148,14 @@ def rigidXstd_vector(rigid, mat_std):
         for icol in range(4):
             line.append(mat_std[iline*4+icol])
         mat.append(line)
-    
-    
+
     out=Rigidbody(rigid)
     for i in range(rigid.Size()):
         coords=rigid.GetCoords(i)
         coords2=Coord3D()
-        coords2.x = mat[0][0]*coords.x + mat[0][1]*coords.y + mat[0][2]*coords.z + mat[3][0]
-        coords2.y = mat[1][0]*coords.x + mat[1][1]*coords.y + mat[1][2]*coords.z + mat[3][1]
-        coords2.z = mat[2][0]*coords.x + mat[2][1]*coords.y + mat[2][2]*coords.z + mat[3][2]
+        coords2.x = mat[0][0]*coords.x + mat[0][1]*coords.y + mat[0][2]*coords.z + mat[0][3]
+        coords2.y = mat[1][0]*coords.x + mat[1][1]*coords.y + mat[1][2]*coords.z + mat[1][3]
+        coords2.z = mat[2][0]*coords.x + mat[2][1]*coords.y + mat[2][2]*coords.z + mat[2][3]
         out.SetCoords(i, coords2)
     return out
 
@@ -224,11 +223,11 @@ def main():
             ligand=Rigidbody(lig)
             for minim in minimlist:
                 minimcounter+=1
-                print "minimization nb %i of %i"%(minimcounter,nbminim)
                 cutoff=math.sqrt(minim[1])
                 niter=minim[0]
+                print "minimization nb %i of %i ; cutoff=%.2f(A) ; maxiter=%d"%(minimcounter,nbminim,cutoff,niter)
 
-                
+
                 center=ligand.FindCenter()
                 ligand.Translate(Coord3D()-center)
                 AttractEuler(ligand,ligand,rot[0],rot[1],rot[2])
@@ -253,12 +252,13 @@ def main():
                     for j in range(4):
                         print vec[i*4+j],
                     print ""
-                    
-                    
+
+
                 testout=rigidXstd_vector(lig, vec)
+
                 print "RMSD: ", Rmsd(testout.CA(), output.CA())
             #check the rot/trans matrix:
-            
+
 
     now = datetime.datetime.now()
     print "Finished at: ",now.strftime("%A %B %d %Y, %H:%M")

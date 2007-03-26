@@ -54,8 +54,8 @@ public:
 
     /// returns the coordinates of atom i
     Coord3D GetCoords(uint i) const {
-//     assert(i>=0);
-//     assert(i<Size());
+     assert(i>=0);
+     assert(i<Size());
         return mAtoms[i].GetCoords();
     };
 
