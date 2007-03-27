@@ -169,7 +169,8 @@ def main():
 
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option("-s", action="store_true", dest="single",default=False)
+    parser.add_option("-s", action="store_true", dest="single",default=False,help="single minimization mode")
+    parser.add_option("--ref", action="store", type="string", dest="reffile")
     (options, args) = parser.parse_args()
 
 
@@ -198,6 +199,10 @@ def main():
     lig=Rigidbody(ligand_name)
     print "Receptor (fixed) %s  has %d atoms" %(receptor_name,rec.Size())
     print "Ligand (mobile) %s  has %d atoms" %(ligand_name,lig.Size())
+    
+    if (options.reffile):
+        print "using reference file: %s"%options.reffile
+        ref=Rigidbody(options.reffile)
 
 
     if (not options.single):
@@ -206,6 +211,7 @@ def main():
     else:
         translations=[lig.FindCenter()]
         rotations=[(0,0,0)]
+        print "Single mode"
 
     transnb=0
     for trans in translations:
@@ -227,7 +233,7 @@ def main():
                 minimcounter+=1
                 cutoff=math.sqrt(minim[1])
                 niter=minim[0]
-                print "minimization nb %i of %i ; cutoff=%.2f(A) ; maxiter=%d"%(minimcounter,nbminim,cutoff,niter)
+                print "{{ minimization nb %i of %i ; cutoff=%.2f(A) ; maxiter=%d"%(minimcounter,nbminim,cutoff,niter)
 
                 X=SingleMinim(rec,ligand,cutoff,niter)
 
@@ -248,13 +254,20 @@ def main():
 
                 #testout=rigidXstd_vector(lig, vec)
 
-                #print "RMSD: ", Rmsd(testout.CA(), output.CA())
+
+                if (options.reffile):
+                    rms=Rmsd(ref.CA(), output.CA())
+                else:
+                    rms="XXXX"
 
                 #calculates true energy:
                 FF=AttractForceField(ligand, rec, 500)
-                print "True energy: ", FF.Energy()
+                print "Trans Rot Ener Rmsd_ref:"
+                print transnb, rotnb, FF.Energy(), rms
+                
+            
 
-            #check the rot/trans matrix:
+            
 
 
     now = datetime.datetime.now()
