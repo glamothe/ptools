@@ -171,6 +171,7 @@ def main():
     parser = OptionParser()
     parser.add_option("-s", action="store_true", dest="single",default=False,help="single minimization mode")
     parser.add_option("--ref", action="store", type="string", dest="reffile")
+    parser.add_option("-t", "--translation", action="store", type="int", dest="transnb", help="translation number (distributed mode)")
     (options, args) = parser.parse_args()
 
 
@@ -200,6 +201,10 @@ def main():
     print "Receptor (fixed) %s  has %d atoms" %(receptor_name,rec.Size())
     print "Ligand (mobile) %s  has %d atoms" %(ligand_name,lig.Size())
     
+    if (options.single and options.transnb):
+        parser.error("options -s and -t are mutually exclusive")
+    
+    
     if (options.reffile):
         print "using reference file: %s"%options.reffile
         ref=Rigidbody(options.reffile)
@@ -212,6 +217,11 @@ def main():
         translations=[lig.FindCenter()]
         rotations=[(0,0,0)]
         print "Single mode"
+
+    if (options.transnb):
+        trans=Rigidbody("translat.dat")
+        co=trans.GetCoords(options.transnb)
+        translations=[co]
 
     transnb=0
     for trans in translations:
@@ -255,15 +265,15 @@ def main():
                 #testout=rigidXstd_vector(lig, vec)
 
 
-                if (options.reffile):
-                    rms=Rmsd(ref.CA(), output.CA())
-                else:
-                    rms="XXXX"
+            if (options.reffile):
+                rms=Rmsd(ref.CA(), output.CA())
+            else:
+                rms="XXXX"
 
                 #calculates true energy:
-                FF=AttractForceField(ligand, rec, 500)
-                print "Trans Rot Ener Rmsd_ref:"
-                print transnb, rotnb, FF.Energy(), rms
+            FF=AttractForceField(ligand, rec, 500)
+            print "Trans Rot Ener Rmsd_ref:"
+            print transnb, rotnb, FF.Energy(), rms
                 
             
 
