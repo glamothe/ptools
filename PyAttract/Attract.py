@@ -247,7 +247,7 @@ def main():
 
                 X=SingleMinim(rec,ligand,cutoff,niter)
 
-                PrintVect(X)
+                #PrintVect(X)
 
                 output=Rigidbody(ligand)
                 center=output.FindCenter()
@@ -256,7 +256,7 @@ def main():
                 output.Translate(Coord3D(X[3],X[4],X[5]))
                 output.Translate(center)
 
-                output.PrintMatrix()
+                
                 ligand=Rigidbody(output)
                 #WritePDB(output, "out.pdb")
                 #vec=output.GetMatrix()
@@ -270,12 +270,13 @@ def main():
             else:
                 rms="XXXX"
 
-                #calculates true energy:
+
+            #calculates true energy, and rmsd if possible
             FF=AttractForceField(ligand, rec, 500)
             print "Trans Rot Ener Rmsd_ref:"
             print transnb, rotnb, FF.Energy(), rms
-                
-            
+            output.PrintMatrix()
+
 
             
 
