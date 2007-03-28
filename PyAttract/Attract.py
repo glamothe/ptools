@@ -169,8 +169,8 @@ def main():
 
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option("-s", action="store_true", dest="single",default=False,help="single minimization mode")
-    parser.add_option("--ref", action="store", type="string", dest="reffile")
+    parser.add_option("-s", "--single", action="store_true", dest="single",default=False,help="single minimization mode")
+    parser.add_option("--ref", action="store", type="string", dest="reffile", help="reference ligand for rmsd" )
     parser.add_option("-t", "--translation", action="store", type="int", dest="transnb", help="translation number (distributed mode)")
     (options, args) = parser.parse_args()
 
@@ -275,7 +275,7 @@ def main():
 
             #calculates true energy, and rmsd if possible
             FF=AttractForceField(ligand, rec, 500)
-            print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "Rmsd_ref")
+            print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
             print "%-4s %6d %6d %13.7f %13.7f" %("==", transnb, rotnb, FF.Energy(), rms)
             output.PrintMatrix()
 
