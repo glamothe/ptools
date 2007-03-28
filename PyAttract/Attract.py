@@ -95,7 +95,7 @@ class Translation:
         if (self.i == self.translat_dat.Size()): raise StopIteration
         coord=self.translat_dat.GetCoords(self.i)
         self.i+=1
-        return coord
+        return [self.i,coord]
         
 
 
@@ -218,12 +218,14 @@ def main():
         rotations=[(0,0,0)]
         print "Single mode"
 
+    transnb=0
     if (options.transnb):
         trans=Rigidbody("translat.dat")
         co=trans.GetCoords(options.transnb)
-        translations=[co]
+        translations=[[options.transnb+1,co]]
+        transnb=options.transnb
 
-    transnb=0
+    
     for trans in translations:
         transnb+=1
         print "@@@@@@@ Translation nb %i @@@@@@@" %(transnb)
@@ -237,7 +239,7 @@ def main():
             center=ligand.FindCenter()
             ligand.Translate(Coord3D()-center)
             AttractEuler(ligand,ligand,rot[0],rot[1],rot[2])
-            ligand.Translate(trans)
+            ligand.Translate(trans[1])
 
             for minim in minimlist:
                 minimcounter+=1
@@ -273,8 +275,8 @@ def main():
 
             #calculates true energy, and rmsd if possible
             FF=AttractForceField(ligand, rec, 500)
-            print "Trans Rot Ener Rmsd_ref:"
-            print transnb, rotnb, FF.Energy(), rms
+            print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "Rmsd_ref")
+            print "%-4s %6d %6d %13.7f %13.7f" %("==", transnb, rotnb, FF.Energy(), rms)
             output.PrintMatrix()
 
 

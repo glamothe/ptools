@@ -190,16 +190,18 @@ void Rigidbody::ResetMatrix()
 
 void Rigidbody::PrintMatrix() const
 {
-    std::cout << "#############\n";
+    std::cout << "### MAT BEGIN\n";
     for (uint i=0; i<4; i++)
     {
+
+        std::cout << "MAT   ";
         for (uint j=0; j<4; j++)
         {
-            printf("%12.7f", this->mat44[i][j]) ;
+            printf("%13.7f", this->mat44[i][j]) ;
         }
         std::cout << std::endl;
     }
-    std::cout << "#############\n";
+    std::cout << "### MAT END\n";
 }
 
 
