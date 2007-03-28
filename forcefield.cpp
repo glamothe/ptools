@@ -219,11 +219,18 @@ double AttractForceField::Electrostatic()
 
     for (uint iter=0; iter<plist.Size(); iter++)
     {
+
+
         uint ir = plist[iter].atrec;
         uint jl = plist[iter].atlig;
         double chargeR = m_rAtomCharge[ir];
         double chargeL = m_lAtomCharge[jl];
         double charge = chargeR * chargeL * (332.053986/20.0);
+
+        if (fabs(charge) > 0.0)
+        {
+
+
 
         Coord3D dx = m_ligand.GetCoords(jl) - m_receptor.GetCoords(ir) ;
         double r2 = Norm2(dx);
@@ -232,8 +239,8 @@ double AttractForceField::Electrostatic()
         double rr2 = 1.0/r2;
         dx = rr2*dx;
 
-        if (fabs(charge) > 0.0)
-        {
+
+
             double et = charge*rr2;
             sumElectrostatic+=et;
 
