@@ -30,8 +30,8 @@ FFLAGS="-g"
 
                
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH,  FORTRAN = 'g77 -g',  FORTRANFLAGS="-g" )
-#common.Append(CCFLAGS='-Wall -O4 -DNDEBUG')
-common.Append(CCFLAGS='-Wall -O4 -g')
+common.Append(CCFLAGS='-Wall -O4 -DNDEBUG')
+#common.Append(CCFLAGS='-Wall -O4 -g -D_GLIBCXX_DEBUG')
 
 
 
