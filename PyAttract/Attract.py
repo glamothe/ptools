@@ -214,12 +214,12 @@ def main():
         translations=Translation()
         rotations=Rotation()
     else:
-        translations=[lig.FindCenter()]
+        translations=[[1,lig.FindCenter()]]
         rotations=[(0,0,0)]
         print "Single mode"
 
     transnb=0
-    if (options.transnb):
+    if (options.transnb!=None):
         trans=Rigidbody("translat.dat")
         co=trans.GetCoords(options.transnb)
         translations=[[options.transnb+1,co]]
