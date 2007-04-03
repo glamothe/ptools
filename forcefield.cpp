@@ -88,10 +88,10 @@ AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& li
 
 
 
-void AttractForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta)
+void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta)
 {
 
-    for (uint j=0; j<6; j++)
+    for (uint j=0; j<ProblemSize(); j++)
     {
 
         Vdouble newvars1 = stateVars;

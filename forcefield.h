@@ -25,7 +25,7 @@ public:
     //virtual double Function()=0; //simply return the function value for
     virtual double Function(const Vdouble&)=0;
     virtual void Derivatives(const Vdouble&, Vdouble&)=0; ///< analytical derivative
-    virtual void NumDerivatives(const Vdouble&, Vdouble&){}; ///< numerical derivative for testing purpose
+    virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta); ///< numerical derivative for testing purpose
     virtual uint ProblemSize()=0;
 
     virtual ~ForceField(){};
@@ -53,7 +53,7 @@ public:
         //std::cerr << "Type de delta:" << (std::string) typeid(delta).name() << std::endl ;
         return Gradient(stateVars, delta);
     };
-    virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta);
+    //virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta);
     virtual uint ProblemSize() {return 6;};
 
 

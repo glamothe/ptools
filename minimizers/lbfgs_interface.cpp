@@ -20,7 +20,6 @@ inline void assign(char* dest, char* src)
 Lbfgs::Lbfgs( ForceField& toMinim)
         :objToMinimize(toMinim)
 {
-
 };
 
 
@@ -104,12 +103,12 @@ void Lbfgs::minimize(int maxiter)
 
     int rc;
 
-    int m = 10;
+    int m = 5;
 
     lbfgsb_t* opt = lbfgsb_create(n, m, &l[0], &u[0], &nbd[0]);
     assert(opt);
 
-    opt->iprint=-1; //no output
+    opt->iprint=1;
 
     double f = 0.0;
 

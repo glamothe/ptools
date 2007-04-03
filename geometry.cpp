@@ -373,6 +373,7 @@ void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double s
         !  the command  dest = source. If not grave problems will happen
     */
 
+    //note: should also work if dest and source are the same object
 
     double  cp, cs, ss, sp, cscp, sscp, sssp, crot, srot, xar, yar, cssp ;
 

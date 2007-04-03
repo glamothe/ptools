@@ -20,7 +20,7 @@ namespace PTools
 class Lbfgs
 {
       public:
-            Lbfgs( ForceField& toMinim);
+            Lbfgs(ForceField& toMinim);
             ~Lbfgs(); 
             void minimize(int maxiter);
             Vdouble GetX() {return x;}; // Quel nom donner a cette fonction ? 
