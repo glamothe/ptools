@@ -104,8 +104,13 @@ private:
     bool m_energycalled ;
 
     PairList plist;
+    double fortranEnergy();
+    std::string _filesuffix;
 
+    static int _minimnb;
 } ;
+
+
 
 
 class TestForceField: public ForceField

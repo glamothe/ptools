@@ -1,6 +1,7 @@
 #include "forcefield.h"
 #include "geometry.h"
 #include "rmsd.h"
+#include "pdbio.h"
 
 
 #include <fstream>
@@ -61,7 +62,7 @@ void extractExtra(Rigidbody& rig, std::vector<uint>& vCat, std::vector<double>& 
 
 }
 
-
+int AttractForceField::_minimnb=0;  // static initialization
 
 
 AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& lig,double cutoff)
@@ -99,7 +100,7 @@ void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta)
 
 
 
-        double h=1e-6;
+        double h=1e-3;
 
         newvars1[j]+=h;
         double F1=Function(newvars1);
@@ -232,12 +233,12 @@ double AttractForceField::Electrostatic()
 
 
 
-        Coord3D dx = m_ligand.GetCoords(jl) - m_receptor.GetCoords(ir) ;
-        double r2 = Norm2(dx);
+            Coord3D dx = m_ligand.GetCoords(jl) - m_receptor.GetCoords(ir) ;
+            double r2 = Norm2(dx);
 
-        if (r2 < 0.001 ) r2=0.001;
-        double rr2 = 1.0/r2;
-        dx = rr2*dx;
+            if (r2 < 0.001 ) r2=0.001;
+            double rr2 = 1.0/r2;
+            dx = rr2*dx;
 
 
 
@@ -392,6 +393,108 @@ void AttractForceField::ShowEnergyParams()
 {
     for (unsigned int i=0; i < m_amp.size(); i++ )
         std::cout << "m_amp[" << i+1 << "]=" << m_amp[i]  << "   m_rad[" << i+1 << "]=" << m_rad[i] << std::endl;
+
+}
+
+
+
+
+
+
+
+
+
+extern "C"
+{
+    extern
+        void nonbon8_ ( double* recCoords, int*r,  double* ligCoords, int* l, // coordinates for receptor and ligand and their sizes
+                        int* rectypes, int* ligtypes,  //  array for correspondance between atoms indexes and their Attract's "type"
+                        double* cha_r, double* cha_l,   // charges of atoms
+                        int* nonr, int* nonl, int* nonp,    //  arrays for pairlist and size of the pairlist
+                        double* ac, double* rc,                      //  precalculated two dimensional arrays. Beware of the column major issue
+                        double* LJ, double* coulomb                  //  return of the function
+                      );
+
+
+}
+
+
+
+double AttractForceField::fortranEnergy()
+{
+
+
+// linear array of receptor coordinates
+    std::vector <double> recCoords;
+
+
+    for (uint i=0; i <m_receptor.Size(); i++)
+    {
+        Coord3D co ( m_receptor.GetCoords(i) );
+        recCoords.push_back(co.x);
+        recCoords.push_back(co.y);
+        recCoords.push_back(co.z);
+
+    }
+
+
+
+    double LJ=0.0;
+    double coulomb=0.0;
+
+
+
+// linear array of ligand coordinates
+    std::vector <double> ligCoords;
+    for (uint i=0; i < m_ligand.Size(); i++)
+    {
+        Coord3D co ( m_ligand.GetCoords(i) );
+        ligCoords.push_back(co.x);
+        ligCoords.push_back(co.y);
+        ligCoords.push_back(co.z);
+    }
+
+    int r = m_receptor.Size();
+    std::cout << "m_receptor size: " << r << "\n" ;
+    int l = m_ligand.Size();
+
+
+    Vint ligplist; //ligand atoms in the pairlist
+    Vint recplist; //recetor atoms
+    int plistsize = plist.Size();
+
+    for (int i=0; i <  plistsize; i++)
+    {
+
+        ligplist.push_back( plist[i].atlig ) ;
+        recplist.push_back( plist[i].atrec ) ;
+    }
+
+
+
+
+    std::vector<int> rAtomCat;
+    std::vector<int> lAtomCat;
+
+    for (uint i=0; i<m_rAtomCat.size(); i++)
+        rAtomCat.push_back(m_rAtomCat[i]);
+
+
+
+    for (uint i=0; i<m_lAtomCat.size(); i++)
+        lAtomCat.push_back(m_lAtomCat[i]);
+
+    std::cout << "taille pairlist: " << plistsize << "\n";
+
+
+    nonbon8_(  &recCoords[0],&r, &ligCoords[0], &l,  //
+               &rAtomCat[0], &lAtomCat[0],     //
+               &m_rAtomCharge[0], &m_lAtomCharge[0], //
+               &recplist[0], &ligplist[0], &plistsize, //
+               (double*) m_ac,(double*) m_rc, //
+               &LJ, &coulomb) ;
+
+    return LJ+coulomb;
 
 }
 
