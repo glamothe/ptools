@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2.4
 
 from ptools import *
 import sys
