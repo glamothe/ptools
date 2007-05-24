@@ -11,5 +11,7 @@
 #include "geometry.h"
 #include "atomselection.h"
 #include "pdbio.h"
+#include "forcefield.h"
+#include "pairlist.h"
 
 #endif // PTOOLS_H
