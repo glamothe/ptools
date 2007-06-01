@@ -82,9 +82,25 @@ AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& li
     extractExtra(m_refreceptor, m_rAtomCat, m_rAtomCharge);
     extractExtra(m_refligand,   m_lAtomCat, m_lAtomCharge);
 
-
-
     m_energycalled=false; //initialization
+
+    m_rstk=0.0; //no restraint by default
+
+
+    // find the closest atom of the ligand to the receptor
+    // (for the constraint force)
+    double mindist2 = 1.0e8;
+    m_ligRestraintIndex = -1;
+    m_reccenter = m_receptor.FindCenter();
+    for (uint ilig=0; ilig<lig.Size(); ilig++)
+    {
+        Coord3D atlig = lig.GetCoords(ilig);
+        if (Norm2(atlig-m_reccenter) < mindist2)
+        {
+            mindist2 = Norm2(atlig-m_reccenter) ;
+            m_ligRestraintIndex = ilig ;
+        }
+    }
 }
 
 
@@ -120,6 +136,7 @@ double AttractForceField::Energy()
 {
     ResetForces();
     double energy = LennardJones() +  Electrostatic();
+    energy+=Constraints(); //(if hte order of evaluation is important, then it should not be merged with the precedent line)
     m_energycalled=true;
     return energy;
 };
@@ -211,6 +228,35 @@ double AttractForceField::LennardJones()
     }
     return sumLJ ;
 }
+
+
+
+
+
+double AttractForceField::Constraints()
+{
+    if (m_rstk==0.0) return 0.0;
+
+    //calculates the distance between the receptor center and the ligand surface:
+    Coord3D ligRestraintCoords = m_ligand.GetCoords(m_ligRestraintIndex) ;
+    Coord3D vecLig2Rec = m_reccenter - ligRestraintCoords ;
+
+    double ett = Norm2(vecLig2Rec) ;
+
+    //rstk: user-defined constant
+    Coord3D springforce = 4 * m_rstk * ett * vecLig2Rec ;
+    //adds force to the correct ligand atom:
+    m_ligforces[m_ligRestraintIndex]=m_ligforces[m_ligRestraintIndex]+springforce;
+
+    double ener =  m_rstk * ett * ett ;
+    //std::cout << "Constraint energy: " << ener << std::endl;
+
+    return ener;
+}
+
+
+
+
 
 
 

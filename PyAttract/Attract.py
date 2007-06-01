@@ -22,8 +22,10 @@ def PrintVect(vect):
 
 
 
-def SingleMinim(rec, lig,cutoff,niter):
+def SingleMinim(rec, lig,cutoff,niter,rstk):
     FF=AttractForceField(rec,lig,cutoff)
+    if rstk>0.0:
+        FF.SetRestraint(rstk)
     lbfgs=Lbfgs(FF)
     lbfgs.minimize(niter)
     X=lbfgs.GetX()
@@ -125,16 +127,24 @@ def readParams(filename):
         else:
             break
 
-    ignored=line #one more line is read in the loop before.
+    rstk = float(line[3])
+    #print "rstk = ",rstk
+    #ignored=line #one more line is read in the loop before.
                  # (the xrst line which is ignored now)
     
     minimlist=[]
     for i in range(nbminim):
         line=clean.pop(0).split()
-        minim=(int(line[0]),float(line[-1]))
-        minimlist.append(minim)  #return a list of type (iter,squarecutoff)
+        minim={}
+        minim['maxiter'] = int(line[0])
+        minim['squarecutoff'] = float(line[-1])
+        if int(line[-2])==1:
+            minim['rstk'] = rstk
+        else:
+            minim['rstk'] = 0.0
+        minimlist.append(minim)  #return a list of type (iter,squarecutoff,has_restraint)
                                  #other parameters are ignored
-    return (nbminim, lignames, minimlist)
+    return (nbminim, lignames, minimlist,rstk)
 
 
 
@@ -194,8 +204,8 @@ def main():
     print now,"(",now.strftime("%A %B %d %Y, %H:%M"),")"
 
 
-    (nbminim,lignames,minimlist) = readParams("attract.inp")
-
+    (nbminim,lignames,minimlist,rstk) = readParams("attract.inp")
+    print "rstk = ",rstk
     rec=Rigidbody(receptor_name)
     lig=Rigidbody(ligand_name)
     print "Receptor (fixed) %s  has %d atoms" %(receptor_name,rec.Size())
@@ -243,11 +253,12 @@ def main():
 
             for minim in minimlist:
                 minimcounter+=1
-                cutoff=math.sqrt(minim[1])
-                niter=minim[0]
+                cutoff=math.sqrt(minim['squarecutoff'])
+                niter=minim['maxiter']
                 print "{{ minimization nb %i of %i ; cutoff=%.2f(A) ; maxiter=%d"%(minimcounter,nbminim,cutoff,niter)
 
-                X=SingleMinim(rec,ligand,cutoff,niter)
+                rstk=minim['rstk']
+                X=SingleMinim(rec,ligand,cutoff,niter,rstk)
 
                 #PrintVect(X)
 

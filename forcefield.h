@@ -62,10 +62,12 @@ public:
 
     double Electrostatic();
     double LennardJones();
+
     void Gradient(const Vdouble& stateVars, Vdouble& delta);
 
     void ShowEnergyParams(); ///< for debug purposes...
     void Trans() {Vdouble delta(6) ; Trans(delta,true); };
+    void SetRestraint(double rstk) {m_rstk = rstk;};
 
 
 
@@ -80,6 +82,8 @@ private:
     void Rota(double phi,double ssi, double rot, Vdouble& delta, bool print=false);
     void ResetForces();
 
+    double Constraints(); ///< distance constraints between ligand and receptor
+
     //private data
     Rigidbody m_refreceptor, m_refligand;
     Rigidbody m_receptor, m_ligand;
@@ -91,9 +95,12 @@ private:
     std::vector<Coord3D> m_ligforces ; //forces
 
     Coord3D m_ligcenter; //center of mass of the ligand
+    Coord3D m_reccenter; //center of mass of the receptor (used for the distance constraint)
 
     Vuint m_rAtomCat; //receptor atom category (as seen in reduced pdb files)
     Vuint m_lAtomCat; //ligand atom category
+
+    uint m_ligRestraintIndex; //index of the ligand atom on which the retraint force should be applied
 
     Vdouble m_rAtomCharge;
     Vdouble m_lAtomCharge;
@@ -108,6 +115,7 @@ private:
     std::string _filesuffix;
 
     static int _minimnb;
+    double m_rstk;
 } ;
 
 

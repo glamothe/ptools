@@ -226,6 +226,7 @@ BOOST_PYTHON_MODULE(_ptools)
         .def("Gradient", &PTools::AttractForceField::Gradient)
         .def("ShowEnergyParams", &PTools::AttractForceField::ShowEnergyParams)
         .def("Trans", (void (PTools::AttractForceField::*)() )&PTools::AttractForceField::Trans)
+        .def("SetRestraint", &PTools::AttractForceField::SetRestraint)
     ;
 
     class_< PTools::TestForceField, bases< PTools::ForceField >  >("TestForceField", init<  >())
