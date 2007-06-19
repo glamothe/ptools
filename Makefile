@@ -1,9 +1,16 @@
+# generates the C++ static library
 ptools:
-	scons cpp
-all: ptools.cpp
-	scons -j2 cpp python
+	scons -j2 cpp
+
+# generates the C++ shared library (but NOT the bindings files - see below )
+python:
+	scons -j2 python
+
+# generates python bindings files
+# Py++ pygccxml and gccxml required
+bindings:
+	python interface.py
+
+
 clean:
 	scons -c
-
-ptools.cpp: ptools.pyste
-	pyste --module=_ptools ptools.pyste
