@@ -13,5 +13,7 @@
 #include "pdbio.h"
 #include "forcefield.h"
 #include "pairlist.h"
+#include "minimizers/lbfgs_interface.h"
+
 
 #endif // PTOOLS_H

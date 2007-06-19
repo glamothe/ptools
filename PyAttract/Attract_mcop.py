@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2.4
 
 from ptools import *
 import sys
@@ -23,8 +23,10 @@ def PrintVect(vect):
 
 
 
-def SingleMinim(rec, lig,cutoff,niter):
+def SingleMinim(rec, lig,cutoff,niter,rstk):
     FF=AttractForceField(rec,lig,cutoff)
+    if rstk>0.0:
+        FF.SetRestraint(rstk)
     lbfgs=Lbfgs(FF)
     lbfgs.minimize(niter)
     X=lbfgs.GetX()
@@ -126,16 +128,24 @@ def readParams(filename):
         else:
             break
 
-    ignored=line #one more line is read in the loop before.
+    rstk = float(line[3])
+    #print "rstk = ",rstk
+    #ignored=line #one more line is read in the loop before.
                  # (the xrst line which is ignored now)
     
     minimlist=[]
     for i in range(nbminim):
         line=clean.pop(0).split()
-        minim=(int(line[0]),float(line[-1]))
-        minimlist.append(minim)  #return a list of type (iter,squarecutoff)
+        minim={}
+        minim['maxiter'] = int(line[0])
+        minim['squarecutoff'] = float(line[-1])
+        if int(line[-2])==1:
+            minim['rstk'] = rstk
+        else:
+            minim['rstk'] = 0.0
+        minimlist.append(minim)  #return a list of type (iter,squarecutoff,has_restraint)
                                  #other parameters are ignored
-    return (nbminim, lignames, minimlist)
+    return (nbminim, lignames, minimlist,rstk)
 
 
 
@@ -159,7 +169,6 @@ def rigidXstd_vector(rigid, mat_std):
         coords2.z = mat[2][0]*coords.x + mat[2][1]*coords.y + mat[2][2]*coords.z + mat[2][3]
         out.SetCoords(i, coords2)
     return out
-
 
 
 
@@ -196,8 +205,8 @@ def main():
     print now,"(",now.strftime("%A %B %d %Y, %H:%M"),")"
 
 
-    (nbminim,lignames,minimlist) = readParams("attract.inp")
-
+    (nbminim,lignames,minimlist,rstk) = readParams("attract.inp")
+    print "rstk = ",rstk
     rec=Rigidbody(receptor_name)
     lig=Rigidbody(ligand_name)
     print "Receptor (fixed) %s  has %d atoms" %(receptor_name,rec.Size())
@@ -216,12 +225,12 @@ def main():
         translations=Translation()
         rotations=Rotation()
     else:
-        translations=[lig.FindCenter()]
+        translations=[[1,lig.FindCenter()]]
         rotations=[(0,0,0)]
         print "Single mode"
 
     transnb=0
-    if (options.transnb):
+    if (options.transnb!=None):
         trans=Rigidbody("translat.dat")
         co=trans.GetCoords(options.transnb)
         translations=[[options.transnb+1,co]]
@@ -245,11 +254,12 @@ def main():
 
             for minim in minimlist:
                 minimcounter+=1
-                cutoff=math.sqrt(minim[1])
-                niter=minim[0]
+                cutoff=math.sqrt(minim['squarecutoff'])
+                niter=minim['maxiter']
                 print "{{ minimization nb %i of %i ; cutoff=%.2f(A) ; maxiter=%d"%(minimcounter,nbminim,cutoff,niter)
 
-                X=SingleMinim(rec,ligand,cutoff,niter)
+                rstk=minim['rstk']
+                X=SingleMinim(rec,ligand,cutoff,niter,rstk)
 
                 #PrintVect(X)
 

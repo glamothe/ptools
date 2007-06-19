@@ -14,6 +14,7 @@ class MulticopyRegion:
         pass
         
     def EnergyAndWeights(self, rigid, cutoff):
+        "calculates weights and energies between a multicopy region and a rigid region"
         coeffs=[]
         energies=[]
         sumCoeffs=0.0

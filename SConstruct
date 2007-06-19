@@ -10,7 +10,6 @@ COMMON_CPP = Split ("""atom.cpp
                        nonbon8.f90
                        minimizers/lbfgs_interface.cpp
                        minimizers/routines.f
-                       
                        minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp
 
                     """)
@@ -26,8 +25,14 @@ COMMON_CPP = Split ("""atom.cpp
 
 
 
-PYTHON_CPP=["_ptools.cpp"]
-                    
+PYTHON_CPP=[]
+import fnmatch
+import os
+for file in os.listdir("Pybindings"):
+    if fnmatch.fnmatch(file, "*.cpp"):
+        PYTHON_CPP.append("Pybindings/%s"%file)
+print PYTHON_CPP
+
                     
 COMMON_LIBS=["g2c", "f95"]
 #COMMON_LIBS=["g2c"]
@@ -35,7 +40,7 @@ COMMON_LIBS=["g2c", "f95"]
 COMMON_CPPPATH=['.']
 FFLAGS="-g"
 
-               
+                
 #common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".",  FORTRANFLAGS="-g" )
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = '/ibpc/rhea/saladin/bin/g95 -g ',  FORTRANFLAGS="-g" )
 common.Append(CCFLAGS='-Wall -O2 -g -DNDEBUG')
