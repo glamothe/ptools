@@ -2,7 +2,7 @@ import os
 from pyplusplus import module_builder
 
 #Creating an instance of class that will help you to expose your declarations
-mb = module_builder.module_builder_t( [r"/ibpc/rhea/saladin/Src/ptools/trunk/ptools.h"]
+mb = module_builder.module_builder_t( [os.path.abspath('./ptools.h')]
                                       , gccxml_path=r"" 
                                       , define_symbols=[] )
 
