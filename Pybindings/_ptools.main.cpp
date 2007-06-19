@@ -8,6 +8,8 @@
 
 #include "Pybindings/Atom.pypp.hpp"
 
+#include "Pybindings/AtomSelection.pypp.hpp"
+
 #include "Pybindings/AttractForceField.pypp.hpp"
 
 #include "Pybindings/Coord3D.pypp.hpp"
@@ -28,6 +30,10 @@ BOOST_PYTHON_MODULE(_ptools){
     register_vector_less_double_comma_std_scope_allocator_less_double_grate___grate__class();
 
     register_Atom_class();
+
+    register_AtomSelection_class();
+
+    bp::implicitly_convertible< PTools::Rigidbody &, PTools::AtomSelection >();
 
     register_ForceField_class();
 

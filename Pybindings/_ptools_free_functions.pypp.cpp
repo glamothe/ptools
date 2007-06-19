@@ -19,4 +19,15 @@ void register_free_functions(){
     
     }
 
+    { //::PTools::Rmsd
+    
+        typedef double ( *Rmsd_function_type )( ::PTools::AtomSelection const &,::PTools::AtomSelection const & );
+        
+        bp::def( 
+            "Rmsd"
+            , Rmsd_function_type( &::PTools::Rmsd )
+            , ( bp::arg("atsel1"), bp::arg("atsel2") ) );
+    
+    }
+
 }

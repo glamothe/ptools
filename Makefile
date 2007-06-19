@@ -11,6 +11,7 @@ python:
 bindings:
 	python interface.py
 
+all: ptools python
 
 clean:
 	scons -c

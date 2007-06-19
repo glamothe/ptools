@@ -14,6 +14,8 @@
 #include "forcefield.h"
 #include "pairlist.h"
 #include "minimizers/lbfgs_interface.h"
+#include "rmsd.h"
+#include "atomselection.h"
 
 
 #endif // PTOOLS_H

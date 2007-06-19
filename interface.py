@@ -39,7 +39,11 @@ attractForceField.include()
 lbfgs = mb.class_("Lbfgs")
 lbfgs.include()
 
+rmsd = mb.free_function("Rmsd")
+rmsd.include()
 
+atomselection = mb.class_("AtomSelection")
+atomselection.include()
 
 
 #Creating code creator. After this step you should not modify/customize declarations.
