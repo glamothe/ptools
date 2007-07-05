@@ -42,7 +42,8 @@ FFLAGS="-g"
 
                 
 #common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".",  FORTRANFLAGS="-g" )
-common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = '/ibpc/rhea/saladin/bin/g95 -g ',  FORTRANFLAGS="-g" )
+common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = '/home/asaladin/bin/g95-install/bin/g95 -fPIC -g',  FORTRANFLAGS="-g" )
+
 common.Append(CCFLAGS='-Wall -O2 -g -DNDEBUG')
 #common.Append(CCFLAGS='-Wall -O2 -g -D_GLIBCXX_DEBUG')
 
