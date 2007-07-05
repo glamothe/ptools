@@ -100,7 +100,7 @@ private:
     Vuint m_rAtomCat; //receptor atom category (as seen in reduced pdb files)
     Vuint m_lAtomCat; //ligand atom category
 
-    uint m_ligRestraintIndex; //index of the ligand atom on which the retraint force should be applied
+    int m_ligRestraintIndex; //index of the ligand atom on which the retraint force should be applied
 
     Vdouble m_rAtomCharge;
     Vdouble m_lAtomCharge;
