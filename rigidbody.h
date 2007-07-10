@@ -65,6 +65,9 @@ public:
     /// return geometric center of all atoms
     Coord3D FindCenter() const;
 
+    /// center the rigidbody to the Origin (0,0,0)
+    void CenterToOrigin();
+
     void Translate(const Coord3D& tr); ///< Translate the whole object
 
     /// selection : complete
