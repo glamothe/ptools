@@ -69,7 +69,7 @@ Coord3D Rigidbody::FindCenter() const
 }
 
 
-    void Rigidbody::CenterToOrigin();
+void Rigidbody::CenterToOrigin()
     {
         Coord3D c = FindCenter();
         Translate(Coord3D()-c);
