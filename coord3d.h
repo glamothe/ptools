@@ -49,6 +49,12 @@ inline Coord3D operator- (const Coord3D& A,const Coord3D& B)
     return P;
 }
 
+
+inline Coord3D & operator+=(Coord3D & a, const Coord3D & x ){a = a + x ; return a; };  //operator +=
+inline Coord3D & operator-=(Coord3D & a, const Coord3D & x ){a = a - x ; return a; };  //operator -=
+
+
+
 /// Vector Norm
 inline double Norm(const Coord3D & A)
 {
