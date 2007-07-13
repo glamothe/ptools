@@ -50,6 +50,8 @@ Norm = mb.free_function("Norm")
 Norm.include()
 Norm2 = mb.free_function("Norm2")
 Norm2.include()
+PrintCoord=mb.free_function("PrintCoord")
+PrintCoord.include()
 
 
 atomselection = mb.class_("AtomSelection")
