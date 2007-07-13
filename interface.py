@@ -52,6 +52,8 @@ Norm2 = mb.free_function("Norm2")
 Norm2.include()
 PrintCoord=mb.free_function("PrintCoord")
 PrintCoord.include()
+WritePDB=mb.free_function("WritePDB")
+WritePDB.include()
 
 
 atomselection = mb.class_("AtomSelection")
