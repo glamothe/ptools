@@ -564,6 +564,7 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody & 
         m_ligand(lig),
         m_receptor(rec)
 {
+    
     m_ligSize = lig.Size();
     m_recSize = rec.Size();
 
@@ -606,11 +607,17 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody & 
     //extractExtra(rec, m_rAtomCategory, m_rAtomCharge);
 
 
-    for (uint j=0; j < lig.Size(); j++)
+    for (uint jindex=0; jindex < lig.m_activeAtoms.size(); jindex++)
     {
+	uint j = lig.m_activeAtoms[jindex];
         uint jj = lig.m_atomTypeNumber[j];
-        for (uint i=0; i<rec.Size(); i++)
+        for (uint iindex=0; iindex<rec.m_activeAtoms.size(); iindex++)
         {
+
+	    
+	    uint i = rec.m_activeAtoms[iindex];
+
+
             uint ii = rec.m_atomTypeNumber[i];
             assert(i<3000);
             assert(j<3000);
@@ -688,7 +695,7 @@ double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig)
         double rr2 = 1.0/r2;
         dx = rr2*dx ;
 
-        if (charge > 0.0) {
+        if (charge != 0.0) {
             double et = charge*rr2;
             et*=(332.053986/15.0);  //constant felec/permi (could still be optimized!)
 

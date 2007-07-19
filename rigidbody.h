@@ -167,7 +167,9 @@ public:
     void resetForces()
 	{
 	 m_forces = std::vector<Coord3D> (this->Size() ) ;
-}
+        }
+    std::vector<uint> m_activeAtoms;
+
 
 
 private:
@@ -178,6 +180,7 @@ private:
 
 
 friend class AttractForceField2;
+
 
 };  //end class AttractRigid
 

@@ -257,6 +257,12 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
         iss >> atcategory >> atcharge ;
         m_atomTypeNumber.push_back(atcategory-1);  // -1 to directly use the atomTypeNumber into C-array 
         m_charge.push_back(atcharge);
+
+	if (isAtomActive(i))
+	{
+		m_activeAtoms.push_back(i);
+	}
+
     }
 
 }

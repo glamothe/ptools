@@ -100,21 +100,50 @@ T_PairList<T>::~T_PairList()
 template<class T>
 void T_PairList<T>::update()
 {
+
+
     if (no_update) return ;
     vectl.clear(); // clears the pairlist
     vectr.clear();
 
     //basic implementation of a pairlist generation:
-    for (uint i = 0 ; i < mp_ligand->Size(); i++)
+    uint ligsize = mp_ligand->Size();
+    uint recsize = mp_receptor->Size();
+
+    std::vector<uint> activelig;
+    std::vector<uint> activerec;
+
+    for (uint i=0; i<mp_ligand->Size(); i++)
+{
+if (mp_ligand->isAtomActive(i))
+{
+ activelig.push_back(i);
+}
+}
+
+for (uint i=0; i<mp_receptor->Size(); i++)
+{
+if (mp_receptor->isAtomActive(i))
+{
+ activerec.push_back(i);
+}
+}
+
+uint activeligsize = activelig.size();
+uint activerecsize = activerec.size();
+
+
+    for (uint ii = 0 ; ii < activeligsize ; ii++)
     {
 
-        if (mp_ligand->isAtomActive(i))
-            for (uint j = 0; j < mp_receptor->Size(); j++)
+            for (uint jj = 0; jj < activerecsize; jj++)
             {
-                if (mp_receptor->isAtomActive(j))
-                {
-                    Atom at1 = mp_ligand->GetAtom(i);
-                    Atom at2 = mp_receptor->GetAtom(j);
+		uint i=activelig[ii];
+		uint j=activerec[jj];
+
+                
+                    //Atom at1 = mp_ligand->GetAtom(i);
+                    //Atom at2 = mp_receptor->GetAtom(j);
 
                     Coord3D c1 = mp_ligand->GetCoords(i) ;
                     Coord3D c2 = mp_receptor->GetCoords(j);
@@ -124,7 +153,7 @@ void T_PairList<T>::update()
                         vectr.push_back(j);
                     }
 
-                }
+                
             }
     }
 
