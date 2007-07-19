@@ -564,7 +564,7 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody & 
         m_ligand(lig),
         m_receptor(rec)
 {
-    
+
     m_ligSize = lig.Size();
     m_recSize = rec.Size();
 
@@ -595,11 +595,11 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody & 
 
     for (uint i = 0; i<31; i++)
     {
-           for (uint j = 0; j<31; j++)
+        for (uint j = 0; j<31; j++)
         {
             mbest >> iflo[i][j] ;
             assert(iflo[i][j]==1 || iflo[i][j]==-1);
-           }
+        }
     }
 
 
@@ -609,20 +609,24 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody & 
 
     for (uint jindex=0; jindex < lig.m_activeAtoms.size(); jindex++)
     {
-	uint j = lig.m_activeAtoms[jindex];
+        uint j = lig.m_activeAtoms[jindex];
         uint jj = lig.m_atomTypeNumber[j];
         for (uint iindex=0; iindex<rec.m_activeAtoms.size(); iindex++)
         {
 
-	    
-	    uint i = rec.m_activeAtoms[iindex];
+            uint i = rec.m_activeAtoms[iindex];
 
 
             uint ii = rec.m_atomTypeNumber[i];
             assert(i<3000);
             assert(j<3000);
-            rc[i][j] = abc[ii][jj] * pow(rbc[ii][jj],8);
-            ac[i][j] = abc[ii][jj] * pow(rbc[ii][jj],6);
+            double rbc2 = rbc[ii][jj]*rbc[ii][jj];
+            double rbc6 = rbc2*rbc2*rbc2;
+            double rbc8 = rbc6*rbc2;
+            rc[i][j] = abc[ii][jj] * rbc8; //*pow(rbc[ii][jj],8); this optimization modifies the final result
+            ac[i][j] = abc[ii][jj] * rbc6; //*pow(rbc[ii][jj],6); *but* the difference between the 2 c++ versions
+            // is less than between C++(any version) and fortran
+            // by the way pow() is very very slow. We should check why...
             assert(ii<=30);
             assert(jj<=30);
             ipon[i][j] = iflo[ii][jj] ;

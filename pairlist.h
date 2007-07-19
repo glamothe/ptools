@@ -107,8 +107,6 @@ void T_PairList<T>::update()
     vectr.clear();
 
     //basic implementation of a pairlist generation:
-    uint ligsize = mp_ligand->Size();
-    uint recsize = mp_receptor->Size();
 
     std::vector<uint> activelig;
     std::vector<uint> activerec;
