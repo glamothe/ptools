@@ -40,9 +40,9 @@ print PYTHON_CPP
 
 arch = os.uname()[-1]
 if arch=="x86_64":
-	f95="f95_g95_LINUX_64.a"
+	f95="f95_g95_LINUX_64"
 else:
-	f95="f95_g95_LINUX_32.a"
+	f95="f95_g95_LINUX_32"
 
 
 COMMON_LIBS=["g2c", f95]
@@ -55,8 +55,9 @@ FFLAGS="-g"
 #common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".",  FORTRANFLAGS="-g" )
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = 'g95 -fPIC -g',  FORTRANFLAGS="-g", ENV = {'PATH' : os.environ['PATH']})
 
-common.Append(CCFLAGS='-Wall -O3 -g -DNDEBUG')
-#common.Append(CCFLAGS='-Wall -O2 -g -D_GLIBCXX_DEBUG')
+#common.Append(CCFLAGS='-Wall -O2 -g -DNDEBUG')                  #fastest(?) release
+#common.Append(CCFLAGS='-Wall -O2 -g -fPIC -D_GLIBCXX_DEBUG')    #debuging
+common.Append(CCFLAGS='-Wall -O0 -g -pg -fPIC -DNDEBUG ')        #profiling
 
 
 
