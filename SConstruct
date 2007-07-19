@@ -35,8 +35,17 @@ for file in os.listdir("Pybindings"):
         PYTHON_CPP.append("Pybindings/%s"%file)
 print PYTHON_CPP
 
-                    
-COMMON_LIBS=["g2c", "f95"]
+#determine architecture (unix only ?) to determine which 
+#static library to import for f95:
+
+arch = os.uname()[-1]
+if arch=="x86_64":
+	f95="f95_g95_LINUX_64.a"
+else:
+	f95="f95_g95_LINUX_32.a"
+
+
+COMMON_LIBS=["g2c", f95]
 #COMMON_LIBS=["g2c"]
 
 COMMON_CPPPATH=['.']
