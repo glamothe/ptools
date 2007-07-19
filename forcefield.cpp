@@ -169,7 +169,7 @@ void AttractForceField::InitParams()
     if (!aminon)
     {
         //the file cannot be opened
-        std::string msg = "Forcefield.cpp: Cannot Locate file aminon.par\n";
+        std::string msg = "Forcefield.cpp: Cannot Locate file forcefield parameters (aminon.par)\n";
         std::cout << msg ;
         throw msg;
     }
