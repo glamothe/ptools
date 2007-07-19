@@ -42,7 +42,14 @@ void PrintVec(const Vdouble& vec)
 }
 
 
-void extractExtra(Rigidbody& rig, std::vector<uint>& vCat, std::vector<double>& vCh)
+/*! \brief Extracts extra information from ATOM lines.
+ *
+ *  For Attract pdb files, the library currently reads some extra informations
+*  after the x,y,z coordinates. This information is extracted here.
+*  Two arrays are populated then: atcategory which contains the atom type category
+* (AKA iaci variable in the fortran code) and the atom charge ('xlai' in the fortran code)
+ */
+void extractExtra( Rigidbody& rig, std::vector<uint>& vCat, std::vector<double>& vCh)
 {
 
     uint   atcategory  = 0;
@@ -50,7 +57,7 @@ void extractExtra(Rigidbody& rig, std::vector<uint>& vCat, std::vector<double>& 
 
     for (uint i=0; i<rig.Size(); i++)
     {
-        Atom at = rig.GetAtom(i);
+        const Atom at = rig.GetAtom(i);
         std::string extra = at.GetExtra();
         //std::cout << extra << std::endl;
         std::istringstream iss( extra );
@@ -543,6 +550,188 @@ double AttractForceField::fortranEnergy()
     return LJ+coulomb;
 
 }
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+//     AttractForceField2 implementation
+////////////////////////////////////////////////////////////////
+
+AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody & rec, AttractRigidbody & lig, double cutoff)
+        : m_pairlist(rec,lig,cutoff),
+        m_ligand(lig),
+        m_receptor(rec)
+{
+    m_ligSize = lig.Size();
+    m_recSize = rec.Size();
+
+
+
+    std::ifstream mbest (filename.c_str());
+    //open(11,file=eingabe2) -> eingabe2: mbest1k.par
+    if (!mbest)
+    {
+        //the file cannot be opened
+        std::string msg = "Forcefield.cpp: Cannot Locate file  " + filename + "\n" ;
+        std::cout << msg ;
+        throw msg;
+    }
+
+
+    for (uint i = 0; i<31; i++)
+        for (uint j = 0; j<31; j++)
+        {
+            mbest >> rbc[i][j] ;
+            assert(i<=30);
+            assert(j<=30);
+        }
+
+    for (uint i = 0; i<31; i++)
+        for (uint j = 0; j<31; j++)
+            mbest >> abc[i][j] ;
+
+    for (uint i = 0; i<31; i++)
+    {
+           for (uint j = 0; j<31; j++)
+        {
+            mbest >> iflo[i][j] ;
+            assert(iflo[i][j]==1 || iflo[i][j]==-1);
+           }
+    }
+
+
+    //extractExtra(lig,  m_lAtomCategory, m_lAtomCharge);
+    //extractExtra(rec, m_rAtomCategory, m_rAtomCharge);
+
+
+    for (uint j=0; j < lig.Size(); j++)
+    {
+        uint jj = lig.m_atomTypeNumber[j];
+        for (uint i=0; i<rec.Size(); i++)
+        {
+            uint ii = rec.m_atomTypeNumber[i];
+            assert(i<3000);
+            assert(j<3000);
+            rc[i][j] = abc[ii][jj] * pow(rbc[ii][jj],8);
+            ac[i][j] = abc[ii][jj] * pow(rbc[ii][jj],6);
+            assert(ii<=30);
+            assert(jj<=30);
+            ipon[i][j] = iflo[ii][jj] ;
+            assert(ipon[i][j]==1 || ipon[i][j]==-1);
+        }
+    }
+
+
+
+}
+
+
+double AttractForceField2::Function(const Vdouble& stateVars )
+{
+    AttractEuler(m_centeredligand[0], m_movedligand[0], stateVars[0], stateVars[1], stateVars[2]);
+    m_movedligand[0].Translate(m_ligcenter[0]);
+    m_movedligand[0].Translate(Coord3D(stateVars[3],stateVars[4],stateVars[5]));
+    return nonbon8(m_receptor, m_movedligand[0]);
+}
+
+
+/*! \brief Non bonded energy
+*
+*   translated from fortran file nonbon8.f
+*   TODO: add comments in the code, remove debug instructions
+*/
+double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig)
+{
+
+    double enon = 0.0;
+    double epote = 0.0;
+    double esolv = 0.0;
+
+//reset forces for ligand and receptor:
+    lig.resetForces();
+    rec.resetForces();
+//     m_ligForces = std::vector<Coord3D>(m_ligSize);
+//     m_recForces = std::vector<Coord3D>(m_recSize);
+
+    std::cout << "nonp " << m_pairlist.Size() << std::endl ;
+    for (uint ik=0; ik<m_pairlist.Size(); ik++ )
+    {
+        AtomPair atpair = m_pairlist[ik];
+        int iscw = 0 ; // ?
+        std::cout.precision(20);
+
+        uint i = atpair.atrec ;
+        uint j = atpair.atlig ;
+        assert(i<3000);
+        assert(j<3000);
+        double alen = ac[i][j];
+        double rlen = rc[i][j];
+        int ivor = ipon[i][j];
+        assert(ivor==1 || ivor==-1);
+
+
+        double alen4 = alen*alen*alen*alen;
+        double rlen3 = rlen*rlen*rlen;
+        double emin = -27.0*alen4/(256.0*rlen3);
+
+        double rmin2=4.0*rlen/(3.0*alen);
+        double charge= rec.m_charge[i]* lig.m_charge[j];  //charge product of the two atoms
+        //std::cout << "charge: " << charge << std::endl;
+
+
+        Coord3D dx = rec.GetCoords(i) - lig.GetCoords(j);
+        double r2 = Norm2(dx);
+        if (r2 < 0.001) r2=0.001 ;
+
+        double rr2 = 1.0/r2;
+        dx = rr2*dx ;
+
+        if (charge > 0.0) {
+            double et = charge*rr2;
+            et*=(332.053986/15.0);  //constant felec/permi (could still be optimized!)
+
+            epote += et ;
+            Coord3D fdb =2.0*et*dx ;
+            lig.m_forces[j] += fdb;
+            rec.m_forces[i] -= fdb;
+
+        }
+
+        //switch between minimum or saddle point
+        if (r2 < rmin2) {
+
+            double rr23 = rr2*rr2*rr2 ;
+            double rep = rlen*rr2 ;
+            double vlj = (rep-alen)*rr23;
+            enon=enon+vlj+(ivor-1)*emin ;
+
+            double fb=6.0*vlj+2.0*(rep*rr23);
+            Coord3D fdb = fb*dx;
+            lig.m_forces[j]+=fdb;
+            rec.m_forces[i]-=fdb;
+        }
+        else {
+            double rr23=rr2*rr2*rr2;
+            double rep=rlen*rr2;
+            double vlj=(rep-alen)*rr23 ;
+            enon += ivor*vlj ;
+
+            double fb=6.0*vlj+2.0*(rep*rr23);
+
+            Coord3D fdb=ivor*fb*dx ;
+            lig.m_forces[j] += fdb ;
+            rec.m_forces[i] -= fdb ;
+        }
+
+
+    }
+
+    std::cout << "vlj  coulomb: " << enon << "  " << epote << "\n";
+    return enon;
+}
+
 
 
 

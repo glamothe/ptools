@@ -2,7 +2,7 @@ import os
 from pyplusplus import module_builder
 
 #Creating an instance of class that will help you to expose your declarations
-mb = module_builder.module_builder_t( [os.path.abspath('./ptools.h')]
+mb = module_builder.module_builder_t( [os.path.abspath('./ptools.h'), os.path.abspath('./py_details.h')]
                                       , gccxml_path=r"" 
                                       , define_symbols=[] )
 
@@ -19,9 +19,13 @@ normalize = coord3D.member_function("Normalize")
 normalize.call_policies = module_builder.call_policies.return_internal_reference()
 
 rigidbody = mb.class_("Rigidbody")
-getatom = rigidbody.member_function("GetAtom")
+getatom = rigidbody.member_function("GetAtomReference")
 getatom.call_policies = module_builder.call_policies.return_internal_reference()
 rigidbody.include()
+
+attractrigidbody=mb.class_("AttractRigidbody")
+attractrigidbody.include()
+
 
 atom = mb.class_("Atom")
 atom.include()
@@ -38,6 +42,15 @@ attractForceField.include()
 
 attractForceField2 = mb.class_("AttractForceField2")
 attractForceField2.include()
+
+
+#this will introduce the PairList template
+#this is tricky and quite ugly. Looking for a better alternative
+pairlist = mb.class_("T_PairList<PTools::Rigidbody>")  #regular pairlist (for Rigidbody)
+pairlist.include()
+att2pairlist=mb.class_("T_PairList<PTools::AttractRigidbody>") #the new Attract 2 pairlist (works with AttractRigidbody)
+att2pairlist.include()
+mb.namespace( 'py_details' ).exclude()  #exclude the py_details ugly namespace
 
 
 lbfgs = mb.class_("Lbfgs")

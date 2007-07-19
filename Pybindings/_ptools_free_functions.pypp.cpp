@@ -2,7 +2,8 @@
 
 #include "_ptools_free_functions.pypp.hpp"
 #include "boost/python.hpp"
-#include "/ibpc/rhea/saladin/Src/ptools/trunk/ptools.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/ptools.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/pairlist_dummy.h"
 
 namespace bp = boost::python;
 
@@ -19,6 +20,39 @@ void register_free_functions(){
     
     }
 
+    { //::PTools::Norm
+    
+        typedef double ( *Norm_function_type )( ::PTools::Coord3D const & );
+        
+        bp::def( 
+            "Norm"
+            , Norm_function_type( &::PTools::Norm )
+            , ( bp::arg("A") ) );
+    
+    }
+
+    { //::PTools::Norm2
+    
+        typedef double ( *Norm2_function_type )( ::PTools::Coord3D const & );
+        
+        bp::def( 
+            "Norm2"
+            , Norm2_function_type( &::PTools::Norm2 )
+            , ( bp::arg("A") ) );
+    
+    }
+
+    { //::PTools::PrintCoord
+    
+        typedef ::std::string ( *PrintCoord_function_type )( ::PTools::Coord3D const & );
+        
+        bp::def( 
+            "PrintCoord"
+            , PrintCoord_function_type( &::PTools::PrintCoord )
+            , ( bp::arg("A") ) );
+    
+    }
+
     { //::PTools::Rmsd
     
         typedef double ( *Rmsd_function_type )( ::PTools::AtomSelection const &,::PTools::AtomSelection const & );
@@ -27,6 +61,17 @@ void register_free_functions(){
             "Rmsd"
             , Rmsd_function_type( &::PTools::Rmsd )
             , ( bp::arg("atsel1"), bp::arg("atsel2") ) );
+    
+    }
+
+    { //::PTools::WritePDB
+    
+        typedef void ( *WritePDB_function_type )( ::PTools::Rigidbody const &,::std::string );
+        
+        bp::def( 
+            "WritePDB"
+            , WritePDB_function_type( &::PTools::WritePDB )
+            , ( bp::arg("rigid"), bp::arg("filename") ) );
     
     }
 

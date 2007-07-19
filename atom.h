@@ -53,7 +53,7 @@ public:
     inline void SetAtomId(uint atomnumber) {mAtomId=atomnumber;}; ///< define atom ID
 
     inline void SetExtra(std::string extra){mExtra=extra;}; ///< set the extra data field
-    inline std::string GetExtra(){return mExtra;}; ///< get the extra data field
+    inline std::string GetExtra() const {return mExtra;}; ///< get the extra data field
 
 };
 

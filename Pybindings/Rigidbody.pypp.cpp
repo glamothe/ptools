@@ -2,14 +2,52 @@
 
 #include "Rigidbody.pypp.hpp"
 #include "boost/python.hpp"
-#include "/ibpc/rhea/saladin/Src/ptools/trunk/ptools.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/ptools.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/pairlist_dummy.h"
 
 namespace bp = boost::python;
+
+struct Rigidbody_wrapper : PTools::Rigidbody, bp::wrapper< PTools::Rigidbody > {
+
+    Rigidbody_wrapper( )
+    : PTools::Rigidbody( )
+      , bp::wrapper< PTools::Rigidbody >(){
+        // null constructor
+    
+    }
+
+    Rigidbody_wrapper(::std::string filename )
+    : PTools::Rigidbody( filename )
+      , bp::wrapper< PTools::Rigidbody >(){
+        // constructor
+    
+    }
+
+    Rigidbody_wrapper(::PTools::Rigidbody const & model )
+    : PTools::Rigidbody( boost::ref(model) )
+      , bp::wrapper< PTools::Rigidbody >(){
+        // copy constructor
+    
+    }
+
+    virtual bool isAtomActive( ::uint i ) const  {
+        if( bp::override func_isAtomActive = this->get_override( "isAtomActive" ) )
+            return func_isAtomActive( i );
+        else
+            return this->PTools::Rigidbody::isAtomActive( i );
+    }
+    
+    
+    bool default_isAtomActive( ::uint i ) const  {
+        return PTools::Rigidbody::isAtomActive( i );
+    }
+
+};
 
 void register_Rigidbody_class(){
 
     { //::PTools::Rigidbody
-        typedef bp::class_< PTools::Rigidbody > Rigidbody_exposer_t;
+        typedef bp::class_< Rigidbody_wrapper > Rigidbody_exposer_t;
         Rigidbody_exposer_t Rigidbody_exposer = Rigidbody_exposer_t( "Rigidbody" );
         bp::scope Rigidbody_scope( Rigidbody_exposer );
         Rigidbody_exposer.def( bp::init< >() );
@@ -54,6 +92,15 @@ void register_Rigidbody_class(){
                 , CA_function_type( &::PTools::Rigidbody::CA ) );
         
         }
+        { //::PTools::Rigidbody::CenterToOrigin
+        
+            typedef void ( ::PTools::Rigidbody::*CenterToOrigin_function_type )(  ) ;
+            
+            Rigidbody_exposer.def( 
+                "CenterToOrigin"
+                , CenterToOrigin_function_type( &::PTools::Rigidbody::CenterToOrigin ) );
+        
+        }
         { //::PTools::Rigidbody::CopyAtom
         
             typedef ::PTools::Atom ( ::PTools::Rigidbody::*CopyAtom_function_type )( ::uint ) const;
@@ -75,11 +122,22 @@ void register_Rigidbody_class(){
         }
         { //::PTools::Rigidbody::GetAtom
         
-            typedef ::PTools::Atom & ( ::PTools::Rigidbody::*GetAtom_function_type )( ::uint ) ;
+            typedef ::PTools::Atom const & ( ::PTools::Rigidbody::*GetAtom_function_type )( ::uint ) const;
             
             Rigidbody_exposer.def( 
                 "GetAtom"
                 , GetAtom_function_type( &::PTools::Rigidbody::GetAtom )
+                , ( bp::arg("pos") )
+                , bp::return_value_policy< bp::copy_const_reference >() );
+        
+        }
+        { //::PTools::Rigidbody::GetAtomReference
+        
+            typedef ::PTools::Atom & ( ::PTools::Rigidbody::*GetAtomReference_function_type )( ::uint ) ;
+            
+            Rigidbody_exposer.def( 
+                "GetAtomReference"
+                , GetAtomReference_function_type( &::PTools::Rigidbody::GetAtomReference )
                 , ( bp::arg("pos") )
                 , bp::return_internal_reference< 1 >() );
         
@@ -200,6 +258,18 @@ void register_Rigidbody_class(){
                 , ( bp::arg("tr") ) );
         
         }
+        { //::PTools::Rigidbody::isAtomActive
+        
+            typedef bool ( ::PTools::Rigidbody::*isAtomActive_function_type )( ::uint ) const;
+            typedef bool ( Rigidbody_wrapper::*default_isAtomActive_function_type )( ::uint ) const;
+            
+            Rigidbody_exposer.def( 
+                "isAtomActive"
+                , isAtomActive_function_type(&::PTools::Rigidbody::isAtomActive)
+                , default_isAtomActive_function_type(&Rigidbody_wrapper::default_isAtomActive)
+                , ( bp::arg("i") ) );
+        
+        }
         Rigidbody_exposer.def( bp::self + bp::self );
         { //::PTools::Rigidbody::operator=
         
@@ -214,13 +284,13 @@ void register_Rigidbody_class(){
         }
         { //::PTools::Rigidbody::operator[]
         
-            typedef ::PTools::Atom & ( ::PTools::Rigidbody::*__getitem___function_type )( ::uint ) ;
+            typedef ::PTools::Atom const & ( ::PTools::Rigidbody::*__getitem___function_type )( ::uint ) const;
             
             Rigidbody_exposer.def( 
                 "__getitem__"
                 , __getitem___function_type( &::PTools::Rigidbody::operator[] )
                 , ( bp::arg("pos") )
-                , bp::return_internal_reference< 1 >() );
+                , bp::return_value_policy< bp::copy_const_reference >() );
         
         }
     }

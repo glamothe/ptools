@@ -362,18 +362,20 @@ void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double 
 }
 
 
+
+
+    /*! \brief  makes an Euler rotation of source and stores result
+        *  in dest.
+	*
+        *  source is not centered so you might want to do it before
+        *  calling this subroutine
+        *  You must also verify that 'dest' is correctly initialised by
+        *  the command  dest = source. If not grave problems will happen
+    */
+//note: should also work if dest and source are the same object
 void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot)
 {
-    /*
-        !  makes an Euler rotation of source and stores result
-        !  in dest.
-        !  source is not centered so you might want to do it before
-        !  calling this subroutine
-        !  You must also verify that 'dest' is correctly initialised by
-        !  the command  dest = source. If not grave problems will happen
-    */
 
-    //note: should also work if dest and source are the same object
 
     double  cp, cs, ss, sp, cscp, sscp, sssp, crot, srot, xar, yar, cssp ;
 

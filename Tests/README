@@ -1,0 +1,9 @@
+Unit testing:
+Python programs here contains unit tests that are supposed to succeed. 
+For now, only a few tests were written. 
+
+usage:
+python unittest1.py
+
+expected output: "OK"
+

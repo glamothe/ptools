@@ -2,7 +2,8 @@
 
 #include "Coord3D.pypp.hpp"
 #include "boost/python.hpp"
-#include "/ibpc/rhea/saladin/Src/ptools/trunk/ptools.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/ptools.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/pairlist_dummy.h"
 
 namespace bp = boost::python;
 
@@ -14,6 +15,7 @@ void register_Coord3D_class(){
         bp::scope Coord3D_scope( Coord3D_exposer );
         Coord3D_exposer.def( bp::init< >() );
         Coord3D_exposer.def( bp::init< double, double, double >(( bp::arg("nx"), bp::arg("ny"), bp::arg("nz") )) );
+        Coord3D_exposer.def( bp::init< PTools::Coord3D const & >(( bp::arg("old") )) );
         { //::PTools::Coord3D::Normalize
         
             typedef ::PTools::Coord3D & ( ::PTools::Coord3D::*Normalize_function_type )(  ) ;
@@ -41,7 +43,9 @@ void register_Coord3D_class(){
         Coord3D_exposer.def( bp::other< double >() * bp::self );
         Coord3D_exposer.def( bp::self * bp::other< double >() );
         Coord3D_exposer.def( bp::self + bp::self );
+        Coord3D_exposer.def( bp::self += bp::self );
         Coord3D_exposer.def( bp::self - bp::self );
+        Coord3D_exposer.def( bp::self -= bp::self );
     }
 
 }

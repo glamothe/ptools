@@ -2,7 +2,8 @@
 
 #include "Atom.pypp.hpp"
 #include "boost/python.hpp"
-#include "/ibpc/rhea/saladin/Src/ptools/trunk/ptools.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/ptools.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/pairlist_dummy.h"
 
 namespace bp = boost::python;
 

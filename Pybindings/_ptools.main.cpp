@@ -4,13 +4,21 @@
 
 #include "boost/python/suite/indexing/vector_indexing_suite.hpp"
 
-#include "/ibpc/rhea/saladin/Src/ptools/trunk/ptools.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/ptools.h"
+
+#include "/people/cheetah/asaladin/Src/ptools/trunk/pairlist_dummy.h"
 
 #include "Pybindings/Atom.pypp.hpp"
 
 #include "Pybindings/AtomSelection.pypp.hpp"
 
+#include "Pybindings/Attract2PairList.pypp.hpp"
+
 #include "Pybindings/AttractForceField.pypp.hpp"
+
+#include "Pybindings/AttractForceField2.pypp.hpp"
+
+#include "Pybindings/AttractRigidbody.pypp.hpp"
 
 #include "Pybindings/Coord3D.pypp.hpp"
 
@@ -18,16 +26,18 @@
 
 #include "Pybindings/Lbfgs.pypp.hpp"
 
+#include "Pybindings/PairList.pypp.hpp"
+
 #include "Pybindings/Rigidbody.pypp.hpp"
 
-#include "Pybindings/_ptools_free_functions.pypp.hpp"
+#include "Pybindings/Vdouble.pypp.hpp"
 
-#include "Pybindings/vector_less_double_comma_std_scope_allocator_less_double_grate___grate_.pypp.hpp"
+#include "Pybindings/_ptools_free_functions.pypp.hpp"
 
 namespace bp = boost::python;
 
 BOOST_PYTHON_MODULE(_ptools){
-    register_vector_less_double_comma_std_scope_allocator_less_double_grate___grate__class();
+    register_Vdouble_class();
 
     register_Atom_class();
 
@@ -39,15 +49,25 @@ BOOST_PYTHON_MODULE(_ptools){
 
     register_AttractForceField_class();
 
+    register_AttractForceField2_class();
+
+    register_Rigidbody_class();
+
+    bp::implicitly_convertible< std::string, PTools::Rigidbody >();
+
+    register_AttractRigidbody_class();
+
+    bp::implicitly_convertible< PTools::Rigidbody const &, PTools::AttractRigidbody >();
+
     register_Coord3D_class();
 
     register_Lbfgs_class();
 
     bp::implicitly_convertible< PTools::ForceField &, PTools::Lbfgs >();
 
-    register_Rigidbody_class();
+    register_Attract2PairList_class();
 
-    bp::implicitly_convertible< std::string, PTools::Rigidbody >();
+    register_PairList_class();
 
     register_free_functions();
 }

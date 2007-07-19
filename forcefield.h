@@ -54,7 +54,9 @@ public:
         return Gradient(stateVars, delta);
     };
     //virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta);
-    virtual uint ProblemSize() {return 6;};
+    virtual uint ProblemSize() {
+        return 6;
+    };
 
 
     double Energy(); ///< return current energy without moving any object
@@ -66,8 +68,13 @@ public:
     void Gradient(const Vdouble& stateVars, Vdouble& delta);
 
     void ShowEnergyParams(); ///< for debug purposes...
-    void Trans() {Vdouble delta(6) ; Trans(delta,true); };
-    void SetRestraint(double rstk) {m_rstk = rstk;};
+    void Trans() {
+        Vdouble delta(6) ;
+        Trans(delta,true);
+    };
+    void SetRestraint(double rstk) {
+        m_rstk = rstk;
+    };
 
 
 
@@ -126,7 +133,9 @@ class TestForceField: public ForceField
 
 //virtual double Function() {return 0.0;};
 
-    virtual uint ProblemSize(){return 2;};
+    virtual uint ProblemSize(){
+        return 2;
+    };
 
     virtual double Function(const Vdouble& X)
     {
@@ -144,6 +153,65 @@ class TestForceField: public ForceField
 
 
 };
+
+
+
+/*!  \brief Attract forcefield version 2
+*
+*   new forcefield with saddle point and pairwise energy
+*/
+class AttractForceField2 : public ForceField
+{
+
+public:
+
+    AttractForceField2(std::string paramsFileName, AttractRigidbody& rec, AttractRigidbody& lig, double cutoff);
+    double Function(const Vdouble&);
+    void Derivatives(const Vdouble&, Vdouble&){}; ///< analytical derivative
+    uint ProblemSize(){return 0;};
+    double nonbon8(AttractRigidbody& rec, AttractRigidbody& lig);
+
+
+private:
+
+    //private variables
+
+	AttractRigidbody m_ligand, m_receptor;
+
+    Vuint m_rAtomCat; ///< receptor atom category (std vector)
+
+    double rbc[31][31];
+    double abc[31][31];
+    int iflo[31][31];  //? read from mkbest1.par (forcefield parameters)
+    int ipon[3000][3000];
+
+    double rc[3000][3000];  //TODO: should be translated into clean std::vectors
+    double ac[3000][3000];
+
+
+    uint m_ligSize ; ///<ligand size
+    uint m_recSize ; ///<receptor size
+    Attract2PairList m_pairlist; ///<ligand-receptor pairlist
+
+    //Vuint m_lAtomCategory;
+    //Vdouble m_lAtomCharge;
+    //Vuint m_rAtomCategory;
+    //Vdouble m_rAtomCharge;
+
+    //std::vector<Coord3D> m_ligForces ; ///< ligand forces
+    std::vector<Coord3D> m_recForces ; ///< ligand forces
+
+    std::vector<AttractRigidbody> m_centeredligand;
+    std::vector<AttractRigidbody> m_movedligand;
+    std::vector<Coord3D> m_ligcenter;
+
+
+
+    //private functions members:
+
+
+};
+
 
 
 

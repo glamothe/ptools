@@ -70,10 +70,10 @@ Coord3D Rigidbody::FindCenter() const
 
 
 void Rigidbody::CenterToOrigin()
-    {
-        Coord3D c = FindCenter();
-        Translate(Coord3D()-c);
-    }
+{
+    Coord3D c = FindCenter();
+    Translate(Coord3D()-c);
+}
 
 
 
@@ -81,7 +81,7 @@ void Rigidbody::CenterToOrigin()
 void Rigidbody::Translate(const Coord3D& tr)
 {
     for (uint i=0; i<this->Size(); i++)
-        this->GetAtom(i).Translate(tr);
+        this->GetAtomReference(i).Translate(tr);
 
     //updates rotation/translation matrix:
     this->mat44[0][3]+=tr.x;
@@ -159,7 +159,9 @@ AtomSelection Rigidbody::SelectResRange(uint start, uint stop)
 }
 
 
-AtomSelection Rigidbody::CA() {return SelectAtomType("CA");}
+AtomSelection Rigidbody::CA() {
+    return SelectAtomType("CA");
+}
 
 /// operator =
 Rigidbody& Rigidbody::operator=(const Rigidbody& rig) {
@@ -221,20 +223,43 @@ void Rigidbody::ApplyMatrix(double mat[4][4])
 
 Vdouble Rigidbody::GetMatrix() const
 {
-Vdouble result;
-const double * ptr;
+    Vdouble result;
+    const double * ptr;
 
-ptr=(double*)mat44;
-for(uint i=0; i<16; i++)
+    ptr=(double*)mat44;
+    for (uint i=0; i<16; i++)
+    {
+        result.push_back(*ptr++);
+    }
+
+    return result;
+
+}
+
+
+
+
+///////////// AttractRigidbody implementation:
+
+AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
+        : Rigidbody(rig)
 {
-    result.push_back(*ptr++);
+    // extracts the "extra" field of Atoms to the m_atomTypeNumber array:
+    uint   atcategory  = 0;
+    double  atcharge   = 0.0;
+
+    for (uint i = 0; i < Size() ; ++i)
+    {
+        Atom at = GetAtom(i);
+        std::string extra = at.GetExtra();
+
+        std::istringstream iss( extra );
+        iss >> atcategory >> atcharge ;
+        m_atomTypeNumber.push_back(atcategory-1);  // -1 to directly use the atomTypeNumber into C-array 
+        m_charge.push_back(atcharge);
+    }
+
 }
-
-return result;
-
-}
-
-
 
 
 
