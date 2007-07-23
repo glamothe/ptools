@@ -1,4 +1,4 @@
-#ifndef RIGIDBODY_H
+ifndef RIGIDBODY_H
 #define RIGIDBODY_H
 
 
@@ -153,11 +153,11 @@ class AttractRigidbody: public Rigidbody
 public:
     AttractRigidbody(const Rigidbody & rig) ; ///< initilize a new object from a regular Rigidbody object
 
-    uint getAtomTypeNumber(uint i)
+    uint getAtomTypeNumber(uint i) const
     {
         return m_atomTypeNumber[i];
     };
-    double getCharge(uint i)
+    double getCharge(uint i) const
     {
         return m_charge[i];
     };
