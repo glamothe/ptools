@@ -1,0 +1,58 @@
+How to use the library
+=======================
+
+I) compiling:
+You need some packages in order to generate the library from the source code:
+   - a C++ compiler (of course).
+     g++ was used to develop the library. Others compilers should also work
+     (if it doesn't work, please send me an e-mail adrien.saladin@gmail.com)
+
+   - a fortran 77 compiler
+     in order to compile third-party files like the L-BFGS quasi-newton minimizer
+
+   - python and python development files
+     (debian packages 'python' and 'python-dev')
+     (by python I mean the CPython implementation of python. www.python.org)
+
+   - the boost::python library
+     (dynamic library + development files)
+     this is a fantastic library which wrap the python C API for c++ programs
+
+   - gccxml, pygccxml, pyplusplus:
+     if you want to modify the C++ library, you will need to re-generate the python
+     interface (running 'python interface.py'). You need these packages in order to do it.
+     (you can download them at http://www.language-binding.net/index.html)
+
+   - the 'scons' utility
+     this is the 'make' system for this library. Regular makefiles may be provided
+     at some time.
+
+simply type:
+a)  'scons cpp'  to generate the c++ library only
+b)  ' python interface.py && scons python' to generate the python-importable library
+c)  'scons' to generate both libraries.
+
+
+
+
+II) Testing:
+Some unit test are provided in order to check if the library behaves correctly on your system.
+You need to compile the python library in order to use these unit tests (see above).
+to run them, type 'python unittest1.py' in the Test/ directory.
+If everything goes fine you should get something like:
+"""
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+"""
+
+if not, then contact me ;-)  (adrien.saladin@gmail.com)
+
+
+III) Documentation:
+Source code may be parsed by an automatic documentation generator called 'Doxygen'.
+This documentation may only help for the C++ part of the library.
+after installing Doxygen, simply type 'doxygen' in the directory which contains the 'Doxyfile'.
+Then look into the html/ directory and find the index.html file generated...
