@@ -168,7 +168,9 @@ public:
 	{
 	 m_forces = std::vector<Coord3D> (this->Size() ) ;
         }
-    std::vector<uint> m_activeAtoms;
+
+
+    std::vector<uint> m_activeAtoms; ///< list of active atoms (atoms that are taken into account for interaction)
 
 
 
