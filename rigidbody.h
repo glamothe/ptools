@@ -97,7 +97,7 @@ public:
     void Translate(const Coord3D& tr); ///< Translate the whole object
 
     /// selection : complete
-    AtomSelection SelectAllAtoms(Rigidbody& rigid);
+    AtomSelection SelectAllAtoms();
 
     /// selection : by atom type
     AtomSelection SelectAtomType(std::string atomtype);

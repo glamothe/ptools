@@ -90,7 +90,7 @@ void Rigidbody::Translate(const Coord3D& tr)
 }
 
 
-AtomSelection Rigidbody::SelectAllAtoms( Rigidbody& rigid)
+AtomSelection Rigidbody::SelectAllAtoms()
 {
     AtomSelection newsel;
     newsel.SetRigid(*this);
