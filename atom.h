@@ -16,7 +16,7 @@ class Rigidbody;
 class Atomproperty {
 private:
     std::string mAtomType;  ///< CA, N, HN1, ...
-    std::string mAtomElement; /// C, N, H, O, etc.
+    std::string mAtomElement; ///< C, N, H, O, etc.
     std::string mResidType; ///< LEU, ARG, ...
     std::string mChainId; ///< A, B, etc.
     uint mResidId; ///< residue number
