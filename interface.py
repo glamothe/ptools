@@ -26,6 +26,8 @@ rigidbody.include()
 attractrigidbody=mb.class_("AttractRigidbody")
 attractrigidbody.include()
 
+atomproperty=mb.class_("Atomproperty")
+atomproperty.include()
 
 atom = mb.class_("Atom")
 atom.include()
