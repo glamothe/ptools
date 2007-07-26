@@ -458,19 +458,19 @@ void AttractForceField::ShowEnergyParams()
 
 
 
-extern "C"
-{
-    extern
-        void nonbon8_ ( double* recCoords, int*r,  double* ligCoords, int* l, // coordinates for receptor and ligand and their sizes
-                        int* rectypes, int* ligtypes,  //  array for correspondance between atoms indexes and their Attract's "type"
-                        double* cha_r, double* cha_l,   // charges of atoms
-                        int* nonr, int* nonl, int* nonp,    //  arrays for pairlist and size of the pairlist
-                        double* ac, double* rc,                      //  precalculated two dimensional arrays. Beware of the column major issue
-                        double* LJ, double* coulomb                  //  return of the function
-                      );
-
-
-}
+// extern "C"
+// {
+//     extern
+//         void nonbon8_ ( double* recCoords, int*r,  double* ligCoords, int* l, // coordinates for receptor and ligand and their sizes
+//                         int* rectypes, int* ligtypes,  //  array for correspondance between atoms indexes and their Attract's "type"
+//                         double* cha_r, double* cha_l,   // charges of atoms
+//                         int* nonr, int* nonl, int* nonp,    //  arrays for pairlist and size of the pairlist
+//                         double* ac, double* rc,                      //  precalculated two dimensional arrays. Beware of the column major issue
+//                         double* LJ, double* coulomb                  //  return of the function
+//                       );
+// 
+// 
+// }
 
 
 
@@ -541,12 +541,12 @@ double AttractForceField::fortranEnergy()
     std::cout << "taille pairlist: " << plistsize << "\n";
 
 
-    nonbon8_(  &recCoords[0],&r, &ligCoords[0], &l,  //
-               &rAtomCat[0], &lAtomCat[0],     //
-               &m_rAtomCharge[0], &m_lAtomCharge[0], //
-               &recplist[0], &ligplist[0], &plistsize, //
-               (double*) m_ac,(double*) m_rc, //
-               &LJ, &coulomb) ;
+//     nonbon8_(  &recCoords[0],&r, &ligCoords[0], &l,  //
+//                &rAtomCat[0], &lAtomCat[0],     //
+//                &m_rAtomCharge[0], &m_lAtomCharge[0], //
+//                &recplist[0], &ligplist[0], &plistsize, //
+//                (double*) m_ac,(double*) m_rc, //
+//                &LJ, &coulomb) ;
 
     return LJ+coulomb;
 

@@ -9,7 +9,6 @@ COMMON_CPP = Split ("""atom.cpp
                        rmsd.cpp
                        forcefield.cpp
                        pairlist.cpp
-                       nonbon8.f90
                        minimizers/lbfgs_interface.cpp
                        minimizers/routines.f
                        minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp
@@ -21,9 +20,9 @@ COMMON_CPP = Split ("""atom.cpp
  #minimizers/lbfgs_wrapper/lbfgsb_wrapper.c   #with bounds
  #minimizers/lbfgs_wrapper/lbfgsb.f    #with bounds
 
-                       #minimizers/lbfgs_wrapper/lbfgs_wrapper.cpp 
-                      #minimizers/lbfgs_wrapper/lbfgs.f
-                       #minimizers/lbfgs_wrapper/lbfgsb.f
+ #minimizers/lbfgs_wrapper/lbfgs_wrapper.cpp 
+ #minimizers/lbfgs_wrapper/lbfgs.f
+ #minimizers/lbfgs_wrapper/lbfgsb.f
 
 
 
@@ -38,22 +37,22 @@ print PYTHON_CPP
 #determine architecture (unix only ?) to determine which 
 #static library to import for f95:
 
-arch = os.uname()[-1]
-if arch=="x86_64":
-	f95="f95_g95_LINUX_64"
-else:
-	f95="f95_g95_LINUX_32"
+#arch = os.uname()[-1]
+#if arch=="x86_64":
+#	f95="f95_g95_LINUX_64"
+#else:
+#	f95="f95_g95_LINUX_32"
 
 
-COMMON_LIBS=["g2c", f95]
-#COMMON_LIBS=["g2c"]
+#COMMON_LIBS=["g2c", f95]
+COMMON_LIBS=["g2c"]
 
 COMMON_CPPPATH=['.']
 FFLAGS="-g"
 
                 
-#common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".",  FORTRANFLAGS="-g" )
-common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = 'g95 -fPIC -g',  FORTRANFLAGS="-g", ENV = {'PATH' : os.environ['PATH']})
+common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".",  FORTRANFLAGS="-g" )
+#common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = 'g95 -fPIC -g',  FORTRANFLAGS="-g", ENV = {'PATH' : os.environ['PATH']})
 
 #common.Append(CCFLAGS='-Wall -O2 -g -DNDEBUG')                  #fastest(?) release
 #common.Append(CCFLAGS='-Wall -O2 -g -fPIC -D_GLIBCXX_DEBUG')    #debuging
@@ -83,13 +82,6 @@ Alias('cpp',lib2)
 print "BUILD_TARGETS is", map(str, BUILD_TARGETS)
 
 
+#### old commands. Not needed but kept here for some time #####
 
-#to be able to compile using pyste:
-#env = Environment()
-#bld = Builder(action = 'pyste --module=_ptools -I. $SOURCE')
-#env.Append(BUILDERS = {'Pyste' : bld})
-
-# uncomment this line if pyste is installed
-#env.Pyste('ptools.pyste')
-
-#env.SharedLibrary(File('ptools.so'), list, LIBS=libs, CPPPATH=['/usr/include/python2.4/','.'])
+#Alias('cpp',[lib2,tst])
