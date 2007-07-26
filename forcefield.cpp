@@ -474,83 +474,83 @@ void AttractForceField::ShowEnergyParams()
 
 
 
-double AttractForceField::fortranEnergy()
-{
-
-
-// linear array of receptor coordinates
-    std::vector <double> recCoords;
-
-
-    for (uint i=0; i <m_receptor.Size(); i++)
-    {
-        Coord3D co ( m_receptor.GetCoords(i) );
-        recCoords.push_back(co.x);
-        recCoords.push_back(co.y);
-        recCoords.push_back(co.z);
-
-    }
-
-
-
-    double LJ=0.0;
-    double coulomb=0.0;
-
-
-
-// linear array of ligand coordinates
-    std::vector <double> ligCoords;
-    for (uint i=0; i < m_ligand.Size(); i++)
-    {
-        Coord3D co ( m_ligand.GetCoords(i) );
-        ligCoords.push_back(co.x);
-        ligCoords.push_back(co.y);
-        ligCoords.push_back(co.z);
-    }
-
-    int r = m_receptor.Size();
-    std::cout << "m_receptor size: " << r << "\n" ;
-    int l = m_ligand.Size();
-
-
-    Vint ligplist; //ligand atoms in the pairlist
-    Vint recplist; //recetor atoms
-    int plistsize = plist.Size();
-
-    for (int i=0; i <  plistsize; i++)
-    {
-
-        ligplist.push_back( plist[i].atlig ) ;
-        recplist.push_back( plist[i].atrec ) ;
-    }
-
-
-
-
-    std::vector<int> rAtomCat;
-    std::vector<int> lAtomCat;
-
-    for (uint i=0; i<m_rAtomCat.size(); i++)
-        rAtomCat.push_back(m_rAtomCat[i]);
-
-
-
-    for (uint i=0; i<m_lAtomCat.size(); i++)
-        lAtomCat.push_back(m_lAtomCat[i]);
-
-    std::cout << "taille pairlist: " << plistsize << "\n";
-
-
-//     nonbon8_(  &recCoords[0],&r, &ligCoords[0], &l,  //
-//                &rAtomCat[0], &lAtomCat[0],     //
-//                &m_rAtomCharge[0], &m_lAtomCharge[0], //
-//                &recplist[0], &ligplist[0], &plistsize, //
-//                (double*) m_ac,(double*) m_rc, //
-//                &LJ, &coulomb) ;
-
-    return LJ+coulomb;
-
-}
+// double AttractForceField::fortranEnergy()
+// {
+// 
+// 
+// // linear array of receptor coordinates
+//     std::vector <double> recCoords;
+// 
+// 
+//     for (uint i=0; i <m_receptor.Size(); i++)
+//     {
+//         Coord3D co ( m_receptor.GetCoords(i) );
+//         recCoords.push_back(co.x);
+//         recCoords.push_back(co.y);
+//         recCoords.push_back(co.z);
+// 
+//     }
+// 
+// 
+// 
+//     double LJ=0.0;
+//     double coulomb=0.0;
+// 
+// 
+// 
+// // linear array of ligand coordinates
+//     std::vector <double> ligCoords;
+//     for (uint i=0; i < m_ligand.Size(); i++)
+//     {
+//         Coord3D co ( m_ligand.GetCoords(i) );
+//         ligCoords.push_back(co.x);
+//         ligCoords.push_back(co.y);
+//         ligCoords.push_back(co.z);
+//     }
+// 
+//     int r = m_receptor.Size();
+//     std::cout << "m_receptor size: " << r << "\n" ;
+//     int l = m_ligand.Size();
+// 
+// 
+//     Vint ligplist; //ligand atoms in the pairlist
+//     Vint recplist; //recetor atoms
+//     int plistsize = plist.Size();
+// 
+//     for (int i=0; i <  plistsize; i++)
+//     {
+// 
+//         ligplist.push_back( plist[i].atlig ) ;
+//         recplist.push_back( plist[i].atrec ) ;
+//     }
+// 
+// 
+// 
+// 
+//     std::vector<int> rAtomCat;
+//     std::vector<int> lAtomCat;
+// 
+//     for (uint i=0; i<m_rAtomCat.size(); i++)
+//         rAtomCat.push_back(m_rAtomCat[i]);
+// 
+// 
+// 
+//     for (uint i=0; i<m_lAtomCat.size(); i++)
+//         lAtomCat.push_back(m_lAtomCat[i]);
+// 
+//     std::cout << "taille pairlist: " << plistsize << "\n";
+// 
+// 
+// //     nonbon8_(  &recCoords[0],&r, &ligCoords[0], &l,  //
+// //                &rAtomCat[0], &lAtomCat[0],     //
+// //                &m_rAtomCharge[0], &m_lAtomCharge[0], //
+// //                &recplist[0], &ligplist[0], &plistsize, //
+// //                (double*) m_ac,(double*) m_rc, //
+// //                &LJ, &coulomb) ;
+// 
+//     return LJ+coulomb;
+// 
+// }
 
 
 
@@ -744,10 +744,11 @@ double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig)
 
 
 
-void AttractForceField2::Trans(uint molIndex,  Vdouble& delta, bool print)
+void AttractForceField2::Trans(uint molIndex, Vdouble & delta, uint shift,  bool print)
 {
 // molIndex is the index of the protein we want to extract the average
 // translational forces
+
 
 const AttractRigidbody &rig(m_movedligand[molIndex]);
 //   In this subroutine the translational force components are calculated
@@ -776,9 +777,10 @@ const AttractRigidbody &rig(m_movedligand[molIndex]);
         }
     }
 
-    delta[3]=ftr1;
-    delta[4]=ftr2;
-    delta[5]=ftr3;
+    assert(shift+2 < delta.size());
+    delta[0+shift]=ftr1;
+    delta[1+shift]=ftr2;
+    delta[2+shift]=ftr3;
 
     //debug:
     if (print) std::cout <<  "translational forces: " << ftr1 <<"  "<< ftr2 <<"  " << ftr3 << std::endl;
@@ -787,7 +789,7 @@ const AttractRigidbody &rig(m_movedligand[molIndex]);
 
 
 
-void AttractForceField2::Rota(uint molIndex, double phi,double ssi, double rot, Vdouble& delta,bool print)
+void AttractForceField2::Rota(uint molIndex, double phi,double ssi, double rot, Vdouble & delta,uint shift, bool print)
 {
 // molIndex is the index of the protein we want to extract the average
 // translational forces
@@ -831,6 +833,7 @@ void AttractForceField2::Rota(uint molIndex, double phi,double ssi, double rot, 
     AttractRigidbody * pLigCentered = & m_centeredligand[molIndex] ; // pointer to the centered ligand
     AttractRigidbody * pLigMoved  = & m_movedligand[molIndex] ; // pointer to the rotated/translated ligand (for forces)
 
+    assert(shift+2 < delta.size());
     for (uint i=0; i< pLigCentered->m_activeAtoms.size(); i++)
     {
         uint atomIndex = pLigCentered->m_activeAtoms[i];
@@ -856,9 +859,9 @@ void AttractForceField2::Rota(uint molIndex, double phi,double ssi, double rot, 
 
         for (uint j=0;j<3;j++)
         {
-            delta[j] += pm[0][j] * pLigMoved->m_forces[atomIndex].x ;
-            delta[j] += pm[1][j] * pLigMoved->m_forces[atomIndex].y ;
-            delta[j] += pm[2][j] * pLigMoved->m_forces[atomIndex].z ;
+            delta[j+shift] += pm[0][j] * pLigMoved->m_forces[atomIndex].x ;
+            delta[j+shift] += pm[1][j] * pLigMoved->m_forces[atomIndex].y ;
+            delta[j+shift] += pm[2][j] * pLigMoved->m_forces[atomIndex].z ;
         }
     }
 

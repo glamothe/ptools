@@ -118,7 +118,6 @@ private:
     bool m_energycalled ;
 
     PairList plist;
-    double fortranEnergy();
     std::string _filesuffix;
 
     static int _minimnb;
@@ -208,8 +207,8 @@ private:
 
 
     //private functions members:
-        void Trans(uint molIndex, Vdouble& delta, bool print=false); // translational derivatives
-        void Rota(uint molIndex, double phi,double ssi, double rot, Vdouble& delta, bool print=false);
+        void Trans(uint molIndex, Vdouble& delta,uint shift, bool print=false); // translational derivatives
+        void Rota(uint molIndex, double phi,double ssi, double rot, Vdouble& delta, uint shift, bool print=false);
 
 
 };
