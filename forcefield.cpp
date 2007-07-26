@@ -212,6 +212,7 @@ double AttractForceField::LennardJones()
         assert(m_lAtomCat[jl] >= 0);
         assert(m_lAtomCat[jl] < m_rad.size());
 
+
         double alen = m_ac[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
         double rlen = m_rc[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
 
@@ -560,9 +561,10 @@ double AttractForceField::fortranEnergy()
 ////////////////////////////////////////////////////////////////
 
 AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody & rec, AttractRigidbody & lig, double cutoff)
-        : m_pairlist(rec,lig,cutoff),
-        m_ligand(lig),
-        m_receptor(rec)
+        : m_ligand(lig),
+          m_receptor(rec),
+          m_pairlist(rec,lig,cutoff)
+
 {
 
     m_ligSize = lig.Size();
@@ -658,19 +660,16 @@ double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig)
 
     double enon = 0.0;
     double epote = 0.0;
-    double esolv = 0.0;
 
-//reset forces for ligand and receptor:
+    //reset forces for ligand and receptor:
     lig.resetForces();
     rec.resetForces();
-//     m_ligForces = std::vector<Coord3D>(m_ligSize);
-//     m_recForces = std::vector<Coord3D>(m_recSize);
 
-    std::cout << "nonp " << m_pairlist.Size() << std::endl ;
+
     for (uint ik=0; ik<m_pairlist.Size(); ik++ )
     {
         AtomPair atpair = m_pairlist[ik];
-        int iscw = 0 ; // ?
+
         std::cout.precision(20);
 
         uint i = atpair.atrec ;
@@ -745,8 +744,137 @@ double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig)
 
 
 
+void AttractForceField2::Trans(uint molIndex,  Vdouble& delta, bool print)
+{
+// molIndex is the index of the protein we want to extract the average
+// translational forces
 
+const AttractRigidbody &rig(m_movedligand[molIndex]);
+//   In this subroutine the translational force components are calculated
+    double flim = 1.0e18;
+    double ftr1, ftr2, ftr3, fbetr;
+
+    ftr1=0.0;
+    ftr2=0.0;
+    ftr3=0.0;
+    for (uint i=0;i<rig.Size(); i++)
+    {
+        ftr1=ftr1 + rig.m_forces[i].x;
+        ftr2=ftr2 + rig.m_forces[i].y;
+        ftr3=ftr3 + rig.m_forces[i].z;
+    }
+
+// force reduction, some times helps in case of very "bad" start structure
+    for (uint i=0; i<3; i++)
+    {
+        fbetr=ftr1*ftr1 +ftr2*ftr2 +ftr3*ftr3;
+        if (fbetr > flim)
+        {
+            ftr1=.01*ftr1;
+            ftr2=.01*ftr2;
+            ftr3=.01*ftr3;
+        }
+    }
+
+    delta[3]=ftr1;
+    delta[4]=ftr2;
+    delta[5]=ftr3;
+
+    //debug:
+    if (print) std::cout <<  "translational forces: " << ftr1 <<"  "<< ftr2 <<"  " << ftr3 << std::endl;
+    return ;
 }
+
+
+
+void AttractForceField2::Rota(uint molIndex, double phi,double ssi, double rot, Vdouble& delta,bool print)
+{
+// molIndex is the index of the protein we want to extract the average
+// translational forces
+
+
+
+    //delta array of doubles of dimension 6 ( 3 rotations, 3 translations)
+
+    double  cs,cp,ss,sp,cscp,sscp,sssp,crot,srot,xar,yar,cssp,X,Y,Z ;
+    double  pm[3][3];
+
+// !c
+// !c     calculates orientational force contributions
+// !c     component 1: phi-angle
+// !c     component 2: ssi-angle
+// !c     component 3: rot-angle
+// !c
+
+
+    for (uint i=0; i<3;i++)
+    {
+        delta[i]=0.0;
+        for (uint j=0;j<3;j++)
+            pm[i][j]=0.0 ;
+    }
+
+    cs=cos(ssi);
+    cp=cos(phi);
+    ss=sin(ssi);
+    sp=sin(phi);
+    cscp=cs*cp;
+    cssp=cs*sp;
+    sscp=ss*cp;
+    sssp=ss*sp;
+    crot=cos(rot);
+    srot=sin(rot);
+
+    // for the x, y and z coordinates, we need 
+    // the coordinates of the centered, non-translated molecule
+
+    AttractRigidbody * pLigCentered = & m_centeredligand[molIndex] ; // pointer to the centered ligand
+    AttractRigidbody * pLigMoved  = & m_movedligand[molIndex] ; // pointer to the rotated/translated ligand (for forces)
+
+    for (uint i=0; i< pLigCentered->m_activeAtoms.size(); i++)
+    {
+        uint atomIndex = pLigCentered->m_activeAtoms[i];
+
+        Coord3D coords = pLigCentered->GetCoords(atomIndex);
+        X = coords.x;
+        Y = coords.y;
+        Z = coords.z;
+
+        xar=X*crot+Y*srot;
+        yar=-X*srot+Y*crot;
+        pm[0][0]=-xar*cssp-yar*cp-Z*sssp ;
+        pm[1][0]=xar*cscp-yar*sp+Z*sscp ;
+        pm[2][0]=0.0 ;
+
+        pm[0][1]=-xar*sscp+Z*cscp ;
+        pm[1][1]=-xar*sssp+Z*cssp ;
+        pm[2][1]=-xar*cs-Z*ss ;
+
+        pm[0][2]=yar*cscp+xar*sp ;
+        pm[1][2]=yar*cssp-xar*cp ;
+        pm[2][2]=-yar*ss ;
+
+        for (uint j=0;j<3;j++)
+        {
+            delta[j] += pm[0][j] * pLigMoved->m_forces[atomIndex].x ;
+            delta[j] += pm[1][j] * pLigMoved->m_forces[atomIndex].y ;
+            delta[j] += pm[2][j] * pLigMoved->m_forces[atomIndex].z ;
+        }
+    }
+
+    if (print) std::cout << "Rotational forces: " << delta[0] << " " << delta[1] << " " << delta[2] << std::endl;
+
+    return;
+}
+
+
+
+
+
+
+
+
+}//namespace PTools
 
 
 

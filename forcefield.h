@@ -208,6 +208,8 @@ private:
 
 
     //private functions members:
+        void Trans(uint molIndex, Vdouble& delta, bool print=false); // translational derivatives
+        void Rota(uint molIndex, double phi,double ssi, double rot, Vdouble& delta, bool print=false);
 
 
 };
