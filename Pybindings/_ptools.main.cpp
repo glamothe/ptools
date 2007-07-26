@@ -6,7 +6,7 @@
 
 #include "/people/cheetah/asaladin/Src/ptools/trunk/ptools.h"
 
-#include "/people/cheetah/asaladin/Src/ptools/trunk/pairlist_dummy.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/py_details.h"
 
 #include "Pybindings/Atom.pypp.hpp"
 
@@ -32,11 +32,15 @@
 
 #include "Pybindings/Vdouble.pypp.hpp"
 
+#include "Pybindings/Vuint.pypp.hpp"
+
 #include "Pybindings/_ptools_free_functions.pypp.hpp"
 
 namespace bp = boost::python;
 
 BOOST_PYTHON_MODULE(_ptools){
+    register_Vuint_class();
+
     register_Vdouble_class();
 
     register_Atom_class();

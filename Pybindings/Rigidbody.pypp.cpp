@@ -3,7 +3,7 @@
 #include "Rigidbody.pypp.hpp"
 #include "boost/python.hpp"
 #include "/people/cheetah/asaladin/Src/ptools/trunk/ptools.h"
-#include "/people/cheetah/asaladin/Src/ptools/trunk/pairlist_dummy.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/py_details.h"
 
 namespace bp = boost::python;
 
@@ -181,12 +181,11 @@ void register_Rigidbody_class(){
         }
         { //::PTools::Rigidbody::SelectAllAtoms
         
-            typedef ::PTools::AtomSelection ( ::PTools::Rigidbody::*SelectAllAtoms_function_type )( ::PTools::Rigidbody & ) ;
+            typedef ::PTools::AtomSelection ( ::PTools::Rigidbody::*SelectAllAtoms_function_type )(  ) ;
             
             Rigidbody_exposer.def( 
                 "SelectAllAtoms"
-                , SelectAllAtoms_function_type( &::PTools::Rigidbody::SelectAllAtoms )
-                , ( bp::arg("rigid") ) );
+                , SelectAllAtoms_function_type( &::PTools::Rigidbody::SelectAllAtoms ) );
         
         }
         { //::PTools::Rigidbody::SelectAtomType

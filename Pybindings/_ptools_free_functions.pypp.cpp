@@ -3,7 +3,7 @@
 #include "_ptools_free_functions.pypp.hpp"
 #include "boost/python.hpp"
 #include "/people/cheetah/asaladin/Src/ptools/trunk/ptools.h"
-#include "/people/cheetah/asaladin/Src/ptools/trunk/pairlist_dummy.h"
+#include "/people/cheetah/asaladin/Src/ptools/trunk/py_details.h"
 
 namespace bp = boost::python;
 
