@@ -11,26 +11,10 @@ import string
 
 
 
-
-
-
 def PrintVect(vect):
     for i in range(len(vect)):
         print vect[i], " | ",
     print ''
-
-
-
-
-def SingleMinim(rec, lig,cutoff,niter,rstk):
-    FF=AttractForceField(rec,lig,cutoff)
-    if rstk>0.0:
-        FF.SetRestraint(rstk)
-    lbfgs=Lbfgs(FF)
-    lbfgs.minimize(niter)
-    X=lbfgs.GetX()
-    return X
-
 
 
 
@@ -174,130 +158,136 @@ def rigidXstd_vector(rigid, mat_std):
 
 
 
-def main():
 
 
-    from optparse import OptionParser
-    parser = OptionParser()
-    parser.add_option("-s", "--single", action="store_true", dest="single",default=False,help="single minimization mode")
-    parser.add_option("--ref", action="store", type="string", dest="reffile", help="reference ligand for rmsd" )
-    parser.add_option("-t", "--translation", action="store", type="int", dest="transnb", help="translation number (distributed mode) starting from 0 for the first one!")
-    (options, args) = parser.parse_args()
+###########################
+##  MAIN ATTRACT PROGRAM  #
+###########################
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option("-s", "--single", action="store_true", dest="single",default=False,help="single minimization mode")
+parser.add_option("--ref", action="store", type="string", dest="reffile", help="reference ligand for rmsd" )
+parser.add_option("-t", "--translation", action="store", type="int", dest="transnb", help="translation number (distributed mode) starting from 0 for the first one!")
+(options, args) = parser.parse_args()
 
 
 
-    receptor_name=args[0]
-    ligand_name=args[1]
+receptor_name=args[0]
+ligand_name=args[1]
 
-    print """
-    **********************************************************************
-    **                ATTRACT  (Python edition)                         **
-    **                version: 0.3                                      **
-    ********************************************************************** """
+print """
+**********************************************************************
+**                ATTRACT  (Python edition)                         **
+**                version: 0.3                                      **
+********************************************************************** """
 
-    import locale
-    import datetime
-
-
-    #locale.setlocale(locale.LC_ALL, 'fr_FR')
-    now = datetime.datetime.now()
-    print now,"(",now.strftime("%A %B %d %Y, %H:%M"),")"
+import locale
+import datetime
 
 
-    (nbminim,lignames,minimlist,rstk) = readParams("attract.inp")
-    print "rstk = ",rstk
-    rec=Rigidbody(receptor_name)
-    lig=Rigidbody(ligand_name)
-    print "Receptor (fixed) %s  has %d atoms" %(receptor_name,rec.Size())
-    print "Ligand (mobile) %s  has %d atoms" %(ligand_name,lig.Size())
-    
-    if (options.single and options.transnb):
-        parser.error("options -s and -t are mutually exclusive")
-    
-    
-    if (options.reffile):
-        print "using reference file: %s"%options.reffile
-        ref=Rigidbody(options.reffile)
+#locale.setlocale(locale.LC_ALL, 'fr_FR')
+now = datetime.datetime.now()
+print now,"(",now.strftime("%A %B %d %Y, %H:%M"),")"
 
 
-    if (not options.single):
-        translations=Translation()
-        rotations=Rotation()
-    else:
-        translations=[[1,lig.FindCenter()]]
-        rotations=[(0,0,0)]
-        print "Single mode"
+(nbminim,lignames,minimlist,rstk) = readParams("attract.inp")
+print "rstk = ",rstk
+rec=Rigidbody(receptor_name)
+lig=Rigidbody(ligand_name)
+print "Receptor (fixed) %s  has %d particules" %(receptor_name,rec.Size())
+print "Ligand (mobile) %s  has %d particules" %(ligand_name,lig.Size())
 
-    transnb=0
-    if (options.transnb!=None):
-        trans=Rigidbody("translat.dat")
-        co=trans.GetCoords(options.transnb)
-        translations=[[options.transnb+1,co]]
-        transnb=options.transnb
-
-    
-    for trans in translations:
-        transnb+=1
-        print "@@@@@@@ Translation nb %i @@@@@@@" %(transnb)
-        rotnb=0
-        for rot in rotations:
-            rotnb+=1
-            print "----- Rotation nb %i -----"%rotnb
-            minimcounter=0
-            ligand=Rigidbody(lig)
-
-            center=ligand.FindCenter()
-            ligand.Translate(Coord3D()-center)
-            AttractEuler(ligand,ligand,rot[0],rot[1],rot[2])
-            ligand.Translate(trans[1])
-
-            for minim in minimlist:
-                minimcounter+=1
-                cutoff=math.sqrt(minim['squarecutoff'])
-                niter=minim['maxiter']
-                print "{{ minimization nb %i of %i ; cutoff=%.2f(A) ; maxiter=%d"%(minimcounter,nbminim,cutoff,niter)
-
-                rstk=minim['rstk']
-                X=SingleMinim(rec,ligand,cutoff,niter,rstk)
-
-                #PrintVect(X)
-
-                output=Rigidbody(ligand)
-                center=output.FindCenter()
-                output.Translate(Coord3D()-center)
-                AttractEuler(output ,output, X[0], X[1], X[2])
-                output.Translate(Coord3D(X[3],X[4],X[5]))
-                output.Translate(center)
-
-                
-                ligand=Rigidbody(output)
-                #WritePDB(output, "out.pdb")
-                #vec=output.GetMatrix()
+if (options.single and options.transnb):
+    parser.error("options -s and -t are mutually exclusive")
 
 
-                #testout=rigidXstd_vector(lig, vec)
+if (options.reffile):
+    print "using reference file: %s"%options.reffile
+    ref=Rigidbody(options.reffile)
 
 
-            if (options.reffile):
-                rms=Rmsd(ref.CA(), output.CA())
-            else:
-                rms="XXXX"
+
+if (not options.single):
+    #systematic docking with default translations and rotations
+    translations=Translation()
+    rotations=Rotation()
+else: #(single mode)
+    #creates dummy translation and rotation
+    translations=[[1,lig.FindCenter()]]
+    rotations=[(0,0,0)]
+    print "Single mode"
 
 
-            #calculates true energy, and rmsd if possible
-            FF=AttractForceField(ligand, rec, 500)
-            print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
-            print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, FF.Energy(), str(rms))
-            output.PrintMatrix()
+# option -t used: define the selected translation
+transnb=0
+if (options.transnb!=None):
+    trans=Rigidbody("translat.dat")
+    co=trans.GetCoords(options.transnb)
+    translations=[[options.transnb+1,co]]
+    transnb=options.transnb
 
 
-            
+# core attract algorithm
+for trans in translations:
+    transnb+=1
+    print "@@@@@@@ Translation nb %i @@@@@@@" %(transnb)
+    rotnb=0
+    for rot in rotations:
+        rotnb+=1
+        print "----- Rotation nb %i -----"%rotnb
+        minimcounter=0
+        ligand=Rigidbody(lig)
+
+        center=ligand.FindCenter()
+        ligand.Translate(Coord3D()-center) #set ligand center of mass to 0,0,0
+        AttractEuler(ligand,ligand,rot[0],rot[1],rot[2])
+        ligand.Translate(trans[1])
+
+        for minim in minimlist:
+            minimcounter+=1
+            cutoff=math.sqrt(minim['squarecutoff'])
+            niter=minim['maxiter']
+            print "{{ minimization nb %i of %i ; cutoff= %.2f (A) ; maxiter= %d"%(minimcounter,nbminim,cutoff,niter)
 
 
-    now = datetime.datetime.now()
-    print "Finished at: ",now.strftime("%A %B %d %Y, %H:%M")
+            #performs single minimization on receptor and ligand, given maxiter=niter and restraint constant rstk
+            forcefield=AttractForceField(rec,ligand,cutoff)
+            rstk=minim['rstk']  #restraint force
+            if rstk>0.0:
+                forecefield.SetRestraint(rstk)
+            lbfgs_minimizer=Lbfgs(forcefield)
+            lbfgs_minimizer.minimize(niter)
+            X=lbfgs_minimizer.GetMinimizedVars()  #optimized freedom variables after minimization
 
 
-if __name__=="__main__":
-    main()
+            #TODO: test and use CenterToOrigin() !
+            output=Rigidbody(ligand)
+            center=output.FindCenter()
+            output.Translate(Coord3D()-center)
+            AttractEuler(output ,output, X[0], X[1], X[2])
+            output.Translate(Coord3D(X[3],X[4],X[5]))
+            output.Translate(center)
+
+            ligand=Rigidbody(output)
+
+
+        #computes RMSD if reference structure available
+        if (options.reffile):
+            rms=Rmsd(ref.CA(), output.CA())
+        else:
+            rms="XXXX"
+
+
+        #calculates true energy, and rmsd if possible
+        #with the new ligand position
+        forcefield=AttractForceField(ligand, rec, 500)
+        print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
+        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, FF.Energy(), str(rms))
+        output.PrintMatrix()
+
+
+
+now = datetime.datetime.now()
+print "Finished at: ",now.strftime("%A %B %d %Y, %H:%M")
+
 
