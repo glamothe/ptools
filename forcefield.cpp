@@ -208,9 +208,9 @@ double AttractForceField::LennardJones()
         uint ir = plist[iter].atrec;
         uint jl = plist[iter].atlig;
         assert(m_rAtomCat[ir] >= 0);
-        assert(m_rAtomCat[ir] <= 39);
+        assert(m_rAtomCat[ir] < m_rad.size());
         assert(m_lAtomCat[jl] >= 0);
-        assert(m_lAtomCat[jl] <= 39);
+        assert(m_lAtomCat[jl] < m_rad.size());
 
         double alen = m_ac[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
         double rlen = m_rc[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
