@@ -23,7 +23,7 @@ class Lbfgs
             Lbfgs(ForceField& toMinim);
             ~Lbfgs(); 
             void minimize(int maxiter);
-            Vdouble GetX() {return x;}; // Quel nom donner a cette fonction ? 
+            Vdouble GetMinimizedVars() const {return x;};
 
 
 
