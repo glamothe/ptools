@@ -18,7 +18,7 @@ typedef std::vector<double> Vdouble;
 #define Debug(func)
 #endif
 
-typedef double mytype;
+//typedef double mytype;
 
 
 /*! \brief 2-dimensional Object Oriented array 
@@ -33,6 +33,7 @@ typedef double mytype;
 *  speed test are needed, but it should be reasonably fast for most daily usages
 *  TODO: make speed tests ...
 */
+template <class mytype>
 class Array2D
 {
 public:
