@@ -25,7 +25,7 @@ public:
     //virtual double Function()=0; //simply return the function value for
     virtual double Function(const Vdouble&)=0;
     virtual void Derivatives(const Vdouble&, Vdouble&)=0; ///< analytical derivative
-    virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta); ///< numerical derivative for testing purpose
+    virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta, bool print=false); ///< numerical derivative for testing purpose
     virtual uint ProblemSize()=0;
 
     virtual ~ForceField(){};
@@ -166,26 +166,30 @@ public:
 
     AttractForceField2(std::string paramsFileName, AttractRigidbody& rec, AttractRigidbody& lig, double cutoff);
     double Function(const Vdouble&);
-    void Derivatives(const Vdouble&, Vdouble&){}; ///< analytical derivative
-    uint ProblemSize(){return 0;};
-    double nonbon8(AttractRigidbody& rec, AttractRigidbody& lig);
+    void Derivatives(const Vdouble&, Vdouble&); ///< analytical derivative
+    uint ProblemSize(){return 6;};
+    double nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, bool print=false);
 
 
 private:
 
     //private variables
 
-	AttractRigidbody m_ligand, m_receptor;
+    Rigidbody m_ligand, m_receptor;
 
     Vuint m_rAtomCat; ///< receptor atom category (std vector)
 
     double rbc[31][31];
     double abc[31][31];
     int iflo[31][31];  //? read from mkbest1.par (forcefield parameters)
-    int ipon[3000][3000];
+    
+    Array2D<int> ipon;
+    //int ipon[3000][3000];
 
-    double rc[3000][3000];  //TODO: should be translated into clean std::vectors
-    double ac[3000][3000];
+    Array2D<double> rc;
+    //double rc[3000][3000];  //TODO: should be translated into clean std::vectors
+    Array2D<double> ac;
+//     double ac[3000][3000];
 
 
     uint m_ligSize ; ///<ligand size

@@ -112,7 +112,7 @@ AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& li
 
 
 
-void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta)
+void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool print)
 {
 
     for (uint j=0; j<ProblemSize(); j++)
@@ -133,6 +133,16 @@ void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta)
         delta[j]=diff;
     }
 
+   if (print)
+   {
+      std::cout << "Numerical derivatives: \n";
+      for (uint i=0; i<ProblemSize(); i++)
+      {
+      std::cout << delta[i] << "  " ;
+      }
+      std::cout << "\n";
+
+   }
 }
 
 
@@ -560,13 +570,19 @@ void AttractForceField::ShowEnergyParams()
 //     AttractForceField2 implementation
 ////////////////////////////////////////////////////////////////
 
-AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody & rec, AttractRigidbody & lig, double cutoff)
-        : m_ligand(lig),
-          m_receptor(rec),
-          m_pairlist(rec,lig,cutoff)
+AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody& rec, AttractRigidbody& lig, double cutoff)
+         : m_ligand(lig),
+           m_receptor(rec),
+           m_pairlist(m_receptor,m_ligand,cutoff)
 
 {
 
+
+//    return;
+
+    ipon = Array2D<int>(3000,3000);
+    ac = Array2D<double>(3000,3000);
+    rc = Array2D<double>(3000,3000);
     m_ligSize = lig.Size();
     m_recSize = rec.Size();
 
@@ -625,17 +641,24 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody & 
             double rbc2 = rbc[ii][jj]*rbc[ii][jj];
             double rbc6 = rbc2*rbc2*rbc2;
             double rbc8 = rbc6*rbc2;
-            rc[i][j] = abc[ii][jj] * rbc8; //*pow(rbc[ii][jj],8); this optimization modifies the final result
-            ac[i][j] = abc[ii][jj] * rbc6; //*pow(rbc[ii][jj],6); *but* the difference between the 2 c++ versions
+            rc(i,j) = abc[ii][jj] * rbc8; //*pow(rbc[ii][jj],8); this optimization modifies the final result
+            ac(i,j) = abc[ii][jj] * rbc6; //*pow(rbc[ii][jj],6); *but* the difference between the 2 c++ versions
             // is less than between C++(any version) and fortran
             // by the way pow() is very very slow. We should check why...
             assert(ii<=30);
             assert(jj<=30);
-            ipon[i][j] = iflo[ii][jj] ;
-            assert(ipon[i][j]==1 || ipon[i][j]==-1);
+            ipon(i,j) = iflo[ii][jj] ;
+            assert(ipon(i,j)==1 || ipon(i,j)==-1);
         }
     }
 
+
+	Rigidbody centeredlig(lig);
+	Coord3D com = lig.FindCenter();
+	m_ligcenter.push_back(com);
+	centeredlig.CenterToOrigin();
+	m_centeredligand.push_back(centeredlig);
+	m_movedligand.push_back(centeredlig);
 
 
 }
@@ -643,10 +666,37 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody & 
 
 double AttractForceField2::Function(const Vdouble& stateVars )
 {
+    assert(stateVars.size()==6);
+    assert(m_centeredligand.size() >=1);
+    assert(m_movedligand.size() >=1);
     AttractEuler(m_centeredligand[0], m_movedligand[0], stateVars[0], stateVars[1], stateVars[2]);
     m_movedligand[0].Translate(m_ligcenter[0]);
     m_movedligand[0].Translate(Coord3D(stateVars[3],stateVars[4],stateVars[5]));
-    return nonbon8(m_receptor, m_movedligand[0]);
+//     return nonbon8(m_receptor, m_movedligand[0]);
+
+}
+
+
+
+
+/*! \brief returns the analytical derivatives of the forcefield 2
+*
+*   input: 
+*   Vdouble & stateVars: determines how the molecules are moved by the minimizer
+*   (the minimizer only works on a linear Vdouble holding the free minimization variables)
+*   output:
+*   this function puts the derivative of the energy with respect to variable 1 to 6 (in case of 6 degrees of
+*   freedom. 3 trans + 3 rotations) into the 'delta' Vdouble array
+*/
+void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
+{
+//delta[0] to delta[2] : rotations
+//delta[3] to delta[5] : translation
+
+Trans(0, delta, 3, true);
+Rota(0, stateVars[0], stateVars[1], stateVars[2], delta, 0, true );
+
+
 }
 
 
@@ -655,7 +705,7 @@ double AttractForceField2::Function(const Vdouble& stateVars )
 *   translated from fortran file nonbon8.f
 *   TODO: add comments in the code, remove debug instructions
 */
-double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig)
+double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, bool print)
 {
 
     double enon = 0.0;
@@ -676,9 +726,9 @@ double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig)
         uint j = atpair.atlig ;
         assert(i<3000);
         assert(j<3000);
-        double alen = ac[i][j];
-        double rlen = rc[i][j];
-        int ivor = ipon[i][j];
+        double alen = ac(i,j);
+        double rlen = rc(i,j);
+        int ivor = ipon(i,j);
         assert(ivor==1 || ivor==-1);
 
 
@@ -738,8 +788,8 @@ double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig)
 
     }
 
-    std::cout << "vlj  coulomb: " << enon << "  " << epote << "\n";
-    return enon;
+    if (print) std::cout << "vlj  coulomb: " << enon << "  " << epote << "\n";
+    return enon+epote;
 }
 
 
