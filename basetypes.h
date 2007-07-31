@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <cassert>
-#include "boost/shared_array.hpp"
+#include <boost/shared_array.hpp>
 
 
 typedef std::vector<int> Vint;
