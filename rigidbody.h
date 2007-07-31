@@ -20,6 +20,8 @@ class Rigidbody
 {
 
 private:
+
+    /* don't forget the constructors if you add some private data ! */
     std::vector<Atom> mAtoms; ///< vector of Atoms
     std::vector<Coord3D> mForces; ///< forces for each atom
     double mat44[4][4]; ///< rotation/tranlation matrix
@@ -114,8 +116,10 @@ public:
     /// selection shortcut for C-alpha
     AtomSelection CA();
 
-    /// operator =
-    Rigidbody& operator= (const Rigidbody& rig);
+    // operator =
+    // TODO: one should check but this operator doesn't seem to be that necessary
+    // (the compilers can use Rigidbody(const Rigidbody&) instead)
+    //Rigidbody& operator= (const Rigidbody& rig);
 
     /// operator +
     Rigidbody operator+ (const Rigidbody& rig);
@@ -152,6 +156,7 @@ class AttractRigidbody: public Rigidbody
 {
 public:
     AttractRigidbody(const Rigidbody & rig) ; ///< initilize a new object from a regular Rigidbody object
+    
 
     uint getAtomTypeNumber(uint i) const
     {
@@ -180,12 +185,10 @@ private:
     std::vector<Coord3D> m_forces ;
 
 
-
 friend class AttractForceField2;
 
 
 };  //end class AttractRigid
-
 
 
 

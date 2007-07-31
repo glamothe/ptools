@@ -7,9 +7,9 @@ namespace PTools{
 
 
 Rigidbody::Rigidbody()
-{
-    ResetMatrix();
-}
+ {
+     ResetMatrix();
+ }
 
 
 
@@ -20,19 +20,20 @@ Rigidbody::Rigidbody(std::string filename)
 }
 
 
-Rigidbody::Rigidbody(const Rigidbody& model)
-{
+ Rigidbody::Rigidbody(const Rigidbody& model)
+ {
 //this copy constructor is needed because double[4][4] is not
 // automatically copied with the default copy constructor
 
     this->mAtoms = model.mAtoms;
     this->mForces = model.mForces;
 
-//copy of the matrix:
-    for (uint i=0; i<4; i++)
-        for (uint j=0; j<4; j++)
-            this->mat44[i][j]=model.mat44[i][j];
 
+//copy of the matrix:
+//Note: very naive way. May be slower than memcpy() or copy using pointers (?)
+     for (uint i=0; i<4; i++)
+         for (uint j=0; j<4; j++)
+             this->mat44[i][j]=model.mat44[i][j];
 
 }
 
@@ -164,10 +165,10 @@ AtomSelection Rigidbody::CA() {
 }
 
 /// operator =
-Rigidbody& Rigidbody::operator=(const Rigidbody& rig) {
-    mAtoms = rig.mAtoms;
-    return *this;
-}
+// Rigidbody& Rigidbody::operator=(const Rigidbody& rig) {
+//     mAtoms = rig.mAtoms;
+//     return *this;
+// }
 
 /// operator +
 Rigidbody Rigidbody::operator+(const Rigidbody& rig) {
