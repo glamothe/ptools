@@ -4,32 +4,75 @@
 
 #include <vector>
 #include <iostream>
+#include <cassert>
+#include "boost/shared_array.hpp"
+
 
 typedef std::vector<int> Vint;
 typedef std::vector<uint> Vuint;
 typedef std::vector<double> Vdouble;
 
+#ifndef NDEBUG
+#define Debug(func) func
+#else
+#define Debug(func)
+#endif
+
+typedef double mytype;
 
 
+/*! \brief 2-dimensional Object Oriented array 
+*
+*  this class provides a 2-dimensional OO array. Memory is managed automatically.
+*  The size of the array cannot be modified after creation.
+*  It should be compatible with functions that needs raw pointers (with few modifications of the object).
+*  WARNING: the assignemnt like 'Array2D array2=array1;' or 'Array2D array2(array1)' leads to two objects
+*  sharing the same memory (this reduce the cost of copying and transmission by value,
+*  like for Python objects). To make array2 independant of array1 (deep copy), use: array2.detach() after the
+*  copy.
+*  speed test are needed, but it should be reasonably fast for most daily usages
+*  TODO: make speed tests ...
+*/
+class Array2D
+{
+public:
+	Array2D(int row, int columns)
+	:m_rows(row), 
+	m_columns(columns)
+	{
+		m_size = row*columns;
+		msa_data  = boost::shared_array<mytype>( new mytype[m_size]);
+	}
 
-// #warning "basetype.h: never keep that !!!!!!"
-// struct Vdouble: public std::vector<double>
-// {
-// 
-// public:
-//     Vdouble(int sz):std::vector<double>(sz){};
-//     Vdouble():std::vector<double>(){};
-//     //Vdouble(const Vdouble& dbl){std::cout << "OPERATEUR DE RECOPIE"; }
-// 
-// 
-//     uint size() const
-//     {
-//         std::cout<<"##########################\n##########\n size Appelé !!!\n";
-//         return std::vector<double>::size();
-//     }
-// 
-// 
-// };
+	/// index operator (fortran-like syntax). a(0,2) gives raw 1, column 3.
+	mytype& operator() (int r, int c)
+	{
+		assert(r<m_rows);
+		assert(c<m_columns);
+		return msa_data[r*m_columns+c];
+        }
+
+	const void * id() {return (void *) &msa_data[0]; }
+	void detach()
+	{
+		mytype * olddata = msa_data.get();
+		mytype * newdata = new mytype[m_size];
+		memcpy( newdata, olddata, m_size*sizeof(mytype) );
+		msa_data=boost::shared_array<mytype>(newdata);
+	}
+
+
+private:
+	boost::shared_array<mytype> msa_data;
+	int m_rows;
+	int m_columns;
+	size_t m_size;
+
+
+//friend void Array2D_deepCopy(const Array2D & src, Array2D & dest);
+
+} ;
+
 
 
 
