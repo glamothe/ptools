@@ -34,7 +34,7 @@ void Lbfgs::minimize(int maxiter)
 
 
     int n = objToMinimize.ProblemSize();
-    std::cout  << "Problem size: " << n << std::endl;
+    std::cout  << "number of free variables for the minimizer: " << n << std::endl;
 
 
     Vdouble l(n);
