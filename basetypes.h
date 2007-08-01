@@ -21,7 +21,7 @@ typedef std::vector<double> Vdouble;
 //typedef double mytype;
 
 
-/*! \brief 2-dimensional Object Oriented array 
+/*! \brief 2-dimensional Object Oriented array
 *
 *  this class provides a 2-dimensional OO array. Memory is managed automatically.
 *  The size of the array cannot be modified after creation.
@@ -37,37 +37,40 @@ template <class mytype>
 class Array2D
 {
 public:
-	Array2D(int row, int columns)
-	:m_rows(row), 
-	m_columns(columns)
-	{
-		m_size = row*columns;
-		msa_data  = boost::shared_array<mytype>( new mytype[m_size]);
-	}
+    Array2D(){};
+    Array2D(int row, int columns)
+            :m_rows(row),
+            m_columns(columns)
+    {
+        m_size = row*columns;
+        msa_data  = boost::shared_array<mytype>( new mytype[m_size]);
+    }
 
-	/// index operator (fortran-like syntax). a(0,2) gives raw 1, column 3.
-	mytype& operator() (int r, int c)
-	{
-		assert(r<m_rows);
-		assert(c<m_columns);
-		return msa_data[r*m_columns+c];
-        }
+    /// index operator (fortran-like syntax). a(0,2) gives raw 1, column 3.
+    mytype& operator() (int r, int c)
+    {
+        assert(r<m_rows);
+        assert(c<m_columns);
+        return msa_data[r*m_columns+c];
+    }
 
-	const void * id() {return (void *) &msa_data[0]; }
-	void detach()
-	{
-		mytype * olddata = msa_data.get();
-		mytype * newdata = new mytype[m_size];
-		memcpy( newdata, olddata, m_size*sizeof(mytype) );
-		msa_data=boost::shared_array<mytype>(newdata);
-	}
+    const void * id() {
+        return (void *) &msa_data[0];
+    }
+    void detach()
+    {
+        mytype * olddata = msa_data.get();
+        mytype * newdata = new mytype[m_size];
+        memcpy( newdata, olddata, m_size*sizeof(mytype) );
+        msa_data=boost::shared_array<mytype>(newdata);
+    }
 
 
 private:
-	boost::shared_array<mytype> msa_data;
-	int m_rows;
-	int m_columns;
-	size_t m_size;
+    boost::shared_array<mytype> msa_data;
+    int m_rows;
+    int m_columns;
+    size_t m_size;
 
 
 //friend void Array2D_deepCopy(const Array2D & src, Array2D & dest);
