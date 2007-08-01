@@ -111,10 +111,14 @@ AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& li
 }
 
 
-
+static bool numerical_warning=false;
 void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool print)
 {
 
+if (!numerical_warning)
+{ std::cout << "Warning: using numerical derivatives in production may lead to poor performances\n" ;
+numerical_warning=true;
+}
     for (uint j=0; j<ProblemSize(); j++)
     {
 
@@ -621,9 +625,6 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody& r
     }
 
 
-    //extractExtra(lig,  m_lAtomCategory, m_lAtomCharge);
-    //extractExtra(rec, m_rAtomCategory, m_rAtomCharge);
-
 
     for (uint jindex=0; jindex < lig.m_activeAtoms.size(); jindex++)
     {
@@ -672,7 +673,7 @@ double AttractForceField2::Function(const Vdouble& stateVars )
     AttractEuler(m_centeredligand[0], m_movedligand[0], stateVars[0], stateVars[1], stateVars[2]);
     m_movedligand[0].Translate(m_ligcenter[0]);
     m_movedligand[0].Translate(Coord3D(stateVars[3],stateVars[4],stateVars[5]));
-//     return nonbon8(m_receptor, m_movedligand[0]);
+    return nonbon8(m_receptor, m_movedligand[0]);
 
 }
 
@@ -693,9 +694,15 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 //delta[0] to delta[2] : rotations
 //delta[3] to delta[5] : translation
 
-Trans(0, delta, 3, true);
-Rota(0, stateVars[0], stateVars[1], stateVars[2], delta, 0, true );
+Trans(0, delta, 3, false);
+Rota(0, stateVars[0], stateVars[1], stateVars[2], delta, 0, false );
 
+//print the delta vector:
+// for (uint i=0; i<delta.size(); i++)
+// {
+// 	std::cout <<  delta[i] << "  " ;
+// }
+// std::cout << std::endl;
 
 }
 

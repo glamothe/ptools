@@ -155,6 +155,7 @@ class TestForceField: public ForceField
 
 
 
+///////////////////////////////////////////////////////
 /*!  \brief Attract forcefield version 2
 *
 *   new forcefield with saddle point and pairwise energy
@@ -175,7 +176,7 @@ private:
 
     //private variables
 
-    Rigidbody m_ligand, m_receptor;
+    AttractRigidbody m_ligand, m_receptor;
 
     Vuint m_rAtomCat; ///< receptor atom category (std vector)
 
