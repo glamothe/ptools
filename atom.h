@@ -25,12 +25,12 @@ private:
     std::string mExtra; ///< extra data
 
 public:
-    Atomproperty(){ mAtomType="X", ///< default constructor
-                                  mAtomElement="X",
-                                  mResidType="XXX",
-                                  mChainId="X",
-                                  mResidId=1,
-                                  mAtomId=1,
+    Atomproperty(){ mAtomType="X"; ///< default constructor
+                                  mAtomElement="X";
+                                  mResidType="XXX";
+                                  mChainId="X";
+                                  mResidId=1;
+                                  mAtomId=1;
                                   mAtomCharge=0.0;
     };
 
