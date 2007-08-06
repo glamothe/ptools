@@ -47,7 +47,6 @@ public:
     ///  get the Atom of index i (with direct access to modifications)
     Atom& GetAtomReference(uint pos)
     {
-        assert(pos>=0);
         assert(pos<Size());
         return mAtoms[pos];
     };
@@ -79,7 +78,6 @@ public:
     /// returns the coordinates of atom i
     Coord3D GetCoords(uint i) const
     {
-        assert(i>=0);
         assert(i<Size());
         return mAtoms[i].GetCoords();
     };
