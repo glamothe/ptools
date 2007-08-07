@@ -160,6 +160,28 @@ class TestForceField: public ForceField
 *
 *   new forcefield with saddle point and pairwise energy
 */
+
+struct AttFF2_params
+{
+Array2D<int> ipon;
+Array2D<double> rc;
+    //double rc[3000][3000];  //TODO: should be translated into clean std::vectors
+Array2D<double> ac;
+//     double ac[3000][3000];
+
+double rbc[31][31];
+double abc[31][31];
+int iflo[31][31];  //? read from mkbest1.par (forcefield parameters)
+
+//AttFF2_params() {ipon=Array2D<int>(3000,3000); ac=Array2D<double>(3000,3000); rc=Array2D<double>(3000,3000); }
+
+};
+
+
+
+
+
+
 class AttractForceField2 : public ForceField
 {
 
@@ -176,21 +198,19 @@ private:
 
     //private variables
 
+
+
+
     AttractRigidbody m_ligand, m_receptor;
 
     Vuint m_rAtomCat; ///< receptor atom category (std vector)
 
-    double rbc[31][31];
-    double abc[31][31];
-    int iflo[31][31];  //? read from mkbest1.par (forcefield parameters)
+ 
     
-    Array2D<int> ipon;
+    
     //int ipon[3000][3000];
 
-    Array2D<double> rc;
-    //double rc[3000][3000];  //TODO: should be translated into clean std::vectors
-    Array2D<double> ac;
-//     double ac[3000][3000];
+    
 
 
     uint m_ligSize ; ///<ligand size
