@@ -17,7 +17,7 @@ struct Coord3D
     Coord3D(const Coord3D& old) {x=old.x; y=old.y; z=old.z;};
 
     inline Coord3D & operator= (const Coord3D &);
-    Coord3D&  Normalize(); ///< Normalize vector to unity
+    Coord3D&  Normalize(); ///< Normalize vector to unity (in place)
 
 };
 

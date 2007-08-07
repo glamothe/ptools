@@ -37,8 +37,8 @@ public:
         mAtomCharge=0.0;
     };
 
-    /// return atom type const
-    std::string GetType()  {return mAtomType;}; 
+    /// return atom type 
+    std::string GetType() const  {return mAtomType;}; 
 
     /// define atom type
     void SetType(std::string newtype) { mAtomType = newtype;}; 
