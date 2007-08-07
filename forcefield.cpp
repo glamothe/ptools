@@ -115,10 +115,11 @@ static bool numerical_warning=false;
 void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool print)
 {
 
-if (!numerical_warning)
-{ std::cout << "Warning: using numerical derivatives in production may lead to poor performances\n" ;
-numerical_warning=true;
-}
+    if (!numerical_warning)
+    {
+        std::cout << "Warning: using numerical derivatives in production may lead to poor performances\n" ;
+        numerical_warning=true;
+    }
     for (uint j=0; j<ProblemSize(); j++)
     {
 
@@ -137,16 +138,16 @@ numerical_warning=true;
         delta[j]=diff;
     }
 
-   if (print)
-   {
-      std::cout << "Numerical derivatives: \n";
-      for (uint i=0; i<ProblemSize(); i++)
-      {
-      std::cout << delta[i] << "  " ;
-      }
-      std::cout << "\n";
+    if (print)
+    {
+        std::cout << "Numerical derivatives: \n";
+        for (uint i=0; i<ProblemSize(); i++)
+        {
+            std::cout << delta[i] << "  " ;
+        }
+        std::cout << "\n";
 
-   }
+    }
 }
 
 
@@ -482,36 +483,36 @@ void AttractForceField::ShowEnergyParams()
 //                         double* ac, double* rc,                      //  precalculated two dimensional arrays. Beware of the column major issue
 //                         double* LJ, double* coulomb                  //  return of the function
 //                       );
-// 
-// 
+//
+//
 // }
 
 
 
 // double AttractForceField::fortranEnergy()
 // {
-// 
-// 
+//
+//
 // // linear array of receptor coordinates
 //     std::vector <double> recCoords;
-// 
-// 
+//
+//
 //     for (uint i=0; i <m_receptor.Size(); i++)
 //     {
 //         Coord3D co ( m_receptor.GetCoords(i) );
 //         recCoords.push_back(co.x);
 //         recCoords.push_back(co.y);
 //         recCoords.push_back(co.z);
-// 
+//
 //     }
-// 
-// 
-// 
+//
+//
+//
 //     double LJ=0.0;
 //     double coulomb=0.0;
-// 
-// 
-// 
+//
+//
+//
 // // linear array of ligand coordinates
 //     std::vector <double> ligCoords;
 //     for (uint i=0; i < m_ligand.Size(); i++)
@@ -521,49 +522,49 @@ void AttractForceField::ShowEnergyParams()
 //         ligCoords.push_back(co.y);
 //         ligCoords.push_back(co.z);
 //     }
-// 
+//
 //     int r = m_receptor.Size();
 //     std::cout << "m_receptor size: " << r << "\n" ;
 //     int l = m_ligand.Size();
-// 
-// 
+//
+//
 //     Vint ligplist; //ligand atoms in the pairlist
 //     Vint recplist; //recetor atoms
 //     int plistsize = plist.Size();
-// 
+//
 //     for (int i=0; i <  plistsize; i++)
 //     {
-// 
+//
 //         ligplist.push_back( plist[i].atlig ) ;
 //         recplist.push_back( plist[i].atrec ) ;
 //     }
-// 
-// 
-// 
-// 
+//
+//
+//
+//
 //     std::vector<int> rAtomCat;
 //     std::vector<int> lAtomCat;
-// 
+//
 //     for (uint i=0; i<m_rAtomCat.size(); i++)
 //         rAtomCat.push_back(m_rAtomCat[i]);
-// 
-// 
-// 
+//
+//
+//
 //     for (uint i=0; i<m_lAtomCat.size(); i++)
 //         lAtomCat.push_back(m_lAtomCat[i]);
-// 
+//
 //     std::cout << "taille pairlist: " << plistsize << "\n";
-// 
-// 
+//
+//
 // //     nonbon8_(  &recCoords[0],&r, &ligCoords[0], &l,  //
 // //                &rAtomCat[0], &lAtomCat[0],     //
 // //                &m_rAtomCharge[0], &m_lAtomCharge[0], //
 // //                &recplist[0], &ligplist[0], &plistsize, //
 // //                (double*) m_ac,(double*) m_rc, //
 // //                &LJ, &coulomb) ;
-// 
+//
 //     return LJ+coulomb;
-// 
+//
 // }
 
 
@@ -574,92 +575,99 @@ void AttractForceField::ShowEnergyParams()
 //     AttractForceField2 implementation
 ////////////////////////////////////////////////////////////////
 
+
+static AttFF2_params* m_params = 0;
+
 AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody& rec, AttractRigidbody& lig, double cutoff)
-         : m_ligand(lig),
-           m_receptor(rec),
-           m_pairlist(m_receptor,m_ligand,cutoff)
+        : m_ligand(lig),
+        m_receptor(rec),
+        m_pairlist(m_receptor,m_ligand,cutoff)
 
 {
 
-
-//    return;
-
-    ipon = Array2D<int>(3000,3000);
-    ac = Array2D<double>(3000,3000);
-    rc = Array2D<double>(3000,3000);
     m_ligSize = lig.Size();
     m_recSize = rec.Size();
 
 
-
-    std::ifstream mbest (filename.c_str());
-    //open(11,file=eingabe2) -> eingabe2: mbest1k.par
-    if (!mbest)
+    if (m_params==0)
     {
-        //the file cannot be opened
-        std::string msg = "Forcefield.cpp: Cannot Locate file  " + filename + "\n" ;
-        std::cout << msg ;
-        throw msg;
-    }
+        m_params=new AttFF2_params();
+
+//    return;
+
+        m_params->ipon = Array2D<int>(31,31);
+        m_params->ac = Array2D<double>(31,31);
+        m_params->rc = Array2D<double>(31,31);
 
 
-    for (uint i = 0; i<31; i++)
-        for (uint j = 0; j<31; j++)
+        std::ifstream mbest (filename.c_str());
+        //open(11,file=eingabe2) -> eingabe2: mbest1k.par
+        if (!mbest)
         {
-            mbest >> rbc[i][j] ;
-            assert(i<=30);
-            assert(j<=30);
+            //the file cannot be opened
+            std::string msg = "Forcefield.cpp: Cannot Locate file  " + filename + "\n" ;
+            std::cout << msg ;
+            throw msg;
         }
 
-    for (uint i = 0; i<31; i++)
-        for (uint j = 0; j<31; j++)
-            mbest >> abc[i][j] ;
 
-    for (uint i = 0; i<31; i++)
-    {
-        for (uint j = 0; j<31; j++)
+        for (uint i = 0; i<31; i++)
+            for (uint j = 0; j<31; j++)
+            {
+                mbest >> m_params->rbc[i][j] ;
+                assert(i<=30);
+                assert(j<=30);
+            }
+
+        for (uint i = 0; i<31; i++)
+            for (uint j = 0; j<31; j++)
+                mbest >> m_params->abc[i][j] ;
+
+        for (uint i = 0; i<31; i++)
         {
-            mbest >> iflo[i][j] ;
-            assert(iflo[i][j]==1 || iflo[i][j]==-1);
+            for (uint j = 0; j<31; j++)
+            {
+                mbest >> m_params->iflo[i][j] ;
+                assert(m_params->iflo[i][j]==1 || m_params->iflo[i][j]==-1);
+            }
+        }
+
+
+
+        for (uint jj=0; jj<31; jj++) //  jindex=0; jindex < lig.m_activeAtoms.size(); jindex++)
+        {
+//             uint j = lig.m_activeAtoms[jindex];
+//             uint jj = lig.m_atomTypeNumber[j];
+            for (uint ii=0; ii<31; ii++) //  uint iindex=0; iindex<rec.m_activeAtoms.size(); iindex++)
+            {
+
+//                 uint i = rec.m_activeAtoms[iindex];
+
+
+//                 uint ii = rec.m_atomTypeNumber[i];
+//                 assert(i<3000);
+//                 assert(j<3000);
+                double rbc2 = m_params->rbc[ii][jj]*m_params->rbc[ii][jj];
+                double rbc6 = rbc2*rbc2*rbc2;
+                double rbc8 = rbc6*rbc2;
+                m_params->rc(ii,jj) = m_params->abc[ii][jj] * rbc8; //*pow(rbc[ii][jj],8); this optimization modifies the final result
+                m_params->ac(ii,jj) = m_params->abc[ii][jj] * rbc6; //*pow(rbc[ii][jj],6); *but* the difference between the 2 c++ versions
+                // is less than between C++(any version) and fortran
+                // by the way pow() is very very slow. We should check why...
+                assert(ii<31);
+                assert(jj<31);
+                m_params->ipon(ii,jj) = m_params->iflo[ii][jj] ;
+                assert(m_params->ipon(ii,jj)==1 || m_params->ipon(ii,jj)==-1);
+            }
         }
     }
 
-
-
-    for (uint jindex=0; jindex < lig.m_activeAtoms.size(); jindex++)
-    {
-        uint j = lig.m_activeAtoms[jindex];
-        uint jj = lig.m_atomTypeNumber[j];
-        for (uint iindex=0; iindex<rec.m_activeAtoms.size(); iindex++)
-        {
-
-            uint i = rec.m_activeAtoms[iindex];
-
-
-            uint ii = rec.m_atomTypeNumber[i];
-            assert(i<3000);
-            assert(j<3000);
-            double rbc2 = rbc[ii][jj]*rbc[ii][jj];
-            double rbc6 = rbc2*rbc2*rbc2;
-            double rbc8 = rbc6*rbc2;
-            rc(i,j) = abc[ii][jj] * rbc8; //*pow(rbc[ii][jj],8); this optimization modifies the final result
-            ac(i,j) = abc[ii][jj] * rbc6; //*pow(rbc[ii][jj],6); *but* the difference between the 2 c++ versions
-            // is less than between C++(any version) and fortran
-            // by the way pow() is very very slow. We should check why...
-            assert(ii<=30);
-            assert(jj<=30);
-            ipon(i,j) = iflo[ii][jj] ;
-            assert(ipon(i,j)==1 || ipon(i,j)==-1);
-        }
-    }
-
-
-	Rigidbody centeredlig(lig);
-	Coord3D com = lig.FindCenter();
-	m_ligcenter.push_back(com);
-	centeredlig.CenterToOrigin();
-	m_centeredligand.push_back(centeredlig);
-	m_movedligand.push_back(centeredlig);
+    AttractRigidbody centeredlig(lig);
+    Coord3D com = lig.FindCenter();
+    m_ligcenter.push_back(com);
+    centeredlig.CenterToOrigin();
+    m_centeredligand.push_back(centeredlig);
+    m_movedligand.push_back(centeredlig);
 
 
 }
@@ -682,7 +690,7 @@ double AttractForceField2::Function(const Vdouble& stateVars )
 
 /*! \brief returns the analytical derivatives of the forcefield 2
 *
-*   input: 
+*   input:
 *   Vdouble & stateVars: determines how the molecules are moved by the minimizer
 *   (the minimizer only works on a linear Vdouble holding the free minimization variables)
 *   output:
@@ -694,8 +702,8 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 //delta[0] to delta[2] : rotations
 //delta[3] to delta[5] : translation
 
-Trans(0, delta, 3, false);
-Rota(0, stateVars[0], stateVars[1], stateVars[2], delta, 0, false );
+    Trans(0, delta, 3, false);
+    Rota(0, stateVars[0], stateVars[1], stateVars[2], delta, 0, false );
 
 //print the delta vector:
 // for (uint i=0; i<delta.size(); i++)
@@ -731,11 +739,13 @@ double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig,
 
         uint i = atpair.atrec ;
         uint j = atpair.atlig ;
-        assert(i<3000);
-        assert(j<3000);
-        double alen = ac(i,j);
-        double rlen = rc(i,j);
-        int ivor = ipon(i,j);
+        uint ii=rec.m_atomTypeNumber[i];
+        uint jj=lig.m_atomTypeNumber[j];
+        assert(ii<=30);
+        assert(jj<=30);
+        double alen = m_params->ac(ii,jj);
+        double rlen = m_params->rc(ii,jj);
+        int ivor = m_params->ipon(ii,jj);
         assert(ivor==1 || ivor==-1);
 
 
@@ -807,7 +817,7 @@ void AttractForceField2::Trans(uint molIndex, Vdouble & delta, uint shift,  bool
 // translational forces
 
 
-const AttractRigidbody &rig(m_movedligand[molIndex]);
+    AttractRigidbody const & rig(m_movedligand[molIndex]);
 //   In this subroutine the translational force components are calculated
     double flim = 1.0e18;
     double ftr1, ftr2, ftr3, fbetr;
@@ -884,7 +894,7 @@ void AttractForceField2::Rota(uint molIndex, double phi,double ssi, double rot, 
     crot=cos(rot);
     srot=sin(rot);
 
-    // for the x, y and z coordinates, we need 
+    // for the x, y and z coordinates, we need
     // the coordinates of the centered, non-translated molecule
 
     AttractRigidbody * pLigCentered = & m_centeredligand[molIndex] ; // pointer to the centered ligand

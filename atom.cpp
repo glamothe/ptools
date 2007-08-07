@@ -36,7 +36,7 @@ std::string Atom::ToPdbString() const
     double y = coord.y;
     double z = coord.z ;
 
-    snprintf(output,80,"ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f\n",atomnumber,atomname,residName,chainID,residnumber,x,y,z);
+    snprintf(output,80,"ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f%s\n",atomnumber,atomname,residName,chainID,residnumber,x,y,z,GetExtra().c_str());
     return (std::string) output;
 }
 
