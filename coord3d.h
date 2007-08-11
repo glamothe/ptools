@@ -33,20 +33,20 @@ inline Coord3D & Coord3D::operator= (const Coord3D & C)
 /// Define + operator : Coord3D + Coord3D
 inline Coord3D operator+ (const Coord3D& A,const Coord3D& B)
 {
-    Coord3D P;
-    P.x = A.x + B.x ;
-    P.y = A.y +  B.y ;
-    P.z = A.z + B.z ;
+    Coord3D P(A);
+    P.x += B.x ;
+    P.y += B.y ;
+    P.z += B.z ;
     return P;
 }
 
 /// define - operator : Coord3D - Coord3D
 inline Coord3D operator- (const Coord3D& A,const Coord3D& B)
 {
-    Coord3D P;
-    P.x = A.x - B.x ;
-    P.y = A.y - B.y ;
-    P.z = A.z - B.z ;
+    Coord3D P(A);
+    P.x -= B.x ;
+    P.y -= B.y ;
+    P.z -= B.z ;
     return P;
 }
 
@@ -72,10 +72,10 @@ inline double Norm2(const Coord3D & A)
 /// define * operator : Coord3D x double
 inline Coord3D operator* (const Coord3D& A, double scal)
 {
-    Coord3D P;
-    P.x = A.x * scal ;
-    P.y = A.y * scal ;
-    P.z = A.z * scal ;
+    Coord3D P(A);
+    P.x *= scal ;
+    P.y *= scal ;
+    P.z *= scal ;
     return P;
 }
 
