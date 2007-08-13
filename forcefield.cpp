@@ -595,9 +595,9 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody& r
 
 //    return;
 
-        m_params->ipon = Array2D<int>(31,31);
-        m_params->ac = Array2D<double>(31,31);
-        m_params->rc = Array2D<double>(31,31);
+//         m_params->ipon = Array2D<int>(31,31);
+//         m_params->ac = Array2D<double>(31,31);
+//         m_params->rc = Array2D<double>(31,31);
 
 
         std::ifstream mbest (filename.c_str());
@@ -650,14 +650,23 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody& r
                 double rbc2 = m_params->rbc[ii][jj]*m_params->rbc[ii][jj];
                 double rbc6 = rbc2*rbc2*rbc2;
                 double rbc8 = rbc6*rbc2;
-                m_params->rc(ii,jj) = m_params->abc[ii][jj] * rbc8; //*pow(rbc[ii][jj],8); this optimization modifies the final result
-                m_params->ac(ii,jj) = m_params->abc[ii][jj] * rbc6; //*pow(rbc[ii][jj],6); *but* the difference between the 2 c++ versions
+                m_params->rc[ii][jj] = m_params->abc[ii][jj] * rbc8; //*pow(rbc[ii][jj],8); this optimization modifies the final result
+                m_params->ac[ii][jj] = m_params->abc[ii][jj] * rbc6; //*pow(rbc[ii][jj],6); *but* the difference between the 2 c++ versions
                 // is less than between C++(any version) and fortran
                 // by the way pow() is very very slow. We should check why...
                 assert(ii<31);
                 assert(jj<31);
-                m_params->ipon(ii,jj) = m_params->iflo[ii][jj] ;
-                assert(m_params->ipon(ii,jj)==1 || m_params->ipon(ii,jj)==-1);
+                m_params->ipon[ii][jj] = m_params->iflo[ii][jj] ;
+                assert(m_params->ipon[ii][jj]==1 || m_params->ipon[ii][jj]==-1);
+
+        double alen = m_params->ac[ii][jj];
+        double rlen = m_params->rc[ii][jj];
+        double alen4 = alen*alen*alen*alen;
+        double rlen3 = rlen*rlen*rlen;
+        m_params->emin[ii][jj] = -27.0*alen4/(256.0*rlen3);
+        m_params->rmin2[ii][jj]= 4.0*rlen/(3.0*alen);
+
+                
             }
         }
     }
@@ -715,6 +724,9 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 }
 
 
+int getTotEner() {return ntotener;};
+
+
 /*! \brief Non bonded energy
 *
 *   translated from fortran file nonbon8.f
@@ -722,6 +734,8 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 */
 double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, bool print)
 {
+
+    ntotener+=1; //TODO:remove this !
 
     double enon = 0.0;
     double epote = 0.0;
@@ -743,17 +757,12 @@ double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig,
         uint jj=lig.m_atomTypeNumber[j];
         assert(ii<=30);
         assert(jj<=30);
-        double alen = m_params->ac(ii,jj);
-        double rlen = m_params->rc(ii,jj);
-        int ivor = m_params->ipon(ii,jj);
+        double alen = m_params->ac[ii][jj];
+        double rlen = m_params->rc[ii][jj];
+        int ivor = m_params->ipon[ii][jj];
         assert(ivor==1 || ivor==-1);
 
 
-        double alen4 = alen*alen*alen*alen;
-        double rlen3 = rlen*rlen*rlen;
-        double emin = -27.0*alen4/(256.0*rlen3);
-
-        double rmin2=4.0*rlen/(3.0*alen);
         double charge= rec.m_charge[i]* lig.m_charge[j];  //charge product of the two atoms
         //std::cout << "charge: " << charge << std::endl;
 
@@ -777,12 +786,12 @@ double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig,
         }
 
         //switch between minimum or saddle point
-        if (r2 < rmin2) {
+        if (r2 < m_params->rmin2[ii][jj] ) {
 
             double rr23 = rr2*rr2*rr2 ;
             double rep = rlen*rr2 ;
             double vlj = (rep-alen)*rr23;
-            enon=enon+vlj+(ivor-1)*emin ;
+            enon=enon+vlj+(ivor-1)*m_params->emin[ii][jj] ;
 
             double fb=6.0*vlj+2.0*(rep*rr23);
             Coord3D fdb = fb*dx;

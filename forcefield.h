@@ -24,7 +24,12 @@ public:
 
     //virtual double Function()=0; //simply return the function value for
     virtual double Function(const Vdouble&)=0;
-    virtual void Derivatives(const Vdouble&, Vdouble&)=0; ///< analytical derivative
+    
+    /// analytical derivative
+    virtual void Derivatives(const Vdouble& StateVars, Vdouble& delta)
+    {
+      NumDerivatives(StateVars, delta, true);
+    }
     virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta, bool print=false); ///< numerical derivative for testing purpose
     virtual uint ProblemSize()=0;
 
@@ -163,12 +168,16 @@ class TestForceField: public ForceField
 
 struct AttFF2_params
 {
-Array2D<int> ipon;
-Array2D<double> rc;
-    //double rc[3000][3000];  //TODO: should be translated into clean std::vectors
-Array2D<double> ac;
-//     double ac[3000][3000];
+int ipon[31][31];
+// Array2D<int> ipon;
+// Array2D<double> rc;
+double rc[31][31];  //TODO: should be translated into clean std::vectors
+// Array2D<double> ac;
+double ac[31][31];
 
+
+double emin[31][31];
+double rmin2[31][31];
 double rbc[31][31];
 double abc[31][31];
 int iflo[31][31];  //? read from mkbest1.par (forcefield parameters)
@@ -239,6 +248,7 @@ private:
 };
 
 
+static int ntotener=0;
 
 
 } //namespace PTools
