@@ -23,12 +23,12 @@ void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double s
 void mat44xmat44( const double mat1[4][4], const double mat2[4][4], double result[4][4] );
 //void MultMat4x4(double R1[4][4], double R2[4][4], double out[4][4]);
 
-
+///vectorial product
 void VectProd(const Coord3D& u,const Coord3D& v, Coord3D& UvectV);
 
 void printmat44(const double mat[4][4]);
 
-
+///returns the scalar product between two Coord3D object
 inline double ScalProd( const Coord3D& a, const Coord3D& b )
 {
     return a.x * b.x + a.y * b.y + a.z * b.z ;

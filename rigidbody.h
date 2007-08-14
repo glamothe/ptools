@@ -83,7 +83,7 @@ public:
     };
 
     /// define the coordinates of atom i
-    void SetCoords(uint i, Coord3D& co)
+    void SetCoords(uint i, const Coord3D& co)
     {
         mAtoms[i].SetCoords(co);
     };
@@ -176,11 +176,17 @@ public:
     std::vector<uint> m_activeAtoms; ///< list of active atoms (atoms that are taken into account for interaction)
 
 
+    ///adds a mode to the mode list
+    void addMode(VCoord3D & mode) {m_modesArray.push_back(mode);};
+
+
 
 private:
     std::vector<uint> m_atomTypeNumber ;
     std::vector<double> m_charge ;
     std::vector<Coord3D> m_forces ;
+
+    std::vector<VCoord3D> m_modesArray; ///< array of modes (normal modes)
 
 
 friend class AttractForceField2;
@@ -190,6 +196,7 @@ friend class AttractForceField2;
 
 
 
+void applyMode(AttractRigidbody & src, AttractRigidbody& dest, const std::vector<Coord3D> & mode, double scalar);
 
 
 } // end namespace PTools

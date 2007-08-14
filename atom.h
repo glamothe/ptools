@@ -10,8 +10,6 @@
 
 namespace PTools{
 
-class Rigidbody;
-
 
 class Atomproperty {
 private:
@@ -95,7 +93,7 @@ public:
     Coord3D GetCoords() const; ///< return atom coordinates
 
     /// define atom coordinates
-    inline void SetCoords(Coord3D& coords) {mCoords=coords;}; 
+    inline void SetCoords(const Coord3D& coords) {mCoords=coords;}; 
 
     /// convert atom properties and coordinates to std::string
     std::string ToString() const; 

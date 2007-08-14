@@ -271,5 +271,23 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 
 
 
+/////////////////////////////
+
+
+///apply a normal mode to an AttractRigidbody
+void applyMode(AttractRigidbody & src, AttractRigidbody& dest, const std::vector<Coord3D> & mode, double scalar){
+assert(src.Size() == dest.Size());
+assert(mode.size() == src.Size());
+for(uint i=0; i<src.Size(); i++)
+{
+    Coord3D co = src.GetCoords(i);
+    Coord3D displacment = mode[i];
+    co +=displacment*scalar;
+    dest.SetCoords(i, co);
+}
+
+
+}
+
 
 } //namespace PTools
