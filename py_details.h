@@ -1,5 +1,6 @@
 #include "pairlist.h"
 #include "ptools.h"
+#include "coord3d.h"
 
 #include <vector>
 
@@ -8,6 +9,7 @@ namespace pyplusplus{ namespace aliases{
     typedef std::vector< double > Vdouble;
     typedef std::vector< uint > Vuint ;
     typedef std::vector< int > Vint ;
+    typedef std::vector< PTools::Coord3D> VCoord3D;
     } } //pyplusplus::aliases
 
 
