@@ -344,7 +344,7 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
 *
 * Algorithm from Sippl et Stegbuchner. Computers Chem. Vol 15, No. 1, p 73-78, 1991.
 */
-Screw superpose( AtomSelection selref, AtomSelection selmob, int verbosity)
+Screw superimpose( AtomSelection selref, AtomSelection selmob, int verbosity)
 {
 
     if (selref.Size() != selmob.Size()) {
