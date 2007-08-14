@@ -4,6 +4,8 @@
 
 #include <math.h>
 #include <string>
+#include <vector>
+
 
 namespace PTools{
 
@@ -17,9 +19,15 @@ struct Coord3D
     Coord3D(const Coord3D& old) {x=old.x; y=old.y; z=old.z;};
 
     inline Coord3D & operator= (const Coord3D &);
+    inline bool operator==(const Coord3D& b) {return (b.x==x && b.y==y && b.z==z); };
     Coord3D&  Normalize(); ///< Normalize vector to unity (in place)
 
+    std::string toString(bool newline=true);
+
 };
+
+
+typedef std::vector<Coord3D> VCoord3D;
 
 /// Define = operator : Coord3D = Coord3D
 inline Coord3D & Coord3D::operator= (const Coord3D & C)
@@ -83,6 +91,14 @@ inline Coord3D operator* (const Coord3D& A, double scal)
 inline Coord3D operator* (double scal, const Coord3D& A) {
     return A * scal ;
 }
+
+
+/// define / operator : Coord3D / double
+inline Coord3D operator/ (const Coord3D& A, double d) {
+    return (1/d) * A ;
+}
+
+
 
 /// print coordinates in string
 inline std::string PrintCoord(const Coord3D& A) {
