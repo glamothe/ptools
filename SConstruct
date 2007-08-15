@@ -54,9 +54,10 @@ FFLAGS="-g"
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".",  FORTRANFLAGS="-g" )
 #common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = 'g95 -fPIC -g',  FORTRANFLAGS="-g", ENV = {'PATH' : os.environ['PATH']})
 
-#common.Append(CCFLAGS='-Wall -O2 -g -DNDEBUG')                  #fastest(?) release
-#common.Append(CCFLAGS='-Wall -O2 -g -fPIC -D_GLIBCXX_DEBUG')    #debuging
-common.Append(CCFLAGS='-Wall -O0 -g -pg -fPIC -DNDEBUG ')        #profiling
+common.Append(CCFLAGS='-Wall -O2 -DNDEBUG')                  #fastest(?) release
+#common.Append(CCFLAGS='-Wall -O2 -g -fPIC')                     #debuging normal
+#common.Append(CCFLAGS='-Wall -O2 -g -fPIC -D_GLIBCXX_DEBUG')    #debuging high (use with care !)
+#common.Append(CCFLAGS='-Wall -O0 -g -pg -fPIC -DNDEBUG ')        #profiling
 
 
 
