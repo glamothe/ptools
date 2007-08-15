@@ -276,10 +276,10 @@ void XRotation( const Rigidbody& source, Rigidbody& result, double alpha )
     for ( uint iatom = 0; iatom < source.Size(); iatom++ )
     {
         Coord3D res;
-        Coord3D vect = source.GetCoords(iatom);
+        Coord3D vect = source.mCoords[iatom];
 
         mat44xVect( rotmatrix, vect, res ) ;
-        result.SetCoords(iatom, res) ;
+        result.mCoords[iatom] = res;
 
     }
 
@@ -295,10 +295,10 @@ void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4
     for ( uint iatom = 0; iatom < source.Size(); iatom++ )
     {
         Coord3D res;
-        Coord3D vect = source.GetCoords(iatom);
+        Coord3D vect = source.mCoords[iatom];
         mat44xVect( mat, vect, res ) ;
 
-        result.SetCoords(iatom, res) ;
+        result.mCoords[iatom]=res ;
     }
 
     mat44xmat44( mat , source.mat44, result.mat44);
@@ -328,10 +328,11 @@ Attention: ne marche que si l'objet source est déjà centré
 TODO: tests !
 
 */
-void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double phi, double psi)
+void EulerZYZ(const Rigidbody & source, Rigidbody & target, double theta, double phi, double psi)
 {
 
-    std::cout << "Warning: this function does not update the mat44 matrix of rigidbody. \n";
+    std::string message =  "Warning: this function does not update the mat44 matrix of rigidbody. \n";
+    throw message;
 
 
     double ct = cos(theta);
@@ -343,19 +344,18 @@ void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double 
 
     for (uint at=0; at<source.Size(); at++)
     {
-        Coord3D vec = source.GetCoords(at);
+        const Coord3D & vec = source.mCoords[at] ;
         double x = vec.x;
         double y = vec.y;
         double z = vec.z;
 
 
-        Coord3D target;
-        target.x = ct*( sp*z + cp*(cs*x-ss*y)) -st*(cs*y+ss*x) ;
-        target.x = st*( sp*z + cp*(cs*x-ss*y)) +ct*(cs*y+ss*x) ;
-        target.z = cp*z-sp*(cs*x-ss*y) ;
+        Coord3D result;
+        result.x = ct*( sp*z + cp*(cs*x-ss*y)) -st*(cs*y+ss*x) ;
+        result.x = st*( sp*z + cp*(cs*x-ss*y)) +ct*(cs*y+ss*x) ;
+        result.z = cp*z-sp*(cs*x-ss*y) ;
 
-        cible.SetCoords(at,target) ;
-
+        target.mCoords[at] = result ;
 
     }
 
@@ -392,7 +392,7 @@ void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double s
 
     for (uint i=0; i<source.Size(); i++)
     {
-        Coord3D coords = source.GetCoords(i);
+        const Coord3D & coords = source.mCoords[i];
 
 
         double X = coords.x;
@@ -404,7 +404,7 @@ void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double s
                        xar*cssp+yar*cp+ Z*sssp,
                        -xar*ss+Z*cs);
 
-        dest.SetCoords(i,final);
+        dest.mCoords[i] = final ;
 
     }
 

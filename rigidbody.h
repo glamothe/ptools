@@ -22,7 +22,11 @@ class Rigidbody
 private:
 
     /* don't forget the constructors if you add some private data ! */
-    std::vector<Atom> mAtoms; ///< vector of Atoms
+//     std::vector<Atom> mAtoms; ///< vector of Atoms
+
+
+    std::vector<Coord3D> mCoords; ///< vector of coordinates
+
     std::vector<Coord3D> mForces; ///< forces for each atom
     double mat44[4][4]; ///< rotation/tranlation matrix
 
@@ -30,7 +34,7 @@ private:
 
  protected:
 
-
+    std::vector<Atomproperty> mAtomProp; ///< array of atom properties
 
 
 
@@ -42,31 +46,28 @@ public:
     virtual ~Rigidbody(){};
 
     /// Make a deep copy of one atom (the Atom extracted is then totally independent)
-    Atom CopyAtom(uint i) const ;
+    virtual Atom CopyAtom(uint i) const ;
 
-    ///  get the Atom of index i (with direct access to modifications)
-    Atom& GetAtomReference(uint pos)
-    {
-        assert(pos<Size());
-        return mAtoms[pos];
-    };
+//     ///  get the Atom of index i (with direct access to modifications)
+//     Atom& GetAtomReference(uint pos)
+//     {
+//         assert(pos<Size());
+//         return mAtoms[pos];
+//     };
 
-	/// const version of GetAtom
-	const Atom& GetAtom(uint pos) const
-	{
-	return mAtoms[pos];
-	}
+// 	/// const version of GetAtom
+// 	Atom GetAtom(uint pos) const
+// 	{
+//         Atom at(mAtomProp[pos],mCoords[pos]);
+// 	return at;
+// 	}
 
-    /// synonym of GetAtom
-    const Atom& operator[](uint pos) const
-    {
-        return GetAtom(pos);
-    };
+
 
     /// return number of atoms
     inline uint Size() const
     {
-        return mAtoms.size();
+        return mAtomProp.size();
     };
 
     /// add an atom to the molecule (deep copy)
@@ -76,17 +77,17 @@ public:
     void AddAtom(const Atom& at);
 
     /// returns the coordinates of atom i
-    Coord3D GetCoords(uint i) const
-    {
-        assert(i<Size());
-        return mAtoms[i].GetCoords();
-    };
+//     Coord3D GetCoords(uint i) const
+//     {
+//         assert(i<Size());
+//         return mAtoms[i].GetCoords();
+//     };
 
     /// define the coordinates of atom i
-    void SetCoords(uint i, const Coord3D& co)
-    {
-        mAtoms[i].SetCoords(co);
-    };
+//     void SetCoords(uint i, const Coord3D& co)
+//     {
+//         mAtoms[i].SetCoords(co);
+//     };
 
     /// return geometric center of all atoms
     Coord3D FindCenter() const;
@@ -133,9 +134,12 @@ public:
     virtual bool isAtomActive(uint i) const {return true;}; 
 
 
+    // here is all the friends declarations I'm not very proud of...
     friend void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot);
     friend void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4 ] );
     friend void Translate(const Rigidbody& source, Rigidbody& target, const Coord3D& trans);
+    friend void XRotation( const Rigidbody& source, Rigidbody& result, double alpha );
+    friend void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double phi, double psi);
 
     friend class AtomSelection;
 
@@ -196,7 +200,7 @@ friend class AttractForceField2;
 
 
 
-void applyMode(AttractRigidbody & src, AttractRigidbody& dest, const std::vector<Coord3D> & mode, double scalar);
+// void applyMode(AttractRigidbody & src, AttractRigidbody& dest, const std::vector<Coord3D> & mode, double scalar);
 
 
 } // end namespace PTools

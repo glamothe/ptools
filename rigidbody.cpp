@@ -25,8 +25,10 @@ Rigidbody::Rigidbody(std::string filename)
 //this copy constructor is needed because double[4][4] is not
 // automatically copied with the default copy constructor
 
-    this->mAtoms = model.mAtoms;
+//     this->mAtoms = model.mAtoms;
     this->mForces = model.mForces;
+    this->mCoords = model.mCoords;
+    this->mAtomProp = model.mAtomProp;
 
 
 //copy of the matrix:
@@ -40,14 +42,15 @@ Rigidbody::Rigidbody(std::string filename)
 
 void Rigidbody::AddAtom(const Atomproperty& at, Coord3D co)
 {
-    Atom atom(at,co);
-    mAtoms.push_back(atom);
+    mAtomProp.push_back(at);
+    mCoords.push_back(co);
 }
 
 
 Atom Rigidbody::CopyAtom(uint i) const
 {
-    return mAtoms[i];
+   Atom at(mAtomProp[i],mCoords[i]);
+   return at;
 }
 
 
@@ -64,7 +67,7 @@ Coord3D Rigidbody::FindCenter() const
     Coord3D center(0.0,0.0,0.0);
     for (uint i=0; i< this->Size() ; i++)
     {
-        center =  center + GetCoords(i);
+        center =  center + mCoords[i];
     }
     return ( (1.0/(double)this->Size())*center);
 }
@@ -82,7 +85,7 @@ void Rigidbody::CenterToOrigin()
 void Rigidbody::Translate(const Coord3D& tr)
 {
     for (uint i=0; i<this->Size(); i++)
-        this->GetAtomReference(i).Translate(tr);
+        this->mCoords[i] += tr ;
 
     //updates rotation/translation matrix:
     this->mat44[0][3]+=tr.x;
@@ -113,7 +116,7 @@ AtomSelection Rigidbody::SelectAtomType(std::string atomtype)
 
     for (uint i=0; i<Size(); i++)
     {
-        if (GetAtom(i).GetType()==atomtype)
+        if ( mAtomProp[i].GetType()==atomtype)
             newsel.AddAtomIndex(i);
     }
 
@@ -128,7 +131,7 @@ AtomSelection Rigidbody::SelectResidType(std::string residtype)
 
     for (uint i=0; i<Size(); i++)
     {
-        if (GetAtom(i).GetResidType()==residtype)
+        if (mAtomProp[i].GetResidType()==residtype)
             newsel.AddAtomIndex(i);
     }
     return newsel;
@@ -140,7 +143,7 @@ AtomSelection Rigidbody::SelectChainId(std::string chainId) {
     newsel.SetRigid(*this);
     for (uint i=0; i<Size(); i++)
     {
-        if (GetAtom(i).GetChainId()==chainId)
+        if (mAtomProp[i].GetChainId()==chainId)
             newsel.AddAtomIndex(i);
     }
     return newsel;
@@ -153,8 +156,8 @@ AtomSelection Rigidbody::SelectResRange(uint start, uint stop)
 
     for (uint i=0; i < Size(); i++)
     {
-        Atom at = GetAtom(i);
-        if (at.GetResidId() >=start && at.GetResidId() <= stop) newsel.AddAtomIndex(i);
+        Atomproperty& atp ( mAtomProp[i] );
+        if (atp.GetResidId() >=start && atp.GetResidId() <= stop) newsel.AddAtomIndex(i);
     }
     return newsel;
 }
@@ -164,18 +167,13 @@ AtomSelection Rigidbody::CA() {
     return SelectAtomType("CA");
 }
 
-/// operator =
-// Rigidbody& Rigidbody::operator=(const Rigidbody& rig) {
-//     mAtoms = rig.mAtoms;
-//     return *this;
-// }
 
 /// operator +
 Rigidbody Rigidbody::operator+(const Rigidbody& rig) {
-    Rigidbody rigFinal;
-    rigFinal.mAtoms = mAtoms;
+    Rigidbody rigFinal(*this);
     for (uint i=0; i< rig.Size() ; i++) {
-        rigFinal.mAtoms.push_back(rig.mAtoms[i]);
+        rigFinal.mCoords.push_back(rig.mCoords[i]);
+        rigFinal.mAtomProp.push_back(rig.mAtomProp[i]);
     }
     return rigFinal;
 }
@@ -251,7 +249,7 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 
     for (uint i = 0; i < Size() ; ++i)
     {
-        Atom at = GetAtom(i);
+        Atomproperty & at (mAtomProp[i]);
         std::string extra = at.GetExtra();
 
         std::istringstream iss( extra );
@@ -274,20 +272,20 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 /////////////////////////////
 
 
-///apply a normal mode to an AttractRigidbody
-void applyMode(AttractRigidbody & src, AttractRigidbody& dest, const std::vector<Coord3D> & mode, double scalar){
-assert(src.Size() == dest.Size());
-assert(mode.size() == src.Size());
-for(uint i=0; i<src.Size(); i++)
-{
-    Coord3D co = src.GetCoords(i);
-    Coord3D displacment = mode[i];
-    co +=displacment*scalar;
-    dest.SetCoords(i, co);
-}
-
-
-}
+// ///apply a normal mode to an AttractRigidbody
+// void applyMode(AttractRigidbody & src, AttractRigidbody& dest, const std::vector<Coord3D> & mode, double scalar){
+// assert(src.Size() == dest.Size());
+// assert(mode.size() == src.Size());
+// for(uint i=0; i<src.Size(); i++)
+// {
+//     Coord3D co = src.GetCoords(i);
+//     Coord3D displacment = mode[i];
+//     co +=displacment*scalar;
+//     dest.SetCoords(i, co);
+// }
+// 
+// 
+// }
 
 
 } //namespace PTools
