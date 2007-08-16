@@ -143,8 +143,8 @@ uint activerecsize = activerec.size();
                     //Atom at1 = mp_ligand->GetAtom(i);
                     //Atom at2 = mp_receptor->GetAtom(j);
 
-                    Coord3D c1 = mp_ligand->GetCoords(i) ;
-                    Coord3D c2 = mp_receptor->GetCoords(j);
+                    Coord3D c1 = mp_ligand->GetCoordsValide(i) ;
+                    Coord3D c2 = mp_receptor->GetCoordsValide(j);
                     if (Norm2(c1-c2) <= squarecutoff)
                     {
                         vectl.push_back(i);

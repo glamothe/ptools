@@ -24,18 +24,12 @@ private:
     /* don't forget the constructors if you add some private data ! */
 //     std::vector<Atom> mAtoms; ///< vector of Atoms
 
-
     std::vector<Coord3D> mCoords; ///< vector of coordinates
-
     std::vector<Coord3D> mForces; ///< forces for each atom
     double mat44[4][4]; ///< rotation/tranlation matrix
 
-
-
  protected:
-
     std::vector<Atomproperty> mAtomProp; ///< array of atom properties
-
 
 
 public:
@@ -63,6 +57,13 @@ public:
 // 	}
 
 
+        /// const version of GetAtom
+        Atomproperty const & GetAtomProperty(uint pos) const
+        {
+          return mAtomProp[pos];
+        }
+
+
 
     /// return number of atoms
     inline uint Size() const
@@ -76,18 +77,18 @@ public:
     /// add an atom to the molecule
     void AddAtom(const Atom& at);
 
-    /// returns the coordinates of atom i
-//     Coord3D GetCoords(uint i) const
-//     {
-//         assert(i<Size());
-//         return mAtoms[i].GetCoords();
-//     };
+    //returns the coordinates of atom i
+    virtual Coord3D const & GetCoordsValide(uint i) const
+    {
+        assert(i<Size());
+        return mCoords[i];
+    };
 
     /// define the coordinates of atom i
-//     void SetCoords(uint i, const Coord3D& co)
-//     {
-//         mAtoms[i].SetCoords(co);
-//     };
+     void SetCoordsValid(uint i, const Coord3D& co)
+     {
+         mCoords[i] = co ;
+     };
 
     /// return geometric center of all atoms
     Coord3D FindCenter() const;

@@ -129,7 +129,7 @@ void Rotate(Rigidbody& rigid, Matrix & mat)
     double x,y,z, X, Y, Z;
     for (uint i=0; i<rigid.Size(); i++)
     {
-        Coord3D co = rigid.GetCoords(i);
+        Coord3D co = rigid.GetCoordsValide(i);
         x= co.x;
         y= co.y;
         z= co.z;
@@ -138,7 +138,7 @@ void Rotate(Rigidbody& rigid, Matrix & mat)
         Y = x*mat(1,0) + y*mat(1,1) + z*mat(1,2) ;
         Z = x*mat(2,0) + y*mat(2,1) + z*mat(2,2) ;
 
-        rigid.SetCoords(i, Coord3D(X,Y,Z));
+        rigid.SetCoordsValid(i, Coord3D(X,Y,Z));
 
     }
 
@@ -166,9 +166,9 @@ void rigidToMatrix(const Rigidbody & rig , Array2D<double> & out)
 {
     for (uint atom=0; atom<rig.Size();atom++)
     {
-        out(atom,0) =  rig.GetCoords(atom).x;
-        out(atom,1) =  rig.GetCoords(atom).y;
-        out(atom,2) =  rig.GetCoords(atom).z;
+        out(atom,0) =  rig.GetCoordsValide(atom).x;
+        out(atom,1) =  rig.GetCoordsValide(atom).y;
+        out(atom,2) =  rig.GetCoordsValide(atom).z;
     }
 
 }

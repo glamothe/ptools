@@ -19,8 +19,8 @@ normalize = coord3D.member_function("Normalize")
 normalize.call_policies = module_builder.call_policies.return_internal_reference()
 
 rigidbody = mb.class_("Rigidbody")
-getatom = rigidbody.member_function("GetAtomReference")
-getatom.call_policies = module_builder.call_policies.return_internal_reference()
+#getatom = rigidbody.member_function("GetAtomReference")
+#getatom.call_policies = module_builder.call_policies.return_internal_reference()
 rigidbody.include()
 
 attractrigidbody=mb.class_("AttractRigidbody")
