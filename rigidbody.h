@@ -53,7 +53,7 @@ public:
 	/// const version of GetAtom
 	Atom GetAtom(uint pos) const
 	{
-        Atom at(mAtomProp[pos],mCoords[pos]);
+        Atom at(mAtomProp[pos],GetCoords(pos));
 	return at;
 	}
 
