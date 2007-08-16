@@ -49,7 +49,7 @@ void Rigidbody::AddAtom(const Atomproperty& at, Coord3D co)
 
 Atom Rigidbody::CopyAtom(uint i) const
 {
-   Atom at(mAtomProp[i],mCoords[i]);
+   Atom at(mAtomProp[i],GetCoords(i));
    return at;
 }
 

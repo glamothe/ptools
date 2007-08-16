@@ -49,12 +49,13 @@ public:
 //         return mAtoms[pos];
 //     };
 
-// 	/// const version of GetAtom
-// 	Atom GetAtom(uint pos) const
-// 	{
-//         Atom at(mAtomProp[pos],mCoords[pos]);
-// 	return at;
-// 	}
+
+	/// const version of GetAtom
+	Atom GetAtom(uint pos) const
+	{
+        Atom at(mAtomProp[pos],mCoords[pos]);
+	return at;
+	}
 
 
         /// const version of GetAtom
@@ -78,7 +79,7 @@ public:
     void AddAtom(const Atom& at);
 
     //returns the coordinates of atom i
-    virtual Coord3D const & GetCoords(uint i) const
+    virtual Coord3D GetCoords(uint i) const
     {
         assert(i<Size());
         return mCoords[i];
@@ -180,16 +181,31 @@ public:
 
     std::vector<uint> m_activeAtoms; ///< list of active atoms (atoms that are taken into account for interaction)
 
+    ///overload of the virtual function GetCoords
+    virtual Coord3D GetCoords(uint i) const
+    {
+       Coord3D t = Rigidbody::GetCoords(i) ;
+       for(uint nmode=0; nmode<m_lambdaMode.size(); nmode++)
+       {
+          t += m_modesArray[nmode][i] * m_lambdaMode[nmode];
+       }
+
+       return t;
+    }
 
     ///adds a mode to the mode list
-    void addMode(VCoord3D & mode) {m_modesArray.push_back(mode);};
-
+    void addMode(VCoord3D & mode) {m_modesArray.push_back(mode); m_lambdaMode.push_back(0.0); };
+    void applyMode(uint modenumber, double lambda){
+      assert(m_lambdaMode.size()> modenumber );
+      m_lambdaMode[modenumber] = lambda ;
+    }
 
 
 private:
     std::vector<uint> m_atomTypeNumber ;
     std::vector<double> m_charge ;
     std::vector<Coord3D> m_forces ;
+    std::vector<double> m_lambdaMode ;
 
     std::vector<VCoord3D> m_modesArray; ///< array of modes (normal modes)
 
