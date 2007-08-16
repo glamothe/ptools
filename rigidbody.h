@@ -78,7 +78,7 @@ public:
     void AddAtom(const Atom& at);
 
     //returns the coordinates of atom i
-    virtual Coord3D const & GetCoordsValide(uint i) const
+    virtual Coord3D const & GetCoords(uint i) const
     {
         assert(i<Size());
         return mCoords[i];

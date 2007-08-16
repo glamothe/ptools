@@ -101,7 +101,7 @@ AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& li
     m_reccenter = m_receptor.FindCenter();
     for (uint ilig=0; ilig<lig.Size(); ilig++)
     {
-        Coord3D atlig = lig.GetCoordsValide(ilig);
+        Coord3D atlig = lig.GetCoords(ilig);
         if (Norm2(atlig-m_reccenter) < mindist2)
         {
             mindist2 = Norm2(atlig-m_reccenter) ;
@@ -231,7 +231,7 @@ double AttractForceField::LennardJones()
         double alen = m_ac[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
         double rlen = m_rc[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
 
-        Coord3D dx = m_ligand.GetCoordsValide(jl) - m_receptor.GetCoordsValide(ir) ;
+        Coord3D dx = m_ligand.GetCoords(jl) - m_receptor.GetCoords(ir) ;
         double r2 = Norm2(dx);
 
         if (r2 < 0.001 ) r2=0.001;
@@ -261,7 +261,7 @@ double AttractForceField::Constraints()
     if (m_rstk==0.0) return 0.0;
 
     //calculates the distance between the receptor center and the ligand surface:
-    Coord3D ligRestraintCoords = m_ligand.GetCoordsValide(m_ligRestraintIndex) ;
+    Coord3D ligRestraintCoords = m_ligand.GetCoords(m_ligRestraintIndex) ;
     Coord3D vecLig2Rec = m_reccenter - ligRestraintCoords ;
 
     double ett = Norm2(vecLig2Rec) ;
@@ -302,7 +302,7 @@ double AttractForceField::Electrostatic()
 
 
 
-            Coord3D dx = m_ligand.GetCoordsValide(jl) - m_receptor.GetCoordsValide(ir) ;
+            Coord3D dx = m_ligand.GetCoords(jl) - m_receptor.GetCoords(ir) ;
             double r2 = Norm2(dx);
 
             if (r2 < 0.001 ) r2=0.001;
@@ -416,7 +416,7 @@ void AttractForceField::Rota(double phi,double ssi, double rot, Vdouble& delta,b
     for (uint i=0; i<m_ligand.Size(); i++)
     {
 
-        Coord3D coords = m_refligand.GetCoordsValide(i);
+        Coord3D coords = m_refligand.GetCoords(i);
         X = coords.x;
         Y = coords.y;
         Z = coords.z;
@@ -767,7 +767,7 @@ double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig,
         //std::cout << "charge: " << charge << std::endl;
 
 
-        Coord3D dx = rec.GetCoordsValide(i) - lig.GetCoordsValide(j);
+        Coord3D dx = rec.GetCoords(i) - lig.GetCoords(j);
         double r2 = Norm2(dx);
         if (r2 < 0.001) r2=0.001 ;
 
@@ -914,7 +914,7 @@ void AttractForceField2::Rota(uint molIndex, double phi,double ssi, double rot, 
     {
         uint atomIndex = pLigCentered->m_activeAtoms[i];
 
-        Coord3D coords = pLigCentered->GetCoordsValide(atomIndex);
+        Coord3D coords = pLigCentered->GetCoords(atomIndex);
         X = coords.x;
         Y = coords.y;
         Z = coords.z;
