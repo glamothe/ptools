@@ -71,13 +71,14 @@ for mode in modes:
             arrayOfModes.append(vcmode)
 
 
-for vcmode in arrayOfModes:
-    rig.addMode(vcmode)
+for vcmode,eigen in zip(arrayOfModes,eigens):
+    rig.addMode(vcmode,float(eigen) )
+    print "eigen: " , eigen
 
 
-for l in arange(-1,1,0.1):
-    rig.applyMode(0, l)
-    WritePDB(rig, "fich%s.red"%(l))
+for l in arange(-3,3, 0.5):
+    rig.applyMode(0, 0.01*l)
+    WritePDB(rig, "fich%s.red"%(l+3))
 
 
 
