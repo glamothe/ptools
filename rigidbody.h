@@ -9,9 +9,27 @@
 #include "coord3d.h"
 #include "atom.h"
 #include "basetypes.h"
+// #include "geometry.h"
 
 namespace PTools
 {
+
+
+namespace {  
+// anonymous namespace for copying the mat44xVect from geometry.h
+// this is a pretty ugly hack and if someone finds a better way, then please do it !
+
+   inline void mat44xVect(const double mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D& out )
+   {
+    out.x = vect.x * mat[ 0 ][ 0 ] + vect.y * mat[ 0 ][ 1 ] + vect.z * mat[ 0 ][ 2 ] + mat[ 0 ][ 3 ] ;
+    out.y = vect.x * mat[ 1 ][ 0 ] + vect.y * mat[ 1 ][ 1 ] + vect.z * mat[ 1 ][ 2 ] + mat[ 1 ][ 3 ] ;
+    out.z = vect.x * mat[ 2 ][ 0 ] + vect.y * mat[ 2 ][ 1 ] + vect.z * mat[ 2 ][ 2 ] + mat[ 2 ][ 3 ] ;
+   }
+
+}
+
+
+
 
 
 class AtomSelection; // forward declaration
@@ -28,7 +46,12 @@ private:
     std::vector<Coord3D> mForces; ///< forces for each atom
     double mat44[4][4]; ///< rotation/tranlation matrix
 
- protected:
+
+    virtual void m_hookCoords(uint i, Coord3D & co) const ; ///< private hook to give a chance for class childs to change the coordinates before rotations and translations
+
+
+
+protected:
     std::vector<Atomproperty> mAtomProp; ///< array of atom properties
 
 
@@ -82,7 +105,13 @@ public:
     virtual Coord3D GetCoords(uint i) const
     {
         assert(i<Size());
-        return mCoords[i];
+        Coord3D c = mCoords[i];  //get the unrotated-untranslated coordinates
+        m_hookCoords(i, c);  // gives a last chance to apply some modifications before translation/rotation (normal modes for example)
+
+        Coord3D t = c ; //we need an intermediate object for mat44xVect
+        mat44xVect(this->mat44, c , t);  //apply the 4x4 matrix to our internal coordinates filtered by the hook function
+
+        return t;  //finally returns the final coordinates
     };
 
     /// define the coordinates of atom i
@@ -98,6 +127,8 @@ public:
     void CenterToOrigin();
 
     void Translate(const Coord3D& tr); ///< Translate the whole object
+
+    void AttractEulerRotate(double phi, double ssi, double rot); ///< Do an euler rotation (Attract convention)
 
     /// selection : complete
     AtomSelection SelectAllAtoms();
@@ -122,7 +153,7 @@ public:
     // (the compilers can use Rigidbody(const Rigidbody&) instead)
     //Rigidbody& operator= (const Rigidbody& rig);
 
-    /// operator +
+    /// operator + : merge two Rigdibody by extending the first coordinates with the second coordinates.
     Rigidbody operator+ (const Rigidbody& rig);
 
     void ABrotate(const Coord3D& A, const Coord3D& B, double theta); ///< rotation around (AB) axis.
@@ -136,10 +167,11 @@ public:
     virtual bool isAtomActive(uint i) const {return true;}; 
 
 
+
     // here is all the friends declarations I'm not very proud of...
-    friend void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot);
+//     friend void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot);
     friend void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4 ] );
-    friend void Translate(const Rigidbody& source, Rigidbody& target, const Coord3D& trans);
+//     friend void Translate(const Rigidbody& source, Rigidbody& target, const Coord3D& trans);
     friend void XRotation( const Rigidbody& source, Rigidbody& result, double alpha );
     friend void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double phi, double psi);
 
@@ -187,17 +219,20 @@ public:
        Coord3D t = Rigidbody::GetCoords(i) ;
        for(uint nmode=0; nmode<m_lambdaMode.size(); nmode++)
        {
-          t += m_modesArray[nmode][i] * m_lambdaMode[nmode];
+          if (m_eigen[nmode]!=0.0)
+          	t += m_modesArray[nmode][i] * m_lambdaMode[nmode];
        }
 
        return t;
     }
 
     ///adds a mode to the mode list
-    void addMode(VCoord3D & mode) {m_modesArray.push_back(mode); m_lambdaMode.push_back(0.0); };
-    void applyMode(uint modenumber, double lambda){
-      assert(m_lambdaMode.size()> modenumber );
-      m_lambdaMode[modenumber] = lambda ;
+     void addMode(VCoord3D & mode, double eigen) {m_modesArray.push_back(mode); m_lambdaMode.push_back(0.0); m_eigen.push_back(eigen); };
+
+     ///ask for a certain mode to be applied before getting the coordinates
+     void applyMode(uint modenumber, double lambda){
+     assert(m_lambdaMode.size()> modenumber );
+     m_lambdaMode[modenumber] = lambda ;
     }
 
 
@@ -206,6 +241,7 @@ private:
     std::vector<double> m_charge ;
     std::vector<Coord3D> m_forces ;
     std::vector<double> m_lambdaMode ;
+    std::vector<double> m_eigen; ///< array of eigenvalues
 
     std::vector<VCoord3D> m_modesArray; ///< array of modes (normal modes)
 

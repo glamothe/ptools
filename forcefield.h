@@ -248,9 +248,6 @@ private:
 };
 
 
-static int ntotener=0;
-
-
 } //namespace PTools
 
 

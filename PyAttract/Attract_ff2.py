@@ -243,7 +243,7 @@ for trans in translations:
 
         center=ligand.FindCenter()
         ligand.Translate(Coord3D()-center) #set ligand center of mass to 0,0,0
-        AttractEuler(ligand,ligand,rot[0],rot[1],rot[2])
+        ligand.AttractEulerRotate(rot[0],rot[1],rot[2])
         ligand.Translate(trans[1])
 
         for minim in minimlist:
@@ -267,7 +267,7 @@ for trans in translations:
             output=AttractRigidbody(ligand)
             center=output.FindCenter()
             output.Translate(Coord3D()-center)
-            AttractEuler(output ,output, X[0], X[1], X[2])
+            output.AttractEulerRotate(X[0], X[1], X[2])
             output.Translate(Coord3D(X[3],X[4],X[5]))
             output.Translate(center)
 

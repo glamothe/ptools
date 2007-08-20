@@ -67,7 +67,7 @@ Coord3D Rigidbody::FindCenter() const
     Coord3D center(0.0,0.0,0.0);
     for (uint i=0; i< this->Size() ; i++)
     {
-        center =  center + mCoords[i];
+        center =  center + GetCoords(i);
     }
     return ( (1.0/(double)this->Size())*center);
 }
@@ -84,14 +84,70 @@ void Rigidbody::CenterToOrigin()
 
 void Rigidbody::Translate(const Coord3D& tr)
 {
-    for (uint i=0; i<this->Size(); i++)
-        this->mCoords[i] += tr ;
+//     for (uint i=0; i<this->Size(); i++)
+//         this->mCoords[i] += tr ;
 
     //updates rotation/translation matrix:
     this->mat44[0][3]+=tr.x;
     this->mat44[1][3]+=tr.y;
     this->mat44[2][3]+=tr.z;
 }
+
+
+
+/*!  \brief this function makes an euler rotation with the Attract convention.
+*
+*   Note that for this new implementation only the 4x4 rotational/translational
+*   matrix is updated. This may allow a big speedup (to be tested) and a 
+*   higher flexibility  (  rig.Translate(a); rig.Translate(minus(a)); may now be delayed
+*   until the coordinates are really needed. 
+*   If coordinates are never asked (why?), then no costly calculation is performed !
+*/
+void Rigidbody::AttractEulerRotate(double phi, double ssi, double rot)
+{
+
+    double  cp, cs, ss, sp, cscp, sscp, sssp, crot, srot, cssp ;
+
+    cs=cos(ssi);
+    cp=cos(phi);
+    ss=sin(ssi);
+    sp=sin(phi);
+    cscp=cs*cp;
+    cssp=cs*sp;
+    sscp=ss*cp;
+    sssp=ss*sp;
+    crot=cos(rot);
+    srot=sin(rot);
+
+
+      double eulermat[4][4];
+
+      eulermat[0][0] = crot*cscp + srot*sp;
+      eulermat[0][1] = srot*cscp - crot*sp;
+      eulermat[0][2] = sscp;
+      eulermat[0][3] = 0.0;
+
+      eulermat[1][0] = crot*cssp-srot*cp ;
+      eulermat[1][1] = srot*cssp+crot*cp;
+      eulermat[1][2] = sssp;
+      eulermat[1][3] = 0.0;
+
+      eulermat[2][0] = -crot*ss;
+      eulermat[2][1] = -srot*ss;
+      eulermat[2][2] = cs;
+      eulermat[2][3] = 0.0;
+
+      eulermat[3][0] = 0.0;
+      eulermat[3][1] = 0.0;
+      eulermat[3][2] = 0.0;
+      eulermat[3][3] = 1.0;
+
+      //matrix multiplication
+      mat44xmat44( eulermat , this->mat44, this->mat44);
+
+}
+
+
 
 
 AtomSelection Rigidbody::SelectAllAtoms()
@@ -267,6 +323,7 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 }
 
 
+void Rigidbody::m_hookCoords(uint i, Coord3D & co) const {};  //(virtual)
 
 
 /////////////////////////////

@@ -33,8 +33,8 @@ atom = mb.class_("Atom")
 atom.include()
 
 
-attractEuler = mb.free_functions("AttractEuler")
-attractEuler.include()
+#attractEuler = mb.free_functions("AttractEuler")
+#attractEuler.include()
 
 forceField = mb.class_("ForceField")
 forceField.include()

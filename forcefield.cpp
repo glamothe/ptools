@@ -167,7 +167,9 @@ double AttractForceField::Energy()
 
 double AttractForceField::Energy(const Vdouble& stateVars)
 {
-    AttractEuler(m_refligand, m_ligand, stateVars[0], stateVars[1], stateVars[2]);
+    m_ligand = m_refligand;
+    m_ligand.AttractEulerRotate(stateVars[0], stateVars[1], stateVars[2]);
+//     AttractEuler(m_refligand, m_ligand, stateVars[0], stateVars[1], stateVars[2]);
     m_ligand.Translate(m_ligcenter);
     m_ligand.Translate(Coord3D(stateVars[3],stateVars[4],stateVars[5]));
     return Energy();
@@ -687,7 +689,9 @@ double AttractForceField2::Function(const Vdouble& stateVars )
     assert(stateVars.size()==6);
     assert(m_centeredligand.size() >=1);
     assert(m_movedligand.size() >=1);
-    AttractEuler(m_centeredligand[0], m_movedligand[0], stateVars[0], stateVars[1], stateVars[2]);
+    m_movedligand[0] = m_centeredligand[0];
+    m_movedligand[0].AttractEulerRotate(stateVars[0], stateVars[1], stateVars[2]);
+//     AttractEuler(m_centeredligand[0], m_movedligand[0], stateVars[0], stateVars[1], stateVars[2]);
     m_movedligand[0].Translate(m_ligcenter[0]);
     m_movedligand[0].Translate(Coord3D(stateVars[3],stateVars[4],stateVars[5]));
     return nonbon8(m_receptor, m_movedligand[0]);
@@ -724,9 +728,6 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 }
 
 
-int getTotEner() {return ntotener;};
-
-
 /*! \brief Non bonded energy
 *
 *   translated from fortran file nonbon8.f
@@ -734,8 +735,6 @@ int getTotEner() {return ntotener;};
 */
 double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, bool print)
 {
-
-    ntotener+=1; //TODO:remove this !
 
     double enon = 0.0;
     double epote = 0.0;

@@ -9,6 +9,7 @@ namespace PTools{
 void mat44xmat44( const double mat1[ 4 ][ 4 ], const double mat2[ 4 ][ 4 ], double result[ 4 ][ 4 ] )
 {
 // gives mat1*mat2 (mat2 left multiplied by mat1)
+// this works even if mat1 == mat2 (ie pointing the to same memory)
 
     double temp[4][4];
 
@@ -273,7 +274,7 @@ void XRotation( const Rigidbody& source, Rigidbody& result, double alpha )
         Coord3D res;
         Coord3D vect = source.mCoords[iatom];
 
-        mat44xVect( rotmatrix, vect, res ) ;
+        PTools::mat44xVect( rotmatrix, vect, res ) ;
         result.mCoords[iatom] = res;
 
     }
@@ -291,7 +292,7 @@ void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4
     {
         Coord3D res;
         Coord3D vect = source.mCoords[iatom];
-        mat44xVect( mat, vect, res ) ;
+        PTools::mat44xVect( mat, vect, res ) ;
 
         result.mCoords[iatom]=res ;
     }
@@ -357,7 +358,7 @@ void EulerZYZ(const Rigidbody & source, Rigidbody & target, double theta, double
 }
 
 
-
+/*
 
     /*! \brief  makes an Euler rotation of source and stores result
         *  in dest.
@@ -366,7 +367,7 @@ void EulerZYZ(const Rigidbody & source, Rigidbody & target, double theta, double
         *  calling this subroutine
         *  You must also verify that 'dest' is correctly initialised by
         *  the command  dest = source. If not grave problems will happen
-    */
+    /
 //note: should also work if dest and source are the same object
 void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot)
 {
@@ -434,7 +435,7 @@ void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double s
 
 
 
-}
+}*/
 
 
 
@@ -526,7 +527,7 @@ double Angle(const Coord3D& vector1, const Coord3D& vector2)
 }
 
 
-
+/*
 void Translate(const Rigidbody& source, Rigidbody& target, const Coord3D& trans)
 {
     assert(source.Size()==target.Size());
@@ -538,7 +539,7 @@ void Translate(const Rigidbody& source, Rigidbody& target, const Coord3D& trans)
     target.mat44[0][3]=source.mat44[0][3]+trans.x;
     target.mat44[1][3]=source.mat44[1][3]+trans.y;
     target.mat44[2][3]=source.mat44[2][3]+trans.z;
-}
+}*/
 
 
 }
