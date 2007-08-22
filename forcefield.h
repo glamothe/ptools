@@ -199,7 +199,7 @@ public:
     AttractForceField2(std::string paramsFileName, AttractRigidbody& rec, AttractRigidbody& lig, double cutoff);
     double Function(const Vdouble&);
     void Derivatives(const Vdouble&, Vdouble&); ///< analytical derivative
-    uint ProblemSize(){return 6;};
+    uint ProblemSize();
     double nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, bool print=false);
 
 

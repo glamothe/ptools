@@ -236,6 +236,11 @@ public:
     }
 
 
+
+    void SetRotation(bool value) {hasrotation  = value;} //allow/disallow rotation
+    void setTranslation(bool value) {hastranslation = value;} //allow/disallow translation
+
+
 private:
     std::vector<uint> m_atomTypeNumber ;
     std::vector<double> m_charge ;
@@ -244,6 +249,9 @@ private:
     std::vector<double> m_eigen; ///< array of eigenvalues
 
     std::vector<VCoord3D> m_modesArray; ///< array of modes (normal modes)
+
+    bool hastranlation;
+    bool hasrotation;
 
 
 friend class AttractForceField2;

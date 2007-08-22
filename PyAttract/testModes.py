@@ -33,11 +33,18 @@ def readModesVectors(filename='eignew.out'):
             else:
                 eigens.append(splittedlines[i][1])
             i=i+1
-    except:
+    except IndexError:
             pass
+
     return modes, eigens
 
 
+
+
+
+#################################
+## main program starts here     #
+#################################
 
 modes,eigens=readModesVectors()
 print [len(i) for i in modes]
@@ -77,8 +84,16 @@ for vcmode,eigen in zip(arrayOfModes,eigens):
 
 
 for l in arange(-3,3, 0.5):
-    rig.applyMode(0, 0.01*l)
+    rig.applyMode(0, l)
     WritePDB(rig, "fich%s.red"%(l+3))
 
 
+#start a minimization:
+lig = Rigidbody('1FIN_c_l.red2')
+lig = AttractRigidbody(lig)
+lig.Translate(Coord3D(-1, -5, -7))
+
+ff2 = AttractForceField2('mbest1k.par',rig, lig, 50)
+minim = Lbfgs(ff2)
+minim.minimize(10)
 

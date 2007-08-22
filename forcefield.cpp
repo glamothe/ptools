@@ -686,18 +686,60 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody& r
 
 double AttractForceField2::Function(const Vdouble& stateVars )
 {
-    assert(stateVars.size()==6);
+    assert(stateVars.size()==1);
     assert(m_centeredligand.size() >=1);
     assert(m_movedligand.size() >=1);
+
+
+    int svptr = 0; //state variable 'pointer'
+
     m_movedligand[0] = m_centeredligand[0];
-    m_movedligand[0].AttractEulerRotate(stateVars[0], stateVars[1], stateVars[2]);
-//     AttractEuler(m_centeredligand[0], m_movedligand[0], stateVars[0], stateVars[1], stateVars[2]);
+    if (m_movedligand[0].hasrotation)
+    {
+       m_movedligand[0].AttractEulerRotate(stateVars[svptr], stateVars[svptr+1], stateVars[svptr+2]);
+       svptr+=3;
+    }
+
+
     m_movedligand[0].Translate(m_ligcenter[0]);
-    m_movedligand[0].Translate(Coord3D(stateVars[3],stateVars[4],stateVars[5]));
-    return nonbon8(m_receptor, m_movedligand[0]);
+
+    if(m_movedligand[0].hastranslation)
+    {
+        m_movedligand[0].Translate(Coord3D(stateVars[svptr],stateVars[svptr+1],stateVars[svptr+2]));
+        svptr+=3;
+    }
+
+    m_receptor.applyMode(0, stateVars[svptr]); //in principle can be done even after translate/rotate but before nonbon ! TODO: define a correct policy for minimizer variables !
+
+
+
+
+    double enernon = nonbon8(m_receptor, m_movedligand[0]);
+
+    double enermode = stateVars[svptr]*stateVars[svptr]*stateVars[svptr]*stateVars[svptr] ; //power 4 ... TODO: create the function template power<int> !!!!
+
+    for(uint i=0; i<stateVars.size(); i++) std::cout << stateVars[i] << "   ";
+    std::cout << "\nmode energy: " << enermode << std::endl;
+    return enernon + enermode ;
 
 }
 
+
+
+uint AttractForceField2::ProblemSize()
+{
+
+  uint size = 0;
+  for (uint i = 0; i < m_centeredligand.size(); i++)
+  {
+    if (m_centeredligand[i].hastranslation) size +=3 ;
+    if (m_centeredligand[i].hasrotation) size +=3 ;
+    size += m_centeredligand[i].m_modesArray.size() ;
+  }
+
+  size += m_receptor.m_modesArray.size(); // TODO: remove this when receptor will become a ligand...
+  return size;
+}
 
 
 
@@ -715,8 +757,29 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 //delta[0] to delta[2] : rotations
 //delta[3] to delta[5] : translation
 
-    Trans(0, delta, 3, false);
-    Rota(0, stateVars[0], stateVars[1], stateVars[2], delta, 0, false );
+
+    int svptr = 0; // stateVars 'pointer'
+
+
+    if(m_movedligand[0].hasrotation)
+    {
+
+      //Rota(0,  <-- 0:molecule index
+      Rota(0, stateVars[svptr], stateVars[svptr+1], stateVars[svptr+2], delta, svptr, false );
+      svptr+=3;
+    }
+
+    if (m_movedligand[0].hastranslation)
+    {
+       Trans(0, delta, svptr, false);
+       svptr+=3;
+    }
+
+
+    //dirty modification for modes:
+    assert(svptr < stateVars.size());
+    delta[svptr] = 4*(stateVars[svptr]*stateVars[svptr]*stateVars[svptr]);
+    std::cout << "mode force: " << delta[svptr] << std::endl;
 
 //print the delta vector:
 // for (uint i=0; i<delta.size(); i++)

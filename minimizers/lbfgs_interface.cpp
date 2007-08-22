@@ -34,6 +34,7 @@ void Lbfgs::minimize(int maxiter)
 
 
     int n = objToMinimize.ProblemSize();
+    assert(n==1);
     std::cout  << "number of free variables for the minimizer: " << n << std::endl;
 
 
@@ -61,8 +62,8 @@ void Lbfgs::minimize(int maxiter)
 
     lbfgsb_t* opt = lbfgsb_create(n, m, &l[0], &u[0], &nbd[0]);
     assert(opt);
-
-    opt->iprint=-1;
+    assert(opt->n ==1);
+    opt->iprint=1;
 
     double f = 0.0;
 
@@ -80,7 +81,7 @@ void Lbfgs::minimize(int maxiter)
                 f = objToMinimize.Function(x);
                 //objToMinimize.NumDerivatives(x,g);
                 //std::cout << " numerical grad: "; for(uint i=0; i<6;i++) std::cout << g[i] << "  "; std::cout <<"\n";
-                objToMinimize.Derivatives(x,g);
+                objToMinimize.NumDerivatives(x,g);
 //                 std::cout << "analytical grad: "; for(uint i=0; i<6;i++) std::cout << g[i] << "  "; std::cout <<"\n";
 
    
