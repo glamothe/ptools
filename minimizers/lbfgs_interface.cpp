@@ -20,12 +20,13 @@ inline void assign(char* dest, char* src)
 Lbfgs::Lbfgs( ForceField& toMinim)
         :objToMinimize(toMinim)
 {
+
 };
 
 
 Lbfgs::~Lbfgs()
 {
-
+lbfgsb_destroy(m_opt);
 }
 
 
@@ -60,17 +61,21 @@ void Lbfgs::minimize(int maxiter)
 
     int m = 5;
 
-    lbfgsb_t* opt = lbfgsb_create(n, m, &l[0], &u[0], &nbd[0]);
-    assert(opt);
-    assert(opt->n ==1);
-    opt->iprint=1;
+    m_opt = lbfgsb_create(n, m, &l[0], &u[0], &nbd[0]);
+    assert(m_opt);
 
-    double f = 0.0;
 
-    opt->max_iter = maxiter;
+   m_opt->iprint=1;
+
+   double f = 0.0;
+
+    m_opt->max_iter = maxiter;
+
+    int last_iter = 0;
+
 /*    opt->iprint = 0;*/
     while (1) {
-        rc = lbfgsb_run(opt, &x[0], &f, &g[0]);
+        rc = lbfgsb_run(m_opt, &x[0], &f, &g[0]);
         if (rc == 0) {
             break;
         } else if (rc < 0) { 
@@ -78,24 +83,30 @@ void Lbfgs::minimize(int maxiter)
             break;
         } else if (rc == 1) { 
 
-                f = objToMinimize.Function(x);
-                //objToMinimize.NumDerivatives(x,g);
-                //std::cout << " numerical grad: "; for(uint i=0; i<6;i++) std::cout << g[i] << "  "; std::cout <<"\n";
-                objToMinimize.NumDerivatives(x,g);
-//                 std::cout << "analytical grad: "; for(uint i=0; i<6;i++) std::cout << g[i] << "  "; std::cout <<"\n";
+                if(last_iter < m_opt->niter)
+                {
+                    //this is a new iteration
+                    last_iter = m_opt->niter;
+                    //saves the minimizer variables for each iteration (can be useful for generating animations)
+                    m_vars_over_time.push_back(x);
+                }
 
-   
+
+                f = objToMinimize.Function(x);
+                objToMinimize.Derivatives(x,g);
+
+
         } else {
             assert(!"can not reach here");
         }
     }
 
 
-    opt->task[59]='\0'; //add a null terminating character to task[]
+    m_opt->task[59]='\0'; //add a null terminating character to task[]
 
 
-    std::cout << opt->task  << " |  " << opt->niter << " iterations\n";
-    lbfgsb_destroy(opt);
+    std::cout << m_opt->task  << " |  " << m_opt->niter << " iterations\n";
+    
 
 
 

@@ -29,6 +29,8 @@ class T_PairList
 public:
     T_PairList(const T & receptor, const T & ligand, double cutoff );
     T_PairList(const T & receptor,const T &  ligand); ///< constructor with infinite cutoff ;
+    T_PairList(){}; //null constructor for use with std::vector
+
     ~T_PairList();
     void update(); ///< update pairlist
     void addPair(const T& ligand, const T& receptor, AtomPair pair) ; ///< Add a pair and checks if correct ligand and receptor are provided

@@ -77,11 +77,9 @@ lib1=python.SharedLibrary(File('_ptools.so'),source=[objects,PYTHON_CPP])
 #lib2=nopython.SharedLibrary('ptools',source=[objects])
 lib2=nopython.StaticLibrary('ptools',source=[statics]) #this makes the library static
 
-testRmsd=Program('testRmsd.cpp', LIBS=['ptools'], LIBPATH='.', CCFLAGS='-g')
-
 
 Alias('python',lib1)
-Alias('cpp',[lib2, testRmsd] )
+Alias('cpp',[lib2] )
 print "BUILD_TARGETS is", map(str, BUILD_TARGETS)
 
 

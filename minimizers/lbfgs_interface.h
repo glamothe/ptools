@@ -21,9 +21,12 @@ class Lbfgs
 {
       public:
             Lbfgs(ForceField& toMinim);
-            ~Lbfgs(); 
+            ~Lbfgs();
             void minimize(int maxiter);
             Vdouble GetMinimizedVars() const {return x;};
+
+            Vdouble GetMinimizedVarsAtIter(uint iter){return m_vars_over_time[iter];}
+            int GetNumberIter() {return m_opt->niter;}
 
 
 
@@ -32,6 +35,10 @@ class Lbfgs
             ForceField& objToMinimize ;
             Vdouble x ; // position variables
             Vdouble g ; // gradient
+
+            lbfgsb_t* m_opt; //minimizer structure
+
+            std::vector<Vdouble> m_vars_over_time;
 
 
 

@@ -196,11 +196,14 @@ class AttractForceField2 : public ForceField
 
 public:
 
-    AttractForceField2(std::string paramsFileName, AttractRigidbody& rec, AttractRigidbody& lig, double cutoff);
+    AttractForceField2(std::string paramsFileName, double cutoff);
     double Function(const Vdouble&);
     void Derivatives(const Vdouble&, Vdouble&); ///< analytical derivative
     uint ProblemSize();
-    double nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, bool print=false);
+    double nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false);
+
+    void AddLigand(AttractRigidbody & lig); ///< add a new ligand to the ligand list...
+    void MakePairLists(); ///< this function generates the pairlists before a minimization
 
 
 private:
@@ -208,35 +211,18 @@ private:
     //private variables
 
 
-
-
-    AttractRigidbody m_ligand, m_receptor;
-
     Vuint m_rAtomCat; ///< receptor atom category (std vector)
 
- 
-    
-    
-    //int ipon[3000][3000];
 
-    
+    std::vector<Attract2PairList> m_pairlists ;
 
-
-    uint m_ligSize ; ///<ligand size
-    uint m_recSize ; ///<receptor size
-    Attract2PairList m_pairlist; ///<ligand-receptor pairlist
-
-    //Vuint m_lAtomCategory;
-    //Vdouble m_lAtomCharge;
-    //Vuint m_rAtomCategory;
-    //Vdouble m_rAtomCharge;
-
-    //std::vector<Coord3D> m_ligForces ; ///< ligand forces
-    std::vector<Coord3D> m_recForces ; ///< ligand forces
+//     std::vector<Coord3D> m_recForces ; ///< ligand forces
 
     std::vector<AttractRigidbody> m_centeredligand;
     std::vector<AttractRigidbody> m_movedligand;
     std::vector<Coord3D> m_ligcenter;
+
+    double m_cutoff;
 
 
 

@@ -237,7 +237,7 @@ public:
 
 
 
-    void SetRotation(bool value) {hasrotation  = value;} //allow/disallow rotation
+    void setRotation(bool value) {hasrotation  = value;} //allow/disallow rotation
     void setTranslation(bool value) {hastranslation = value;} //allow/disallow translation
 
 
@@ -250,9 +250,10 @@ private:
 
     std::vector<VCoord3D> m_modesArray; ///< array of modes (normal modes)
 
-    bool hastranlation;
+    bool hastranslation;
     bool hasrotation;
 
+    void normalizeMode(VCoord3D & mode);
 
 friend class AttractForceField2;
 

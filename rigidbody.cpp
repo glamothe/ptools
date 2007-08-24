@@ -292,7 +292,7 @@ Vdouble Rigidbody::GetMatrix() const
 }
 
 
-
+void Rigidbody::m_hookCoords(uint i, Coord3D & co) const {};  //(virtual)
 
 ///////////// AttractRigidbody implementation:
 
@@ -320,10 +320,46 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 
     }
 
+    setRotation(true);
+    setTranslation(true);
+
+
 }
 
 
-void Rigidbody::m_hookCoords(uint i, Coord3D & co) const {};  //(virtual)
+
+
+
+
+/*!  \brief normalize a normal mode vector
+*
+*    this function normalizes a mode vector assuming it to be a n*3 linear vector.
+*
+*/
+void AttractRigidbody::normalizeMode(VCoord3D & mode)
+{
+
+double sum = 0.0 ;
+for (uint i=0; i<mode.size(); i++)
+{
+sum+=Norm2(mode[i]); // we normalize a n*3 linear like vector, so Norm2 is the correct function to use.
+}
+
+double norm = sqrt(sum);
+
+for (uint i=0; i<mode.size(); i++)
+{
+  mode[i]=mode[i]/norm;  //divide each component by the vector norm
+}
+
+}
+
+
+
+
+
+
+
 
 
 /////////////////////////////

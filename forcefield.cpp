@@ -128,7 +128,7 @@ void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool p
 
 
 
-        double h=1e-3;
+        double h=1e-4;
 
         newvars1[j]+=h;
         double F1=Function(newvars1);
@@ -472,107 +472,6 @@ void AttractForceField::ShowEnergyParams()
 
 
 
-
-
-
-// extern "C"
-// {
-//     extern
-//         void nonbon8_ ( double* recCoords, int*r,  double* ligCoords, int* l, // coordinates for receptor and ligand and their sizes
-//                         int* rectypes, int* ligtypes,  //  array for correspondance between atoms indexes and their Attract's "type"
-//                         double* cha_r, double* cha_l,   // charges of atoms
-//                         int* nonr, int* nonl, int* nonp,    //  arrays for pairlist and size of the pairlist
-//                         double* ac, double* rc,                      //  precalculated two dimensional arrays. Beware of the column major issue
-//                         double* LJ, double* coulomb                  //  return of the function
-//                       );
-//
-//
-// }
-
-
-
-// double AttractForceField::fortranEnergy()
-// {
-//
-//
-// // linear array of receptor coordinates
-//     std::vector <double> recCoords;
-//
-//
-//     for (uint i=0; i <m_receptor.Size(); i++)
-//     {
-//         Coord3D co ( m_receptor.GetCoords(i) );
-//         recCoords.push_back(co.x);
-//         recCoords.push_back(co.y);
-//         recCoords.push_back(co.z);
-//
-//     }
-//
-//
-//
-//     double LJ=0.0;
-//     double coulomb=0.0;
-//
-//
-//
-// // linear array of ligand coordinates
-//     std::vector <double> ligCoords;
-//     for (uint i=0; i < m_ligand.Size(); i++)
-//     {
-//         Coord3D co ( m_ligand.GetCoords(i) );
-//         ligCoords.push_back(co.x);
-//         ligCoords.push_back(co.y);
-//         ligCoords.push_back(co.z);
-//     }
-//
-//     int r = m_receptor.Size();
-//     std::cout << "m_receptor size: " << r << "\n" ;
-//     int l = m_ligand.Size();
-//
-//
-//     Vint ligplist; //ligand atoms in the pairlist
-//     Vint recplist; //recetor atoms
-//     int plistsize = plist.Size();
-//
-//     for (int i=0; i <  plistsize; i++)
-//     {
-//
-//         ligplist.push_back( plist[i].atlig ) ;
-//         recplist.push_back( plist[i].atrec ) ;
-//     }
-//
-//
-//
-//
-//     std::vector<int> rAtomCat;
-//     std::vector<int> lAtomCat;
-//
-//     for (uint i=0; i<m_rAtomCat.size(); i++)
-//         rAtomCat.push_back(m_rAtomCat[i]);
-//
-//
-//
-//     for (uint i=0; i<m_lAtomCat.size(); i++)
-//         lAtomCat.push_back(m_lAtomCat[i]);
-//
-//     std::cout << "taille pairlist: " << plistsize << "\n";
-//
-//
-// //     nonbon8_(  &recCoords[0],&r, &ligCoords[0], &l,  //
-// //                &rAtomCat[0], &lAtomCat[0],     //
-// //                &m_rAtomCharge[0], &m_lAtomCharge[0], //
-// //                &recplist[0], &ligplist[0], &plistsize, //
-// //                (double*) m_ac,(double*) m_rc, //
-// //                &LJ, &coulomb) ;
-//
-//     return LJ+coulomb;
-//
-// }
-
-
-
-
-
 ////////////////////////////////////////////////////////////////
 //     AttractForceField2 implementation
 ////////////////////////////////////////////////////////////////
@@ -580,27 +479,14 @@ void AttractForceField::ShowEnergyParams()
 
 static AttFF2_params* m_params = 0;
 
-AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody& rec, AttractRigidbody& lig, double cutoff)
-        : m_ligand(lig),
-        m_receptor(rec),
-        m_pairlist(m_receptor,m_ligand,cutoff)
-
+AttractForceField2::AttractForceField2(std::string filename, double cutoff)
+:m_cutoff(cutoff)
 {
-
-    m_ligSize = lig.Size();
-    m_recSize = rec.Size();
 
 
     if (m_params==0)
     {
         m_params=new AttFF2_params();
-
-//    return;
-
-//         m_params->ipon = Array2D<int>(31,31);
-//         m_params->ac = Array2D<double>(31,31);
-//         m_params->rc = Array2D<double>(31,31);
-
 
         std::ifstream mbest (filename.c_str());
         //open(11,file=eingabe2) -> eingabe2: mbest1k.par
@@ -636,19 +522,12 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody& r
 
 
 
-        for (uint jj=0; jj<31; jj++) //  jindex=0; jindex < lig.m_activeAtoms.size(); jindex++)
+        for (uint jj=0; jj<31; jj++)  // loop over attract atom types 
         {
-//             uint j = lig.m_activeAtoms[jindex];
-//             uint jj = lig.m_atomTypeNumber[j];
-            for (uint ii=0; ii<31; ii++) //  uint iindex=0; iindex<rec.m_activeAtoms.size(); iindex++)
+
+            for (uint ii=0; ii<31; ii++) // loop over attract atom types 
             {
 
-//                 uint i = rec.m_activeAtoms[iindex];
-
-
-//                 uint ii = rec.m_atomTypeNumber[i];
-//                 assert(i<3000);
-//                 assert(j<3000);
                 double rbc2 = m_params->rbc[ii][jj]*m_params->rbc[ii][jj];
                 double rbc6 = rbc2*rbc2*rbc2;
                 double rbc8 = rbc6*rbc2;
@@ -668,17 +547,10 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody& r
         m_params->emin[ii][jj] = -27.0*alen4/(256.0*rlen3);
         m_params->rmin2[ii][jj]= 4.0*rlen/(3.0*alen);
 
-                
+
             }
         }
     }
-
-    AttractRigidbody centeredlig(lig);
-    Coord3D com = lig.FindCenter();
-    m_ligcenter.push_back(com);
-    centeredlig.CenterToOrigin();
-    m_centeredligand.push_back(centeredlig);
-    m_movedligand.push_back(centeredlig);
 
 
 }
@@ -686,35 +558,61 @@ AttractForceField2::AttractForceField2(std::string filename, AttractRigidbody& r
 
 double AttractForceField2::Function(const Vdouble& stateVars )
 {
-    assert(stateVars.size()==1);
+
     assert(m_centeredligand.size() >=1);
     assert(m_movedligand.size() >=1);
 
 
-    int svptr = 0; //state variable 'pointer'
+    uint svptr = 0; //state variable 'pointer'
 
-    m_movedligand[0] = m_centeredligand[0];
-    if (m_movedligand[0].hasrotation)
+
+    if (m_pairlists.size()!=m_centeredligand.size())
+        MakePairLists();
+
+
+    //reset forces for all ligands
+    for(uint i=0; i<m_movedligand.size(); i++)
     {
-       m_movedligand[0].AttractEulerRotate(stateVars[svptr], stateVars[svptr+1], stateVars[svptr+2]);
-       svptr+=3;
+	m_movedligand[i] = m_centeredligand[i];
+	m_movedligand[i].resetForces(); //just to be sure that the forces are set to zero. Maybe not needed.
+
+	if (m_movedligand[i].hasrotation)
+		{
+		assert(svptr+2 < stateVars.size());
+		m_movedligand[i].AttractEulerRotate(stateVars[svptr], stateVars[svptr+1], stateVars[svptr+2]);
+		svptr+=3;
+		}
+
+
+	m_movedligand[i].Translate(m_ligcenter[i]);
+
+	if(m_movedligand[i].hastranslation)
+	{
+		assert(svptr+2 < stateVars.size());
+		m_movedligand[i].Translate(Coord3D(stateVars[svptr],stateVars[svptr+1],stateVars[svptr+2]));
+		svptr+=3;
+	}
+
     }
 
 
-    m_movedligand[0].Translate(m_ligcenter[0]);
+    double enernon = 0.0 ;
 
-    if(m_movedligand[0].hastranslation)
-    {
-        m_movedligand[0].Translate(Coord3D(stateVars[svptr],stateVars[svptr+1],stateVars[svptr+2]));
-        svptr+=3;
-    }
+    uint plistnumber = 0; //index of pairlist used for a given pair of ligands
+    //iteration over all ligand pairs:
+    for(uint i=0; i<m_movedligand.size(); i++)
+       for(uint j=i+1; j<m_movedligand.size(); j++)
+       {
+           assert(plistnumber < m_pairlists.size() );
+           enernon += nonbon8(m_movedligand[i], m_movedligand[j],  m_pairlists[plistnumber++] );   //calculates energy contribution for every pair. Forces are stored for each ligand
+       }
 
-    m_receptor.applyMode(0, stateVars[svptr]); //in principle can be done even after translate/rotate but before nonbon ! TODO: define a correct policy for minimizer variables !
 
 
 
 
-    double enernon = nonbon8(m_receptor, m_movedligand[0]);
+    m_movedligand[0].applyMode(0, stateVars[svptr]); //in principle can be done even after translate/rotate but before nonbon ! TODO: define a correct policy for minimizer variables !
+
 
     double enermode = stateVars[svptr]*stateVars[svptr]*stateVars[svptr]*stateVars[svptr] ; //power 4 ... TODO: create the function template power<int> !!!!
 
@@ -728,18 +626,19 @@ double AttractForceField2::Function(const Vdouble& stateVars )
 
 uint AttractForceField2::ProblemSize()
 {
-
   uint size = 0;
   for (uint i = 0; i < m_centeredligand.size(); i++)
   {
     if (m_centeredligand[i].hastranslation) size +=3 ;
     if (m_centeredligand[i].hasrotation) size +=3 ;
-    size += m_centeredligand[i].m_modesArray.size() ;
+    size += m_centeredligand[i].m_modesArray.size(); // additional variables needed for normal modes
   }
 
-  size += m_receptor.m_modesArray.size(); // TODO: remove this when receptor will become a ligand...
   return size;
 }
+
+
+
 
 
 
@@ -754,39 +653,37 @@ uint AttractForceField2::ProblemSize()
 */
 void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 {
-//delta[0] to delta[2] : rotations
-//delta[3] to delta[5] : translation
+
+    uint svptr = 0; // stateVars 'pointer'
 
 
-    int svptr = 0; // stateVars 'pointer'
 
 
-    if(m_movedligand[0].hasrotation)
+    for(uint i=0; i<m_movedligand.size(); i++)
     {
 
-      //Rota(0,  <-- 0:molecule index
-      Rota(0, stateVars[svptr], stateVars[svptr+1], stateVars[svptr+2], delta, svptr, false );
-      svptr+=3;
+	if(m_movedligand[i].hasrotation)
+	{
+	//calculates the rotational force for ligand i
+	Rota(i, stateVars[svptr], stateVars[svptr+1], stateVars[svptr+2], delta, svptr, false );
+	svptr+=3;
+	}
+	
+	if (m_movedligand[i].hastranslation)
+	{
+	//calculates the translational force for ligand i
+	Trans(i, delta, svptr, false);
+	svptr+=3;
+	}
+
     }
 
-    if (m_movedligand[0].hastranslation)
-    {
-       Trans(0, delta, svptr, false);
-       svptr+=3;
-    }
 
-
-    //dirty modification for modes:
+   //dirty modification for modes:
     assert(svptr < stateVars.size());
     delta[svptr] = 4*(stateVars[svptr]*stateVars[svptr]*stateVars[svptr]);
     std::cout << "mode force: " << delta[svptr] << std::endl;
 
-//print the delta vector:
-// for (uint i=0; i<delta.size(); i++)
-// {
-// 	std::cout <<  delta[i] << "  " ;
-// }
-// std::cout << std::endl;
 
 }
 
@@ -796,22 +693,19 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 *   translated from fortran file nonbon8.f
 *   TODO: add comments in the code, remove debug instructions
 */
-double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, bool print)
+double AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist , bool print)
 {
 
     double enon = 0.0;
     double epote = 0.0;
 
-    //reset forces for ligand and receptor:
-    lig.resetForces();
-    rec.resetForces();
 
+    std::cout.precision(20);
 
-    for (uint ik=0; ik<m_pairlist.Size(); ik++ )
+    for (uint ik=0; ik<pairlist.Size(); ik++ )
     {
-        AtomPair atpair = m_pairlist[ik];
+        AtomPair atpair = pairlist[ik];
 
-        std::cout.precision(20);
 
         uint i = atpair.atrec ;
         uint j = atpair.atlig ;
@@ -949,7 +843,7 @@ void AttractForceField2::Rota(uint molIndex, double phi,double ssi, double rot, 
 
     for (uint i=0; i<3;i++)
     {
-        delta[i]=0.0;
+        delta[i+shift]=0.0;
         for (uint j=0;j<3;j++)
             pm[i][j]=0.0 ;
     }
@@ -1003,13 +897,45 @@ void AttractForceField2::Rota(uint molIndex, double phi,double ssi, double rot, 
         }
     }
 
-    if (print) std::cout << "Rotational forces: " << delta[0] << " " << delta[1] << " " << delta[2] << std::endl;
+    if (print) std::cout << "Rotational forces: " << delta[shift] << " " << delta[shift+1] << " " << delta[shift+2] << std::endl;
 
     return;
 }
 
 
 
+void AttractForceField2::AddLigand(AttractRigidbody & lig)
+{
+
+    AttractRigidbody centeredlig = lig ;
+    Coord3D com = lig.FindCenter();
+    m_ligcenter.push_back(com);
+
+    m_movedligand.push_back(lig);
+    centeredlig.CenterToOrigin();
+    m_centeredligand.push_back(centeredlig);
+
+
+
+}
+
+
+
+void AttractForceField2::MakePairLists()
+{
+//at this point we expect that m_movedligand still contains original coordinates of all ligands
+//(ie not centered) because we will generate the pairlist from this vector (list)
+
+
+//creates the pairlist: loop over all pairs of ligands
+for(uint i=0; i < m_movedligand.size(); i++)
+   for (uint j=i+1; j<m_movedligand.size(); j++)
+   {
+      Attract2PairList plist(m_movedligand[i], m_movedligand[j], m_cutoff);
+      m_pairlists.push_back(plist);
+   }
+
+}
 
 
 
