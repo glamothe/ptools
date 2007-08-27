@@ -18,6 +18,34 @@ typedef std::vector<double> Vdouble;
 #define Debug(func)
 #endif
 
+
+
+ template<size_t I,size_t N> struct metapow
+{
+  static inline float Pow( float x )
+  {
+    return x*metapow<I+1,N>::Pow(x);
+  }
+};
+
+template<size_t N> struct metapow<N,N>
+{
+  static inline float Pow( float x ) { return 1; }
+};
+
+template<size_t N> float pow(float x)
+{
+  return metapow<0,N>::Pow(x);
+}
+
+
+
+
+
+
+
+
+
 //typedef double mytype;
 
 
