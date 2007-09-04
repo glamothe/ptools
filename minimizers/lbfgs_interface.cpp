@@ -35,7 +35,6 @@ void Lbfgs::minimize(int maxiter)
 
 
     int n = objToMinimize.ProblemSize();
-    assert(n==1);
     std::cout  << "number of free variables for the minimizer: " << n << std::endl;
 
 
@@ -94,6 +93,7 @@ void Lbfgs::minimize(int maxiter)
 
                 f = objToMinimize.Function(x);
                 objToMinimize.Derivatives(x,g);
+//                 objToMinimize.NumDerivatives(x,g,true);
 
 
         } else {

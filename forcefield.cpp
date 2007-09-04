@@ -128,7 +128,7 @@ void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool p
 
 
 
-        double h=1e-4;
+        double h=1.0/20000.0;
 
         newvars1[j]+=h;
         double F1=Function(newvars1);
@@ -570,7 +570,9 @@ double AttractForceField2::Function(const Vdouble& stateVars )
         MakePairLists();
 
 
-    //reset forces for all ligands
+    double enermode = 0.0;
+
+    //put the ligands to the correct positions defined by stateVars
     for(uint i=0; i<m_movedligand.size(); i++)
     {
 	m_movedligand[i] = m_centeredligand[i];
@@ -593,7 +595,20 @@ double AttractForceField2::Function(const Vdouble& stateVars )
 		svptr+=3;
 	}
 
+
+
+        //use the loop over all ligands to calculate energy associated with modes:
+        for (uint mode=0; mode < m_movedligand[i].m_modesArray.size(); mode++)
+        {
+
+            enermode+=  pow<4>(stateVars[svptr]); //minimizer variable to the power 4 (see basetypes.h)
+            m_movedligand[i].applyMode(mode, stateVars[svptr]); //apply the mode 'mode' to ligand i before nonbon calculation
+            svptr +=1 ;
+        }
+
     }
+
+
 
 
     double enernon = 0.0 ;
@@ -611,11 +626,10 @@ double AttractForceField2::Function(const Vdouble& stateVars )
 
 
 
-    m_movedligand[0].applyMode(0, stateVars[svptr]); //in principle can be done even after translate/rotate but before nonbon ! TODO: define a correct policy for minimizer variables !
 
 
-    double enermode = stateVars[svptr]*stateVars[svptr]*stateVars[svptr]*stateVars[svptr] ; //power 4 ... TODO: create the function template power<int> !!!!
-
+//     double enermode = stateVars[svptr]*stateVars[svptr]*stateVars[svptr]*stateVars[svptr] ; //power 4 ... TODO: create the function template power<int> !!!!
+    std::cout << "stateVars: \n";
     for(uint i=0; i<stateVars.size(); i++) std::cout << stateVars[i] << "   ";
     std::cout << "\nmode energy: " << enermode << std::endl;
     return enernon + enermode ;
@@ -676,16 +690,53 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 	svptr+=3;
 	}
 
+
+
+
+
+        AttractRigidbody & lig = m_movedligand[i];  //alias for the ligand
+
+        for(uint mode=0; mode < lig.m_modesArray.size(); mode++)
+        {
+            //force calculation for normal modes:
+            //let 's' be the minimizer variable for a mode
+            //energy derivatives for this variable is given by the formula:
+            // Etot(s) = Ecartesian(s) + Emode(s)
+            // dE/ds = sum_i[(dEi/dx).(dx/ds) + (dEi/dy)(dy/ds) + (dEi/dz)(dz/ds)] + dEmode/ds
+            // where Ei is the energy interaction for atom i of ligand subject to move
+
+            delta[svptr]=0.0;
+
+            VCoord3D & modearray = lig.m_modesArray[mode];
+
+           double dx=0, dy=0, dz=0;
+            //scalar product between mode and cartesian forces, weighted by minimizer variable
+            for(uint atindex=0; atindex < lig.Size(); atindex++)
+            {
+                assert(svptr < stateVars.size());
+                dx +=  modearray[atindex].x * lig.m_forces[atindex].x;
+                dy +=  modearray[atindex].y * lig.m_forces[atindex].y;
+                dz +=  modearray[atindex].z * lig.m_forces[atindex].z;
+            }
+
+            delta[svptr] = dx+dy+dz; //summation of partial scalar product
+            delta[svptr] += 4*pow<3>(stateVars[svptr]);
+            std::cout << "debug delta: " << delta[svptr] << std::endl;
+            std::vector<double> h = delta;
+            NumDerivatives(stateVars,h,false);
+            std::cout << "debug numderivatives: " << h[0]  << std::endl ;
+
+            svptr++;  //increment the pointer over minimizer variable
+       }
+
+
     }
 
-
-   //dirty modification for modes:
-    assert(svptr < stateVars.size());
-    delta[svptr] = 4*(stateVars[svptr]*stateVars[svptr]*stateVars[svptr]);
-    std::cout << "mode force: " << delta[svptr] << std::endl;
-
-
 }
+
+
+
+
 
 
 /*! \brief Non bonded energy

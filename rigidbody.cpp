@@ -357,7 +357,13 @@ for (uint i=0; i<mode.size(); i++)
 
 
 
-
+void AttractRigidbody::addMode(VCoord3D & mode, double eigen) 
+{
+    m_modesArray.push_back(mode);
+    normalizeMode(m_modesArray[m_modesArray.size()-1]);
+    m_lambdaMode.push_back(0.0);
+    m_eigen.push_back(eigen);
+}
 
 
 

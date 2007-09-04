@@ -47,7 +47,7 @@ def readModesVectors(filename='eignew.out'):
 #################################
 
 modes,eigens=readModesVectors()
-print [len(i) for i in modes]
+print 'h', [len(i) for i in modes]
 print eigens
 print len(eigens), len(modes)
 
@@ -57,12 +57,17 @@ print len(eigens), len(modes)
 rig=Rigidbody('1FIN_c_r.red2')
 assert( rig.Size()*3 == len(modes[0]))
 rig=AttractRigidbody(rig)
+rig.setTranslation(False)
+rig.setRotation(False)
 
 
 
 arrayOfModes = []
 
+imode = 0
 for mode in modes:
+    imode+=1
+    print "we have %i modes so far" %(imode)
     vcmode = VCoord3D()
     dmode = deque(mode)
     try:
@@ -89,11 +94,25 @@ for l in arange(-3,3, 0.5):
 
 
 #start a minimization:
-lig = Rigidbody('1FIN_c_l.red2')
+lig = Rigidbody('1FIN_l.red2_translated')
 lig = AttractRigidbody(lig)
-lig.Translate(Coord3D(-1, -5, -7))
+#lig.Translate(Coord3D(-1, -5, -7))
+lig.setTranslation(False)
+lig.setRotation(False)
 
-ff2 = AttractForceField2('mbest1k.par',rig, lig, 50)
+ff2 = AttractForceField2('mbest1k.par', 50)
+ff2.AddLigand(rig)
+
+ff2.AddLigand(lig)
 minim = Lbfgs(ff2)
 minim.minimize(10)
+
+
+nminim = minim.GetNumberIter()
+for i in range(nminim):
+    v=minim.GetMinimizedVarsAtIter(i)
+    rig.applyMode(0, v[0])
+    WritePDB(rig, "minim%s.red"%(i))
+
+
 

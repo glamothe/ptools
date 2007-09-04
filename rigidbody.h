@@ -219,21 +219,20 @@ public:
        Coord3D t = Rigidbody::GetCoords(i) ;
        for(uint nmode=0; nmode<m_lambdaMode.size(); nmode++)
        {
-          if (m_eigen[nmode]!=0.0)
-          	t += m_modesArray[nmode][i] * m_lambdaMode[nmode];
+          t += m_modesArray[nmode][i] * m_lambdaMode[nmode];
        }
 
        return t;
     }
 
     ///adds a mode to the mode list
-     void addMode(VCoord3D & mode, double eigen) {m_modesArray.push_back(mode); m_lambdaMode.push_back(0.0); m_eigen.push_back(eigen); };
+     void addMode(VCoord3D & mode, double eigen);
 
      ///ask for a certain mode to be applied before getting the coordinates
      void applyMode(uint modenumber, double lambda){
-     assert(m_lambdaMode.size()> modenumber );
-     m_lambdaMode[modenumber] = lambda ;
-    }
+         assert(m_lambdaMode.size()> modenumber );
+         m_lambdaMode[modenumber] = lambda ;
+     }
 
 
 
