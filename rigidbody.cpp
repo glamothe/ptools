@@ -22,7 +22,7 @@ Rigidbody::Rigidbody(std::string filename)
 
  Rigidbody::Rigidbody(const Rigidbody& model)
  {
-//this copy constructor is needed because double[4][4] is not
+//this copy constructor is needed because dbl[4][4] is not
 // automatically copied with the default copy constructor
 
 //     this->mAtoms = model.mAtoms;
@@ -69,7 +69,7 @@ Coord3D Rigidbody::FindCenter() const
     {
         center =  center + GetCoords(i);
     }
-    return ( (1.0/(double)this->Size())*center);
+    return ( (1.0/(dbl)this->Size())*center);
 }
 
 
@@ -103,10 +103,10 @@ void Rigidbody::Translate(const Coord3D& tr)
 *   until the coordinates are really needed. 
 *   If coordinates are never asked (why?), then no costly calculation is performed !
 */
-void Rigidbody::AttractEulerRotate(double phi, double ssi, double rot)
+void Rigidbody::AttractEulerRotate(dbl phi, dbl ssi, dbl rot)
 {
 
-    double  cp, cs, ss, sp, cscp, sscp, sssp, crot, srot, cssp ;
+    dbl  cp, cs, ss, sp, cscp, sscp, sssp, crot, srot, cssp ;
 
     cs=cos(ssi);
     cp=cos(phi);
@@ -120,7 +120,7 @@ void Rigidbody::AttractEulerRotate(double phi, double ssi, double rot)
     srot=sin(rot);
 
 
-      double eulermat[4][4];
+      dbl eulermat[4][4];
 
       eulermat[0][0] = crot*cscp + srot*sp;
       eulermat[0][1] = srot*cscp - crot*sp;
@@ -235,7 +235,7 @@ Rigidbody Rigidbody::operator+(const Rigidbody& rig) {
 }
 
 
-void Rigidbody::ABrotate(const Coord3D& A, const Coord3D& B, double theta)
+void Rigidbody::ABrotate(const Coord3D& A, const Coord3D& B, dbl theta)
 {
     PTools::ABrotate(A,B,*this, *this, theta);
 }
@@ -262,7 +262,7 @@ void Rigidbody::PrintMatrix() const
         std::cout << "MAT   ";
         for (uint j=0; j<4; j++)
         {
-            printf("%13.7f", this->mat44[i][j]) ;
+            printf("%13.7f", real(this->mat44[i][j])) ;
         }
         std::cout << std::endl;
     }
@@ -270,7 +270,7 @@ void Rigidbody::PrintMatrix() const
 }
 
 
-void Rigidbody::ApplyMatrix(double mat[4][4])
+void Rigidbody::ApplyMatrix(dbl mat[4][4])
 {
     mat44xrigid(*this, *this, mat);
 }
@@ -279,9 +279,9 @@ void Rigidbody::ApplyMatrix(double mat[4][4])
 Vdouble Rigidbody::GetMatrix() const
 {
     Vdouble result;
-    const double * ptr;
+    const dbl * ptr;
 
-    ptr=(double*)mat44;
+    ptr=(dbl*)mat44;
     for (uint i=0; i<16; i++)
     {
         result.push_back(*ptr++);
@@ -301,7 +301,7 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 {
     // extracts the "extra" field of Atoms to the m_atomTypeNumber array:
     uint   atcategory  = 0;
-    double  atcharge   = 0.0;
+    dbl  atcharge   = 0.0;
 
     for (uint i = 0; i < Size() ; ++i)
     {
@@ -339,13 +339,13 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 void AttractRigidbody::normalizeMode(VCoord3D & mode)
 {
 
-double sum = 0.0 ;
+dbl sum = 0.0 ;
 for (uint i=0; i<mode.size(); i++)
 {
 sum+=Norm2(mode[i]); // we normalize a n*3 linear like vector, so Norm2 is the correct function to use.
 }
 
-double norm = sqrt(sum);
+dbl norm = sqrt(sum);
 
 for (uint i=0; i<mode.size(); i++)
 {
@@ -357,7 +357,7 @@ for (uint i=0; i<mode.size(); i++)
 
 
 
-void AttractRigidbody::addMode(VCoord3D & mode, double eigen) 
+void AttractRigidbody::addMode(VCoord3D & mode, dbl eigen) 
 {
     m_modesArray.push_back(mode);
     normalizeMode(m_modesArray[m_modesArray.size()-1]);
@@ -372,7 +372,7 @@ void AttractRigidbody::addMode(VCoord3D & mode, double eigen)
 
 
 // ///apply a normal mode to an AttractRigidbody
-// void applyMode(AttractRigidbody & src, AttractRigidbody& dest, const std::vector<Coord3D> & mode, double scalar){
+// void applyMode(AttractRigidbody & src, AttractRigidbody& dest, const std::vector<Coord3D> & mode, dbl scalar){
 // assert(src.Size() == dest.Size());
 // assert(mode.size() == src.Size());
 // for(uint i=0; i<src.Size(); i++)

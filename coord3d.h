@@ -5,17 +5,17 @@
 #include <math.h>
 #include <string>
 #include <vector>
-
+#include "basetypes.h"
 
 namespace PTools{
 
 
 struct Coord3D
 {
-    double x,y,z;
+    dbl x,y,z;
 
     Coord3D() {x=0.0; y=0.0;z=0.0;};
-    Coord3D(double nx, double ny, double nz){x=nx;y=ny;z=nz;};
+    Coord3D(dbl nx, dbl ny, dbl nz){x=nx;y=ny;z=nz;};
     Coord3D(const Coord3D& old) {x=old.x; y=old.y; z=old.z;};
 
     inline Coord3D & operator= (const Coord3D &);
@@ -65,20 +65,20 @@ inline Coord3D & operator-=(Coord3D & a, const Coord3D & x ){a = a - x ; return 
 
 
 /// Vector Norm
-inline double Norm(const Coord3D & A)
+inline dbl Norm(const Coord3D & A)
 {
     return sqrt (A.x*A.x + A.y*A.y + A.z*A.z) ;
 }
 
 /// Vector norm * norm
-inline double Norm2(const Coord3D & A)
+inline dbl Norm2(const Coord3D & A)
 {
     return  (A.x*A.x + A.y*A.y + A.z*A.z);
 }
 
 
-/// define * operator : Coord3D x double
-inline Coord3D operator* (const Coord3D& A, double scal)
+/// define * operator : Coord3D x dbl
+inline Coord3D operator* (const Coord3D& A, dbl scal)
 {
     Coord3D P(A);
     P.x *= scal ;
@@ -87,14 +87,14 @@ inline Coord3D operator* (const Coord3D& A, double scal)
     return P;
 }
 
-/// define * operator : double * Coord3D
-inline Coord3D operator* (double scal, const Coord3D& A) {
+/// define * operator : dbl * Coord3D
+inline Coord3D operator* (dbl scal, const Coord3D& A) {
     return A * scal ;
 }
 
 
-/// define / operator : Coord3D / double
-inline Coord3D operator/ (const Coord3D& A, double d) {
+/// define / operator : Coord3D / dbl
+inline Coord3D operator/ (const Coord3D& A, dbl d) {
     return (1/d) * A ;
 }
 
@@ -104,7 +104,7 @@ inline Coord3D operator/ (const Coord3D& A, double d) {
 inline std::string PrintCoord(const Coord3D& A) {
     int size=100;
     char info[size];
-    snprintf(info, size, "%8.3f %8.3f %8.3f", A.x, A.y, A.z);
+    snprintf(info, size, "%8.3f %8.3f %8.3f", real(A.x), real(A.y), real(A.z));
     return info;
 }
 

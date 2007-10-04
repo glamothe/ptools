@@ -27,7 +27,7 @@ template <class T>
 class T_PairList
 {
 public:
-    T_PairList(const T & receptor, const T & ligand, double cutoff );
+    T_PairList(const T & receptor, const T & ligand, dbl cutoff );
     T_PairList(const T & receptor,const T &  ligand); ///< constructor with infinite cutoff ;
     T_PairList(){}; //null constructor for use with std::vector
 
@@ -36,7 +36,7 @@ public:
     void addPair(const T& ligand, const T& receptor, AtomPair pair) ; ///< Add a pair and checks if correct ligand and receptor are provided
 
     bool no_update; ///< if true the pairlist is never updated
-    double GetCutoff() {
+    dbl GetCutoff() {
         return sqrt(squarecutoff);
     };
     uint Size() {
@@ -51,7 +51,7 @@ public:
 
 
 private:
-    double squarecutoff ; ///< cutoff^2
+    dbl squarecutoff ; ///< cutoff^2
     const T* mp_ligand;
     const T* mp_receptor;
 
@@ -63,7 +63,7 @@ private:
 
 
 template <class T>
-T_PairList<T>::T_PairList(const T & receptor , const T & ligand, double cutoff )
+T_PairList<T>::T_PairList(const T & receptor , const T & ligand, dbl cutoff )
 {
     mp_ligand = &ligand;
     mp_receptor = &receptor;

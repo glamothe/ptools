@@ -17,21 +17,21 @@
 using namespace std;
 
 
-// #ifndef HDRcomplexify
-// inline double real(const double& r) {
-//   /***
-//    *  So the real() statement can be used even with
-//    *  the double version of the code to be derivified,
-//    *  and remains compatible with complexified code, too.
-//    *  Most useful inside printf statements.
-//    ***/
-// return r;
-// }
-// 
-// inline double imag(const double& r) {
-//   return 0.;
-// }
-// #endif // HDRcomplexify
+#ifndef HDRcomplexify
+inline double real(const double& r) {
+  /***
+   *  So the real() statement can be used even with
+   *  the double version of the code to be derivified,
+   *  and remains compatible with complexified code, too.
+   *  Most useful inside printf statements.
+   ***/
+return r;
+}
+
+inline double imag(const double& r) {
+  return 0.;
+}
+#endif // HDRcomplexify
 
 class surreal {
 #define surr_TEENY (1.e-24) /*machine zero compared to nominal value of val*/
@@ -41,8 +41,10 @@ public:
   surreal(const double& v=0.0, const double& d=0.0) : val(v), deriv(d) {}
   operator double() const {return val;}
   operator int() const {return int(val);}
-  inline friend double real(const surreal& z) ;  // born out of
-  inline friend double imag(const surreal& z) ;  // complex step
+  inline friend const double & real(const surreal& z) ;  // born out of
+  inline friend const double & imag(const surreal& z) ;  // complex step
+  inline friend double & real(surreal& z) ;  // born out of
+  inline friend double & imag(surreal& z) ;  // complex step
   // relational operators
   inline friend bool operator==(const surreal&,const surreal&);
   inline friend bool operator==(const surreal&,const double&);
@@ -570,8 +572,10 @@ inline ostream& operator<<(ostream& os, const surreal& z)
 
 
 
-inline double real(const surreal& z) {return z.val;}  // born out of
-inline double imag(const surreal& z) {return z.deriv;}// complex step
+inline const double & real(const surreal& z) {return z.val;}  // born out of
+inline const double & imag(const surreal& z) {return z.deriv;}// complex step
+inline double & real(surreal& z) {return z.val;}  // born out of
+inline double & imag(surreal& z) {return z.deriv;}// complex step
 
 
 #undef surr_TEENY

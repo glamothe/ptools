@@ -7,10 +7,14 @@
 #include <cassert>
 #include <boost/shared_array.hpp>
 
+// #include "complexify.h"
+#include "derivify.h"
+
+typedef surreal dbl;
 
 typedef std::vector<int> Vint;
 typedef std::vector<uint> Vuint;
-typedef std::vector<double> Vdouble;
+typedef std::vector<dbl> Vdouble;
 
 #ifndef NDEBUG
 #define Debug(func) func
@@ -22,7 +26,7 @@ typedef std::vector<double> Vdouble;
 
  template<size_t I,size_t N> struct metapow
 {
-  static inline float Pow( float x )
+  static inline dbl Pow( dbl x )
   {
     return x*metapow<I+1,N>::Pow(x);
   }
@@ -30,10 +34,10 @@ typedef std::vector<double> Vdouble;
 
 template<size_t N> struct metapow<N,N>
 {
-  static inline float Pow( float x ) { return 1; }
+  static inline dbl Pow( dbl x ) { return 1; }
 };
 
-template<size_t N> float pow(float x)
+template<size_t N> dbl pow(dbl x)
 {
   return metapow<0,N>::Pow(x);
 }
@@ -46,7 +50,7 @@ template<size_t N> float pow(float x)
 
 
 
-//typedef double mytype;
+//typedef dbl mytype;
 
 
 /*! \brief 2-dimensional Object Oriented array

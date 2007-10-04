@@ -15,7 +15,7 @@
 
 namespace PTools{
 
-double Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2)
+dbl Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2)
 {
     if (atsel1.Size() != atsel2.Size())
     {
@@ -23,7 +23,7 @@ double Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2)
         throw "RmsdSizesDiffers";
     }
 
-    double sum = 0.0;
+    dbl sum = 0.0;
 
 
     for (uint i=0; i<atsel1.Size(); ++i)
@@ -34,7 +34,7 @@ double Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2)
         sum+=Dist2(atom1,atom2);
     }
 
-    return sqrt(sum/(double) atsel1.Size()) ;
+    return sqrt(sum/(dbl) atsel1.Size()) ;
 
 
 }
@@ -42,10 +42,10 @@ double Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2)
 
 
 
-typedef Array2D<double> Matrix;
+typedef Array2D<dbl> Matrix;
 
 
-void PrintMat(Array2D<double> & mat)
+void PrintMat(Array2D<dbl> & mat)
 {
     for (uint i=0; i<3;i++)
     {
@@ -75,7 +75,7 @@ void Mat33xMat33(Matrix left, Matrix right, Matrix out) //matrix multiplication.
 }
 
 
-void XRotMatrix(double theta, Matrix & out)
+void XRotMatrix(dbl theta, Matrix & out)
 {
     out(0,0)=1;
     out(0,1)=0;
@@ -91,7 +91,7 @@ void XRotMatrix(double theta, Matrix & out)
 }
 
 
-void YRotMatrix(double theta, Matrix & out)
+void YRotMatrix(dbl theta, Matrix & out)
 {
     out(0,0)=cos(theta);
     out(0,1)=0;
@@ -108,7 +108,7 @@ void YRotMatrix(double theta, Matrix & out)
 
 
 
-void ZRotMatrix(double theta, Matrix & out)
+void ZRotMatrix(dbl theta, Matrix & out)
 {
     out(0,0)=cos(theta);
     out(0,1)=-sin(theta);
@@ -126,7 +126,7 @@ void ZRotMatrix(double theta, Matrix & out)
 
 void Rotate(Rigidbody& rigid, Matrix & mat)
 {
-    double x,y,z, X, Y, Z;
+    dbl x,y,z, X, Y, Z;
     for (uint i=0; i<rigid.Size(); i++)
     {
         Coord3D co = rigid.GetCoords(i);
@@ -162,7 +162,7 @@ void Mat33xcoord3D(Matrix & mat, Coord3D& in, Coord3D& out)
 /*! \brief (local function only)  extracts a matrix[n][3] from rigidbody coordinates
 *
 */
-void rigidToMatrix(const Rigidbody & rig , Array2D<double> & out) 
+void rigidToMatrix(const Rigidbody & rig , Array2D<dbl> & out) 
 {
     for (uint atom=0; atom<rig.Size();atom++)
     {
@@ -182,14 +182,14 @@ void rigidToMatrix(const Rigidbody & rig , Array2D<double> & out)
 *
 *  (as indicated in the Sippl article)
 */
-void MakeTensor(const Rigidbody & ref, const Rigidbody &  mob, Array2D<double> & out)
+void MakeTensor(const Rigidbody & ref, const Rigidbody &  mob, Array2D<dbl> & out)
 {
 
     assert(ref.Size() == mob.Size() );
 
     //Get the coordinates of ref and mob inside a matrix to then calculates the tensor
-    Array2D<double> cref(ref.Size(), 3) ;
-    Array2D<double> cmob(mob.Size(), 3) ;
+    Array2D<dbl> cref(ref.Size(), 3) ;
+    Array2D<dbl> cmob(mob.Size(), 3) ;
 
     rigidToMatrix(ref, cref);
     rigidToMatrix(mob, cmob);
@@ -230,11 +230,11 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
     Coord3D pt ; // a point of the rotation axis
 
 
-    double a = rotmatrix(0,0) ; // Xx
-    double b = rotmatrix(1,1) ; // Yy
-    double c = rotmatrix(2,2) ; // Zz
+    dbl a = rotmatrix(0,0) ; // Xx
+    dbl b = rotmatrix(1,1) ; // Yy
+    dbl c = rotmatrix(2,2) ; // Zz
 
-    double normtranslation = 0;
+    dbl normtranslation = 0;
 
     if (fabs(1+a-b-c) > EPSILON)
     {
@@ -288,7 +288,7 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
    else     // angle=0
       { 
             screw.point = Coord3D(0,0,0);
-            if(Norm(trans)!=0)
+            if(real(Norm(trans))!=0)
             {
               screw.transVector = trans / Norm(trans);
             }
@@ -315,16 +315,16 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
     Coord3D uprime;
     Mat33xcoord3D(rotmatrix,u,uprime);
 
-    double cost = ScalProd(u,uprime);
+    dbl cost = ScalProd(u,uprime);
 
     Coord3D usec;
     VectProd(screw.transVector,u,usec);
-    double sint = ScalProd(usec,uprime);
+    dbl sint = ScalProd(usec,uprime);
 
-    if (cost < -1 ) cost=-1;
-    if (cost >1 ) cost= 1 ;
+    if ( real(cost) < -1 ) real(cost)  =-1;
+    if (real(cost) >1 ) real(cost)= 1 ;
     screw.angle = acos(cost);
-    if (sint < 0) screw.angle = -screw.angle ;
+    if (real(sint) < 0) screw.angle = -screw.angle ;
     screw.transVector = screw.transVector * normtranslation;
     return screw ;
 }
@@ -362,8 +362,8 @@ Screw superimpose( AtomSelection selref, AtomSelection selmob, int verbosity)
 
 
 
-    Array2D<double> rot(3,3);  //rotation matrix
-    Array2D<double> ident(3,3); // identity matrix (only in the beginning!) 
+    Array2D<dbl> rot(3,3);  //rotation matrix
+    Array2D<dbl> ident(3,3); // identity matrix (only in the beginning!) 
     for (uint i=0; i<3; i++)
         for(uint j=0; j<3; j++)
         if (i!=j) {ident(i,j)=0;} else {ident(i,j)=1;} ;
@@ -379,7 +379,7 @@ Screw superimpose( AtomSelection selref, AtomSelection selmob, int verbosity)
     mobile.CenterToOrigin();
 
 
-    Array2D<double> U(3,3); //mixed tensor
+    Array2D<dbl> U(3,3); //mixed tensor
     MakeTensor(reference, mobile, U);
 
 
@@ -388,11 +388,11 @@ Screw superimpose( AtomSelection selref, AtomSelection selmob, int verbosity)
     for(uint i=0; i<30; i++)  // we may want to change the number of iterations at some point...
     {
 
-        double arg1,arg2;
+        dbl arg1,arg2;
 
         arg1 = U(2,1) - U(1,2) ;
         arg2 = U(1,1) + U(2,2);
-        double alpha = atan2(arg1 , arg2 );
+        dbl alpha = atan2(arg1 , arg2 );
 
         XRotMatrix(-alpha, rot);
         Mat33xMat33(rot,ident,ident);
@@ -405,7 +405,7 @@ Screw superimpose( AtomSelection selref, AtomSelection selmob, int verbosity)
         arg1 = U(2,0)-U(0,2);
         arg2 = U(0,0)+U(2,2);
 
-        double beta = atan2(arg1,arg2);
+        dbl beta = atan2(arg1,arg2);
         YRotMatrix(beta,rot);
         Mat33xMat33(rot,ident,ident);
 
@@ -416,7 +416,7 @@ Screw superimpose( AtomSelection selref, AtomSelection selmob, int verbosity)
 
         arg1 = U(1,0) - U(0,1);
         arg2 = U(0,0) + U(1,1);
-        double gamma = atan2(arg1,arg2);
+        dbl gamma = atan2(arg1,arg2);
 
         ZRotMatrix(-gamma,rot);
         Mat33xMat33(rot,ident,ident);

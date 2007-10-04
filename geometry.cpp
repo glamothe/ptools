@@ -6,12 +6,12 @@ namespace PTools{
 
 
 
-void mat44xmat44( const double mat1[ 4 ][ 4 ], const double mat2[ 4 ][ 4 ], double result[ 4 ][ 4 ] )
+void mat44xmat44( const dbl mat1[ 4 ][ 4 ], const dbl mat2[ 4 ][ 4 ], dbl result[ 4 ][ 4 ] )
 {
 // gives mat1*mat2 (mat2 left multiplied by mat1)
 // this works even if mat1 == mat2 (ie pointing the to same memory)
 
-    double temp[4][4];
+    dbl temp[4][4];
 
     //std::cout << mat1 << " " << mat2 << " " << result;
     //printmat44(mat1);
@@ -21,28 +21,28 @@ void mat44xmat44( const double mat1[ 4 ][ 4 ], const double mat2[ 4 ][ 4 ], doub
         for ( int rc = 0; rc < 4; rc++ )
         {
             // calcul element result[rl][rc]:
-            double sum = 0.0 ;
+            dbl sum = 0.0 ;
             for ( int p = 0; p < 4; p++ )
                 sum += mat1[ rl ][ p ] * mat2[ p ][ rc ] ;
             temp[ rl ][ rc ] = sum ;
         }
 
     //printmat44(result);
-    memcpy(result, temp, 16*sizeof(double));
+    memcpy(result, temp, 16*sizeof(dbl));
 
 }
 
 
 
-void MakeRotationMatrix( Coord3D A, Coord3D B, double theta, double out[ 4 ][ 4 ] )
+void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
 {
 
     //calcul vecteur AB (dx;dy;dz):
-    double dx = B.x - A.x ;
-    double dy = B.y - A.y ;
-    double dz = B.z - A.z ;
+    dbl dx = B.x - A.x ;
+    dbl dy = B.y - A.y ;
+    dbl dz = B.z - A.z ;
 
-    double mat1[ 4 ][ 4 ] ;
+    dbl mat1[ 4 ][ 4 ] ;
 
 
     //translation vecteur BA:
@@ -60,12 +60,12 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, double theta, double out[ 4 ][ 4 
     mat1[ 2 ][ 3 ] = -A.z;
 
     //rotation pour ramener sur le plan Oxz: Rotation 1 autour de X, angle -gamma (-g).
-    double d = sqrt( pow( dy, 2 ) + pow( dz, 2 ) ) ; //projeté de AB sur le plan Oxy
+    dbl d = sqrt( pow( dy, 2 ) + pow( dz, 2 ) ) ; //projeté de AB sur le plan Oxy
 
-    if ( d == 0 )  // AB appartient à (Ox)
+    if ( real(d) == 0 )  // AB appartient à (Ox)
     {
-        double cost = cos( theta );
-        double sint = sin( theta );
+        dbl cost = cos( theta );
+        dbl sint = sin( theta );
 
         out[ 0 ][ 0 ] = 1 ;
         out[ 0 ][ 1 ] = 0 ;
@@ -89,9 +89,9 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, double theta, double out[ 4 ][ 4 
     }
 
 
-    double cosg = dz / d ;
-    double sing = dy / d ;
-    double mat2[ 4 ][ 4 ] ;
+    dbl cosg = dz / d ;
+    dbl sing = dy / d ;
+    dbl mat2[ 4 ][ 4 ] ;
 
     mat2[ 0 ][ 0 ] = 1 ;
     mat2[ 0 ][ 1 ] = 0 ;
@@ -112,13 +112,13 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, double theta, double out[ 4 ][ 4 
 
     //printmat44(mat2);
 
-    double mat3[ 4 ][ 4 ];
+    dbl mat3[ 4 ][ 4 ];
     mat44xmat44( mat2, mat1, mat3 ); // mat3 == mat2*mat1 (!= mat1*mat2 )
 
 
     // rotation pour ramener sur l'axe Oz: Rotation 2. Axe (Oy), angle p.
-    double f = sqrt( pow( dx, 2 ) + pow( dy, 2 ) + pow( dz, 2 ) ); //norme
-    double cosp, sinp ;
+    dbl f = sqrt( pow( dx, 2 ) + pow( dy, 2 ) + pow( dz, 2 ) ); //norme
+    dbl cosp, sinp ;
     cosp = d / f;
     sinp = dx / f;
 
@@ -146,9 +146,9 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, double theta, double out[ 4 ][ 4 
 
 
     //rotation effective (autour axe 0z, angle theta)
-    double rotmatrix[ 4 ][ 4 ] ;
-    double cost = cos( theta );
-    double sint = sin( theta );
+    dbl rotmatrix[ 4 ][ 4 ] ;
+    dbl cost = cos( theta );
+    dbl sint = sin( theta );
 
     rotmatrix[ 0 ][ 0 ] = cost ;
     rotmatrix[ 0 ][ 1 ] = sint;
@@ -237,13 +237,13 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, double theta, double out[ 4 ][ 4 
 
 
 
-void XRotation( const Rigidbody& source, Rigidbody& result, double alpha )
+void XRotation( const Rigidbody& source, Rigidbody& result, dbl alpha )
 {
 
-    double cosa = cos( alpha );
-    double sina = sin( alpha );
+    dbl cosa = cos( alpha );
+    dbl sina = sin( alpha );
 
-    double rotmatrix[ 4 ][ 4 ];
+    dbl rotmatrix[ 4 ][ 4 ];
 
 
     //rotation d'angle alpha autour de (Ox), dans le sens indirect en regardant vers l'origine.
@@ -285,7 +285,7 @@ void XRotation( const Rigidbody& source, Rigidbody& result, double alpha )
 
 
 
-void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4 ] )
+void mat44xrigid( const Rigidbody& source, Rigidbody& result, dbl mat[ 4 ][ 4 ] )
 {
 
     for ( uint iatom = 0; iatom < source.Size(); iatom++ )
@@ -304,14 +304,14 @@ void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4
 
 
 
-void ABrotate( Coord3D A, Coord3D B, const Rigidbody& source, Rigidbody& result, double theta )
+void ABrotate( Coord3D A, Coord3D B, const Rigidbody& source, Rigidbody& result, dbl theta )
 {
 
     if (source.Size() != result.Size())
     {
         result = source ;
     }
-    double matrix[ 4 ][ 4 ];
+    dbl matrix[ 4 ][ 4 ];
     MakeRotationMatrix( A, B, theta, matrix );
     mat44xrigid( source, result, matrix );
 }
@@ -324,26 +324,26 @@ Attention: ne marche que si l'objet source est déjà centré
 TODO: tests !
 
 */
-void EulerZYZ(const Rigidbody & source, Rigidbody & target, double theta, double phi, double psi)
+void EulerZYZ(const Rigidbody & source, Rigidbody & target, dbl theta, dbl phi, dbl psi)
 {
 
     std::string message =  "Warning: this function does not update the mat44 matrix of rigidbody. \n";
     throw message;
 
 
-    double ct = cos(theta);
-    double st = sin(theta);
-    double cp = cos(phi);
-    double sp = sin(phi);
-    double cs = cos(psi);
-    double ss = sin(psi);
+    dbl ct = cos(theta);
+    dbl st = sin(theta);
+    dbl cp = cos(phi);
+    dbl sp = sin(phi);
+    dbl cs = cos(psi);
+    dbl ss = sin(psi);
 
     for (uint at=0; at<source.Size(); at++)
     {
         const Coord3D & vec = source.mCoords[at] ;
-        double x = vec.x;
-        double y = vec.y;
-        double z = vec.z;
+        dbl x = vec.x;
+        dbl y = vec.y;
+        dbl z = vec.z;
 
 
         Coord3D result;
@@ -369,11 +369,11 @@ void EulerZYZ(const Rigidbody & source, Rigidbody & target, double theta, double
         *  the command  dest = source. If not grave problems will happen
     /
 //note: should also work if dest and source are the same object
-void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot)
+void AttractEuler(const Rigidbody& source, Rigidbody& dest, dbl phi, dbl ssi, dbl rot)
 {
 
 
-    double  cp, cs, ss, sp, cscp, sscp, sssp, crot, srot, xar, yar, cssp ;
+    dbl  cp, cs, ss, sp, cscp, sscp, sssp, crot, srot, xar, yar, cssp ;
 
     cs=cos(ssi);
     cp=cos(phi);
@@ -391,9 +391,9 @@ void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double s
         const Coord3D & coords = source.mCoords[i];
 
 
-        double X = coords.x;
-        double Y = coords.y;
-        double Z = coords.z;
+        dbl X = coords.x;
+        dbl Y = coords.y;
+        dbl Z = coords.z;
         xar = X *crot+ Y*srot;
         yar = -X*srot+Y*crot ;
         Coord3D final( xar*cscp-yar*sp+ Z*sscp,
@@ -405,7 +405,7 @@ void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double s
     }
 
 
-      double eulermat[4][4];
+      dbl eulermat[4][4];
 
       eulermat[0][0] = crot*cscp + srot*sp;
       eulermat[0][1] = srot*cscp - crot*sp;
@@ -446,14 +446,14 @@ void VectProd( const Coord3D& u, const Coord3D& v, Coord3D& UvectV )
     UvectV.z = u.x * v.y - u.y * v.x ;
 }
 
-void printmat44( const double mat[ 4 ][ 4 ] )
+void printmat44( const dbl mat[ 4 ][ 4 ] )
 {
 
     for (uint i=0; i<4; i++)
     {
         for (uint j=0; j<4; j++)
         {
-            printf("%12.7f", mat[i][j]) ;
+            printf("%12.7f", real(mat[i][j])) ;
         }
         std::cout << std::endl;
     }
@@ -472,7 +472,7 @@ void MakeVect( const Coord3D& a, const Coord3D& b, Coord3D& result )
 
 
 
-double dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3D& d )
+dbl dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3D& d )
 {
     //calculate the dihedral angle defined by a, b, c and d.
     //The method is described in: J.K Rainey, Ph.D. Thesis,
@@ -499,10 +499,10 @@ double dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coo
 
     //std::cout <<"ScalProd: " <<ScalProd(BA,n1)<< "\n" ;
 
-    double n1n2 = ScalProd( n1, n2 );
-    double cost = n1n2 / sqrt( ScalProd( n1, n1 ) * ScalProd( n2, n2 ) );
+    dbl n1n2 = ScalProd( n1, n2 );
+    dbl cost = n1n2 / sqrt( ScalProd( n1, n1 ) * ScalProd( n2, n2 ) );
 
-    double theta = acos( cost );
+    dbl theta = acos( cost );
     std::cout << "Theta: " << theta / 3.14159265*180 << "\n" ;
 
     Coord3D n3;
@@ -516,13 +516,13 @@ double dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coo
 
 
 
-double Angle(const Coord3D& vector1, const Coord3D& vector2)
+dbl Angle(const Coord3D& vector1, const Coord3D& vector2)
 {
-    double pdtscal=ScalProd(vector1,vector2);
-    double A = sqrt(ScalProd(vector1,vector1)) ;
-    double B = sqrt(ScalProd(vector2,vector2));
+    dbl pdtscal=ScalProd(vector1,vector2);
+    dbl A = sqrt(ScalProd(vector1,vector1)) ;
+    dbl B = sqrt(ScalProd(vector2,vector2));
 
-    double costheta = pdtscal / (A*B) ;
+    dbl costheta = pdtscal / (A*B) ;
     return acos(costheta);
 }
 

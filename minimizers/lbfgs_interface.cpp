@@ -4,6 +4,8 @@
 #include <iostream>
 #include <math.h>
 
+#include "../complexify.h"
+
 namespace PTools{
 
 inline void assign(char* dest, char* src)
@@ -30,16 +32,41 @@ lbfgsb_destroy(m_opt);
 }
 
 
+// vector<double> to vector<double> converter. used for genericity. should not impact performances too much.
+inline void tocplx(const std::vector<double> & vdblin, std::vector<double> & vdblout ){vdblout=vdblin;};
+
+//convert from vector<cplx> to vector<double>
+inline void tocplx(const std::vector<double> & vdblin, std::vector<surreal> & vcplx)
+{
+    vcplx = std::vector<surreal>();
+    for (uint i=0; i<vdblin.size(); i++)
+    {
+        vcplx.push_back(vdblin[i]);
+    }
+}
+
+inline std::vector<double> todbl(std::vector<double> & vdbl) {return vdbl;};
+inline std::vector<double> todbl(std::vector<surreal> & vcplx)
+{
+std::vector<double> vdbl;
+for(uint i=0; i<vcplx.size(); i++)
+{
+    vdbl.push_back(real(vcplx[i]));
+}
+return vdbl;
+};
+
+
+
 void Lbfgs::minimize(int maxiter)
 {
-
 
     int n = objToMinimize.ProblemSize();
     std::cout  << "number of free variables for the minimizer: " << n << std::endl;
 
 
-    Vdouble l(n);
-    Vdouble u(n);
+    std::vector<double> l(n);
+    std::vector<double> u(n);
     Vint nbd(n);
 
     x.resize(n);
@@ -91,8 +118,11 @@ void Lbfgs::minimize(int maxiter)
                 }
 
 
-                f = objToMinimize.Function(x);
-                objToMinimize.Derivatives(x,g);
+                std::vector<dbl> vdblx;  tocplx(x,vdblx);
+                std::vector<dbl> vdblg;  tocplx(g,vdblg);
+
+                f = objToMinimize.Function(vdblx);
+                objToMinimize.Derivatives(vdblx,vdblg);
 //                 objToMinimize.NumDerivatives(x,g,true);
 
 

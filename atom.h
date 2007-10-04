@@ -19,7 +19,7 @@ private:
     std::string mChainId; ///< A, B, etc.
     uint mResidId; ///< residue number
     uint mAtomId; ///< atom number
-    double mAtomCharge; ///< charge of the atom
+    dbl mAtomCharge; ///< charge of the atom
     std::string mExtra; ///< extra data
 
 public:
@@ -48,10 +48,10 @@ public:
     void SetResidType(std::string residtype){mResidType=residtype;}; 
 
     /// return atom charge
-    inline double GetAtomCharge() const {return mAtomCharge;}; 
+    inline dbl GetAtomCharge() const {return mAtomCharge;}; 
 
     /// define atom charge
-    inline void SetAtomCharge(double ch) {mAtomCharge=ch;}; 
+    inline void SetAtomCharge(dbl ch) {mAtomCharge=ch;}; 
 
     /// return chain ID
     inline std::string GetChainId() const {return mChainId;}; 
@@ -108,13 +108,13 @@ public:
 
 
 
-inline double Dist(const Atom& at1, const Atom& at2) ///< distance between two atoms
+inline dbl Dist(const Atom& at1, const Atom& at2) ///< distance between two atoms
 {
     return Norm(at1.GetCoords()-at2.GetCoords());
 }
 
 
-inline double Dist2(const Atom& at1, const Atom& at2) ///< distance**2 between two atoms
+inline dbl Dist2(const Atom& at1, const Atom& at2) ///< distance**2 between two atoms
 {
     return Norm2(at1.GetCoords()-at2.GetCoords());
 }

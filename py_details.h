@@ -6,7 +6,8 @@
 
 namespace pyplusplus{ namespace aliases{
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    typedef std::vector< double > Vdouble;
+    typedef std::vector< surreal > Vsurreal;
+    typedef std::vector< double > Vdouble ;
     typedef std::vector< uint > Vuint ;
     typedef std::vector< int > Vint ;
     typedef std::vector< PTools::Coord3D> VCoord3D;

@@ -12,12 +12,12 @@ namespace PTools{
 
 class Rigidbody;
 
-typedef double Mat44[4][4];
+typedef dbl Mat44[4][4];
 
-void MakeRotationMatrix(Coord3D A, Coord3D B, double theta,  double out[4][4]);
-void XRotation(const Rigidbody& source, Rigidbody &result,  double alpha); // rotation autour de l'axe X
+void MakeRotationMatrix(Coord3D A, Coord3D B, dbl theta,  dbl out[4][4]);
+void XRotation(const Rigidbody& source, Rigidbody &result,  dbl alpha); // rotation autour de l'axe X
 
-inline void mat44xVect(const double mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D& out )
+inline void mat44xVect(const dbl mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D& out )
 {
     out.x = vect.x * mat[ 0 ][ 0 ] + vect.y * mat[ 0 ][ 1 ] + vect.z * mat[ 0 ][ 2 ] + mat[ 0 ][ 3 ] ;
     out.y = vect.x * mat[ 1 ][ 0 ] + vect.y * mat[ 1 ][ 1 ] + vect.z * mat[ 1 ][ 2 ] + mat[ 1 ][ 3 ] ;
@@ -25,28 +25,28 @@ inline void mat44xVect(const double mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D&
 }
 
 
-void mat44xrigid(const Rigidbody& source, Rigidbody& result, double mat[4][4]);
-void ABrotate(Coord3D A, Coord3D B, const Rigidbody& source, Rigidbody& result, double theta);
-void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double phi, double psi);
-// void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot);
+void mat44xrigid(const Rigidbody& source, Rigidbody& result, dbl mat[4][4]);
+void ABrotate(Coord3D A, Coord3D B, const Rigidbody& source, Rigidbody& result, dbl theta);
+void EulerZYZ(const Rigidbody & source, Rigidbody & cible, dbl theta, dbl phi, dbl psi);
+// void AttractEuler(const Rigidbody& source, Rigidbody& dest, dbl phi, dbl ssi, dbl rot);
 
-void mat44xmat44( const double mat1[4][4], const double mat2[4][4], double result[4][4] );
-//void MultMat4x4(double R1[4][4], double R2[4][4], double out[4][4]);
+void mat44xmat44( const dbl mat1[4][4], const dbl mat2[4][4], dbl result[4][4] );
+//void MultMat4x4(dbl R1[4][4], dbl R2[4][4], dbl out[4][4]);
 
 ///vectorial product
 void VectProd(const Coord3D& u,const Coord3D& v, Coord3D& UvectV);
 
-void printmat44(const double mat[4][4]);
+void printmat44(const dbl mat[4][4]);
 
 ///returns the scalar product between two Coord3D object
-inline double ScalProd( const Coord3D& a, const Coord3D& b )
+inline dbl ScalProd( const Coord3D& a, const Coord3D& b )
 {
     return a.x * b.x + a.y * b.y + a.z * b.z ;
 }
 
-double dihedral(const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3D& d);
+dbl dihedral(const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3D& d);
 
-double Angle(const Coord3D& vector1, const Coord3D& vector2);
+dbl Angle(const Coord3D& vector1, const Coord3D& vector2);
 
 // void Translate(const Rigidbody & source, Rigidbody & target, const Coord3D& trans); ///< rigidbody translation
 

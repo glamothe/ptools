@@ -163,13 +163,13 @@ void WritePDB(const Rigidbody& rigid, std::string filename)
         int atomnumber = at.GetAtomId();
 
         Coord3D coord = at.GetCoords();
-        double x = coord.x;
-        double y = coord.y;
-        double z = coord.z ;
+        dbl x = coord.x;
+        dbl y = coord.y;
+        dbl z = coord.z ;
 
 
 
-        fprintf(file,"ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f%s",atomnumber,atomname,residName,chainID,residnumber,x,y,z,at.GetExtra().c_str());
+        fprintf(file,"ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f%s",atomnumber,atomname,residName,chainID,residnumber,real(x),real(y),real(z),at.GetExtra().c_str());
         fprintf(file,"\n");
     }
 

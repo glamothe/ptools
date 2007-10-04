@@ -22,8 +22,8 @@ class ForceField
 public:
 
 
-    //virtual double Function()=0; //simply return the function value for
-    virtual double Function(const Vdouble&)=0;
+    //virtual dbl Function()=0; //simply return the function value for
+    virtual dbl Function(const Vdouble&)=0;
     
     /// analytical derivative
     virtual void Derivatives(const Vdouble& StateVars, Vdouble& delta)
@@ -43,13 +43,13 @@ class AttractForceField: public ForceField
 
 public:
 
-    AttractForceField(const Rigidbody& recept,const Rigidbody& lig,double cutoff);
+    AttractForceField(const Rigidbody& recept,const Rigidbody& lig,dbl cutoff);
     virtual ~AttractForceField(){};
 
 
     //this is to satisfy the abstract class:
-    //virtual double Function() {return Energy();};
-    virtual double Function(const Vdouble& stateVars) {
+    //virtual dbl Function() {return Energy();};
+    virtual dbl Function(const Vdouble& stateVars) {
         //std::cout << "Function: stateVars size: " << stateVars.size() << std::endl;
         return Energy(stateVars);
     };
@@ -64,11 +64,11 @@ public:
     };
 
 
-    double Energy(); ///< return current energy without moving any object
-    double Energy(const Vdouble& stateVars); // stateVars: tx ty tz theta phi psi
+    dbl Energy(); ///< return current energy without moving any object
+    dbl Energy(const Vdouble& stateVars); // stateVars: tx ty tz theta phi psi
 
-    double Electrostatic();
-    double LennardJones();
+    dbl Electrostatic();
+    dbl LennardJones();
 
     void Gradient(const Vdouble& stateVars, Vdouble& delta);
 
@@ -77,7 +77,7 @@ public:
         Vdouble delta(6) ;
         Trans(delta,true);
     };
-    void SetRestraint(double rstk) {
+    void SetRestraint(dbl rstk) {
         m_rstk = rstk;
     };
 
@@ -91,10 +91,10 @@ private:
     void InitParams();
 
     void Trans(Vdouble& delta, bool print=false); // translational derivatives
-    void Rota(double phi,double ssi, double rot, Vdouble& delta, bool print=false);
+    void Rota(dbl phi,dbl ssi, dbl rot, Vdouble& delta, bool print=false);
     void ResetForces();
 
-    double Constraints(); ///< distance constraints between ligand and receptor
+    dbl Constraints(); ///< distance constraints between ligand and receptor
 
     //private data
     Rigidbody m_refreceptor, m_refligand;
@@ -117,8 +117,8 @@ private:
     Vdouble m_rAtomCharge;
     Vdouble m_lAtomCharge;
 
-    double m_rc[40][40]; //some pre-calculated results
-    double m_ac[40][40]; //some pre-calculated results
+    dbl m_rc[40][40]; //some pre-calculated results
+    dbl m_ac[40][40]; //some pre-calculated results
 
     bool m_energycalled ;
 
@@ -126,7 +126,7 @@ private:
     std::string _filesuffix;
 
     static int _minimnb;
-    double m_rstk;
+    dbl m_rstk;
 } ;
 
 
@@ -135,13 +135,13 @@ private:
 class TestForceField: public ForceField
 {
 
-//virtual double Function() {return 0.0;};
+//virtual dbl Function() {return 0.0;};
 
     virtual uint ProblemSize(){
         return 2;
     };
 
-    virtual double Function(const Vdouble& X)
+    virtual dbl Function(const Vdouble& X)
     {
         PrintVec(X);
         return X[0]*X[0] + (X[1]-2)*(X[1]-2) ;
@@ -170,19 +170,19 @@ struct AttFF2_params
 {
 int ipon[31][31];
 // Array2D<int> ipon;
-// Array2D<double> rc;
-double rc[31][31];  //TODO: should be translated into clean std::vectors
-// Array2D<double> ac;
-double ac[31][31];
+// Array2D<dbl> rc;
+dbl rc[31][31];  //TODO: should be translated into clean std::vectors
+// Array2D<dbl> ac;
+dbl ac[31][31];
 
 
-double emin[31][31];
-double rmin2[31][31];
-double rbc[31][31];
-double abc[31][31];
+dbl emin[31][31];
+dbl rmin2[31][31];
+dbl rbc[31][31];
+dbl abc[31][31];
 int iflo[31][31];  //? read from mkbest1.par (forcefield parameters)
 
-//AttFF2_params() {ipon=Array2D<int>(3000,3000); ac=Array2D<double>(3000,3000); rc=Array2D<double>(3000,3000); }
+//AttFF2_params() {ipon=Array2D<int>(3000,3000); ac=Array2D<dbl>(3000,3000); rc=Array2D<double>(3000,3000); }
 
 };
 
@@ -196,11 +196,11 @@ class AttractForceField2 : public ForceField
 
 public:
 
-    AttractForceField2(std::string paramsFileName, double cutoff);
-    double Function(const Vdouble&);
+    AttractForceField2(std::string paramsFileName, dbl cutoff);
+    dbl Function(const Vdouble&);
     void Derivatives(const Vdouble&, Vdouble&); ///< analytical derivative
     uint ProblemSize();
-    double nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false);
+    dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false);
 
     void AddLigand(AttractRigidbody & lig); ///< add a new ligand to the ligand list...
     void MakePairLists(); ///< this function generates the pairlists before a minimization
@@ -222,13 +222,13 @@ private:
     std::vector<AttractRigidbody> m_movedligand;
     std::vector<Coord3D> m_ligcenter;
 
-    double m_cutoff;
+    dbl m_cutoff;
 
 
 
     //private functions members:
         void Trans(uint molIndex, Vdouble& delta,uint shift, bool print=false); // translational derivatives
-        void Rota(uint molIndex, double phi,double ssi, double rot, Vdouble& delta, uint shift, bool print=false);
+        void Rota(uint molIndex, dbl phi, dbl ssi, dbl rot, Vdouble& delta, uint shift, bool print=false);
 
 
 };

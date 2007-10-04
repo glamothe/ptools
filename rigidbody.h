@@ -19,7 +19,7 @@ namespace {
 // anonymous namespace for copying the mat44xVect from geometry.h
 // this is a pretty ugly hack and if someone finds a better way, then please do it !
 
-   inline void mat44xVect(const double mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D& out )
+   inline void mat44xVect(const dbl mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D& out )
    {
     out.x = vect.x * mat[ 0 ][ 0 ] + vect.y * mat[ 0 ][ 1 ] + vect.z * mat[ 0 ][ 2 ] + mat[ 0 ][ 3 ] ;
     out.y = vect.x * mat[ 1 ][ 0 ] + vect.y * mat[ 1 ][ 1 ] + vect.z * mat[ 1 ][ 2 ] + mat[ 1 ][ 3 ] ;
@@ -44,7 +44,7 @@ private:
 
     std::vector<Coord3D> mCoords; ///< vector of coordinates
     std::vector<Coord3D> mForces; ///< forces for each atom
-    double mat44[4][4]; ///< rotation/tranlation matrix
+    dbl mat44[4][4]; ///< rotation/tranlation matrix
 
 
     virtual void m_hookCoords(uint i, Coord3D & co) const ; ///< private hook to give a chance for class childs to change the coordinates before rotations and translations
@@ -128,7 +128,7 @@ public:
 
     void Translate(const Coord3D& tr); ///< Translate the whole object
 
-    void AttractEulerRotate(double phi, double ssi, double rot); ///< Do an euler rotation (Attract convention)
+    void AttractEulerRotate(dbl phi, dbl ssi, dbl rot); ///< Do an euler rotation (Attract convention)
 
     /// selection : complete
     AtomSelection SelectAllAtoms();
@@ -156,11 +156,11 @@ public:
     /// operator + : merge two Rigdibody by extending the first coordinates with the second coordinates.
     Rigidbody operator+ (const Rigidbody& rig);
 
-    void ABrotate(const Coord3D& A, const Coord3D& B, double theta); ///< rotation around (AB) axis.
+    void ABrotate(const Coord3D& A, const Coord3D& B, dbl theta); ///< rotation around (AB) axis.
 
     void ResetMatrix(); ///< reset Rotation/translation matrix to identity.
     void PrintMatrix() const; ///< print the rotation/translation matrix
-    void ApplyMatrix(double mat[4][4]);
+    void ApplyMatrix(dbl mat[4][4]);
     Vdouble GetMatrix() const;
 
     /// in some cases atoms may be ignored 
@@ -169,11 +169,11 @@ public:
 
 
     // here is all the friends declarations I'm not very proud of...
-//     friend void AttractEuler(const Rigidbody& source, Rigidbody& dest, double phi, double ssi, double rot);
-    friend void mat44xrigid( const Rigidbody& source, Rigidbody& result, double mat[ 4 ][ 4 ] );
+//     friend void AttractEuler(const Rigidbody& source, Rigidbody& dest, dbl phi, dbl ssi, dbl rot);
+    friend void mat44xrigid( const Rigidbody& source, Rigidbody& result, dbl mat[ 4 ][ 4 ] );
 //     friend void Translate(const Rigidbody& source, Rigidbody& target, const Coord3D& trans);
-    friend void XRotation( const Rigidbody& source, Rigidbody& result, double alpha );
-    friend void EulerZYZ(const Rigidbody & source, Rigidbody & cible, double theta, double phi, double psi);
+    friend void XRotation( const Rigidbody& source, Rigidbody& result, dbl alpha );
+    friend void EulerZYZ(const Rigidbody & source, Rigidbody & cible, dbl theta, dbl phi, dbl psi);
 
     friend class AtomSelection;
 
@@ -198,7 +198,7 @@ public:
     {
         return m_atomTypeNumber[i];
     };
-    double getCharge(uint i) const
+    dbl getCharge(uint i) const
     {
         return m_charge[i];
     };
@@ -226,10 +226,10 @@ public:
     }
 
     ///adds a mode to the mode list
-     void addMode(VCoord3D & mode, double eigen);
+     void addMode(VCoord3D & mode, dbl eigen);
 
      ///ask for a certain mode to be applied before getting the coordinates
-     void applyMode(uint modenumber, double lambda){
+     void applyMode(uint modenumber, dbl lambda){
          assert(m_lambdaMode.size()> modenumber );
          m_lambdaMode[modenumber] = lambda ;
      }
@@ -242,10 +242,10 @@ public:
 
 private:
     std::vector<uint> m_atomTypeNumber ;
-    std::vector<double> m_charge ;
+    std::vector<dbl> m_charge ;
     std::vector<Coord3D> m_forces ;
-    std::vector<double> m_lambdaMode ;
-    std::vector<double> m_eigen; ///< array of eigenvalues
+    std::vector<dbl> m_lambdaMode ;
+    std::vector<dbl> m_eigen; ///< array of eigenvalues
 
     std::vector<VCoord3D> m_modesArray; ///< array of modes (normal modes)
 
@@ -261,7 +261,7 @@ friend class AttractForceField2;
 
 
 
-// void applyMode(AttractRigidbody & src, AttractRigidbody& dest, const std::vector<Coord3D> & mode, double scalar);
+// void applyMode(AttractRigidbody & src, AttractRigidbody& dest, const std::vector<Coord3D> & mode, dbl scalar);
 
 
 } // end namespace PTools
