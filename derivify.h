@@ -1,3 +1,6 @@
+// NOTE: taken from website http://mdolab.utias.utoronto.ca/resources/complex-step/cpp
+// no explicit license given. 
+//
 /***
  *  For automatic differentiation of a C/C++ code:
  *  f'(x) =  imag [ f(surreal(x,1)) ]
