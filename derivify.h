@@ -39,8 +39,10 @@ class surreal {
 
 public:
   surreal(const double& v=0.0, const double& d=0.0) : val(v), deriv(d) {}
+  inline surreal& operator=(const surreal & s) {val = s.val ; deriv = s.deriv; return *this;};
   operator double() const {return val;}
   operator int() const {return int(val);}
+
   inline friend const double & real(const surreal& z) ;  // born out of
   inline friend const double & imag(const surreal& z) ;  // complex step
   inline friend double & real(surreal& z) ;  // born out of
