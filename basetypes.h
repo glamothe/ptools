@@ -11,7 +11,7 @@
 //switch to choose between automatic differenciation 
 //or normal double arithmetic
 
-#define AUTO_DIFF
+
 
 
 #include "derivify.h"  //must be included in any cases

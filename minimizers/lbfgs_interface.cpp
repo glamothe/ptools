@@ -51,6 +51,8 @@ inline void tocplx(const std::vector<double> & vdblin, std::vector<surreal> & vc
 #endif
 
 inline std::vector<double> todbl(std::vector<double> & vdbl) {return vdbl;};
+
+#ifdef AUTO_DIFF
 inline std::vector<double> todbl(std::vector<surreal> & vcplx)
 {
 std::vector<double> vdbl;
@@ -61,7 +63,7 @@ for(uint i=0; i<vcplx.size(); i++)
 return vdbl;
 };
 
-
+#endif
 
 void Lbfgs::minimize(int maxiter)
 {

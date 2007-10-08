@@ -152,7 +152,11 @@ void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool p
 
     }
 }
-
+#else
+void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool print)
+{
+    std::cout << "This feature was not enabled at compile-time. Please recompile with #define AUTO_DIFF \n";
+}
 
 #endif  //AUTO_DIFF
 

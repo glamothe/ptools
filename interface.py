@@ -82,8 +82,12 @@ screw.include()
 superimpose=mb.free_function("superimpose")
 superimpose.include()
 
-surreal = mb.class_("surreal")
-surreal.include()
+
+try:
+    surreal = mb.class_("surreal")
+    surreal.include()
+except :
+    print "no surreal type this time."
 
 #Creating code creator. After this step you should not modify/customize declarations.
 mb.build_code_creator( module_name='_ptools' )

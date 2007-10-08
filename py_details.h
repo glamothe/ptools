@@ -6,7 +6,10 @@
 
 namespace pyplusplus{ namespace aliases{
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#ifdef AUTO_DIFF
     typedef std::vector< surreal > Vsurreal;
+#endif
     typedef std::vector< double > Vdouble ;
     typedef std::vector< uint > Vuint ;
     typedef std::vector< int > Vint ;
