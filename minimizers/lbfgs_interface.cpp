@@ -35,6 +35,9 @@ lbfgsb_destroy(m_opt);
 // vector<double> to vector<double> converter. used for genericity. should not impact performances too much.
 inline void tocplx(const std::vector<double> & vdblin, std::vector<double> & vdblout ){vdblout=vdblin;};
 
+
+
+#ifdef AUTO_DIFF
 //convert from vector<cplx> to vector<double>
 inline void tocplx(const std::vector<double> & vdblin, std::vector<surreal> & vcplx)
 {
@@ -44,6 +47,8 @@ inline void tocplx(const std::vector<double> & vdblin, std::vector<surreal> & vc
         vcplx.push_back(vdblin[i]);
     }
 }
+
+#endif
 
 inline std::vector<double> todbl(std::vector<double> & vdbl) {return vdbl;};
 inline std::vector<double> todbl(std::vector<surreal> & vcplx)
@@ -118,11 +123,21 @@ void Lbfgs::minimize(int maxiter)
                 }
 
 
-                std::vector<dbl> vdblx;  tocplx(x,vdblx);
-                std::vector<dbl> vdblg;  tocplx(g,vdblg);
+                std::vector<dbl> vdblx;
+                tocplx(x,vdblx);
+                std::vector<dbl> vdblg;
+                tocplx(g,vdblg);
 
                 f = objToMinimize.Function(vdblx);
                 objToMinimize.Derivatives(vdblx,vdblg);
+                g=todbl(vdblg);
+
+
+                std::cout << "analytical derivatives: \n";
+                for(uint i=0; i<g.size(); i++)
+                {
+                    std::cout << "deriv[" << i << "]: " << g[i] << std::endl;
+                }
 //                 objToMinimize.NumDerivatives(x,g,true);
 
 

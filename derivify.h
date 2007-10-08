@@ -17,8 +17,10 @@
 using namespace std;
 
 
+// #define AUTO_DIFF
+
 #ifndef HDRcomplexify
-inline double real(const double& r) {
+inline const double & real(const double& r) {
   /***
    *  So the real() statement can be used even with
    *  the double version of the code to be derivified,
@@ -28,10 +30,18 @@ inline double real(const double& r) {
 return r;
 }
 
+
+inline double & real(double & r) { return r;}
+
+
+
 inline double imag(const double& r) {
   return 0.;
 }
 #endif // HDRcomplexify
+
+
+#ifdef AUTO_DIFF
 
 class surreal {
 #define surr_TEENY (1.e-24) /*machine zero compared to nominal value of val*/
@@ -39,7 +49,7 @@ class surreal {
 
 public:
   surreal(const double& v=0.0, const double& d=0.0) : val(v), deriv(d) {}
-  inline surreal& operator=(const surreal & s) {val = s.val ; deriv = s.deriv; return *this;};
+//   inline surreal& operator=(const surreal & s) {val = s.val ; deriv = s.deriv; return *this;};
   operator double() const {return val;}
   operator int() const {return int(val);}
 
@@ -578,6 +588,9 @@ inline const double & real(const surreal& z) {return z.val;}  // born out of
 inline const double & imag(const surreal& z) {return z.deriv;}// complex step
 inline double & real(surreal& z) {return z.val;}  // born out of
 inline double & imag(surreal& z) {return z.deriv;}// complex step
+
+
+#endif // #ifdef AUTO_DIFF
 
 
 #undef surr_TEENY

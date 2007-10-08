@@ -73,9 +73,9 @@ for mode in modes:
     try:
         while(True):
             co=Coord3D()
-            co.x = dmode.popleft()
-            co.y = dmode.popleft()
-            co.z = dmode.popleft()
+            co.x = surreal(dmode.popleft())
+            co.y = surreal(dmode.popleft())
+            co.z = surreal(dmode.popleft())
             vcmode.append(co)
     except IndexError:
             #print type(vcmode)
@@ -84,23 +84,24 @@ for mode in modes:
 
 
 for vcmode,eigen in zip(arrayOfModes,eigens):
-    rig.addMode(vcmode,float(eigen) )
+    rig.addMode(vcmode,surreal(float(eigen)) )
     print "eigen: " , eigen
 
 
 for l in arange(-3,3, 0.5):
-    rig.applyMode(0, l)
+    rig.applyMode(0, surreal(l))
     WritePDB(rig, "fich%s.red"%(l+3))
 
 
 #start a minimization:
-lig = Rigidbody('1FIN_l.red2_translated')
+lig = Rigidbody('1FIN_c_l.red2')
 lig = AttractRigidbody(lig)
 #lig.Translate(Coord3D(-1, -5, -7))
-lig.setTranslation(False)
-lig.setRotation(False)
 
-ff2 = AttractForceField2('mbest1k.par', 50)
+#lig.setTranslation(False)
+#lig.setRotation(False)
+
+ff2 = AttractForceField2('mbest1k.par', surreal(50))
 ff2.AddLigand(rig)
 
 ff2.AddLigand(lig)

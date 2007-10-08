@@ -60,7 +60,7 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     mat1[ 2 ][ 3 ] = -A.z;
 
     //rotation pour ramener sur le plan Oxz: Rotation 1 autour de X, angle -gamma (-g).
-    dbl d = sqrt( pow( dy, 2 ) + pow( dz, 2 ) ) ; //projeté de AB sur le plan Oxy
+    dbl d = sqrt( dy*dy + dz*dz ) ; //projeté de AB sur le plan Oxy
 
     if ( real(d) == 0 )  // AB appartient à (Ox)
     {
@@ -117,7 +117,7 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
 
 
     // rotation pour ramener sur l'axe Oz: Rotation 2. Axe (Oy), angle p.
-    dbl f = sqrt( pow( dx, 2 ) + pow( dy, 2 ) + pow( dz, 2 ) ); //norme
+    dbl f = sqrt(  dx*dx + dy*dy + dz*dz ); //norme
     dbl cosp, sinp ;
     cosp = d / f;
     sinp = dx / f;

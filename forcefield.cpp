@@ -111,6 +111,8 @@ AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& li
 }
 
 
+#ifdef AUTO_DIFF
+
 static bool numerical_warning=false;
 void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool print)
 {
@@ -123,19 +125,20 @@ void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool p
     for (uint j=0; j<ProblemSize(); j++)
     {
 
-        Vdouble newvars1 = stateVars;
-        Vdouble newvars2 = stateVars;
+        std::vector<dbl> newvars1 = stateVars;
+        std::vector<dbl> newvars2 = stateVars;
 
 
 
-        dbl h=1.0/20000.0;
-
-        newvars1[j]+=h;
+//         dbl h=1.0/20000.0; 
+	
+	imag(newvars1[j])=1;
         dbl F1=Function(newvars1);
-        newvars2[j]-=h;
-        dbl F2=Function(newvars2);
-        dbl diff=(F1-F2)/(2*h) ;
-        delta[j]=diff;
+//         newvars2[j]-=h;
+//         dbl F2=Function(newvars2);
+//         dbl diff=(F1-F2)/(2*h) ;
+         delta[j]=imag(F1);
+         if (print) std::cout << "function : " << real(F1) << std::endl ;
     }
 
     if (print)
@@ -143,7 +146,7 @@ void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool p
         std::cout << "Numerical derivatives: \n";
         for (uint i=0; i<ProblemSize(); i++)
         {
-            std::cout << delta[i] << "  " ;
+            std::cout <<  "Derivatives[" << i<< "]"  <<  real(delta[i]) << std::endl ;
         }
         std::cout << "\n";
 
@@ -151,7 +154,7 @@ void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool p
 }
 
 
-
+#endif  //AUTO_DIFF
 
 
 dbl AttractForceField::Energy()
@@ -721,10 +724,12 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 
             delta[svptr] = dx+dy+dz; //summation of partial scalar product
             delta[svptr] += 4*pow<3>(stateVars[svptr]);
-            std::cout << "debug delta: " << delta[svptr] << std::endl;
+            std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n";
+            std::cout << "debug analytical delta: " << delta[svptr] << std::endl;
             std::vector<dbl> h = delta;
-            NumDerivatives(stateVars,h,false);
+            NumDerivatives(stateVars,h,true);
             std::cout << "debug numderivatives: " << h[0]  << std::endl ;
+            std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n";
 
             svptr++;  //increment the pointer over minimizer variable
        }

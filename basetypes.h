@@ -7,10 +7,21 @@
 #include <cassert>
 #include <boost/shared_array.hpp>
 
-// #include "complexify.h"
-#include "derivify.h"
 
-typedef surreal dbl;
+//switch to choose between automatic differenciation 
+//or normal double arithmetic
+
+#define AUTO_DIFF
+
+
+#include "derivify.h"  //must be included in any cases
+
+#ifdef AUTO_DIFF
+   typedef surreal dbl;
+#else
+   typedef double dbl;
+#endif
+
 
 typedef std::vector<int> Vint;
 typedef std::vector<uint> Vuint;
@@ -21,6 +32,7 @@ typedef std::vector<dbl> Vdouble;
 #else
 #define Debug(func)
 #endif
+
 
 
 
