@@ -235,6 +235,8 @@ public:
      }
 
 
+    ///get the eigenvalue of mode 'i'
+    double getEigen(uint i);
 
     void setRotation(bool value) {hasrotation  = value;} //allow/disallow rotation
     void setTranslation(bool value) {hastranslation = value;} //allow/disallow translation

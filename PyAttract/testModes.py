@@ -85,6 +85,7 @@ for mode in modes:
 
 for vcmode,eigen in zip(arrayOfModes,eigens):
     rig.addMode(vcmode,surreal(float(eigen)) )
+    print "surreal(float(eigen)): ", surreal(float(eigen))
     print "eigen: " , eigen
 
 
@@ -101,18 +102,19 @@ lig = AttractRigidbody(lig)
 #lig.setTranslation(False)
 #lig.setRotation(False)
 
-ff2 = AttractForceField2('mbest1k.par', surreal(50))
+ff2 = AttractForceField2('mbest1k.par', surreal(8))
 ff2.AddLigand(rig)
 
 ff2.AddLigand(lig)
 minim = Lbfgs(ff2)
-minim.minimize(10)
+minim.minimize(500)
 
+raise SystemExit
 
 nminim = minim.GetNumberIter()
 for i in range(nminim):
     v=minim.GetMinimizedVarsAtIter(i)
-    rig.applyMode(0, v[0])
+    rig.applyMode(0, surreal(v[0]))
     WritePDB(rig, "minim%s.red"%(i))
 
 

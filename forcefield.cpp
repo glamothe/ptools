@@ -130,15 +130,15 @@ void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool p
 
 
 
-//         dbl h=1.0/20000.0; 
-	
-	imag(newvars1[j])=1;
+//         dbl h=1.0/20000.0;
+
+        imag(newvars1[j])=1;
         dbl F1=Function(newvars1);
 //         newvars2[j]-=h;
 //         dbl F2=Function(newvars2);
 //         dbl diff=(F1-F2)/(2*h) ;
-         delta[j]=imag(F1);
-         if (print) std::cout << "function : " << real(F1) << std::endl ;
+        delta[j]=imag(F1);
+        if (print) std::cout << "function : " << real(F1) << std::endl ;
     }
 
     if (print)
@@ -487,7 +487,7 @@ void AttractForceField::ShowEnergyParams()
 static AttFF2_params* m_params = 0;
 
 AttractForceField2::AttractForceField2(std::string filename, dbl cutoff)
-:m_cutoff(cutoff)
+        :m_cutoff(cutoff)
 {
 
 
@@ -529,10 +529,10 @@ AttractForceField2::AttractForceField2(std::string filename, dbl cutoff)
 
 
 
-        for (uint jj=0; jj<31; jj++)  // loop over attract atom types 
+        for (uint jj=0; jj<31; jj++)  // loop over attract atom types
         {
 
-            for (uint ii=0; ii<31; ii++) // loop over attract atom types 
+            for (uint ii=0; ii<31; ii++) // loop over attract atom types
             {
 
                 dbl rbc2 = m_params->rbc[ii][jj]*m_params->rbc[ii][jj];
@@ -547,12 +547,12 @@ AttractForceField2::AttractForceField2(std::string filename, dbl cutoff)
                 m_params->ipon[ii][jj] = m_params->iflo[ii][jj] ;
                 assert(m_params->ipon[ii][jj]==1 || m_params->ipon[ii][jj]==-1);
 
-        dbl alen = m_params->ac[ii][jj];
-        dbl rlen = m_params->rc[ii][jj];
-        dbl alen4 = alen*alen*alen*alen;
-        dbl rlen3 = rlen*rlen*rlen;
-        m_params->emin[ii][jj] = -27.0*alen4/(256.0*rlen3);
-        m_params->rmin2[ii][jj]= 4.0*rlen/(3.0*alen);
+                dbl alen = m_params->ac[ii][jj];
+                dbl rlen = m_params->rc[ii][jj];
+                dbl alen4 = alen*alen*alen*alen;
+                dbl rlen3 = rlen*rlen*rlen;
+                m_params->emin[ii][jj] = -27.0*alen4/(256.0*rlen3);
+                m_params->rmin2[ii][jj]= 4.0*rlen/(3.0*alen);
 
 
             }
@@ -580,35 +580,34 @@ dbl AttractForceField2::Function(const Vdouble& stateVars )
     dbl enermode = 0.0;
 
     //put the ligands to the correct positions defined by stateVars
-    for(uint i=0; i<m_movedligand.size(); i++)
+    for (uint i=0; i<m_movedligand.size(); i++)
     {
-	m_movedligand[i] = m_centeredligand[i];
-	m_movedligand[i].resetForces(); //just to be sure that the forces are set to zero. Maybe not needed.
+        m_movedligand[i] = m_centeredligand[i];
+        m_movedligand[i].resetForces(); //just to be sure that the forces are set to zero. Maybe not needed.
 
-	if (m_movedligand[i].hasrotation)
-		{
-		assert(svptr+2 < stateVars.size());
-		m_movedligand[i].AttractEulerRotate(stateVars[svptr], stateVars[svptr+1], stateVars[svptr+2]);
-		svptr+=3;
-		}
+        if (m_movedligand[i].hasrotation)
+        {
+            assert(svptr+2 < stateVars.size());
+            m_movedligand[i].AttractEulerRotate(stateVars[svptr], stateVars[svptr+1], stateVars[svptr+2]);
+            svptr+=3;
+        }
 
 
-	m_movedligand[i].Translate(m_ligcenter[i]);
+        m_movedligand[i].Translate(m_ligcenter[i]);
 
-	if(m_movedligand[i].hastranslation)
-	{
-		assert(svptr+2 < stateVars.size());
-		m_movedligand[i].Translate(Coord3D(stateVars[svptr],stateVars[svptr+1],stateVars[svptr+2]));
-		svptr+=3;
-	}
+        if (m_movedligand[i].hastranslation)
+        {
+            assert(svptr+2 < stateVars.size());
+            m_movedligand[i].Translate(Coord3D(stateVars[svptr],stateVars[svptr+1],stateVars[svptr+2]));
+            svptr+=3;
+        }
 
 
 
         //use the loop over all ligands to calculate energy associated with modes:
         for (uint mode=0; mode < m_movedligand[i].m_modesArray.size(); mode++)
         {
-
-            enermode+=  pow<4>(stateVars[svptr]); //minimizer variable to the power 4 (see basetypes.h)
+            enermode +=  pow<4>(stateVars[svptr]) * pow<2>( m_movedligand[i].getEigen(mode)) ; //minimizer variable to the power 4 (see basetypes.h)
             m_movedligand[i].applyMode(mode, stateVars[svptr]); //apply the mode 'mode' to ligand i before nonbon calculation
             svptr +=1 ;
         }
@@ -622,23 +621,22 @@ dbl AttractForceField2::Function(const Vdouble& stateVars )
 
     uint plistnumber = 0; //index of pairlist used for a given pair of ligands
     //iteration over all ligand pairs:
-    for(uint i=0; i<m_movedligand.size(); i++)
-       for(uint j=i+1; j<m_movedligand.size(); j++)
-       {
-           assert(plistnumber < m_pairlists.size() );
-           enernon += nonbon8(m_movedligand[i], m_movedligand[j],  m_pairlists[plistnumber++] );   //calculates energy contribution for every pair. Forces are stored for each ligand
-       }
-
-
-
-
+    for (uint i=0; i<m_movedligand.size(); i++)
+        for (uint j=i+1; j<m_movedligand.size(); j++)
+        {
+            assert(plistnumber < m_pairlists.size() );
+            enernon += nonbon8(m_movedligand[i], m_movedligand[j],  m_pairlists[plistnumber++] );   //calculates energy contribution for every pair. Forces are stored for each ligand
+        }
 
 
 
 //     dbl enermode = stateVars[svptr]*stateVars[svptr]*stateVars[svptr]*stateVars[svptr] ; //power 4 ... TODO: create the function template power<int> !!!!
-    std::cout << "stateVars: \n";
-    for(uint i=0; i<stateVars.size(); i++) std::cout << stateVars[i] << "   ";
-    std::cout << "\nmode energy: " << enermode << std::endl;
+//     std::cout << "stateVars: \n";
+//     for(uint i=0; i<stateVars.size(); i++) std::cout << stateVars[i] << "   ";
+//     std::cout << "\nmode energy: " << enermode << std::endl;
+
+
+
     return enernon + enermode ;
 
 }
@@ -647,15 +645,15 @@ dbl AttractForceField2::Function(const Vdouble& stateVars )
 
 uint AttractForceField2::ProblemSize()
 {
-  uint size = 0;
-  for (uint i = 0; i < m_centeredligand.size(); i++)
-  {
-    if (m_centeredligand[i].hastranslation) size +=3 ;
-    if (m_centeredligand[i].hasrotation) size +=3 ;
-    size += m_centeredligand[i].m_modesArray.size(); // additional variables needed for normal modes
-  }
+    uint size = 0;
+    for (uint i = 0; i < m_centeredligand.size(); i++)
+    {
+        if (m_centeredligand[i].hastranslation) size +=3 ;
+        if (m_centeredligand[i].hasrotation) size +=3 ;
+        size += m_centeredligand[i].m_modesArray.size(); // additional variables needed for normal modes
+    }
 
-  return size;
+    return size;
 }
 
 
@@ -678,24 +676,22 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
     uint svptr = 0; // stateVars 'pointer'
 
 
-
-
-    for(uint i=0; i<m_movedligand.size(); i++)
+    for (uint i=0; i<m_movedligand.size(); i++)
     {
 
-	if(m_movedligand[i].hasrotation)
-	{
-	//calculates the rotational force for ligand i
-	Rota(i, stateVars[svptr], stateVars[svptr+1], stateVars[svptr+2], delta, svptr, false );
-	svptr+=3;
-	}
-	
-	if (m_movedligand[i].hastranslation)
-	{
-	//calculates the translational force for ligand i
-	Trans(i, delta, svptr, false);
-	svptr+=3;
-	}
+        if (m_movedligand[i].hasrotation)
+        {
+            //calculates the rotational force for ligand i
+            Rota(i, stateVars[svptr], stateVars[svptr+1], stateVars[svptr+2], delta, svptr, false );
+            svptr+=3;
+        }
+
+        if (m_movedligand[i].hastranslation)
+        {
+            //calculates the translational force for ligand i
+            Trans(i, delta, svptr, false);
+            svptr+=3;
+        }
 
 
 
@@ -703,7 +699,9 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 
         AttractRigidbody & lig = m_movedligand[i];  //alias for the ligand
 
-        for(uint mode=0; mode < lig.m_modesArray.size(); mode++)
+//         std::cout << "@@@@  number of modes of ligand "<< i <<"   " << lig.m_modesArray.size() << std::endl;
+
+        for (uint mode=0; mode < lig.m_modesArray.size(); mode++)
         {
             //force calculation for normal modes:
             //let 's' be the minimizer variable for a mode
@@ -716,9 +714,9 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 
             VCoord3D & modearray = lig.m_modesArray[mode];
 
-           dbl dx=0, dy=0, dz=0;
+            dbl dx=0, dy=0, dz=0;
             //scalar product between mode and cartesian forces, weighted by minimizer variable
-            for(uint atindex=0; atindex < lig.Size(); atindex++)
+            for (uint atindex=0; atindex < lig.Size(); atindex++)
             {
                 assert(svptr < stateVars.size());
                 dx +=  modearray[atindex].x * lig.m_forces[atindex].x;
@@ -727,19 +725,27 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
             }
 
             delta[svptr] = dx+dy+dz; //summation of partial scalar product
-            delta[svptr] += 4*pow<3>(stateVars[svptr]);
-            std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n";
-            std::cout << "debug analytical delta: " << delta[svptr] << std::endl;
-            std::vector<dbl> h = delta;
-            NumDerivatives(stateVars,h,true);
-            std::cout << "debug numderivatives: " << h[0]  << std::endl ;
-            std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n";
-
+//             /*debug:*/ std::cout << "@@@@@lambda: " << lig.getEigen(mode) << std::endl;
+            delta[svptr] += 4*pow<3>(stateVars[svptr]) * pow<2>(lig.getEigen(mode)) ;
             svptr++;  //increment the pointer over minimizer variable
-       }
 
+
+        }
 
     }
+
+
+        //debug: print numerical and analytical derivatives
+//         std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n";
+//         std::cout << "debug analytical delta: " << std::endl;
+//         for (uint k=0; k < delta.size(); k++)  std::cout<< delta[k] << "  " ;
+//         std::cout << "\n";
+//         std::vector<dbl> h = delta;
+//         NumDerivatives(stateVars,h,true);
+//         std::cout << "debug numderivatives: " << h[0]  << std::endl ;
+//         std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n";
+
+
 
 }
 
@@ -988,12 +994,12 @@ void AttractForceField2::MakePairLists()
 
 
 //creates the pairlist: loop over all pairs of ligands
-for(uint i=0; i < m_movedligand.size(); i++)
-   for (uint j=i+1; j<m_movedligand.size(); j++)
-   {
-      Attract2PairList plist(m_movedligand[i], m_movedligand[j], m_cutoff);
-      m_pairlists.push_back(plist);
-   }
+    for (uint i=0; i < m_movedligand.size(); i++)
+        for (uint j=i+1; j<m_movedligand.size(); j++)
+        {
+            Attract2PairList plist(m_movedligand[i], m_movedligand[j], m_cutoff);
+            m_pairlists.push_back(plist);
+        }
 
 }
 

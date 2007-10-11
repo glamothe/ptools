@@ -366,7 +366,7 @@ void AttractRigidbody::addMode(VCoord3D & mode, dbl eigen)
 }
 
 
-
+double AttractRigidbody::getEigen(uint i) {return m_eigen.at(i);};
 
 /////////////////////////////
 

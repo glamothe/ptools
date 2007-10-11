@@ -135,11 +135,11 @@ void Lbfgs::minimize(int maxiter)
                 g=todbl(vdblg);
 
 
-                std::cout << "analytical derivatives: \n";
-                for(uint i=0; i<g.size(); i++)
-                {
-                    std::cout << "deriv[" << i << "]: " << g[i] << std::endl;
-                }
+//                 std::cout << "analytical derivatives: \n";
+//                 for(uint i=0; i<g.size(); i++)
+//                 {
+//                     std::cout << "deriv[" << i << "]: " << g[i] << std::endl;
+//                 }
 //                 objToMinimize.NumDerivatives(x,g,true);
 
 
