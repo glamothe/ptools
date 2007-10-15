@@ -46,6 +46,9 @@ attractForceField2 = mb.class_("AttractForceField2")
 attractForceField2.include()
 
 
+AtomPair = mb.class_("AtomPair")
+AtomPair.include()
+
 #this will introduce the PairList template
 #this is tricky and quite ugly. Looking for a better alternative
 pairlist = mb.class_("T_PairList<PTools::Rigidbody>")  #regular pairlist (for Rigidbody)
@@ -65,6 +68,10 @@ Norm = mb.free_function("Norm")
 Norm.include()
 Norm2 = mb.free_function("Norm2")
 Norm2.include()
+Dist = mb.free_function("Dist").include()
+Dist2 = mb.free_function("Dist2").include()
+
+
 PrintCoord=mb.free_function("PrintCoord")
 PrintCoord.include()
 WritePDB=mb.free_function("WritePDB")

@@ -1004,6 +1004,7 @@ void AttractForceField2::MakePairLists()
 }
 
 
+AttractRigidbody AttractForceField2::GetLigand(uint i) {return m_movedligand[i];};
 
 
 

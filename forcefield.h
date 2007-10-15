@@ -204,6 +204,7 @@ public:
 
     void AddLigand(AttractRigidbody & lig); ///< add a new ligand to the ligand list...
     void MakePairLists(); ///< this function generates the pairlists before a minimization
+    AttractRigidbody GetLigand(uint i);
 
 
 private:
