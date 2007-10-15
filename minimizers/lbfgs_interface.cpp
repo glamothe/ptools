@@ -3,6 +3,7 @@
 #include <string.h>
 #include <iostream>
 #include <math.h>
+#include <float.h> 
 
 #include "../complexify.h"
 
@@ -100,7 +101,7 @@ void Lbfgs::minimize(int maxiter)
 
    m_opt->iprint=1;
 
-   double f = 0.0;
+   double f = DBL_MAX;
 
     m_opt->max_iter = maxiter;
 
