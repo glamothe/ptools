@@ -30,7 +30,7 @@ def readModesVectors(filename='eignew.out'):
             #print len(mode)
             if len(mode)!=0:
                 modes.append(copy.deepcopy(mode))
-            else:
+            if len(splittedlines[i])==2:
                 eigens.append(splittedlines[i][1])
             i=i+1
     except IndexError:
@@ -107,7 +107,7 @@ ff2.AddLigand(rig)
 
 ff2.AddLigand(lig)
 minim = Lbfgs(ff2)
-minim.minimize(500)
+minim.minimize(10500)
 
 raise SystemExit
 
