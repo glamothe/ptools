@@ -585,6 +585,17 @@ dbl AttractForceField2::Function(const Vdouble& stateVars )
         m_movedligand[i] = m_centeredligand[i];
         m_movedligand[i].resetForces(); //just to be sure that the forces are set to zero. Maybe not needed.
 
+
+        //use the loop over all ligands to calculate energy associated with modes:
+        for (uint mode=0; mode < m_movedligand[i].m_modesArray.size(); mode++)
+        {
+            enermode +=  pow<4>(stateVars[svptr]) * pow<2>( m_movedligand[i].getEigen(mode)) ; //minimizer variable to the power 4 (see basetypes.h)
+            m_movedligand[i].applyMode(mode, stateVars[svptr]); //apply the mode 'mode' to ligand i before nonbon calculation
+            svptr +=1 ;
+        }
+
+
+
         if (m_movedligand[i].hasrotation)
         {
             assert(svptr+2 < stateVars.size());
@@ -602,15 +613,6 @@ dbl AttractForceField2::Function(const Vdouble& stateVars )
             svptr+=3;
         }
 
-
-
-        //use the loop over all ligands to calculate energy associated with modes:
-        for (uint mode=0; mode < m_movedligand[i].m_modesArray.size(); mode++)
-        {
-            enermode +=  pow<4>(stateVars[svptr]) * pow<2>( m_movedligand[i].getEigen(mode)) ; //minimizer variable to the power 4 (see basetypes.h)
-            m_movedligand[i].applyMode(mode, stateVars[svptr]); //apply the mode 'mode' to ligand i before nonbon calculation
-            svptr +=1 ;
-        }
 
     }
 
@@ -735,7 +737,7 @@ void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
     }
 
 
-        //debug: print numerical and analytical derivatives
+    //debug: print numerical and analytical derivatives
 //         std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n";
 //         std::cout << "debug analytical delta: " << std::endl;
 //         for (uint k=0; k < delta.size(); k++)  std::cout<< delta[k] << "  " ;
