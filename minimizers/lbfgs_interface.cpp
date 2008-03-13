@@ -23,7 +23,9 @@ inline void assign(char* dest, char* src)
 Lbfgs::Lbfgs( ForceField& toMinim)
         :objToMinimize(toMinim)
 {
-
+    //let the object do some initialization before beginning a new minimization
+    //(for example, create new pairlists...)
+    objToMinimize.initMinimization();
 };
 
 

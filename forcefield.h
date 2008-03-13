@@ -24,20 +24,21 @@ public:
 
     //virtual dbl Function()=0; //simply return the function value for
     virtual dbl Function(const Vdouble&)=0;
-    
+
     /// analytical derivative
     virtual void Derivatives(const Vdouble& StateVars, Vdouble& delta)
     {
-      NumDerivatives(StateVars, delta, true);
+        NumDerivatives(StateVars, delta, true);
     }
     virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta, bool print=false); ///< numerical derivative for testing purpose
     virtual uint ProblemSize()=0;
+    virtual void initMinimization()=0; ///< this function is called at the beginning of a minimization
 
     virtual ~ForceField(){};
 
 } ;
 
-
+/*
 class AttractForceField: public ForceField
 {
 
@@ -101,8 +102,7 @@ private:
     Rigidbody m_receptor, m_ligand;
     Rigidbody m_savligand;
 
-    Vdouble m_rad ; //rad parameter ... RADius?
-    Vdouble m_amp ; //amp parameter ... AMPlitude??
+   
 
     std::vector<Coord3D> m_ligforces ; //forces
 
@@ -117,8 +117,7 @@ private:
     Vdouble m_rAtomCharge;
     Vdouble m_lAtomCharge;
 
-    dbl m_rc[40][40]; //some pre-calculated results
-    dbl m_ac[40][40]; //some pre-calculated results
+
 
     bool m_energycalled ;
 
@@ -127,7 +126,76 @@ private:
 
     static int _minimnb;
     dbl m_rstk;
-} ;
+} ;*/
+
+
+///////////////////////////////////////////////////////////////
+/*!  \brief Common base class for Attract forcefields 1 and 2
+*
+*   Attract forcefields 1 and 2 are very similar. 
+*   nonbon8 and paramters initialization are different, but
+*   rotational/translational derivatives can be simple base functions
+*/
+class BaseAttractForceField: public ForceField
+{
+
+public:
+
+    void initMinimization();
+    void Derivatives(const Vdouble&, Vdouble&); ///< analytical derivative
+    uint ProblemSize(); 
+    dbl Function(const Vdouble&);
+    void AddLigand(AttractRigidbody & lig); ///< add a new ligand to the ligand list...
+    void MakePairLists(); ///< this function generates the pairlists before a minimization
+    AttractRigidbody GetLigand(uint i);
+
+    virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false)=0;
+
+
+protected:
+    //private variables
+    Vuint m_rAtomCat; ///< receptor atom category (std vector)
+    std::vector<Attract2PairList> m_pairlists ;
+    std::vector<AttractRigidbody> m_centeredligand;
+    std::vector<AttractRigidbody> m_movedligand;
+    std::vector<Coord3D> m_ligcenter;
+
+    dbl m_cutoff;
+
+
+    //private functions members:
+    void Trans(uint molIndex, Vdouble& delta,uint shift, bool print=false); // translational derivatives
+    void Rota(uint molIndex, dbl phi, dbl ssi, dbl rot, Vdouble& delta, uint shift, bool print=false);
+
+
+};
+
+
+
+class AttractForceField1: public BaseAttractForceField
+{
+public:
+    void InitParams(const std::string & paramsFileName);
+    AttractForceField1(std::string paramsFileName, dbl cutoff);
+    dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false);
+
+private:
+
+    Vdouble m_rad ; //rad parameter ... RADius?
+    Vdouble m_amp ; //amp parameter ... AMPlitude??
+
+    dbl m_rc[40][40]; //some pre-calculated results
+    dbl m_ac[40][40]; //some pre-calculated results
+
+    int m_ligRestraintIndex;
+
+    dbl m_rstk;
+};
+
+
+
+
+
 
 
 
@@ -168,19 +236,19 @@ class TestForceField: public ForceField
 
 struct AttFF2_params
 {
-int ipon[31][31];
+    int ipon[31][31];
 // Array2D<int> ipon;
 // Array2D<dbl> rc;
-dbl rc[31][31];  //TODO: should be translated into clean std::vectors
+    dbl rc[31][31];  //TODO: should be translated into clean std::vectors
 // Array2D<dbl> ac;
-dbl ac[31][31];
+    dbl ac[31][31];
 
 
-dbl emin[31][31];
-dbl rmin2[31][31];
-dbl rbc[31][31];
-dbl abc[31][31];
-int iflo[31][31];  //? read from mkbest1.par (forcefield parameters)
+    dbl emin[31][31];
+    dbl rmin2[31][31];
+    dbl rbc[31][31];
+    dbl abc[31][31];
+    int iflo[31][31];  //? read from mkbest1.par (forcefield parameters)
 
 //AttFF2_params() {ipon=Array2D<int>(3000,3000); ac=Array2D<dbl>(3000,3000); rc=Array2D<double>(3000,3000); }
 
@@ -191,45 +259,19 @@ int iflo[31][31];  //? read from mkbest1.par (forcefield parameters)
 
 
 
-class AttractForceField2 : public ForceField
+class AttractForceField2 : public BaseAttractForceField
 {
 
 public:
 
+//     void initMinimization();
     AttractForceField2(std::string paramsFileName, dbl cutoff);
-    dbl Function(const Vdouble&);
-    void Derivatives(const Vdouble&, Vdouble&); ///< analytical derivative
-    uint ProblemSize();
     dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false);
-
-    void AddLigand(AttractRigidbody & lig); ///< add a new ligand to the ligand list...
-    void MakePairLists(); ///< this function generates the pairlists before a minimization
-    AttractRigidbody GetLigand(uint i);
-
 
 private:
 
-    //private variables
-
-
-    Vuint m_rAtomCat; ///< receptor atom category (std vector)
-
-
-    std::vector<Attract2PairList> m_pairlists ;
 
 //     std::vector<Coord3D> m_recForces ; ///< ligand forces
-
-    std::vector<AttractRigidbody> m_centeredligand;
-    std::vector<AttractRigidbody> m_movedligand;
-    std::vector<Coord3D> m_ligcenter;
-
-    dbl m_cutoff;
-
-
-
-    //private functions members:
-        void Trans(uint molIndex, Vdouble& delta,uint shift, bool print=false); // translational derivatives
-        void Rota(uint molIndex, dbl phi, dbl ssi, dbl rot, Vdouble& delta, uint shift, bool print=false);
 
 
 };

@@ -206,9 +206,9 @@ public:
 	virtual bool isAtomActive(uint i) const {return (m_atomTypeNumber[i]!=0);  };
 
     void resetForces()
-	{
-	 m_forces = std::vector<Coord3D> (this->Size() ) ;
-        }
+    {
+       m_forces = std::vector<Coord3D> (this->Size() ) ;
+    }
 
 
     std::vector<uint> m_activeAtoms; ///< list of active atoms (atoms that are taken into account for interaction)
@@ -256,7 +256,9 @@ private:
 
     void normalizeMode(VCoord3D & mode);
 
+friend class BaseAttractForceField;
 friend class AttractForceField2;
+friend class AttractForceField1;
 
 
 };  //end class AttractRigid

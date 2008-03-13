@@ -39,8 +39,10 @@ atom.include()
 forceField = mb.class_("ForceField")
 forceField.include()
 
-attractForceField = mb.class_("AttractForceField")
-attractForceField.include()
+mb.class_("BaseAttractForceField").include()
+
+attractForceField1 = mb.class_("AttractForceField1")
+attractForceField1.include()
 
 attractForceField2 = mb.class_("AttractForceField2")
 attractForceField2.include()

@@ -69,46 +69,7 @@ void extractExtra( Rigidbody& rig, std::vector<uint>& vCat, std::vector<dbl>& vC
 
 }
 
-int AttractForceField::_minimnb=0;  // static initialization
 
-
-AttractForceField::AttractForceField(const Rigidbody& recept,const Rigidbody& lig,dbl cutoff)
-        :m_refreceptor(recept), m_refligand(lig), m_receptor(recept), m_ligand(lig),m_savligand(lig),
-        plist(recept,lig,cutoff)
-{
-    m_ligcenter = m_ligand.FindCenter();
-    m_refligand.Translate(PTools::minus(m_ligcenter)); //center the ligand (for later Euler rotation)
-
-    InitParams();
-
-    for (uint i=0;i<m_refligand.Size();i++)
-        m_ligforces.push_back(Coord3D()); // initialize the forces array
-
-    // reads the "extra" informations of each atoms of ligand and receptor
-    // and extracts the "atom category" from this fields
-    extractExtra(m_refreceptor, m_rAtomCat, m_rAtomCharge);
-    extractExtra(m_refligand,   m_lAtomCat, m_lAtomCharge);
-
-    m_energycalled=false; //initialization
-
-    m_rstk=0.0; //no restraint by default
-
-
-    // find the closest atom of the ligand to the receptor
-    // (for the constraint force)
-    dbl mindist2 = 1.0e8;
-    m_ligRestraintIndex = -1;
-    m_reccenter = m_receptor.FindCenter();
-    for (uint ilig=0; ilig<lig.Size(); ilig++)
-    {
-        Coord3D atlig = lig.GetCoords(ilig);
-        if (Norm2(atlig-m_reccenter) < mindist2)
-        {
-            mindist2 = Norm2(atlig-m_reccenter) ;
-            m_ligRestraintIndex = ilig ;
-        }
-    }
-}
 
 
 #ifdef AUTO_DIFF
@@ -161,35 +122,69 @@ void ForceField::NumDerivatives(const Vdouble& stateVars, Vdouble& delta, bool p
 #endif  //AUTO_DIFF
 
 
-dbl AttractForceField::Energy()
+
+
+AttractForceField1::AttractForceField1(std::string paramsFileName, dbl cutoff)
+//         :m_refreceptor(recept), m_refligand(lig), m_receptor(recept), m_ligand(lig),m_savligand(lig),
+//         plist(recept,lig,cutoff)
+
 {
-    ResetForces();
-    dbl energy = LennardJones() +  Electrostatic();
-    energy+=Constraints(); //(if hte order of evaluation is important, then it should not be merged with the precedent line)
-    m_energycalled=true;
-    return energy;
-};
 
 
 
-dbl AttractForceField::Energy(const Vdouble& stateVars)
-{
-    m_ligand = m_refligand;
-    m_ligand.AttractEulerRotate(stateVars[0], stateVars[1], stateVars[2]);
-//     AttractEuler(m_refligand, m_ligand, stateVars[0], stateVars[1], stateVars[2]);
-    m_ligand.Translate(m_ligcenter);
-    m_ligand.Translate(Coord3D(stateVars[3],stateVars[4],stateVars[5]));
-    return Energy();
+//     m_ligcenter = m_ligand.FindCenter();  inutile: AddLigand centre le ligand
+//     m_refligand.Translate(PTools::minus(m_ligcenter)); //center the ligand (for later Euler rotation)
+
+
+
+    InitParams(paramsFileName);
+
+//     for (uint i=0;i<m_refligand.Size();i++)
+//         m_ligforces.push_back(Coord3D()); // initialize the forces array
+
+
+// inutile: AttractRigidbody le fait deja...
+//     // reads the "extra" informations of each atoms of ligand and receptor
+//     // and extracts the "atom category" from this fields
+//
+// //     extractExtra(m_refreceptor, m_rAtomCat, m_rAtomCharge);
+// //     extractExtra(m_refligand,   m_lAtomCat, m_lAtomCharge);
+
+//     m_energycalled=false; //initialization
+
+    m_rstk=0.0; //no restraint by default
+
+
+    /* desactive: la partie multiligand est +/- en conflit avec la force de contrainte...
+
+        // find the closest atom of the ligand to the receptor
+        // (for the constraint force)
+        dbl mindist2 = 1.0e8;
+        m_ligRestraintIndex = -1;
+        m_reccenter = m_receptor.FindCenter();
+        for (uint ilig=0; ilig<lig.Size(); ilig++)
+        {
+            Coord3D atlig = lig.GetCoords(ilig);
+            if (Norm2(atlig-m_reccenter) < mindist2)
+            {
+                mindist2 = Norm2(atlig-m_reccenter) ;
+                m_ligRestraintIndex = ilig ;
+            }
+        }
+
+    */
+
 }
 
 
-void AttractForceField::InitParams()
+
+void AttractForceField1::InitParams(const std::string & paramsFileName )
 {
     int indice, inull;
     dbl rad;
     dbl amp;
 
-    std::ifstream aminon("aminon.par");
+    std::ifstream aminon(paramsFileName.c_str());
     if (!aminon)
     {
         //the file cannot be opened
@@ -219,28 +214,31 @@ void AttractForceField::InitParams()
 
 
 
-dbl AttractForceField::LennardJones()
+dbl AttractForceField1::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print)
 {
 
     dbl sumLJ=0.0 ;
+    dbl sumElectrostatic=0.0;
 
 
 
-    for (uint iter=0; iter<plist.Size(); iter++)
+    for (uint iter=0; iter<pairlist.Size(); iter++)
     {
 
-        uint ir = plist[iter].atrec;
-        uint jl = plist[iter].atlig;
-        assert(m_rAtomCat[ir] >= 0);
-        assert(m_rAtomCat[ir] < m_rad.size());
-        assert(m_lAtomCat[jl] >= 0);
-        assert(m_lAtomCat[jl] < m_rad.size());
+        uint ir = pairlist[iter].atrec;
+        uint jl = pairlist[iter].atlig;
+
+        uint rAtomCat = rec.getAtomTypeNumber(ir);
+        uint lAtomCat = lig.getAtomTypeNumber(jl);
+
+        assert(rAtomCat < m_rad.size());
+        assert(lAtomCat < m_rad.size());
 
 
-        dbl alen = m_ac[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
-        dbl rlen = m_rc[ m_rAtomCat[ir] ][ m_lAtomCat[jl] ];
+        dbl alen = m_ac[ rAtomCat ][ lAtomCat ];
+        dbl rlen = m_rc[ rAtomCat ][ lAtomCat ];
 
-        Coord3D dx = m_ligand.GetCoords(jl) - m_receptor.GetCoords(ir) ;
+        Coord3D dx = lig.GetCoords(jl) - rec.GetCoords(ir) ;
         dbl r2 = Norm2(dx);
 
         if (r2 < 0.001 ) r2=0.001;
@@ -255,11 +253,82 @@ dbl AttractForceField::LennardJones()
 
         dbl fb = 6.0*vlj+2.0*(rep*rr23) ;
         Coord3D fdb = fb*dx ;
-        m_ligforces[jl] = m_ligforces[jl] + fdb ;
-        //receptor%forces%data(i) = receptor%forces%data(i) - fdb
+
+        //assign force to the atoms:
+        lig.m_forces[jl] += fdb ;
+        rec.m_forces[ir] -= fdb ;
+
+
+
+        //electrostatic part:
+        dbl chargeR = rec.m_charge[ir];
+        dbl chargeL = lig.m_charge[jl];
+        dbl charge = chargeR * chargeL * (332.053986/20.0);
+
+        if (fabs(charge) > 0.0)
+        {
+
+//             Coord3D dx = lig.GetCoords(jl) - rec.GetCoords(ir) ;   deja calculé
+//             dbl r2 = Norm2(dx);
+            /*
+                        if (r2 < 0.001 ) r2 = 0.001;  //to prevent
+                        dbl rr2 = 1.0/r2;
+                        dx = rr2*dx;*/
+
+
+
+            dbl et = charge*rr2;
+            sumElectrostatic+=et;
+
+            Coord3D fdb = (2.0*et)*dx;
+            lig.m_forces[jl] += fdb ;
+            rec.m_forces[jl] -= fdb ;
+        }
     }
-    return sumLJ ;
+
+
+    return sumLJ + sumElectrostatic;
 }
+
+
+
+
+
+
+/*
+int AttractForceField::_minimnb=0;  // static initialization
+
+
+
+
+
+
+dbl AttractForceField::Energy()
+{
+    ResetForces();
+    dbl energy = LennardJones() +  Electrostatic();
+    energy+=Constraints(); //(if hte order of evaluation is important, then it should not be merged with the precedent line)
+    m_energycalled=true;
+    return energy;
+};
+
+
+
+dbl AttractForceField::Energy(const Vdouble& stateVars)
+{
+    m_ligand = m_refligand;
+    m_ligand.AttractEulerRotate(stateVars[0], stateVars[1], stateVars[2]);
+//     AttractEuler(m_refligand, m_ligand, stateVars[0], stateVars[1], stateVars[2]);
+    m_ligand.Translate(m_ligcenter);
+    m_ligand.Translate(Coord3D(stateVars[3],stateVars[4],stateVars[5]));
+    return Energy();
+}
+
+
+
+
+
+
 
 
 
@@ -302,6 +371,9 @@ dbl AttractForceField::Electrostatic()
 
         uint ir = plist[iter].atrec;
         uint jl = plist[iter].atlig;
+
+
+
         dbl chargeR = m_rAtomCharge[ir];
         dbl chargeL = m_lAtomCharge[jl];
         dbl charge = chargeR * chargeL * (332.053986/20.0);
@@ -475,8 +547,15 @@ void AttractForceField::ShowEnergyParams()
 }
 
 
+*/
 
 
+
+
+void BaseAttractForceField::initMinimization()
+{
+    MakePairLists();
+}
 
 
 ////////////////////////////////////////////////////////////////
@@ -487,10 +566,9 @@ void AttractForceField::ShowEnergyParams()
 static AttFF2_params* m_params = 0;
 
 AttractForceField2::AttractForceField2(std::string filename, dbl cutoff)
-        :m_cutoff(cutoff)
 {
 
-
+    m_cutoff=cutoff;
     if (m_params==0)
     {
         m_params=new AttFF2_params();
@@ -510,8 +588,6 @@ AttractForceField2::AttractForceField2(std::string filename, dbl cutoff)
             for (uint j = 0; j<31; j++)
             {
                 mbest >> m_params->rbc[i][j] ;
-                assert(i<=30);
-                assert(j<=30);
             }
 
         for (uint i = 0; i<31; i++)
@@ -563,7 +639,7 @@ AttractForceField2::AttractForceField2(std::string filename, dbl cutoff)
 }
 
 
-dbl AttractForceField2::Function(const Vdouble& stateVars )
+dbl BaseAttractForceField::Function(const Vdouble& stateVars )
 {
 
     assert(m_centeredligand.size() >=1);
@@ -571,10 +647,14 @@ dbl AttractForceField2::Function(const Vdouble& stateVars )
 
 
     uint svptr = 0; //state variable 'pointer'
+    const uint nlig = m_movedligand.size();
 
 
-    if (m_pairlists.size()!=m_centeredligand.size())
+    //don't let the user call this function without a coherent pairlist
+    //(the pairlist may be outdated (user choice), but we MUST have the correct number of pairlists!)
+    if (m_pairlists.size() != (nlig*(nlig-1))/2)
         MakePairLists();
+
 
 
     dbl enermode = 0.0;
@@ -645,7 +725,7 @@ dbl AttractForceField2::Function(const Vdouble& stateVars )
 
 
 
-uint AttractForceField2::ProblemSize()
+uint BaseAttractForceField::ProblemSize()
 {
     uint size = 0;
     for (uint i = 0; i < m_centeredligand.size(); i++)
@@ -672,7 +752,7 @@ uint AttractForceField2::ProblemSize()
 *   this function puts the derivative of the energy with respect to variable 1 to 6 (in case of 6 degrees of
 *   freedom. 3 trans + 3 rotations) into the 'delta' Vdouble array
 */
-void AttractForceField2::Derivatives(const Vdouble& stateVars, Vdouble& delta)
+void BaseAttractForceField::Derivatives(const Vdouble& stateVars, Vdouble& delta)
 {
 
     uint svptr = 0; // stateVars 'pointer'
@@ -844,7 +924,7 @@ dbl AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, At
 
 
 
-void AttractForceField2::Trans(uint molIndex, Vdouble & delta, uint shift,  bool print)
+void BaseAttractForceField::Trans(uint molIndex, Vdouble & delta, uint shift,  bool print)
 {
 // molIndex is the index of the protein we want to extract the average
 // translational forces
@@ -889,7 +969,7 @@ void AttractForceField2::Trans(uint molIndex, Vdouble & delta, uint shift,  bool
 
 
 
-void AttractForceField2::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdouble & delta,uint shift, bool print)
+void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdouble & delta,uint shift, bool print)
 {
 // molIndex is the index of the protein we want to extract the average
 // translational forces
@@ -972,7 +1052,7 @@ void AttractForceField2::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdouble &
 
 
 
-void AttractForceField2::AddLigand(AttractRigidbody & lig)
+void BaseAttractForceField::AddLigand(AttractRigidbody & lig)
 {
 
     AttractRigidbody centeredlig = lig ;
@@ -983,13 +1063,11 @@ void AttractForceField2::AddLigand(AttractRigidbody & lig)
     centeredlig.CenterToOrigin();
     m_centeredligand.push_back(centeredlig);
 
-
-
 }
 
 
 
-void AttractForceField2::MakePairLists()
+void BaseAttractForceField::MakePairLists()
 {
 //at this point we expect that m_movedligand still contains original coordinates of all ligands
 //(ie not centered) because we will generate the pairlist from this vector (list)
@@ -1006,7 +1084,10 @@ void AttractForceField2::MakePairLists()
 }
 
 
-AttractRigidbody AttractForceField2::GetLigand(uint i) {return m_movedligand[i];};
+AttractRigidbody BaseAttractForceField::GetLigand(uint i) {return m_movedligand[i];};
+
+
+
 
 
 
