@@ -3,7 +3,7 @@
 #include <string.h>
 #include <iostream>
 #include <math.h>
-#include <float.h> 
+#include <float.h>
 
 #include "../complexify.h"
 
@@ -31,7 +31,7 @@ Lbfgs::Lbfgs( ForceField& toMinim)
 
 Lbfgs::~Lbfgs()
 {
-lbfgsb_destroy(m_opt);
+    lbfgsb_destroy(m_opt);
 }
 
 
@@ -58,12 +58,12 @@ inline std::vector<double> todbl(std::vector<double> & vdbl) {return vdbl;};
 #ifdef AUTO_DIFF
 inline std::vector<double> todbl(std::vector<surreal> & vcplx)
 {
-std::vector<double> vdbl;
-for(uint i=0; i<vcplx.size(); i++)
-{
-    vdbl.push_back(real(vcplx[i]));
-}
-return vdbl;
+    std::vector<double> vdbl;
+    for (uint i=0; i<vcplx.size(); i++)
+    {
+        vdbl.push_back(real(vcplx[i]));
+    }
+    return vdbl;
 };
 
 #endif
@@ -101,42 +101,66 @@ void Lbfgs::minimize(int maxiter)
     assert(m_opt);
 
 
-   m_opt->iprint=1;
+    m_opt->iprint=1;
 
-   double f = DBL_MAX;
+    double f = DBL_MAX;
 
     m_opt->max_iter = maxiter;
 
     int last_iter = 0;
 
-/*    opt->iprint = 0;*/
+    /*    opt->iprint = 0;*/
     while (1) {
         rc = lbfgsb_run(m_opt, &x[0], &f, &g[0]);
         if (rc == 0) {
             break;
-        } else if (rc < 0) { 
+        } else if (rc < 0) {
             printf("lbfgsb stop with an error");
             break;
-        } else if (rc == 1) { 
+        } else if (rc == 1) {
 
-                if(last_iter < m_opt->niter)
-                {
-                    //this is a new iteration
-                    last_iter = m_opt->niter;
-                    //saves the minimizer variables for each iteration (can be useful for generating animations)
-                    m_vars_over_time.push_back(x);
-                }
+            if (last_iter < m_opt->niter)
+            {
+                //this is a new iteration
+                last_iter = m_opt->niter;
+                //saves the minimizer variables for each iteration (can be useful for generating animations)
+                m_vars_over_time.push_back(x);
 
 
-                std::vector<dbl> vdblx;
-                tocplx(x,vdblx);
-                std::vector<dbl> vdblg;
-                tocplx(g,vdblg);
+//                 //check analytical derivatives with surreal:
+//                 std::vector<dbl> vdblx;
+//                 tocplx(x,vdblx);
+//                 std::vector<dbl> vdblg;
+//                 tocplx(g,vdblg);
+// 
+//                 f = objToMinimize.Function(vdblx);
+//                 objToMinimize.Derivatives(vdblx,vdblg);
+// 
+//                 g=todbl(vdblg);
+// 
+// 
+//                 for (uint i=0; i<x.size(); i++)
+//                 {
+//                     std::vector<surreal> svdblx = vdblx ;
+//                     svdblx[i]+=surreal(0,1);
+//                     std::cout <<"check: " << svdblx[i] << std::endl;
+// 
+//                     std::cout << g[i] << "==" << imag(objToMinimize.Function(svdblx)) << "  " ;
+//                 }
+//                 std::cout << std::endl;
 
-                f = objToMinimize.Function(vdblx);
-                objToMinimize.Derivatives(vdblx,vdblg);
-                g=todbl(vdblg);
+            }
 
+
+            std::vector<dbl> vdblx;
+            tocplx(x,vdblx);
+            std::vector<dbl> vdblg;
+            tocplx(g,vdblg);
+
+            f = objToMinimize.Function(vdblx);
+            objToMinimize.Derivatives(vdblx,vdblg);
+
+            g=todbl(vdblg);
 
 //                 std::cout << "analytical derivatives: \n";
 //                 for(uint i=0; i<g.size(); i++)
@@ -156,7 +180,7 @@ void Lbfgs::minimize(int maxiter)
 
 
     std::cout << m_opt->task  << " |  " << m_opt->niter << " iterations\n";
-    
+
 
 
 
