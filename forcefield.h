@@ -151,6 +151,7 @@ public:
 
     virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false)=0;
 
+    virtual ~BaseAttractForceField(){};
 
 protected:
     //private variables
@@ -179,13 +180,14 @@ public:
     AttractForceField1(std::string paramsFileName, dbl cutoff);
     dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false);
 
+    virtual ~AttractForceField1(){};
 private:
 
     Vdouble m_rad ; //rad parameter ... RADius?
     Vdouble m_amp ; //amp parameter ... AMPlitude??
 
-    dbl m_rc[40][40]; //some pre-calculated results
-    dbl m_ac[40][40]; //some pre-calculated results
+    dbl m_rc[64][64]; //some pre-calculated results
+    dbl m_ac[64][64]; //some pre-calculated results
 
     int m_ligRestraintIndex;
 

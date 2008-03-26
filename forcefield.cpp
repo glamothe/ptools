@@ -198,9 +198,8 @@ void AttractForceField1::InitParams(const std::string & paramsFileName )
         aminon >> indice >> rad >> amp >> inull ;
         m_rad.push_back(rad) ;
         m_amp.push_back(amp) ;
+        assert(m_rad.size()<64);
     }
-
-    assert(m_rad.size()<40);
 
 
     //initialisation of the pre-calculated array of rc and ac
