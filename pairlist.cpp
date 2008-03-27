@@ -55,52 +55,49 @@ void Attract2PairList::update()
     std::vector<uint> activerec;
 
     for (uint i=0; i<mp_ligand->Size(); i++)
-{
-if (mp_ligand->isAtomActive(i))
-{
- activelig.push_back(i);
-}
-}
+    {
+        if (mp_ligand->isAtomActive(i))
+        {
+            activelig.push_back(i);
+        }
+    }
 
-for (uint i=0; i<mp_receptor->Size(); i++)
-{
-if (mp_receptor->isAtomActive(i))
-{
- activerec.push_back(i);
-}
-}
+    for (uint i=0; i<mp_receptor->Size(); i++)
+    {
+        if (mp_receptor->isAtomActive(i))
+        {
+            activerec.push_back(i);
+        }
+    }
 
-uint activeligsize = activelig.size();
-uint activerecsize = activerec.size();
+    uint activeligsize = activelig.size();
+    uint activerecsize = activerec.size();
 
-std::cerr << "debug: activelig/rec sizes: " << activeligsize << "  " << activerecsize << std::endl;
+    std::cerr << "debug: activelig/rec sizes: " << activeligsize << "  " << activerecsize << std::endl;
 
 
     for (uint ii = 0 ; ii < activeligsize ; ii++)
     {
 
-            for (uint jj = 0; jj < activerecsize; jj++)
+        for (uint jj = 0; jj < activerecsize; jj++)
+        {
+            uint i=activelig[ii];
+            uint j=activerec[jj];
+
+
+            Coord3D c1 = mp_ligand->GetCoords(i) ;
+            Coord3D c2 = mp_receptor->GetCoords(j);
+            if (Norm2(c1-c2) <= squarecutoff)
             {
-      uint i=activelig[ii];
-      uint j=activerec[jj];
-
-                
-                    //Atom at1 = mp_ligand->GetAtom(i);
-                    //Atom at2 = mp_receptor->GetAtom(j);
-
-                    Coord3D c1 = mp_ligand->GetCoords(i) ;
-                    Coord3D c2 = mp_receptor->GetCoords(j);
-                    if (Norm2(c1-c2) <= squarecutoff)
-                    {
-                        vectl.push_back(i);
-                        vectr.push_back(j);
-                    }
-
-                
+                vectl.push_back(i);
+                vectr.push_back(j);
             }
+
+
+        }
     }
 
-std::cout << "debug: pairlist size (inside pairlist): " << vectl.size() << "  " << vectr.size() << std::endl;
+    std::cout << "debug: pairlist size (inside pairlist): " << vectl.size() << "  " << vectr.size() << std::endl;
 
 }
 
