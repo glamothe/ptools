@@ -191,7 +191,7 @@ public:
 class AttractRigidbody: public Rigidbody
 {
 public:
-    AttractRigidbody(const Rigidbody & rig) ; ///< initilize a new object from a regular Rigidbody object
+    explicit AttractRigidbody(const Rigidbody & rig) ; ///< initilize a new object from a regular Rigidbody object
     virtual ~AttractRigidbody(){};
 
     uint getAtomTypeNumber(uint i) const
