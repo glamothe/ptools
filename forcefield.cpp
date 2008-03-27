@@ -216,6 +216,9 @@ void AttractForceField1::InitParams(const std::string & paramsFileName )
 dbl AttractForceField1::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print)
 {
 
+    assert(rec.m_forces.size() == rec.Size());
+    assert(lig.m_forces.size() == lig.Size());
+
     dbl sumLJ=0.0 ;
     dbl sumElectrostatic=0.0;
 
