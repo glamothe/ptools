@@ -53,11 +53,15 @@ AtomPair.include()
 
 #this will introduce the PairList template
 #this is tricky and quite ugly. Looking for a better alternative
-pairlist = mb.class_("T_PairList<PTools::Rigidbody>")  #regular pairlist (for Rigidbody)
-pairlist.include()
-att2pairlist=mb.class_("T_PairList<PTools::AttractRigidbody>") #the new Attract 2 pairlist (works with AttractRigidbody)
+#pairlist = mb.class_("T_PairList<PTools::Rigidbody>")  #regular pairlist (for Rigidbody)
+#pairlist.include()
+
+
+#att2pairlist=mb.class_("T_PairList<PTools::AttractRigidbody>") #the new Attract 2 pairlist (works with AttractRigidbody)
+
+att2pairlist=mb.class_("Attract2PairList")
 att2pairlist.include()
-mb.namespace( 'py_details' ).exclude()  #exclude the py_details ugly namespace
+#mb.namespace( 'py_details' ).exclude()  #exclude the py_details ugly namespace
 
 
 lbfgs = mb.class_("Lbfgs")

@@ -17,7 +17,7 @@
 using namespace std;
 
 
-// #define AUTO_DIFF   //uncomment this line to use automatic differenciation
+#define AUTO_DIFF   //uncomment this line to use automatic differenciation
 
 #ifndef HDRcomplexify
 inline const double & real(const double& r) {
