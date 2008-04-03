@@ -141,7 +141,7 @@ class BaseAttractForceField: public ForceField
 
 public:
 
-    void initMinimization();
+    virtual void initMinimization();
     void Derivatives(const Vdouble&, Vdouble&); ///< analytical derivative
     uint ProblemSize(); 
     dbl Function(const Vdouble&);

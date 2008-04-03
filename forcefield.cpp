@@ -153,7 +153,7 @@ AttractForceField1::AttractForceField1(std::string paramsFileName, dbl cutoff)
 //     m_energycalled=false; //initialization
 
     m_rstk=0.0; //no restraint by default
-
+    m_cutoff = cutoff;
 
     /* desactive: la partie multiligand est +/- en conflit avec la force de contrainte...
 
@@ -257,8 +257,8 @@ dbl AttractForceField1::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, At
         Coord3D fdb = fb*dx ;
 
         //assign force to the atoms:
-        lig.m_forces[jl] += fdb ;
-        rec.m_forces[ir] -= fdb ;
+        lig.m_forces[jl] -= fdb ;
+        rec.m_forces[ir] += fdb ;
 
 
 
@@ -270,21 +270,12 @@ dbl AttractForceField1::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, At
         if (fabs(charge) > 0.0)
         {
 
-//             Coord3D dx = lig.GetCoords(jl) - rec.GetCoords(ir) ;   deja calculé
-//             dbl r2 = Norm2(dx);
-            /*
-                        if (r2 < 0.001 ) r2 = 0.001;  //to prevent
-                        dbl rr2 = 1.0/r2;
-                        dx = rr2*dx;*/
-
-
-
             dbl et = charge*rr2;
             sumElectrostatic+=et;
 
             Coord3D fdb = (2.0*et)*dx;
-            lig.m_forces[jl] += fdb ;
-            rec.m_forces[jl] -= fdb ;
+            lig.m_forces[jl] -= fdb ;
+            rec.m_forces[ir] += fdb ;
         }
     }
 
@@ -296,260 +287,6 @@ dbl AttractForceField1::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, At
 
 
 
-
-/*
-int AttractForceField::_minimnb=0;  // static initialization
-
-
-
-
-
-
-dbl AttractForceField::Energy()
-{
-    ResetForces();
-    dbl energy = LennardJones() +  Electrostatic();
-    energy+=Constraints(); //(if hte order of evaluation is important, then it should not be merged with the precedent line)
-    m_energycalled=true;
-    return energy;
-};
-
-
-
-dbl AttractForceField::Energy(const Vdouble& stateVars)
-{
-    m_ligand = m_refligand;
-    m_ligand.AttractEulerRotate(stateVars[0], stateVars[1], stateVars[2]);
-//     AttractEuler(m_refligand, m_ligand, stateVars[0], stateVars[1], stateVars[2]);
-    m_ligand.Translate(m_ligcenter);
-    m_ligand.Translate(Coord3D(stateVars[3],stateVars[4],stateVars[5]));
-    return Energy();
-}
-
-
-
-
-
-
-
-
-
-
-
-dbl AttractForceField::Constraints()
-{
-    if (m_rstk==0.0) return 0.0;
-
-    //calculates the distance between the receptor center and the ligand surface:
-    Coord3D ligRestraintCoords = m_ligand.GetCoords(m_ligRestraintIndex) ;
-    Coord3D vecLig2Rec = m_reccenter - ligRestraintCoords ;
-
-    dbl ett = Norm2(vecLig2Rec) ;
-
-    //rstk: user-defined constant
-    Coord3D springforce = 4 * m_rstk * ett * vecLig2Rec ;
-    //adds force to the correct ligand atom:
-    m_ligforces[m_ligRestraintIndex]=m_ligforces[m_ligRestraintIndex]+springforce;
-
-    dbl ener =  m_rstk * ett * ett ;
-    //std::cout << "Constraint energy: " << ener << std::endl;
-
-    return ener;
-}
-
-
-
-
-
-
-
-dbl AttractForceField::Electrostatic()
-{
-    dbl sumElectrostatic=0.0 ;
-
-    for (uint iter=0; iter<plist.Size(); iter++)
-    {
-
-
-        uint ir = plist[iter].atrec;
-        uint jl = plist[iter].atlig;
-
-
-
-        dbl chargeR = m_rAtomCharge[ir];
-        dbl chargeL = m_lAtomCharge[jl];
-        dbl charge = chargeR * chargeL * (332.053986/20.0);
-
-        if (fabs(charge) > 0.0)
-        {
-
-
-
-            Coord3D dx = m_ligand.GetCoords(jl) - m_receptor.GetCoords(ir) ;
-            dbl r2 = Norm2(dx);
-
-            if (r2 < 0.001 ) r2=0.001;
-            dbl rr2 = 1.0/r2;
-            dx = rr2*dx;
-
-
-
-            dbl et = charge*rr2;
-            sumElectrostatic+=et;
-
-            Coord3D fdb = (2.0*et)*dx;
-            m_ligforces[jl] = m_ligforces[jl] + fdb ;
-        }
-    }
-    return  sumElectrostatic ;
-}
-
-
-
-void AttractForceField::Gradient(const Vdouble& stateVars, Vdouble& delta)
-{
-    // !!!!!!!!!! WARNING: this function NEEDS Energy() to be called FIRST !!!!!!!!!!!!!!
-
-    //std::cout << "size of stateVars:" << stateVars.size() << std::endl ;
-    assert(stateVars.size()>=ProblemSize());
-    assert(delta.size()>=ProblemSize());
-
-    Trans(delta);
-    Rota(stateVars[0], stateVars[1], stateVars[2], delta);
-
-    ResetForces();
-    m_energycalled = false;
-    // return 1-delta:
-    for (uint i=0; i<6;i++) delta[i]=-delta[i];
-}
-
-
-void AttractForceField::Trans(Vdouble& delta,bool print)
-{
-//   In this subroutine the translational force components are calculated
-    dbl flim = 1.0e18;
-    dbl ftr1, ftr2, ftr3, fbetr;
-
-    ftr1=0.0;
-    ftr2=0.0;
-    ftr3=0.0;
-    for (uint i=0;i<m_ligand.Size(); i++)
-    {
-        ftr1=ftr1 + m_ligforces[i].x;
-        ftr2=ftr2 + m_ligforces[i].y;
-        ftr3=ftr3 + m_ligforces[i].z;
-    }
-
-// force reduction, some times helps in case of very "bad" start structure
-    for (uint i=0; i<3; i++)
-    {
-        fbetr=ftr1*ftr1 +ftr2*ftr2 +ftr3*ftr3;
-        if (fbetr > flim)
-        {
-            ftr1=.01*ftr1;
-            ftr2=.01*ftr2;
-            ftr3=.01*ftr3;
-        }
-    }
-
-    delta[3]=ftr1;
-    delta[4]=ftr2;
-    delta[5]=ftr3;
-
-    //debug:
-    if (print) std::cout <<  "translational forces: " << ftr1 <<"  "<< ftr2 <<"  " << ftr3 << std::endl;
-    return ;
-}
-
-
-
-void AttractForceField::Rota(dbl phi,dbl ssi, dbl rot, Vdouble& delta,bool print)
-{
-    //delta array of dbls of dimension 6 ( 3 rotations, 3 translations)
-
-    dbl  cs,cp,ss,sp,cscp,sscp,sssp,crot,srot,xar,yar,cssp,X,Y,Z ;
-    dbl  pm[3][3];
-
-// !c
-// !c     calculates orientational force contributions
-// !c     component 1: phi-angle
-// !c     component 2: ssi-angle
-// !c     component 3: rot-angle
-// !c
-
-
-    for (uint i=0; i<3;i++)
-    {
-        delta[i]=0.0;
-        for (uint j=0;j<3;j++)
-            pm[i][j]=0.0 ;
-    }
-
-    cs=cos(ssi);
-    cp=cos(phi);
-    ss=sin(ssi);
-    sp=sin(phi);
-    cscp=cs*cp;
-    cssp=cs*sp;
-    sscp=ss*cp;
-    sssp=ss*sp;
-    crot=cos(rot);
-    srot=sin(rot);
-
-    for (uint i=0; i<m_ligand.Size(); i++)
-    {
-
-        Coord3D coords = m_refligand.GetCoords(i);
-        X = coords.x;
-        Y = coords.y;
-        Z = coords.z;
-
-        xar=X*crot+Y*srot;
-        yar=-X*srot+Y*crot;
-        pm[0][0]=-xar*cssp-yar*cp-Z*sssp ;
-        pm[1][0]=xar*cscp-yar*sp+Z*sscp ;
-        pm[2][0]=0.0 ;
-
-        pm[0][1]=-xar*sscp+Z*cscp ;
-        pm[1][1]=-xar*sssp+Z*cssp ;
-        pm[2][1]=-xar*cs-Z*ss ;
-
-        pm[0][2]=yar*cscp+xar*sp ;
-        pm[1][2]=yar*cssp-xar*cp ;
-        pm[2][2]=-yar*ss ;
-
-        for (uint j=0;j<3;j++)
-        {
-            delta[j] += pm[0][j] * m_ligforces[i].x ;
-            delta[j] += pm[1][j] * m_ligforces[i].y ;
-            delta[j] += pm[2][j] * m_ligforces[i].z ;
-        }
-    }
-
-    if (print) std::cout << "Rotational forces: " << delta[0] << " " << delta[1] << " " << delta[2] << std::endl;
-
-    return;
-}
-
-
-
-void AttractForceField::ResetForces()
-{
-    m_ligforces = std::vector<Coord3D> (m_ligforces.size());
-}
-
-
-
-
-void AttractForceField::ShowEnergyParams()
-{
-    for (unsigned int i=0; i < m_amp.size(); i++ )
-        std::cout << "m_amp[" << i+1 << "]=" << m_amp[i]  << "   m_rad[" << i+1 << "]=" << m_rad[i] << std::endl;
-
-}
-
-
-*/
 
 
 
