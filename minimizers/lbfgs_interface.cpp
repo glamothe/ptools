@@ -25,13 +25,14 @@ Lbfgs::Lbfgs( ForceField& toMinim)
 {
     //let the object do some initialization before beginning a new minimization
     //(for example, create new pairlists...)
+    m_opt = NULL;
     objToMinimize.initMinimization();
 };
 
 
 Lbfgs::~Lbfgs()
 {
-    lbfgsb_destroy(m_opt);
+    if (m_opt) lbfgsb_destroy(m_opt);
 }
 
 
@@ -119,35 +120,44 @@ void Lbfgs::minimize(int maxiter)
             break;
         } else if (rc == 1) {
 
+
+
+/*
+//check analytical derivatives with surreal:
+{
+            std::vector<dbl> vdblx;
+            tocplx(x,vdblx);
+            std::vector<dbl> vdblg;
+            tocplx(g,vdblg);
+
+            f = objToMinimize.Function(vdblx);
+            objToMinimize.Derivatives(vdblx,vdblg);
+
+            g=todbl(vdblg);
+
+
+            for (uint i=0; i<x.size(); i++)
+            {
+                std::vector<surreal> svdblx = vdblx ;
+                svdblx[i]+=surreal(0,1);
+                std::cout <<"check: " << svdblx[i] << std::endl;
+
+                std::cout << g[i] << "==" << imag(objToMinimize.Function(svdblx)) << "  " ;
+            }
+            std::cout << std::endl;
+}
+//end check derivatives
+*/
+
+
+
+
             if (last_iter < m_opt->niter)
             {
                 //this is a new iteration
                 last_iter = m_opt->niter;
                 //saves the minimizer variables for each iteration (can be useful for generating animations)
                 m_vars_over_time.push_back(x);
-
-
-//                 //check analytical derivatives with surreal:
-//                 std::vector<dbl> vdblx;
-//                 tocplx(x,vdblx);
-//                 std::vector<dbl> vdblg;
-//                 tocplx(g,vdblg);
-// 
-//                 f = objToMinimize.Function(vdblx);
-//                 objToMinimize.Derivatives(vdblx,vdblg);
-// 
-//                 g=todbl(vdblg);
-// 
-// 
-//                 for (uint i=0; i<x.size(); i++)
-//                 {
-//                     std::vector<surreal> svdblx = vdblx ;
-//                     svdblx[i]+=surreal(0,1);
-//                     std::cout <<"check: " << svdblx[i] << std::endl;
-// 
-//                     std::cout << g[i] << "==" << imag(objToMinimize.Function(svdblx)) << "  " ;
-//                 }
-//                 std::cout << std::endl;
 
             }
 
