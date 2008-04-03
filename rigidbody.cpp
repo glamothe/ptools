@@ -323,7 +323,7 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
     setRotation(true);
     setTranslation(true);
 
-
+    resetForces();
 }
 
 
