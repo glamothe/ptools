@@ -149,7 +149,17 @@ public:
     void MakePairLists(); ///< this function generates the pairlists before a minimization
     AttractRigidbody GetLigand(uint i);
 
-    virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false)=0;
+    virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false)
+    {
+        std::vector<Coord3D> forcesrec (rec.Size());
+        std::vector<Coord3D> forceslig (lig.Size());
+
+        dbl ener = nonbon8_forces(rec, lig, pairlist, forcesrec, forceslig, print);
+        rec.addForces(forcesrec);
+        lig.addForces(forceslig);
+        return ener;
+    }
+    virtual dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false)=0;
 
     virtual ~BaseAttractForceField(){};
 
@@ -178,7 +188,7 @@ class AttractForceField1: public BaseAttractForceField
 public:
     void InitParams(const std::string & paramsFileName);
     AttractForceField1(std::string paramsFileName, dbl cutoff);
-    dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false);
+    dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
 
     virtual ~AttractForceField1(){};
 private:
@@ -268,7 +278,7 @@ public:
 
 //     void initMinimization();
     AttractForceField2(std::string paramsFileName, dbl cutoff);
-    dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false);
+    dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
 
 private:
 

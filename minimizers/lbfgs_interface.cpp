@@ -102,7 +102,7 @@ void Lbfgs::minimize(int maxiter)
     assert(m_opt);
 
 
-    m_opt->iprint=1;
+    m_opt->iprint=-1;
 
     double f = DBL_MAX;
 

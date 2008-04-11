@@ -73,8 +73,6 @@ void Attract2PairList::update()
     uint activeligsize = activelig.size();
     uint activerecsize = activerec.size();
 
-    std::cerr << "debug: activelig/rec sizes: " << activeligsize << "  " << activerecsize << std::endl;
-
 
     for (uint ii = 0 ; ii < activeligsize ; ii++)
     {
@@ -97,7 +95,6 @@ void Attract2PairList::update()
         }
     }
 
-    std::cout << "debug: pairlist size (inside pairlist): " << vectl.size() << "  " << vectr.size() << std::endl;
 
 }
 

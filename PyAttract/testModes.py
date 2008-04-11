@@ -84,7 +84,7 @@ for mode in modes:
 
 
 for vcmode,eigen in zip(arrayOfModes,eigens):
-    rig.addMode(vcmode,surreal(float(eigen)) )
+    rig.addMode(vcmode,surreal(6.0*float(eigen)*float(eigen)) )
     print "surreal(float(eigen)): ", surreal(float(eigen))
     print "eigen: " , eigen
 

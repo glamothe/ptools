@@ -192,6 +192,7 @@ class AttractRigidbody: public Rigidbody
 {
 public:
     explicit AttractRigidbody(const Rigidbody & rig) ; ///< initilize a new object from a regular Rigidbody object
+    AttractRigidbody(){};
     virtual ~AttractRigidbody(){};
 
     uint getAtomTypeNumber(uint i) const
@@ -210,6 +211,11 @@ public:
        m_forces = std::vector<Coord3D> (this->Size() ) ;
     }
 
+    void addForces(std::vector<Coord3D> forces)
+    {
+      for(uint i=0; i<forces.size(); i++)
+         m_forces[i]+=forces[i];
+    }
 
     std::vector<uint> m_activeAtoms; ///< list of active atoms (atoms that are taken into account for interaction)
 

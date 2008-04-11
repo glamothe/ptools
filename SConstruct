@@ -12,7 +12,7 @@ COMMON_CPP = Split ("""atom.cpp
                        minimizers/lbfgs_interface.cpp
                        minimizers/routines.f
                        minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp
-
+                       mcopff.cpp
                     """)
 
 
@@ -81,6 +81,9 @@ lib2=nopython.StaticLibrary('ptools',source=[statics]) #this makes the library s
 Alias('python',lib1)
 Alias('cpp',[lib2] )
 print "BUILD_TARGETS is", map(str, BUILD_TARGETS)
+
+
+Program("testsegfault.cpp", LIBPATH=['.'],LIBS=["ptools"],CCFLAGS="-g -Wall" )
 
 
 #### old commands. Not needed but kept here for some time #####

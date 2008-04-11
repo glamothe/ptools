@@ -213,11 +213,11 @@ void AttractForceField1::InitParams(const std::string & paramsFileName )
 
 
 
-dbl AttractForceField1::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print)
+dbl AttractForceField1::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print)
 {
 
-    assert(rec.m_forces.size() == rec.Size());
-    assert(lig.m_forces.size() == lig.Size());
+    assert(forcerec.size() == rec.Size());
+    assert(forcelig.size() == lig.Size());
 
     dbl sumLJ=0.0 ;
     dbl sumElectrostatic=0.0;
@@ -257,8 +257,8 @@ dbl AttractForceField1::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, At
         Coord3D fdb = fb*dx ;
 
         //assign force to the atoms:
-        lig.m_forces[jl] -= fdb ;
-        rec.m_forces[ir] += fdb ;
+        forcelig[jl] -= fdb ;
+        forcerec[ir] += fdb ;
 
 
 
@@ -274,8 +274,8 @@ dbl AttractForceField1::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, At
             sumElectrostatic+=et;
 
             Coord3D fdb = (2.0*et)*dx;
-            lig.m_forces[jl] -= fdb ;
-            rec.m_forces[ir] += fdb ;
+            forcelig[jl] -= fdb ;
+            forcerec[ir] += fdb ;
         }
     }
 
@@ -580,7 +580,7 @@ void BaseAttractForceField::Derivatives(const Vdouble& stateVars, Vdouble& delta
 *   translated from fortran file nonbon8.f
 *   TODO: add comments in the code, remove debug instructions
 */
-dbl AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist , bool print)
+dbl AttractForceField2::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print)
 {
 
     dbl enon = 0.0;
@@ -623,8 +623,8 @@ dbl AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, At
 
             epote += et ;
             Coord3D fdb =2.0*et*dx ;
-            lig.m_forces[j] += fdb;
-            rec.m_forces[i] -= fdb;
+            forcelig[j] += fdb;
+            forcerec[i] -= fdb;
 
         }
 
@@ -638,8 +638,8 @@ dbl AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, At
 
             dbl fb=6.0*vlj+2.0*(rep*rr23);
             Coord3D fdb = fb*dx;
-            lig.m_forces[j]+=fdb;
-            rec.m_forces[i]-=fdb;
+            forcelig[j]+=fdb;
+            forcerec[i]-=fdb;
         }
         else {
             dbl rr23=rr2*rr2*rr2;
@@ -650,8 +650,8 @@ dbl AttractForceField2::nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, At
             dbl fb=6.0*vlj+2.0*(rep*rr23);
 
             Coord3D fdb=ivor*fb*dx ;
-            lig.m_forces[j] += fdb ;
-            rec.m_forces[i] -= fdb ;
+            forcelig[j] += fdb ;
+            forcerec[i] -= fdb ;
         }
 
 

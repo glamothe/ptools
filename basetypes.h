@@ -62,7 +62,6 @@ template<size_t N> dbl pow(dbl x)
 
 
 
-//typedef dbl mytype;
 
 
 /*! \brief 2-dimensional Object Oriented array
@@ -98,6 +97,14 @@ public:
         return msa_data[r*m_columns+c];
     }
 
+    const mytype& operator() (int r, int c) const
+    {
+        assert(r<m_rows);
+        assert(c<m_columns);
+        return msa_data[r*m_columns+c];
+    }
+
+
     const void * id() {
         return (void *) &msa_data[0];
     }
@@ -107,6 +114,16 @@ public:
         mytype * newdata = new mytype[m_size];
         memcpy( newdata, olddata, m_size*sizeof(mytype) );
         msa_data=boost::shared_array<mytype>(newdata);
+    }
+
+    void Print()
+    {
+     for (uint r=0; r<m_rows; r++)
+      {
+        for (uint c=0; c<m_columns; c++)
+           std::cout << (*this)(r,c) << "  " ;
+        std::cout << std::endl;
+      }
     }
 
 
@@ -121,6 +138,8 @@ private:
 
 } ;
 
+
+typedef Array2D<dbl> Matrix;
 
 
 

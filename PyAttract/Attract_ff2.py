@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 
 from ptools import *
 import sys
@@ -56,10 +56,11 @@ class Rotation:
             ssii=self.theta[kkk]
             phii=self.zwopi/self.nphi[kkk]
             for jjj in range(self.nphi[kkk]):
-                phiii=jjj*phii
+                phiii=(jjj+1)*phii
                 for iii in range(self.nrot):
-                    roti=iii*self.zwopi/self.nrot
-                    self._rot.append((phii, ssii, roti))
+                    roti=(iii+1)*self.zwopi/self.nrot
+                    self._rot.append((phiii, ssii, roti))
+
 
     def __init__(self):
         self.read_rotdat()
