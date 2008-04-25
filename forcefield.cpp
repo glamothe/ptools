@@ -394,6 +394,7 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
     if (m_pairlists.size() != (nlig*(nlig-1))/2)
         MakePairLists();
 
+    assert(m_pairlists.size() == (nlig*(nlig-1))/2);
 
 
     dbl enermode = 0.0;
