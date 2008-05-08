@@ -23,7 +23,7 @@ std::string Atom::ToString() const {
 
 std::string Atom::ToPdbString() const
 {
-    char output[80];
+    char output[81];
     const char* atomname = GetType().c_str();
     const char* residName = GetResidType().c_str();
     int residnumber = GetResidId();
@@ -32,11 +32,13 @@ std::string Atom::ToPdbString() const
     int atomnumber = GetAtomId();
 
     Coord3D coord = GetCoords();
-    dbl x = coord.x;
-    dbl y = coord.y;
-    dbl z = coord.z ;
+    double x = coord.x;
+    double y = coord.y;
+    double z = coord.z ;
 
-    snprintf(output,80,"ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f%s\n",atomnumber,atomname,residName,chainID,residnumber,real(x),real(y),real(z),GetExtra().c_str());
+    snprintf(output,80,"ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f%s\n",atomnumber,atomname,residName,chainID,residnumber,x,y,z,GetExtra().c_str());
+    output[79]='\n';
+    output[80]='\0';
     return (std::string) output;
 }
 

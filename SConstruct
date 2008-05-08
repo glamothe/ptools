@@ -13,6 +13,7 @@ COMMON_CPP = Split ("""atom.cpp
                        minimizers/routines.f
                        minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp
                        mcopff.cpp
+                       surface.cpp
                     """)
 
 
@@ -45,13 +46,13 @@ print PYTHON_CPP
 
 
 #COMMON_LIBS=["g2c", f95]
-COMMON_LIBS=["g2c"]
+COMMON_LIBS=["gfortran"]
 
 COMMON_CPPPATH=['.']
 FFLAGS="-g"
 
                 
-common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN='g77 -g -O3 -fPIC' ,   FORTRANFLAGS="-g -fPIC" )
+common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN='gfortran -g -O3 -fPIC' ,   FORTRANFLAGS="-g -fPIC" )
 #common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = 'g95 -fPIC -g',  FORTRANFLAGS="-g", ENV = {'PATH' : os.environ['PATH']})
 
 #common.Append(CCFLAGS='-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG')                  #fastest(?) release
@@ -67,9 +68,9 @@ nopython=common.Copy()
 objects=common.SharedObject(COMMON_CPP)
 statics=common.StaticObject(COMMON_CPP)  #to make a static library
 
-python.Append(LIBS=['boost_python', "python2.4"])
+python.Append(LIBS=['boost_python', "python2.5"])
 #python.Replace(CPPPATH=['.','/usr/include/python2.4'])
-python.Append(CPPPATH=['/usr/include/python2.4'])
+python.Append(CPPPATH=['/usr/include/python2.5'])
 
 print "CPPPATH =", python['CPPPATH']
 
@@ -83,7 +84,7 @@ Alias('cpp',[lib2] )
 print "BUILD_TARGETS is", map(str, BUILD_TARGETS)
 
 
-Program("testsegfault.cpp", LIBPATH=['.'],LIBS=["ptools"],CCFLAGS="-g -Wall" )
+#Program("testsegfault.cpp", LIBPATH=['.'],LIBS=["ptools"],CCFLAGS="-g -Wall" )
 
 
 #### old commands. Not needed but kept here for some time #####

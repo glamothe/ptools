@@ -29,6 +29,7 @@ Rigidbody::Rigidbody(std::string filename)
     this->mForces = model.mForces;
     this->mCoords = model.mCoords;
     this->mAtomProp = model.mAtomProp;
+    this->mAtoms = model.mAtoms;
 
 
 //copy of the matrix:
@@ -79,7 +80,29 @@ void Rigidbody::CenterToOrigin()
     Translate(Coord3D()-c);
 }
 
+dbl Rigidbody::RadiusGyration()
+{
+    Coord3D c = this->FindCenter();
+    dbl r=0.0;
+    for (uint i=0; i< this->Size(); i++)
+    {
+        r += Norm2( c - this->GetCoords(i) );
+    }
+    return ( sqrt( r/ this->Size() ));
+}
 
+dbl Rigidbody::Radius()
+{
+    Coord3D center = this->FindCenter();
+    uint size = this->Size();
+    dbl radius = 0.0;
+    for (uint i=0; i < size; i++)
+    {
+        dbl rad=Norm(center - this->GetCoords(i));
+        if (radius < rad) {radius=rad;}
+    }
+    return radius;
+}
 
 
 void Rigidbody::Translate(const Coord3D& tr)
@@ -291,6 +314,16 @@ Vdouble Rigidbody::GetMatrix() const
 
 }
 
+std::string Rigidbody::PrintPDB() const
+{
+ uint size=this->Size();
+ std::string output;
+  for (uint i=0; i < size ; i++)
+	{
+	output = output + mAtoms[i].ToPdbString();
+	}
+ return(std::string) output;
+} 
 
 void Rigidbody::m_hookCoords(uint i, Coord3D & co) const {};  //(virtual)
 

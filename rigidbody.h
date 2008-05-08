@@ -40,7 +40,7 @@ class Rigidbody
 private:
 
     /* don't forget the constructors if you add some private data ! */
-//     std::vector<Atom> mAtoms; ///< vector of Atoms
+     std::vector<Atom> mAtoms; ///< vector of Atoms
 
     std::vector<Coord3D> mCoords; ///< vector of coordinates
     std::vector<Coord3D> mForces; ///< forces for each atom
@@ -129,6 +129,15 @@ public:
     void Translate(const Coord3D& tr); ///< Translate the whole object
 
     void AttractEulerRotate(dbl phi, dbl ssi, dbl rot); ///< Do an euler rotation (Attract convention)
+
+    ///Radius of gyration
+    dbl RadiusGyration();
+
+    /// returns the radius of a Rigidbody (max distance from center)
+    dbl Radius();
+
+    /// converts rigidbody to classical PDB-like string
+    std::string PrintPDB() const ;
 
     /// selection : complete
     AtomSelection SelectAllAtoms();

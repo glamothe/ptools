@@ -95,6 +95,8 @@ screw.include()
 superimpose=mb.free_function("superimpose")
 superimpose.include()
 
+surf=mb.class_("Surface")
+surf.include()
 
 try:
     surreal = mb.class_("surreal")

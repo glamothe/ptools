@@ -18,5 +18,6 @@
 #include "rmsd.h"
 #include "atomselection.h"
 #include "screw.h"
+#include "surface.h"
 
 #endif // PTOOLS_H
