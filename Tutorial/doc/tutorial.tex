@@ -165,7 +165,7 @@ From the Python interpreter or in a Python script, first load the PTools library
 from ptools import *
 \end{verbatim}
 
-\subsubsection{Load PDB file}
+\subsubsection{Load PDB file into a rigidbody object}
 \begin{verbatim}
 pdb = Rigidbody("1BTA.pdb")
 \end{verbatim}
@@ -180,13 +180,23 @@ pdb.Size()
 \begin{verbatim}
 pdb.Radius()
 \end{verbatim}
-
+The result is given in \AA.
 
 \subsubsection{Get radius of gyration}
 \begin{verbatim}
 pdb.RadiusGyration()
 \end{verbatim}
+The result is given in \AA.
 
+\subsubsection{Translate the structure}
+First create a translation vector as a Coord3D object (for instance 5, 0, 1):
+\begin{verbatim}
+trans = Coord3D(5, 0, 1)
+\end{verbatim}
+Then, apply the translation vector:
+\begin{verbatim}
+pdb.Translate(trans)
+\end{verbatim}
 
 \subsubsection{Center structure to origin}
 \begin{verbatim}
