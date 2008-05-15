@@ -1,0 +1,427 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{ae}
+\usepackage{aecompl}
+%\usepackage[cm]{aeguill}
+\textwidth 16.5cm \textheight 26cm \oddsidemargin -0.5cm \topmargin -2cm
+\newcommand{\fup}[1]{\raisebox{1ex}{\small #1}}
+\usepackage{graphicx} % figures
+
+
+
+
+\begin{document}
+
+
+\title{PTools tutorial}
+\maketitle
+
+\thispagestyle{empty}
+
+\begin{figure}[htbp]
+\center
+\includegraphics*[width=0.95\linewidth]{img/docking.png}
+\end{figure}
+
+
+\vspace*{3cm}
+
+This tutorial presents the PTools library features and its docking application: ATTRACT.
+
+\newpage
+
+\tableofcontents{}
+
+\newpage
+
+\section{Set up, compilation and installation}
+
+\subsection{Set up}
+This example installation has been performed on a Dell D420 laptop (Intel
+Core Duo 1.2~GHz, Debian Lenny, linux kernel 2.6.22-2-686).
+
+\paragraph{Scons (make substitute):} {\tt apt-get install scons} \\
+(1.34.1-11 version installed)
+
+
+\paragraph{Libboost-dev:} {\tt apt-get install libboost-dev} \\
+(1.34.1-11 version installed)
+
+
+\paragraph{Libboost Python:} {\tt apt-get install libboost-python1.34.1} \\
+(1.34.1-11 version installed)
+
+
+\paragraph{Libboost Python dev:} {\tt apt-get install libboost-python-dev} \\
+(1.34.1-11 version installed)
+
+\paragraph{Subversion:} {\tt apt-get install subversion subversion-tools} \\
+(1.4.6dfsg1-2 version installed)
+
+\paragraph{Gccxml:} {\tt apt-get install gccxml} \\
+(0.9.0+cvs20071228-2 version installed)
+
+\paragraph{Pyplusplus and Pygccxml: }
+The homepage of {\tt pyplusplus} and {\tt pygccxml} projects is 
+{\tt http://www.language-binding.net/pyplusplus/pyplusplus.html}. From the
+download section \footnote{\tt https://sourceforge.net/project/showfiles.php?group\_id=118209}, 
+get the files {\tt pygccxml-0.9.5.zip} and {\tt Py++-0.9.5.zip}.
+
+\begin{verbatim}
+unzip pygccxml-0.9.5.zip
+cd pygccxml-0.9.5/
+python setup.py build
+python setup.py install --prefix=$HOME/soft
+\end{verbatim}
+
+\begin{verbatim}
+unzip Py++-0.9.5.zip 
+cd Py++-0.9.5/
+python setup.py build
+python setup.py install --prefix=$HOME/soft
+\end{verbatim}
+
+In your {\tt \$HOME/.bashrc} file, then add:
+\begin{verbatim}
+export PATH=PATH:$HOME/soft/bin/
+export PYTHONPATH=$HOME/soft/lib/python2.4/site-packages/
+\end{verbatim}
+
+In a Python shell (obtained with the {\tt python} command), test the installation
+of PyPlusPlus:
+\begin{verbatim}
+>>> import pyplusplus
+\end{verbatim}
+
+\subsection{Source download with subversion}
+
+From the local {\tt \$HOME/soft/} directory, download the full PTools sources with subversion (use the {\it checkout} option):
+\begin{verbatim}
+svn co http://svn-lbt.ibpc.fr/svn/PTools/ptools ptools
+\end{verbatim}
+
+\begin{itemize}
+\item for the first use, press {\it Enter} and then indicate your login and password
+\item both login and password are stored (without encryption) in the {\tt \$HOME/.subversion} directory
+\end{itemize}
+
+PTools source updates are then obtained by:
+\begin{verbatim}
+svn update
+\end{verbatim}
+from the {\tt ptools/} or {\tt ptools/trunk} directories.
+
+
+\subsection{Compilation}
+From the main directory ({\tt trunk}) of the PTools project, create the Python/C++ interface:
+\begin{verbatim}
+python interface.py
+\end{verbatim}
+
+Compile then the library:
+\begin{verbatim}
+scons
+\end{verbatim}
+
+Note that {\tt scons -j2} compiles with two processors in parallel.
+
+\subsection{Final test and further documentation}
+
+In the {\tt Test} directory, one can test the compilation worked:
+\begin{verbatim}
+python unittest1.py
+\end{verbatim}
+
+The expected output is:
+\begin{verbatim}
+....... 
+---------------------------------------------------------------------- 
+Ran 7 tests in 0.813s 
+
+OK 
+\end{verbatim}
+
+Further document may be obtained from the Trac server {\tt http://svn-lbt.ibpc.fr/PTools/wiki}. 
+The server access is controled by the same login/password of the subversion server. The {\tt Timeline}
+and {\tt Browse Source} sections are usually very usefull.
+
+A {\tt README} file is also available on line 
+\footnote{\tt http://svn-lbt.ibpc.fr/PTools/browser/ptools/trunk/Tutorial/README} 
+or locally \footnote{\tt \$HOME/soft/ptools/trunk/Tutorial/README}.
+
+
+\section{PTools library usages and capabilities}
+
+\subsection{Directly from C++}
+
+\subsection{From Python through the C++ binding}
+
+\vspace*{2cm}
+{\bf Explain here the different level of objects between rigidbody, selection, atom and points}
+\vspace*{2cm}
+
+
+From the Python interpreter or in a Python script, first load the PTools library:
+\begin{verbatim}
+from ptools import *
+\end{verbatim}
+
+\subsubsection{Load PDB file}
+\begin{verbatim}
+pdb = Rigidbody("1BTA.pdb")
+\end{verbatim}
+
+\subsubsection{Get total number of atoms}
+\begin{verbatim}
+pdb.Size()
+\end{verbatim}
+
+
+\subsubsection{Get maximum distance from geometric center}
+\begin{verbatim}
+pdb.Radius()
+\end{verbatim}
+
+
+\subsubsection{Get radius of gyration}
+\begin{verbatim}
+pdb.RadiusGyration()
+\end{verbatim}
+
+
+\subsubsection{Center structure to origin}
+\begin{verbatim}
+pdb.CenterToOrigin()
+\end{verbatim}
+
+
+\subsubsection{Save structure as PDB file}
+\begin{verbatim}
+WritePDB(pdb, "1BTA_centered.pdb")
+\end{verbatim}
+
+
+\subsubsection{Select CA atomes}
+\begin{verbatim}
+select_ca = pdb.CA()
+\end{verbatim}
+
+
+\subsubsection{Select backbone atomes}
+\begin{verbatim}
+select_bkbn = pdb.Backbone()
+\end{verbatim}
+
+
+\subsubsection{Select a chain by name}
+\begin{verbatim}
+select_chainA = pdb.SelectChainId("A")
+select_chainB = pdb.SelectChainId("B")
+\end{verbatim}
+
+
+\subsubsection{Selection reunion}
+\begin{verbatim}
+select_chainAB = select_chainA | select_chainB
+\end{verbatim}
+or directly
+\begin{verbatim}
+select_chainAB = pdb.SelectChainId("A") | pdb.SelectChainId("B")
+\end{verbatim}
+
+\subsubsection{Convert an atom selection to a rigidbody object}
+\begin{verbatim}
+ca_trace = select_ca.CreateRigid()
+\end{verbatim}
+
+
+
+\section{Docking with PTools: ATTRACT}
+
+This part is illustrated by the docking of the protein and DNA found in the 1DNJ complex.
+
+\subsection{Extraction of the docking partners and coarse grain reduction}
+
+Before docking, one has to separate both partners. This is possible with visualisation
+software such as Pymol \footnote{\tt http://pymol.sourceforge.net/} or VMD \footnote{\tt http://www.ks.uiuc.edu/Research/vmd/}, and also directly with the PTools library.
+
+\subsubsection{Partner preparation}
+
+Within the Python interpreter, first load the PTools library:
+\begin{verbatim}
+>>> from ptools import *
+\end{verbatim}
+
+Read the PDB file 2NJ.pdb:
+\begin{verbatim}
+>>> pdb=Rigidbody("2DNJ.pdb")
+\end{verbatim}
+
+The chain selection allows the separation between the protein (chain A) and the DNA (chains B and C).
+\begin{verbatim}
+>>> selectA=pdb.SelectChainId("A")
+>>> selectB=pdb.SelectChainId("B")
+>>> selectC=pdb.SelectChainId("C")
+\end{verbatim}
+
+Reunion of both DNA strands:
+\begin{verbatim}
+>>> selectBC=selectB | selectC
+\end{verbatim}
+
+Creation of the protein as a rigid body and file saving as a PDB:
+\begin{verbatim}
+>>> prot=selectA.CreateRigid()
+>>> WritePDB(prot,"2DNJ_prot.pdb")
+\end{verbatim}
+
+Creation of the DNA as a rigid body and file saving as a PDB:
+\begin{verbatim}
+>>> DNA=selectBC.CreateRigid()
+>>> WritePDB(DNA,"2DNJ_dna.pdb")
+\end{verbatim}
+
+Once both partners are isolated in separe files, close the Python interpreter.
+
+To check DNA atom names are compatible with the one used is the reduced model, use the {\tt parse.pl} script:
+\begin{verbatim}
+parse.pl 2DNJ_dna.pdb >2DNJ_dnaf.pdb
+\end{verbatim}
+
+\subsubsection{Protein coarse grain reduction}
+
+\begin{verbatim}
+reduce.py 2DNJ_prot.pdb 2DNJ_prot.cg.z.pdb
+\end{verbatim}
+
+Parameters:
+\begin{itemize}
+\item an all-atom protein pdb file ({\tt 2DNJ\_prot.pdb})
+\item a reduced output pdb file ({\tt 2DNJ\_prot.cg.z.pdb})
+\end{itemize}
+
+Visualise both to check that the reduction worked properly.
+
+\subsubsection{DNA coarse grain reduction}
+
+DNA is reduced using two scripts: {\tt reduceDna.py} and {\tt convertPdb2Zacharias.py}. The first one perform the proper reduction.
+\begin{verbatim}
+reduceDna.py atom2cgDna.dat 2DNJ_dnaf.pdb 2DNJ_dna.cg.pdb
+\end{verbatim}
+Parameters are the following:
+\begin{itemize}
+\item the correspondance between atoms and beads ({\tt atom2cgDna.dat})
+\item an input all-atom pdb file ({\tt 2DNJ\_dnaf.pdb})
+\item an output coarse grain pdb file ({\tt 2DNJ\_dna.cg.pdb})
+\end{itemize}
+
+The second program converts the output DNA reduced pdb file into a pdb-like file compatible with ATTRACT. Its usage is:
+\begin{verbatim}
+convertPdb2Zacharias.py ffParamDna.dat 2DNJ_dna.cg.pdb 2DNJ_dna.cg.z.pdb
+\end{verbatim}
+with the parameters:
+\begin{itemize}
+\item the parameters of the coarse grain force field (bead type and charge) ({\tt ffParamDna.dat})
+\item an input coarse grain pdb file ({\tt 2DNJ\_dna.cg.pdb})
+\item an output coarse grain pdb file compatible with ATTRACT ({\tt 2DNJ\_dna.cg.z.pdb})
+\end{itemize}
+
+As for protein reduction, a visual inspection with any visualisation software is preferable.
+
+\subsection{Docking simulation}
+
+\subsubsection{Ligand positions}
+
+The file {\tt translat.dat} contains all translational initial positions of the ligand used for the systematic docking. To produce this file, the largest dimension of the ligand is needed and obtained with the Python script {\tt rayon.py}:
+\begin{verbatim}
+rayon.py 2DNJ_dna.cg.z.pdb
+\end{verbatim} 
+
+In the present case, the largest dimension of the ligand is 15.88~\AA. The translation distance around the receptor has then to be of least of 15.88~\AA, 17~\AA\ should be fine here.
+
+Starting position (in translation) for the docking are then obtained by:
+\begin{verbatim}
+translate 2DNJ_prot.cg.z.pdb 17 > translat.dat
+\end{verbatim}
+
+The {\tt translate} program creates regurlarly spread points at 17~\AA\ from the surface of the receptor.
+
+The visualisation of the starting points may be viewed with any visualisation software by renaming {\tt translat.dat} in {\tt translat.pdb}.
+
+\subsubsection{ATTRACT parameters}
+
+ATTRACT parameters are found in the file {\tt attract.inp}. A typical configuration file is:
+\begin{verbatim}
+ 6 0 0
+-34.32940 38.75490 -3.66956 0.00050
+ 30  2 1 1 0 0 0 0 1 2000.00
+ 30  2 1 1 0 0 0 0 1 1000.00
+ 50  2 1 1 0 0 0 0 0  500.00
+ 50  2 1 1 0 0 0 0 0   50.00
+ 100 2 1 1 0 0 0 0 0   50.00
+ 500 2 1 1 0 0 0 0 0   50.00
+\end{verbatim}
+
+The first line indicates the number of minimisations performed by ATTRACT for each starting position. The last six lines are the caracteristics of each minimisation. The first column is the number of steps before the minimisation stops. The last column is the square of the cutoff distance for the calculation of the interaction energy between both partners.
+
+\paragraph{Remarques:} Columns with zeros or ones should not be modfied, as well as the second line.
+
+\subsubsection{Docking simulation}
+
+A docking simulation with ATTRACT requires:
+\begin{itemize}
+\item a receptor (fixed partner) file ({\tt 2DNJ\_prot.cg.z.pdb})
+\item a ligand (mobile partner) file ({\tt 2DNJ\_dna.cg.z.pdb})
+\item the ATTRACT program (here for protein--DNA docking, {\tt  Attract\_dna.py})
+\item the coarse grain parameters ({\tt aminon.dna.par})
+\item rotations performed for each translational starting point ({\tt rotation.dat})
+\item translational starting points ({\tt translat.dat})
+\item docking parameters ({\tt attract.inp})
+\end{itemize}
+
+ATTRACT can be used with different options:
+\begin{itemize}
+\item -s (single), performs one serie of minimisations with the ligand in its initial position
+\item -ref=, provides a ligand pdb file that works as a reference. After each docking, the RMSD is calculated between this reference structure and the simulated ligand.
+\end{itemize}
+
+A single ATTRACT simulation is thus obtained by:
+\begin{verbatim}
+Attract_dna.py 2DNJ_prot.cg.z.pdb 2DNJ_dna.cg.z.pdb 
+-s -ref=2DNJ_dna.cg.z.pdb > 2DNJ_single.att
+\end{verbatim}
+
+The first pdb file provided must be the receptor file (and the second the ligand).
+
+For a systematic docking in the translational and rotational space:
+\begin{verbatim}
+Attract_dna.py 2DNJ_prot.cg.z.pdb 2DNJ_dna.cg.z.pdb 
+-ref=2DNJ_dna.cg.z.pdb > 2DNJ_dock.att
+\end{verbatim}
+
+The output file {\tt 2DNJ\_dock.att} contains all informations on the docking simulation.
+
+\subsection{Docking output analysis}
+
+Any simulated ligand structure can be extracted with the script {\tt Extract.py}:
+
+\begin{verbatim}
+Extract.py 2DNJ_dock.att 2DNJ_dna.cg.z.pdb 101 153 > 2DNJ_dock.pdb
+\end{verbatim}
+
+with the parameters:
+\begin{itemize}
+\item an ouput of the docking simulation ({\tt 2DNJ\_dock.att})
+\item the inital ligand file ({\tt 2DNJ\_dna.cg.z.pdb})
+\item a translation index ({\tt 101})
+\item a rotation index ({\tt 153})
+\item an output ligand structure file ({\tt 2DNJ\_dock.pdb})
+\end{itemize}
+
+\section{Misc. tips and tricks}
+ 
+\end{document}
+
+\begin{verbatim}
+
+\end{verbatim}
+		
