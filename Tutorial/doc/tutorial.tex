@@ -3,11 +3,7 @@
 \usepackage{aecompl}
 %\usepackage[cm]{aeguill}
 \textwidth 16.5cm \textheight 26cm \oddsidemargin -0.5cm \topmargin -2cm
-\newcommand{\fup}[1]{\raisebox{1ex}{\small #1}}
 \usepackage{graphicx} % figures
-
-
-
 
 \begin{document}
 
@@ -19,13 +15,14 @@
 
 \begin{figure}[htbp]
 \center
-\includegraphics*[width=0.95\linewidth]{img/docking.png}
+\includegraphics*[width=0.80\linewidth]{img/docking.png}
 \end{figure}
 
 
 \vspace*{3cm}
 
-This tutorial presents the PTools library features and its docking application: ATTRACT.
+\noindent
+This tutorial presents the PTools library features and its docking application ATTRACT.
 
 \newpage
 
@@ -38,6 +35,13 @@ This tutorial presents the PTools library features and its docking application: 
 \subsection{Set up}
 This example installation has been performed on a Dell D420 laptop (Intel
 Core Duo 1.2~GHz, Debian Lenny, linux kernel 2.6.22-2-686).
+
+The basic requirements are:
+\begin{itemize}
+\item Python 2.5 and its development library (Python2.5-dev)
+\item gcc (4.3)
+\item gfortran (4.3)
+\end{itemize}
 
 \paragraph{Scons (make substitute):} {\tt apt-get install scons} \\
 (1.34.1-11 version installed)
@@ -165,30 +169,31 @@ From the Python interpreter or in a Python script, first load the PTools library
 from ptools import *
 \end{verbatim}
 
-\subsubsection{Load PDB file into a rigidbody object}
+
+\subsubsection{Rigidbody objects}
+
+\paragraph{Load PDB file into a rigidbody object.}
 \begin{verbatim}
 pdb = Rigidbody("1BTA.pdb")
 \end{verbatim}
 
-\subsubsection{Get total number of atoms}
+\paragraph{Number of atoms.}
 \begin{verbatim}
 pdb.Size()
 \end{verbatim}
 
-
-\subsubsection{Get maximum distance from geometric center}
+\paragraph{Maximum distance from geometric center} in \AA.
 \begin{verbatim}
 pdb.Radius()
 \end{verbatim}
-The result is given in \AA.
 
-\subsubsection{Get radius of gyration}
+\paragraph{Radius of gyration} in \AA.
 \begin{verbatim}
 pdb.RadiusGyration()
 \end{verbatim}
-The result is given in \AA.
 
-\subsubsection{Translate the structure}
+
+\paragraph{Structure translation.}
 First create a translation vector as a Coord3D object (for instance 5, 0, 1):
 \begin{verbatim}
 trans = Coord3D(5, 0, 1)
@@ -198,49 +203,66 @@ Then, apply the translation vector:
 pdb.Translate(trans)
 \end{verbatim}
 
-\subsubsection{Center structure to origin}
+
+\paragraph{Center structure to origin.}
 \begin{verbatim}
 pdb.CenterToOrigin()
 \end{verbatim}
 
 
-\subsubsection{Save structure as PDB file}
+\paragraph{Save structure as PDB file.}
 \begin{verbatim}
 WritePDB(pdb, "1BTA_centered.pdb")
 \end{verbatim}
 
 
-\subsubsection{Select CA atomes}
+\subsubsection{Selection objects}
+
+\paragraph{Selection of CA atoms.}
 \begin{verbatim}
-select_ca = pdb.CA()
+sel_ca = pdb.CA()
 \end{verbatim}
 
 
-\subsubsection{Select backbone atomes}
+\paragraph{Selection of backbone atoms.}
 \begin{verbatim}
-select_bkbn = pdb.Backbone()
+sel_bkbn = pdb.Backbone()
 \end{verbatim}
 
 
-\subsubsection{Select a chain by name}
+\paragraph{Selection by chain.}
 \begin{verbatim}
-select_chainA = pdb.SelectChainId("A")
-select_chainB = pdb.SelectChainId("B")
+sel_chainA = pdb.SelectChainId("A")
+sel_chainB = pdb.SelectChainId("B")
 \end{verbatim}
 
 
-\subsubsection{Selection reunion}
+\paragraph{Selection of a range of residues.}
 \begin{verbatim}
-select_chainAB = select_chainA | select_chainB
+sel_res = pdb.SelectResRange(10, 20)
+\end{verbatim}
+
+
+\paragraph{Selection number of atoms.}
+\begin{verbatim}
+sel_res.Size()
+\end{verbatim}
+
+
+
+\paragraph{Selection reunion.}
+\begin{verbatim}
+sel_chainAB = sel_chainA | sel_chainB
 \end{verbatim}
 or directly
 \begin{verbatim}
-select_chainAB = pdb.SelectChainId("A") | pdb.SelectChainId("B")
+sel_chainAB = pdb.SelectChainId("A") | pdb.SelectChainId("B")
 \end{verbatim}
 
-\subsubsection{Convert an atom selection to a rigidbody object}
+
+\paragraph{Selection to rigidbody conversion.}
 \begin{verbatim}
-ca_trace = select_ca.CreateRigid()
+ca_trace = sel_ca.CreateRigid()
 \end{verbatim}
 
 
@@ -258,36 +280,36 @@ software such as Pymol \footnote{\tt http://pymol.sourceforge.net/} or VMD \foot
 
 Within the Python interpreter, first load the PTools library:
 \begin{verbatim}
->>> from ptools import *
+from ptools import *
 \end{verbatim}
 
 Read the PDB file 2NJ.pdb:
 \begin{verbatim}
->>> pdb=Rigidbody("2DNJ.pdb")
+pdb=Rigidbody("2DNJ.pdb")
 \end{verbatim}
 
 The chain selection allows the separation between the protein (chain A) and the DNA (chains B and C).
 \begin{verbatim}
->>> selectA=pdb.SelectChainId("A")
->>> selectB=pdb.SelectChainId("B")
->>> selectC=pdb.SelectChainId("C")
+selectA=pdb.SelectChainId("A")
+selectB=pdb.SelectChainId("B")
+selectC=pdb.SelectChainId("C")
 \end{verbatim}
 
 Reunion of both DNA strands:
 \begin{verbatim}
->>> selectBC=selectB | selectC
+selectBC=selectB | selectC
 \end{verbatim}
 
 Creation of the protein as a rigid body and file saving as a PDB:
 \begin{verbatim}
->>> prot=selectA.CreateRigid()
->>> WritePDB(prot,"2DNJ_prot.pdb")
+prot=selectA.CreateRigid()
+WritePDB(prot,"2DNJ_prot.pdb")
 \end{verbatim}
 
 Creation of the DNA as a rigid body and file saving as a PDB:
 \begin{verbatim}
->>> DNA=selectBC.CreateRigid()
->>> WritePDB(DNA,"2DNJ_dna.pdb")
+DNA=selectBC.CreateRigid()
+WritePDB(DNA,"2DNJ_dna.pdb")
 \end{verbatim}
 
 Once both partners are isolated in separe files, close the Python interpreter.
@@ -375,7 +397,7 @@ The first line indicates the number of minimisations performed by ATTRACT for ea
 
 \paragraph{Remarques:} Columns with zeros or ones should not be modfied, as well as the second line.
 
-\subsubsection{Docking simulation}
+\subsubsection{Initial docking simulation}
 
 A docking simulation with ATTRACT requires:
 \begin{itemize}
@@ -390,11 +412,11 @@ A docking simulation with ATTRACT requires:
 
 ATTRACT can be used with different options:
 \begin{itemize}
-\item -s (single), performs one serie of minimisations with the ligand in its initial position
-\item -ref=, provides a ligand pdb file that works as a reference. After each docking, the RMSD is calculated between this reference structure and the simulated ligand.
+\item -s, performs one single serie of minimisations with the ligand in its initial position.
+\item -ref=, provides a ligand pdb file as a reference. After each docking, the RMSD is calculated between this reference structure and the simulated ligand.
 \end{itemize}
 
-A single ATTRACT simulation is thus obtained by:
+A single ATTRACT simulation may thus be obtained by:
 \begin{verbatim}
 Attract_dna.py 2DNJ_prot.cg.z.pdb 2DNJ_dna.cg.z.pdb 
 -s -ref=2DNJ_dna.cg.z.pdb > 2DNJ_single.att
@@ -402,7 +424,7 @@ Attract_dna.py 2DNJ_prot.cg.z.pdb 2DNJ_dna.cg.z.pdb
 
 The first pdb file provided must be the receptor file (and the second the ligand).
 
-For a systematic docking in the translational and rotational space:
+For a full systematic docking in the translational and rotational space:
 \begin{verbatim}
 Attract_dna.py 2DNJ_prot.cg.z.pdb 2DNJ_dna.cg.z.pdb 
 -ref=2DNJ_dna.cg.z.pdb > 2DNJ_dock.att

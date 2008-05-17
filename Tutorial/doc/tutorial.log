@@ -1,4 +1,4 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2008.2.25)  15 MAY 2008 22:49
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2008.2.25)  17 MAY 2008 19:12
 entering extended mode
  %&-line parsing enabled.
 **tutorial.tex
@@ -73,27 +73,27 @@ File: pdftex.def 2007/01/08 v0.04d Graphics/color for pdfTeX
 ) (./tutorial.aux)
 \openout1 = `tutorial.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <14.4> on input line 16.
+(Font)              <14.4> on input line 12.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 16.
+(Font)              <7> on input line 12.
 
 
 LaTeX Warning: No \author given.
 
-<img/docking.png, id=1, 578.16pt x 457.4691pt>
+<img/docking.png, id=1, 433.62pt x 343.2825pt>
 File: img/docking.png Graphic file (type png)
  <use img/docking.png> [1
 
@@ -110,47 +110,45 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 \openout3 = `tutorial.toc'.
 
  [2]
-LaTeX Font Info:    Try loading font information for T1+aett on input line 42.
- (/usr/share/texmf-texlive/tex/latex/ae/t1aett.fd
-File: t1aett.fd 1997/11/16 Font definitions for T1/aett.
-)
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 66.
- [3]
-LaTeX Font Info:    Try loading font information for OMS+aer on input line 103.
-
-
-(/usr/share/texmf/tex/latex/R/omsaer.fd
+LaTeX Font Info:    Try loading font information for OMS+aer on input line 41.
+ (/usr/share/texmf/tex/latex/R/omsaer.fd
 File: omsaer.fd 1999/12/27
 )
 LaTeX Font Info:    Font shape `OMS/aer/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 103.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 41.
+LaTeX Font Info:    Try loading font information for T1+aett on input line 46.
 
-Overfull \hbox (44.67523pt too wide) in paragraph at lines 143--146
+(/usr/share/texmf-texlive/tex/latex/ae/t1aett.fd
+File: t1aett.fd 1997/11/16 Font definitions for T1/aett.
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 70.
+ [3]
+Overfull \hbox (44.67523pt too wide) in paragraph at lines 147--150
 []\T1/aer/m/n/12 Further doc-u-ment may be ob-tained from the Trac server \T1/a
 ett/m/n/12 http://svn-lbt.ibpc.fr/PTools/wiki\T1/aer/m/n/12 .
  []
 
-[4] [5] [6] [7] [8] [9] (./tutorial.aux) ) 
+[4] [5] [6] [7] [8] [9] [10] (./tutorial.aux) ) 
 Here is how much of TeX's memory you used:
- 949 strings out of 94101
- 10725 string characters out of 1165810
- 58836 words of memory out of 1500000
- 4211 multiletter control sequences out of 10000+50000
+ 948 strings out of 94101
+ 10722 string characters out of 1165810
+ 57823 words of memory out of 1500000
+ 4210 multiletter control sequences out of 10000+50000
  35511 words of font info for 73 fonts, out of 1200000 for 2000
  637 hyphenation exceptions out of 8191
- 28i,8n,19p,373b,249s stack positions out of 5000i,500n,6000p,200000b,5000s
-</usr/share/texmf-texlive/fonts/type1
-/bluesky/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmr12.p
-fb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmr17.pfb></usr/share/texmf
--texlive/fonts/type1/bluesky/cm/cmr7.pfb></usr/share/texmf-texlive/fonts/type1/
-bluesky/cm/cmr8.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmsy10.pfb
-></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmti12.pfb></usr/share/texmf-
-texlive/fonts/type1/bluesky/cm/cmtt10.pfb></usr/share/texmf-texlive/fonts/type1
-/bluesky/cm/cmtt12.pfb>
-Output written on tutorial.pdf (9 pages, 414000 bytes).
+ 28i,8n,19p,373b,247s stack positions out of 5000i,500n,6000p,200000b,5000s
+</usr/share/texmf-texlive/fonts/
+type1/bluesky/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cm
+r12.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmr17.pfb></usr/share/
+texmf-texlive/fonts/type1/bluesky/cm/cmr7.pfb></usr/share/texmf-texlive/fonts/t
+ype1/bluesky/cm/cmr8.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmsy1
+0.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmti12.pfb></usr/share/t
+exmf-texlive/fonts/type1/bluesky/cm/cmtt10.pfb></usr/share/texmf-texlive/fonts/
+type1/bluesky/cm/cmtt12.pfb>
+Output written on tutorial.pdf (10 pages, 291106 bytes).
 PDF statistics:
- 72 PDF objects out of 1000 (max. 8388607)
+ 75 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 131072)
  12 words of extra memory for PDF output out of 10000 (max. 10000000)
 
