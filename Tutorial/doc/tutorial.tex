@@ -58,7 +58,7 @@ The basic requirements are:
 \paragraph{libboost Python dev:} {\tt apt-get install libboost-python-dev} \\
 (1.34.1-11 version installed)
 
-\paragraph{lubversion:} {\tt apt-get install subversion subversion-tools} \\
+\paragraph{Subversion:} {\tt apt-get install subversion subversion-tools} \\
 (1.4.6dfsg1-2 version installed)
 
 \paragraph{gccxml:} {\tt apt-get install gccxml} \\
@@ -361,21 +361,33 @@ As for protein reduction, a visual inspection with any visualisation software is
 
 \subsection{Docking simulation}
 
-\subsubsection{Ligand positions}
+\subsubsection{Initial ligand positions}
 
-The file {\tt translat.dat} contains all translational initial positions of the ligand used for the systematic docking. To produce this file, the largest dimension of the ligand is needed and obtained with the Python script {\tt rayon.py}:
+
+The systematic docking simulation uses starting points placed around the
+receptor.  The Python script {\tt translate.py} employs a slightly modified
+Shrake and Rupley \cite{shrake1973} method to define starting positions
+from receptor surface.  The surface generation fonctions are implemented in
+the PTools library. The script first reads the coarse grain (reduced)
+receptor and ligand files, then generates a grid of points at the certain
+distance from the receptor and outputs the grid with a given density.
+
+Remarks:
+\begin{itemize}
+\item {\tt translate.py} reads the {\tt aminon.par} parameter file. This file must be
+in the directory of the receptor and ligand files.
+\item the density option ({\tt -d}) controls the minimum distance between starting
+points (in \AA$^2$). The default value is 100.0 (\AA$^2$). 
+\item the {\tt -h} options, shows the help message and exit.
+\end{itemize}
+
+In the case of the 1DNK complex, it gives:
 \begin{verbatim}
-rayon.py 2DNJ_dna.cg.z.pdb
-\end{verbatim} 
-
-In the present case, the largest dimension of the ligand is 15.88~\AA. The translation distance around the receptor has then to be of least of 15.88~\AA, 17~\AA\ should be fine here.
-
-Starting position (in translation) for the docking are then obtained by:
-\begin{verbatim}
-translate 2DNJ_prot.cg.z.pdb 17 > translat.dat
+translate.py 2DNJ_prot.cg.z.pdb 2DNJ_dna.cg.z.pdb > translat.dat
 \end{verbatim}
 
-The {\tt translate} program creates regurlarly spread points at 17~\AA\ from the surface of the receptor.
+
+
 
 The visualisation of the starting points may be viewed with any visualisation software by renaming {\tt translat.dat} in {\tt translat.pdb}.
 
@@ -450,7 +462,15 @@ with the parameters:
 \end{itemize}
 
 \section{Misc. tips and tricks}
- 
+
+\begin{thebibliography}{99}
+
+\bibitem{shrake1973} A. Shrake, and J.A. Rupley, 
+{\it Environment and exposure to solvent of protein atoms. Lysozyme and
+isulin}, 
+Journal of Molecular Biology, {\bf 79}:351-364, 1973.
+
+\end{thebibliography}
 \end{document}
 
 \begin{verbatim}
