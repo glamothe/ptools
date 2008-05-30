@@ -397,22 +397,11 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
     assert(m_pairlists.size() == (nlig*(nlig-1))/2);
 
 
-    dbl enermode = 0.0;
-
     //put the ligands to the correct positions defined by stateVars
     for (uint i=0; i<m_movedligand.size(); i++)
     {
         m_movedligand[i] = m_centeredligand[i];
         m_movedligand[i].resetForces(); //just to be sure that the forces are set to zero. Maybe not needed.
-
-
-        //use the loop over all ligands to calculate energy associated with modes:
-        for (uint mode=0; mode < m_movedligand[i].m_modesArray.size(); mode++)
-        {
-            enermode +=  pow<4>(stateVars[svptr]) * pow<2>( m_movedligand[i].getEigen(mode)) ; //minimizer variable to the power 4 (see basetypes.h)
-            m_movedligand[i].applyMode(mode, stateVars[svptr]); //apply the mode 'mode' to ligand i before nonbon calculation
-            svptr +=1 ;
-        }
 
 
 
@@ -452,14 +441,10 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
 
 
 
-//     dbl enermode = stateVars[svptr]*stateVars[svptr]*stateVars[svptr]*stateVars[svptr] ; //power 4 ... TODO: create the function template power<int> !!!!
-//     std::cout << "stateVars: \n";
-//     for(uint i=0; i<stateVars.size(); i++) std::cout << stateVars[i] << "   ";
-//     std::cout << "\nmode energy: " << enermode << std::endl;
 
 
 
-    return enernon + enermode ;
+    return enernon;
 
 }
 
@@ -472,7 +457,6 @@ uint BaseAttractForceField::ProblemSize()
     {
         if (m_centeredligand[i].hastranslation) size +=3 ;
         if (m_centeredligand[i].hasrotation) size +=3 ;
-        size += m_centeredligand[i].m_modesArray.size(); // additional variables needed for normal modes
     }
 
     return size;
@@ -516,58 +500,7 @@ void BaseAttractForceField::Derivatives(const Vdouble& stateVars, Vdouble& delta
         }
 
 
-
-
-
-        AttractRigidbody & lig = m_movedligand[i];  //alias for the ligand
-
-//         std::cout << "@@@@  number of modes of ligand "<< i <<"   " << lig.m_modesArray.size() << std::endl;
-
-        for (uint mode=0; mode < lig.m_modesArray.size(); mode++)
-        {
-            //force calculation for normal modes:
-            //let 's' be the minimizer variable for a mode
-            //energy derivatives for this variable is given by the formula:
-            // Etot(s) = Ecartesian(s) + Emode(s)
-            // dE/ds = sum_i[(dEi/dx).(dx/ds) + (dEi/dy)(dy/ds) + (dEi/dz)(dz/ds)] + dEmode/ds
-            // where Ei is the energy interaction for atom i of ligand subject to move
-
-            delta[svptr]=0.0;
-
-            VCoord3D & modearray = lig.m_modesArray[mode];
-
-            dbl dx=0, dy=0, dz=0;
-            //scalar product between mode and cartesian forces, weighted by minimizer variable
-            for (uint atindex=0; atindex < lig.Size(); atindex++)
-            {
-                assert(svptr < stateVars.size());
-                dx +=  modearray[atindex].x * lig.m_forces[atindex].x;
-                dy +=  modearray[atindex].y * lig.m_forces[atindex].y;
-                dz +=  modearray[atindex].z * lig.m_forces[atindex].z;
-            }
-
-            delta[svptr] = dx+dy+dz; //summation of partial scalar product
-//             /*debug:*/ std::cout << "@@@@@lambda: " << lig.getEigen(mode) << std::endl;
-            delta[svptr] += 4*pow<3>(stateVars[svptr]) * pow<2>(lig.getEigen(mode)) ;
-            svptr++;  //increment the pointer over minimizer variable
-
-
-        }
-
     }
-
-
-    //debug: print numerical and analytical derivatives
-//         std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n";
-//         std::cout << "debug analytical delta: " << std::endl;
-//         for (uint k=0; k < delta.size(); k++)  std::cout<< delta[k] << "  " ;
-//         std::cout << "\n";
-//         std::vector<dbl> h = delta;
-//         NumDerivatives(stateVars,h,true);
-//         std::cout << "debug numderivatives: " << h[0]  << std::endl ;
-//         std::cout << "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n";
-
-
 
 }
 

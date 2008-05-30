@@ -58,66 +58,6 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 
 
 
-
-
-
-/*!  \brief normalize a normal mode vector
-*
-*    this function normalizes a mode vector assuming it to be a n*3 linear vector.
-*
-*/
-void AttractRigidbody::normalizeMode(VCoord3D & mode)
-{
-
-dbl sum = 0.0 ;
-for (uint i=0; i<mode.size(); i++)
-{
-sum+=Norm2(mode[i]); // we normalize a n*3 linear like vector, so Norm2 is the correct function to use.
-}
-
-dbl norm = sqrt(sum);
-
-for (uint i=0; i<mode.size(); i++)
-{
-  mode[i]=mode[i]/norm;  //divide each component by the vector norm
-}
-
-}
-
-
-
-
-void AttractRigidbody::addMode(VCoord3D & mode, dbl eigen) 
-{
-    m_modesArray.push_back(mode);
-    normalizeMode(m_modesArray[m_modesArray.size()-1]);
-    m_lambdaMode.push_back(0.0);
-    m_eigen.push_back(eigen);
-}
-
-
-double AttractRigidbody::getEigen(uint i) {return m_eigen.at(i);};
-
-/////////////////////////////
-
-
-// ///apply a normal mode to an AttractRigidbody
-// void applyMode(AttractRigidbody & src, AttractRigidbody& dest, const std::vector<Coord3D> & mode, dbl scalar){
-// assert(src.Size() == dest.Size());
-// assert(mode.size() == src.Size());
-// for(uint i=0; i<src.Size(); i++)
-// {
-//     Coord3D co = src.GetCoords(i);
-//     Coord3D displacment = mode[i];
-//     co +=displacment*scalar;
-//     dest.SetCoords(i, co);
-// }
-// 
-// 
-// }
-
-
-
 } //namespace PTools
 
 

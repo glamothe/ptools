@@ -66,31 +66,6 @@ public:
 
     std::vector<uint> m_activeAtoms; ///< list of active atoms (atoms that are taken into account for interaction)
 
-    ///overload of the virtual function GetCoords
-    virtual Coord3D GetCoords(uint i) const
-    {
-       Coord3D t = Rigidbody::GetCoords(i) ;
-       for(uint nmode=0; nmode<m_lambdaMode.size(); nmode++)
-       {
-          t += m_modesArray[nmode][i] * m_lambdaMode[nmode];
-       }
-
-       return t;
-    }
-
-    ///adds a mode to the mode list
-     void addMode(VCoord3D & mode, dbl eigen);
-
-     ///ask for a certain mode to be applied before getting the coordinates
-     void applyMode(uint modenumber, dbl lambda){
-         assert(m_lambdaMode.size()> modenumber );
-         m_lambdaMode[modenumber] = lambda ;
-     }
-
-
-    ///get the eigenvalue of mode 'i'
-    double getEigen(uint i);
-
     void setRotation(bool value) {hasrotation  = value;} //allow/disallow rotation
     void setTranslation(bool value) {hastranslation = value;} //allow/disallow translation
 
@@ -99,15 +74,9 @@ private:
     std::vector<uint> m_atomTypeNumber ;
     std::vector<dbl> m_charge ;
     std::vector<Coord3D> m_forces ;
-    std::vector<dbl> m_lambdaMode ;
-    std::vector<dbl> m_eigen; ///< array of eigenvalues
-
-    std::vector<VCoord3D> m_modesArray; ///< array of modes (normal modes)
 
     bool hastranslation;
     bool hasrotation;
-
-    void normalizeMode(VCoord3D & mode);
 
 friend class BaseAttractForceField;
 friend class AttractForceField2;

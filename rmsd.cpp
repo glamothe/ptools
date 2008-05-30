@@ -134,26 +134,6 @@ void ZRotMatrix(dbl theta, Matrix & out)
 }
 
 
-// void Rotate(Rigidbody& rigid, Matrix & mat)
-// {
-//     dbl x,y,z, X, Y, Z;
-//     for (uint i=0; i<rigid.Size(); i++)
-//     {
-//         Coord3D co = rigid.GetCoords(i);
-//         x= co.x;
-//         y= co.y;
-//         z= co.z;
-// 
-//         X = x*mat(0,0) + y*mat(0,1) + z*mat(0,2) ;
-//         Y = x*mat(1,0) + y*mat(1,1) + z*mat(1,2) ;
-//         Z = x*mat(2,0) + y*mat(2,1) + z*mat(2,2) ;
-// 
-//         rigid.SetCoords(i, Coord3D(X,Y,Z));
-// 
-//     }
-// 
-// 
-// }
 
 void Mat33xcoord3D(Matrix & mat, Coord3D& in, Coord3D& out)
 {

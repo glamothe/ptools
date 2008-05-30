@@ -48,9 +48,6 @@ dbl dihedral(const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3D
 
 dbl Angle(const Coord3D& vector1, const Coord3D& vector2);
 
-// void Translate(const Rigidbody & source, Rigidbody & target, const Coord3D& trans); ///< rigidbody translation
-
-
 
 
 #endif  //ifndef GEOMETRY

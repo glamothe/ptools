@@ -25,9 +25,6 @@ Matrix matrix;
 /// root mean square deviation without superposition
 dbl Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2);
 
-
-// Vissage MatTrans2screw(Mat33 rotmatrix, coord3D trans); // transforme t(r(X)) en un vissage d'axe de rotation colinéaire au vecteur translation.
-
 Superimpose_t superimpose( AtomSelection selref, AtomSelection selmob, int verbosity=0);
 
 
