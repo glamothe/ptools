@@ -244,7 +244,7 @@ for trans in translations:
 
         center=ligand.FindCenter()
         ligand.Translate(Coord3D()-center) #set ligand center of mass to 0,0,0
-        ligand.AttractEulerRotate(rot[0],rot[1],rot[2])
+        ligand.AttractEulerRotate(surreal(rot[0]),surreal(rot[1]),surreal(rot[2]))
         ligand.Translate(trans[1])
 
         for minim in minimlist:
@@ -255,10 +255,15 @@ for trans in translations:
 
 
             #performs single minimization on receptor and ligand, given maxiter=niter and restraint constant rstk
-            forcefield=AttractForceField2("mbest1k.par",rec,ligand,cutoff)
+            forcefield=AttractForceField2("mbest1k.par",surreal(cutoff))
+            rec.setTranslation(False)
+            rec.setRotation(False)
+            
+            forcefield.AddLigand(rec)
+            forcefield.AddLigand(ligand)
             rstk=minim['rstk']  #restraint force
-#             if rstk>0.0:
-#                 forecefield.SetRestraint(rstk)
+            #if rstk>0.0:
+                #forcefield.SetRestraint(rstk)
             lbfgs_minimizer=Lbfgs(forcefield)
             lbfgs_minimizer.minimize(niter)
             X=lbfgs_minimizer.GetMinimizedVars()  #optimized freedom variables after minimization
@@ -268,11 +273,11 @@ for trans in translations:
             output=AttractRigidbody(ligand)
             center=output.FindCenter()
             output.Translate(Coord3D()-center)
-            output.AttractEulerRotate(X[0], X[1], X[2])
-            output.Translate(Coord3D(X[3],X[4],X[5]))
+            output.AttractEulerRotate(surreal(X[0]), surreal(X[1]), surreal(X[2]))
+            output.Translate(Coord3D(surreal(X[3]),surreal(X[4]),surreal(X[5])))
             output.Translate(center)
 
-            ligand=output
+            ligand=AttractRigidbody(output)
 
 
         #computes RMSD if reference structure available
@@ -284,9 +289,10 @@ for trans in translations:
 
         #calculates true energy, and rmsd if possible
         #with the new ligand position
-        forcefield=AttractForceField2("mbest1k.par",ligand, rec, 500)
+        forcefield=AttractForceField2("mbest1k.par", surreal(50))
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
-        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(ligand,rec), str(rms))
+        pl = Attract2PairList(rec, ligand,surreal(50))
+        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
         output.PrintMatrix()
 
 
