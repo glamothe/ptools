@@ -1,7 +1,8 @@
 #ifndef PAIRLIST_H
 #define PAIRLIST_H
 
-#include "rigidbody.h"
+#include "attractrigidbody.h"
+
 
 #include <vector>
 
@@ -60,23 +61,6 @@ private:
 };
 
 
-
-
-
-
-
-
-
-
-
-// typedef Attract2PairList<Rigidbody> PairList;
-// typedef Attract2PairList<AttractRigidbody> Attract2PairList ;
-
-
-// inline void instantiate(){
-//
-//         sizeof( PairList );
-// }
 
 
 }//namespace PTools

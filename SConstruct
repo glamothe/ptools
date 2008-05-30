@@ -2,6 +2,7 @@ import os
 
 COMMON_CPP = Split ("""atom.cpp
                        rigidbody.cpp
+                       attractrigidbody.cpp
                        coord3d.cpp
                        pdbio.cpp
                        geometry.cpp
@@ -14,6 +15,8 @@ COMMON_CPP = Split ("""atom.cpp
                        minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp
                        mcopff.cpp
                        surface.cpp
+                       coordsarray.cpp
+                       QBestFit.cpp
                     """)
 
 
@@ -45,14 +48,14 @@ print PYTHON_CPP
 #	f95="f95_g95_LINUX_32"
 
 
-#COMMON_LIBS=["g2c", f95]
-COMMON_LIBS=["gfortran"]
+COMMON_LIBS=["g2c"]
+#COMMON_LIBS=["gfortran"]
 
 COMMON_CPPPATH=['.']
 FFLAGS="-g"
 
                 
-common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN='gfortran -g -O3 -fPIC' ,   FORTRANFLAGS="-g -fPIC" )
+common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN='g77 -g -O3 -fPIC' ,   FORTRANFLAGS="-g -fPIC" )
 #common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = 'g95 -fPIC -g',  FORTRANFLAGS="-g", ENV = {'PATH' : os.environ['PATH']})
 
 #common.Append(CCFLAGS='-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG')                  #fastest(?) release
@@ -68,9 +71,9 @@ nopython=common.Copy()
 objects=common.SharedObject(COMMON_CPP)
 statics=common.StaticObject(COMMON_CPP)  #to make a static library
 
-python.Append(LIBS=['boost_python', "python2.5"])
+python.Append(LIBS=['boost_python', "python2.4"])
 #python.Replace(CPPPATH=['.','/usr/include/python2.4'])
-python.Append(CPPPATH=['/usr/include/python2.5'])
+python.Append(CPPPATH=['/usr/include/python2.4'])
 
 print "CPPPATH =", python['CPPPATH']
 
@@ -82,9 +85,6 @@ lib2=nopython.StaticLibrary('ptools',source=[statics]) #this makes the library s
 Alias('python',lib1)
 Alias('cpp',[lib2] )
 print "BUILD_TARGETS is", map(str, BUILD_TARGETS)
-
-
-#Program("testsegfault.cpp", LIBPATH=['.'],LIBS=["ptools"],CCFLAGS="-g -Wall" )
 
 
 #### old commands. Not needed but kept here for some time #####

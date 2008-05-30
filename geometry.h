@@ -15,7 +15,7 @@ class Rigidbody;
 typedef dbl Mat44[4][4];
 
 void MakeRotationMatrix(Coord3D A, Coord3D B, dbl theta,  dbl out[4][4]);
-void XRotation(const Rigidbody& source, Rigidbody &result,  dbl alpha); // rotation autour de l'axe X
+// void XRotation(const Rigidbody& source, Rigidbody &result,  dbl alpha); // rotation autour de l'axe X
 
 inline void mat44xVect(const dbl mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D& out )
 {
@@ -26,8 +26,8 @@ inline void mat44xVect(const dbl mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D& ou
 
 
 void mat44xrigid(const Rigidbody& source, Rigidbody& result, dbl mat[4][4]);
-void ABrotate(Coord3D A, Coord3D B, const Rigidbody& source, Rigidbody& result, dbl theta);
-void EulerZYZ(const Rigidbody & source, Rigidbody & cible, dbl theta, dbl phi, dbl psi);
+void ABrotate(Coord3D A, Coord3D B, Rigidbody& target, dbl theta);
+// void EulerZYZ(const Rigidbody & source, Rigidbody & cible, dbl theta, dbl phi, dbl psi);
 // void AttractEuler(const Rigidbody& source, Rigidbody& dest, dbl phi, dbl ssi, dbl rot);
 
 void mat44xmat44( const dbl mat1[4][4], const dbl mat2[4][4], dbl result[4][4] );

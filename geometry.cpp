@@ -9,7 +9,7 @@ namespace PTools{
 void mat44xmat44( const dbl mat1[ 4 ][ 4 ], const dbl mat2[ 4 ][ 4 ], dbl result[ 4 ][ 4 ] )
 {
 // gives mat1*mat2 (mat2 left multiplied by mat1)
-// this works even if mat1 == mat2 (ie pointing the to same memory)
+// this works even if result == mat1 (ie pointing the to same memory)
 
     dbl temp[4][4];
 
@@ -237,83 +237,83 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
 
 
 
-void XRotation( const Rigidbody& source, Rigidbody& result, dbl alpha )
+// void XRotation( const Rigidbody& source, Rigidbody& result, dbl alpha )
+// {
+// 
+//     dbl cosa = cos( alpha );
+//     dbl sina = sin( alpha );
+// 
+//     dbl rotmatrix[ 4 ][ 4 ];
+// 
+// 
+//     //rotation d'angle alpha autour de (Ox), dans le sens indirect en regardant vers l'origine.
+//     rotmatrix[ 0 ][ 0 ] = 1 ;
+//     rotmatrix[ 0 ][ 1 ] = 0;
+//     rotmatrix[ 0 ][ 2 ] = 0;
+//     rotmatrix[ 0 ][ 3 ] = 0 ;
+// 
+//     rotmatrix[ 1 ][ 0 ] = 0;
+//     rotmatrix[ 1 ][ 1 ] = cosa ;
+//     rotmatrix[ 1 ][ 2 ] = sina;
+//     rotmatrix[ 1 ][ 3 ] = 0;
+// 
+//     rotmatrix[ 2 ][ 0 ] = 0;
+//     rotmatrix[ 2 ][ 1 ] = -sina;
+//     rotmatrix[ 2 ][ 2 ] = cosa;
+//     rotmatrix[ 2 ][ 3 ] = 0;
+// 
+//     rotmatrix[ 3 ][ 0 ] = 0;
+//     rotmatrix[ 3 ][ 1 ] = 0;
+//     rotmatrix[ 3 ][ 2 ] = 0;
+//     rotmatrix[ 3 ][ 3 ] = 1;
+// 
+// 
+// 
+//     for ( uint iatom = 0; iatom < source.Size(); iatom++ )
+//     {
+//         Coord3D res;
+//         Coord3D vect = source.mCoords[iatom];
+// 
+//         PTools::mat44xVect( rotmatrix, vect, res ) ;
+//         result.mCoords[iatom] = res;
+// 
+//     }
+// 
+// 
+// 
+// }
+
+
+
+
+
+
+// void mat44xrigid( const Rigidbody& source, Rigidbody& result, dbl mat[ 4 ][ 4 ] )
+// {
+// 
+//     for ( uint iatom = 0; iatom < source.Size(); iatom++ )
+//     {
+//         Coord3D res;
+//         Coord3D vect = source.mCoords[iatom];
+//         PTools::mat44xVect( mat, vect, res ) ;
+// 
+//         result.mCoords[iatom]=res ;
+//     }
+// 
+//     mat44xmat44( mat , source.mat44, result.mat44);
+// 
+// }
+
+
+
+
+void ABrotate( Coord3D A, Coord3D B, Rigidbody& target, dbl theta )
 {
 
-    dbl cosa = cos( alpha );
-    dbl sina = sin( alpha );
-
-    dbl rotmatrix[ 4 ][ 4 ];
-
-
-    //rotation d'angle alpha autour de (Ox), dans le sens indirect en regardant vers l'origine.
-    rotmatrix[ 0 ][ 0 ] = 1 ;
-    rotmatrix[ 0 ][ 1 ] = 0;
-    rotmatrix[ 0 ][ 2 ] = 0;
-    rotmatrix[ 0 ][ 3 ] = 0 ;
-
-    rotmatrix[ 1 ][ 0 ] = 0;
-    rotmatrix[ 1 ][ 1 ] = cosa ;
-    rotmatrix[ 1 ][ 2 ] = sina;
-    rotmatrix[ 1 ][ 3 ] = 0;
-
-    rotmatrix[ 2 ][ 0 ] = 0;
-    rotmatrix[ 2 ][ 1 ] = -sina;
-    rotmatrix[ 2 ][ 2 ] = cosa;
-    rotmatrix[ 2 ][ 3 ] = 0;
-
-    rotmatrix[ 3 ][ 0 ] = 0;
-    rotmatrix[ 3 ][ 1 ] = 0;
-    rotmatrix[ 3 ][ 2 ] = 0;
-    rotmatrix[ 3 ][ 3 ] = 1;
-
-
-
-    for ( uint iatom = 0; iatom < source.Size(); iatom++ )
-    {
-        Coord3D res;
-        Coord3D vect = source.mCoords[iatom];
-
-        PTools::mat44xVect( rotmatrix, vect, res ) ;
-        result.mCoords[iatom] = res;
-
-    }
-
-
-
-}
-
-
-
-void mat44xrigid( const Rigidbody& source, Rigidbody& result, dbl mat[ 4 ][ 4 ] )
-{
-
-    for ( uint iatom = 0; iatom < source.Size(); iatom++ )
-    {
-        Coord3D res;
-        Coord3D vect = source.mCoords[iatom];
-        PTools::mat44xVect( mat, vect, res ) ;
-
-        result.mCoords[iatom]=res ;
-    }
-
-    mat44xmat44( mat , source.mat44, result.mat44);
-
-}
-
-
-
-
-void ABrotate( Coord3D A, Coord3D B, const Rigidbody& source, Rigidbody& result, dbl theta )
-{
-
-    if (source.Size() != result.Size())
-    {
-        result = source ;
-    }
     dbl matrix[ 4 ][ 4 ];
     MakeRotationMatrix( A, B, theta, matrix );
-    mat44xrigid( source, result, matrix );
+    target.MatrixMultiply(matrix);
+//     mat44xrigid( source, result, matrix );
 }
 
 
@@ -324,38 +324,34 @@ Attention: ne marche que si l'objet source est déjà centré
 TODO: tests !
 
 */
-void EulerZYZ(const Rigidbody & source, Rigidbody & target, dbl theta, dbl phi, dbl psi)
-{
-
-    std::string message =  "Warning: this function does not update the mat44 matrix of rigidbody. \n";
-    throw message;
-
-
-    dbl ct = cos(theta);
-    dbl st = sin(theta);
-    dbl cp = cos(phi);
-    dbl sp = sin(phi);
-    dbl cs = cos(psi);
-    dbl ss = sin(psi);
-
-    for (uint at=0; at<source.Size(); at++)
-    {
-        const Coord3D & vec = source.mCoords[at] ;
-        dbl x = vec.x;
-        dbl y = vec.y;
-        dbl z = vec.z;
-
-
-        Coord3D result;
-        result.x = ct*( sp*z + cp*(cs*x-ss*y)) -st*(cs*y+ss*x) ;
-        result.x = st*( sp*z + cp*(cs*x-ss*y)) +ct*(cs*y+ss*x) ;
-        result.z = cp*z-sp*(cs*x-ss*y) ;
-
-        target.mCoords[at] = result ;
-
-    }
-
-}
+// void EulerZYZ(const Rigidbody & source, dbl theta, dbl phi, dbl psi)
+// {
+// 
+//     dbl ct = cos(theta);
+//     dbl st = sin(theta);
+//     dbl cp = cos(phi);
+//     dbl sp = sin(phi);
+//     dbl cs = cos(psi);
+//     dbl ss = sin(psi);
+// 
+//     for (uint at=0; at<source.Size(); at++)
+//     {
+//         const Coord3D & vec = source.mCoords[at] ;
+//         dbl x = vec.x;
+//         dbl y = vec.y;
+//         dbl z = vec.z;
+// 
+// 
+//         Coord3D result;
+//         result.x = ct*( sp*z + cp*(cs*x-ss*y)) -st*(cs*y+ss*x) ;
+//         result.x = st*( sp*z + cp*(cs*x-ss*y)) +ct*(cs*y+ss*x) ;
+//         result.z = cp*z-sp*(cs*x-ss*y) ;
+// 
+//         target.mCoords[at] = result ;
+// 
+//     }
+// 
+// }
 
 
 /*

@@ -19,5 +19,6 @@
 #include "atomselection.h"
 #include "screw.h"
 #include "surface.h"
+#include "attractrigidbody.h"
 
 #endif // PTOOLS_H

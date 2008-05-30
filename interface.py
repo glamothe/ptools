@@ -18,6 +18,12 @@ coord3D.include()
 normalize = coord3D.member_function("Normalize")
 normalize.call_policies = module_builder.call_policies.return_internal_reference()
 
+
+coordsarray = mb.class_("CoordsArray")
+coordsarray.include()
+#matrix44xVect = coordsarray.member_function
+
+
 rigidbody = mb.class_("Rigidbody")
 #getatom = rigidbody.member_function("GetAtomReference")
 #getatom.call_policies = module_builder.call_policies.return_internal_reference()

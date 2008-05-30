@@ -11,6 +11,16 @@
 
 #define EPSILON 1e-3
 
+typedef dbl   DtFloat;
+typedef DtFloat         DtPoint3[3];
+typedef DtFloat         DtPoint4[4];
+typedef DtFloat         DtMatrix3x3[3][3];
+typedef DtFloat         DtMatrix4x4[4][4];
+
+// extern "C"
+// {
+dbl zuker_superpose(DtPoint3 *c1, DtPoint3 *c2, int len, DtMatrix4x4 M);
+// }
 
 
 namespace PTools{
@@ -42,7 +52,7 @@ dbl Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2)
 
 
 
-typedef Array2D<dbl> Matrix;
+// typedef Array2D<dbl> Matrix;
 
 
 void PrintMat(Array2D<dbl> & mat)
@@ -124,26 +134,26 @@ void ZRotMatrix(dbl theta, Matrix & out)
 }
 
 
-void Rotate(Rigidbody& rigid, Matrix & mat)
-{
-    dbl x,y,z, X, Y, Z;
-    for (uint i=0; i<rigid.Size(); i++)
-    {
-        Coord3D co = rigid.GetCoords(i);
-        x= co.x;
-        y= co.y;
-        z= co.z;
-
-        X = x*mat(0,0) + y*mat(0,1) + z*mat(0,2) ;
-        Y = x*mat(1,0) + y*mat(1,1) + z*mat(1,2) ;
-        Z = x*mat(2,0) + y*mat(2,1) + z*mat(2,2) ;
-
-        rigid.SetCoordsValid(i, Coord3D(X,Y,Z));
-
-    }
-
-
-}
+// void Rotate(Rigidbody& rigid, Matrix & mat)
+// {
+//     dbl x,y,z, X, Y, Z;
+//     for (uint i=0; i<rigid.Size(); i++)
+//     {
+//         Coord3D co = rigid.GetCoords(i);
+//         x= co.x;
+//         y= co.y;
+//         z= co.z;
+// 
+//         X = x*mat(0,0) + y*mat(0,1) + z*mat(0,2) ;
+//         Y = x*mat(1,0) + y*mat(1,1) + z*mat(1,2) ;
+//         Z = x*mat(2,0) + y*mat(2,1) + z*mat(2,2) ;
+// 
+//         rigid.SetCoords(i, Coord3D(X,Y,Z));
+// 
+//     }
+// 
+// 
+// }
 
 void Mat33xcoord3D(Matrix & mat, Coord3D& in, Coord3D& out)
 {
@@ -288,7 +298,7 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
    else     // angle=0
       { 
             screw.point = Coord3D(0,0,0);
-            if(real(Norm(trans))!=0)
+            if(Norm(trans)!=0)
             {
               screw.transVector = trans / Norm(trans);
             }
@@ -321,10 +331,10 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
     VectProd(screw.transVector,u,usec);
     dbl sint = ScalProd(usec,uprime);
 
-    if ( real(cost) < -1 ) real(cost)  =-1;
-    if (real(cost) >1 ) real(cost)= 1 ;
+    if (cost < -1 ) cost=-1;
+    if (cost >1 ) cost= 1 ;
     screw.angle = acos(cost);
-    if (real(sint) < 0) screw.angle = -screw.angle ;
+    if (sint < 0) screw.angle = -screw.angle ;
     screw.transVector = screw.transVector * normtranslation;
     return screw ;
 }
@@ -342,119 +352,65 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
 
 /*! \brief calculates a screw that optimally superimpose mob (mobile) on ref (reference)
 *
-* Algorithm from Sippl et Stegbuchner. Computers Chem. Vol 15, No. 1, p 73-78, 1991.
+* 
 */
-Screw superimpose( AtomSelection selref, AtomSelection selmob, int verbosity)
+Superimpose_t superimpose( AtomSelection selref, AtomSelection selmob, int verbosity)
 {
 
-    if (selref.Size() != selmob.Size()) {
-                                       std::string error = "Error in superpose.cpp: \
-                                       the two AtomSelection objects must have\
-                                       the same size !\n";  throw error;  };
+uint refsz = selref.Size();
+
+Rigidbody rref = selref.CreateRigid();
+Rigidbody rmob = selmob.CreateRigid();
 
 
-    Screw screw; // screw that must be applied to mobile to superimpose on ref
+DtPoint3 ref[refsz];
+DtPoint3 mob[refsz];
 
-
-    //creates a copy of the reference and mobile Rigidbodies selections because we need to modify them
-    Rigidbody reference = selref.CreateRigid();
-    Rigidbody mobile = selmob.CreateRigid();
-
-
-
-    Array2D<dbl> rot(3,3);  //rotation matrix
-    Array2D<dbl> ident(3,3); // identity matrix (only in the beginning!) 
-    for (uint i=0; i<3; i++)
-        for(uint j=0; j<3; j++)
-        if (i!=j) {ident(i,j)=0;} else {ident(i,j)=1;} ;
-
-
-    //get the translation component:
-    Coord3D t0 = reference.FindCenter();
-    Coord3D t1 = mobile.FindCenter();
-
-
-    //center the two objects
-    reference.CenterToOrigin();
-    mobile.CenterToOrigin();
-
-
-    Array2D<dbl> U(3,3); //mixed tensor
-    MakeTensor(reference, mobile, U);
-
-
-
-    //superimposition algorithm:
-    for(uint i=0; i<30; i++)  // we may want to change the number of iterations at some point...
-    {
-
-        dbl arg1,arg2;
-
-        arg1 = U(2,1) - U(1,2) ;
-        arg2 = U(1,1) + U(2,2);
-        dbl alpha = atan2(arg1 , arg2 );
-
-        XRotMatrix(-alpha, rot);
-        Mat33xMat33(rot,ident,ident);
-
-        //------------------------------------
-
-
-        Mat33xMat33(rot,U,U);
-
-        arg1 = U(2,0)-U(0,2);
-        arg2 = U(0,0)+U(2,2);
-
-        dbl beta = atan2(arg1,arg2);
-        YRotMatrix(beta,rot);
-        Mat33xMat33(rot,ident,ident);
-
-        //--------------------------------------
-
-
-        Mat33xMat33(rot,U,U);
-
-        arg1 = U(1,0) - U(0,1);
-        arg2 = U(0,0) + U(1,1);
-        dbl gamma = atan2(arg1,arg2);
-
-        ZRotMatrix(-gamma,rot);
-        Mat33xMat33(rot,ident,ident);
-
-
-        Mat33xMat33(rot,U,U);
-
-    }
-
-
-    screw = MatTrans2screw(ident, t0-t1);
-    screw.point = screw.point + t1 ;
-
-//     if (verbosity==1)
-//     {
-// 
-// 
-//         rigidbody newmob(mob);
-//         rigidbody newref(ref);
-//         selref.setRigid(newref);
-//         selmob.setRigid(newmob);
-//         newmob.transform(screw);
-// 
-//         std::cout << "verif screw, rmsdca = " << rmsd(selmob && CA(newmob),selref && CA(newref)) << std::endl ;
-// 
-//     }
-
-    return screw;
+for (uint i =0; i <refsz; i++)
+ {
+   ref[i][0]=rref.GetCoords(i).x;
+   ref[i][1]=rref.GetCoords(i).y;
+   ref[i][2]=rref.GetCoords(i).z;
 }
 
 
+for (uint i =0; i <refsz; i++)
+ {
+   mob[i][0]=rmob.GetCoords(i).x;
+   mob[i][1]=rmob.GetCoords(i).y;
+   mob[i][2]=rmob.GetCoords(i).z;
+}
+
+DtMatrix4x4 mat;
 
 
+Matrix outmat(4,4);
+Superimpose_t super;
 
+super.rmsd = sqrt(zuker_superpose(ref, mob, refsz, mat)) ; //zuker_superpose returns msd (not rmsd)
+if (verbosity==1)
+  {
+    std::cout << "Rmsd after superposition: " << super.rmsd << std::endl;
+    std::cout << "Matrix: " << std::endl;
+  }
 
+for(uint i=0; i<4; i++)
+     {
+       for (uint j=0; j<4; j++)
+        {
+          if (verbosity==1)
+              std::cout << mat[j][i] << "  " ;
 
+          outmat(i,j) = mat[j][i];
+        }
+       if (verbosity==1) std::cout << std::endl;
 
+      }
 
+super.matrix = outmat;
+
+return super;
+}
 
 
 } //namespace PTools

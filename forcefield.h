@@ -4,6 +4,7 @@
 
 #include "basetypes.h"
 #include "rigidbody.h"
+#include "attractrigidbody.h"
 #include "pairlist.h"
 
 namespace PTools
