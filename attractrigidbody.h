@@ -66,14 +66,18 @@ public:
 
     std::vector<uint> m_activeAtoms; ///< list of active atoms (atoms that are taken into account for interaction)
 
-    void setRotation(bool value) {hasrotation  = value;} //allow/disallow rotation
-    void setTranslation(bool value) {hastranslation = value;} //allow/disallow translation
+    void setRotation(bool value) {hasrotation  = value;} ///< allow/disallow rotation
+    void setTranslation(bool value) {hastranslation = value;} ///< allow/disallow translation
+
+    void setDummyTypes(const std::vector<uint>& dummy); ///< set a list of ignored atom types
 
 
 private:
     std::vector<uint> m_atomTypeNumber ;
     std::vector<dbl> m_charge ;
     std::vector<Coord3D> m_forces ;
+
+    std::vector<uint> m_dummytypes; ///< list of ignored atom types
 
     bool hastranslation;
     bool hasrotation;

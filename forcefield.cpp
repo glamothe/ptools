@@ -130,49 +130,10 @@ AttractForceField1::AttractForceField1(std::string paramsFileName, dbl cutoff)
 
 {
 
-
-
-//     m_ligcenter = m_ligand.FindCenter();  inutile: AddLigand centre le ligand
-//     m_refligand.Translate(PTools::minus(m_ligcenter)); //center the ligand (for later Euler rotation)
-
-
-
     InitParams(paramsFileName);
-
-//     for (uint i=0;i<m_refligand.Size();i++)
-//         m_ligforces.push_back(Coord3D()); // initialize the forces array
-
-
-// inutile: AttractRigidbody le fait deja...
-//     // reads the "extra" informations of each atoms of ligand and receptor
-//     // and extracts the "atom category" from this fields
-//
-// //     extractExtra(m_refreceptor, m_rAtomCat, m_rAtomCharge);
-// //     extractExtra(m_refligand,   m_lAtomCat, m_lAtomCharge);
-
-//     m_energycalled=false; //initialization
 
     m_rstk=0.0; //no restraint by default
     m_cutoff = cutoff;
-
-    /* desactive: la partie multiligand est +/- en conflit avec la force de contrainte...
-
-        // find the closest atom of the ligand to the receptor
-        // (for the constraint force)
-        dbl mindist2 = 1.0e8;
-        m_ligRestraintIndex = -1;
-        m_reccenter = m_receptor.FindCenter();
-        for (uint ilig=0; ilig<lig.Size(); ilig++)
-        {
-            Coord3D atlig = lig.GetCoords(ilig);
-            if (Norm2(atlig-m_reccenter) < mindist2)
-            {
-                mindist2 = Norm2(atlig-m_reccenter) ;
-                m_ligRestraintIndex = ilig ;
-            }
-        }
-
-    */
 
 }
 
@@ -728,6 +689,8 @@ void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdoubl
 void BaseAttractForceField::AddLigand(AttractRigidbody & lig)
 {
 
+    setDummyTypeList(lig); // sets the dummy atom type. (virtual function customized for each Attract forcefield)
+
     AttractRigidbody centeredlig = lig ;
     Coord3D com = lig.FindCenter();
     m_ligcenter.push_back(com);
@@ -760,7 +723,12 @@ void BaseAttractForceField::MakePairLists()
 AttractRigidbody BaseAttractForceField::GetLigand(uint i) {return m_movedligand[i];};
 
 
-
+void AttractForceField2::setDummyTypeList(AttractRigidbody& lig)
+{
+std::vector<uint> dummy;
+dummy.push_back(0);
+lig.setDummyTypes(dummy);
+}
 
 
 

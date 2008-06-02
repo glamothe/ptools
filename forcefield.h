@@ -175,9 +175,12 @@ protected:
     dbl m_cutoff;
 
 
+private:
     //private functions members:
     void Trans(uint molIndex, Vdouble& delta,uint shift, bool print=false); // translational derivatives
     void Rota(uint molIndex, dbl phi, dbl ssi, dbl rot, Vdouble& delta, uint shift, bool print=false);
+
+    virtual void setDummyTypeList(AttractRigidbody& lig)=0;
 
 
 };
@@ -203,6 +206,8 @@ private:
     int m_ligRestraintIndex;
 
     dbl m_rstk;
+
+    void setDummyTypeList(AttractRigidbody& lig){}; //forcefield1 has no dummy type
 };
 
 
@@ -283,7 +288,7 @@ public:
 
 private:
 
-
+       virtual void setDummyTypeList(AttractRigidbody& lig);
 //     std::vector<Coord3D> m_recForces ; ///< ligand forces
 
 

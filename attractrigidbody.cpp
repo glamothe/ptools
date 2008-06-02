@@ -58,6 +58,12 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 
 
 
+
+void AttractRigidbody::setDummyTypes(const std::vector<uint>& dummy)
+{
+m_dummytypes = dummy;
+};
+
 } //namespace PTools
 
 

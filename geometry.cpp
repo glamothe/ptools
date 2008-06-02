@@ -5,7 +5,9 @@ namespace PTools{
 
 
 
-
+/** \brief Matrix multiplication
+*  This function is a simple matrix multiplication routine for 4x4 matrix
+*/
 void mat44xmat44( const dbl mat1[ 4 ][ 4 ], const dbl mat2[ 4 ][ 4 ], dbl result[ 4 ][ 4 ] )
 {
 // gives mat1*mat2 (mat2 left multiplied by mat1)
@@ -339,5 +341,5 @@ dbl Angle(const Coord3D& vector1, const Coord3D& vector2)
     return acos(costheta);
 }
 
-
+} //namespace PTools
 
