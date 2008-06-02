@@ -22,19 +22,25 @@ class ForceField
 {
 public:
 
-
-    //virtual dbl Function()=0; //simply return the function value for
+    ///the function to optimize
     virtual dbl Function(const Vdouble&)=0;
 
-    /// analytical derivative
+    /// analytical derivative of the function above
     virtual void Derivatives(const Vdouble& StateVars, Vdouble& delta)
     {
         NumDerivatives(StateVars, delta, true);
     }
-    virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta, bool print=false); ///< numerical derivative for testing purpose
-    virtual uint ProblemSize()=0;
-    virtual void initMinimization()=0; ///< this function is called at the beginning of a minimization
 
+    ///numerical derivative for testing purpose. Not very accurate
+    virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta, bool print=false); 
+
+    ///size of the problem (number of variables the minimizer must optimize)
+    virtual uint ProblemSize()=0;
+
+    ///this function is called at the beginning of a minimization, by the minimizer (Lbfgs)
+    virtual void initMinimization()=0;
+
+    ///virtual destructor (Effective C++ - Scott Meyers - Item 7)
     virtual ~ForceField(){};
 
 } ;
@@ -142,14 +148,23 @@ class BaseAttractForceField: public ForceField
 
 public:
 
+    ///called before every minimization by the minimizer (Lbfgs)
     virtual void initMinimization();
-    void Derivatives(const Vdouble&, Vdouble&); ///< analytical derivative
+    ///analytical derivative
+    void Derivatives(const Vdouble&, Vdouble&);
     uint ProblemSize(); 
     dbl Function(const Vdouble&);
-    void AddLigand(AttractRigidbody & lig); ///< add a new ligand to the ligand list...
-    void MakePairLists(); ///< this function generates the pairlists before a minimization
+
+    ///add a new ligand to the ligand list...
+    void AddLigand(AttractRigidbody & lig);
+
+    ///after a minimization, get minimized ligand 'i'
     AttractRigidbody GetLigand(uint i);
 
+    /// this function generates the pairlists before a minimization
+    void MakePairLists(); 
+
+    ///non-bonded interactions
     virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false)
     {
         std::vector<Coord3D> forcesrec (rec.Size());
@@ -160,6 +175,8 @@ public:
         lig.addForces(forceslig);
         return ener;
     }
+
+    ///non-bonded interactions
     virtual dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false)=0;
 
     virtual ~BaseAttractForceField(){};
@@ -167,19 +184,23 @@ public:
 protected:
     //private variables
     Vuint m_rAtomCat; ///< receptor atom category (std vector)
-    std::vector<Attract2PairList> m_pairlists ;
-    std::vector<AttractRigidbody> m_centeredligand;
-    std::vector<AttractRigidbody> m_movedligand;
-    std::vector<Coord3D> m_ligcenter;
-
-    dbl m_cutoff;
+    std::vector<Attract2PairList> m_pairlists ; ///< pair lists
+    std::vector<AttractRigidbody> m_centeredligand; ///< array of ligands with their centroid at O (required for Euler rotations)
+    std::vector<AttractRigidbody> m_movedligand; 
+    std::vector<Coord3D> m_ligcenter; ///< list of ligands centroids before centering.
+    dbl m_cutoff; ///< cutoff for the pairlist generation
 
 
 private:
     //private functions members:
-    void Trans(uint molIndex, Vdouble& delta,uint shift, bool print=false); // translational derivatives
+
+    ///translational derivatives
+    void Trans(uint molIndex, Vdouble& delta,uint shift, bool print=false); 
+
+    ///rotational derivatives
     void Rota(uint molIndex, dbl phi, dbl ssi, dbl rot, Vdouble& delta, uint shift, bool print=false);
 
+    ///set list of ignored atom types (dummy atoms)
     virtual void setDummyTypeList(AttractRigidbody& lig)=0;
 
 
@@ -246,51 +267,45 @@ class TestForceField: public ForceField
 
 
 
-///////////////////////////////////////////////////////
-/*!  \brief Attract forcefield version 2
-*
-*   new forcefield with saddle point and pairwise energy
-*/
+/////////////////////////////////////////////////
+//         ForceField2 
+/////////////////////////////////////////////////
 
+/*! \brief Attract ForceField2 parameters
+*
+*/
 struct AttFF2_params
 {
     int ipon[31][31];
-// Array2D<int> ipon;
-// Array2D<dbl> rc;
-    dbl rc[31][31];  //TODO: should be translated into clean std::vectors
-// Array2D<dbl> ac;
-    dbl ac[31][31];
 
+    dbl rc[31][31];
+    dbl ac[31][31];
 
     dbl emin[31][31];
     dbl rmin2[31][31];
     dbl rbc[31][31];
     dbl abc[31][31];
-    int iflo[31][31];  //? read from mkbest1.par (forcefield parameters)
-
-//AttFF2_params() {ipon=Array2D<int>(3000,3000); ac=Array2D<dbl>(3000,3000); rc=Array2D<double>(3000,3000); }
+    int iflo[31][31];
 
 };
 
 
 
-
-
-
+/*!  \brief Attract forcefield version 2
+*
+*   new forcefield with saddle point and pairwise energy
+*/
 class AttractForceField2 : public BaseAttractForceField
 {
 
 public:
 
-//     void initMinimization();
     AttractForceField2(std::string paramsFileName, dbl cutoff);
     dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
 
 private:
 
        virtual void setDummyTypeList(AttractRigidbody& lig);
-//     std::vector<Coord3D> m_recForces ; ///< ligand forces
-
 
 };
 
