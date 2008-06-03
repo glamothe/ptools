@@ -8,9 +8,9 @@ namespace PTools{
 
 
 Rigidbody::Rigidbody()
- {
-     ResetMatrix();
- }
+{
+    ResetMatrix();
+}
 
 
 
@@ -21,9 +21,9 @@ Rigidbody::Rigidbody(std::string filename)
 }
 
 
- Rigidbody::Rigidbody(const Rigidbody& model)
-   : CoordsArray(model)
- {
+Rigidbody::Rigidbody(const Rigidbody& model)
+        : CoordsArray(model)
+{
 //this copy constructor is needed because dbl[4][4] is not
 // automatically copied with the default copy constructor
 
@@ -45,8 +45,8 @@ void Rigidbody::AddAtom(const Atomproperty& at, Coord3D co)
 
 Atom Rigidbody::CopyAtom(uint i) const
 {
-   Atom at(mAtomProp[i],GetCoords(i));
-   return at;
+    Atom at(mAtomProp[i],GetCoords(i));
+    return at;
 }
 
 
@@ -104,7 +104,7 @@ dbl Rigidbody::Radius()
 
 void Rigidbody::Translate(const Coord3D& tr)
 {
-   CoordsArray::Translate(tr);
+    CoordsArray::Translate(tr);
 }
 
 
@@ -112,9 +112,9 @@ void Rigidbody::Translate(const Coord3D& tr)
 /*!  \brief this function makes an euler rotation with the Attract convention.
 *
 *   Note that for this new implementation only the 4x4 rotational/translational
-*   matrix is updated. This may allow a big speedup (to be tested) and a 
+*   matrix is updated. This may allow a big speedup (to be tested) and a
 *   higher flexibility  (  rig.Translate(a); rig.Translate(minus(a)); may now be delayed
-*   until the coordinates are really needed. 
+*   until the coordinates are really needed.
 *   If coordinates are never asked (why?), then no costly calculation is performed !
 */
 void Rigidbody::AttractEulerRotate(dbl phi, dbl ssi, dbl rot)
@@ -134,30 +134,30 @@ void Rigidbody::AttractEulerRotate(dbl phi, dbl ssi, dbl rot)
     srot=sin(rot);
 
 
-      dbl eulermat[4][4];
+    dbl eulermat[4][4];
 
-      eulermat[0][0] = crot*cscp + srot*sp;
-      eulermat[0][1] = srot*cscp - crot*sp;
-      eulermat[0][2] = sscp;
-      eulermat[0][3] = 0.0;
+    eulermat[0][0] = crot*cscp + srot*sp;
+    eulermat[0][1] = srot*cscp - crot*sp;
+    eulermat[0][2] = sscp;
+    eulermat[0][3] = 0.0;
 
-      eulermat[1][0] = crot*cssp-srot*cp ;
-      eulermat[1][1] = srot*cssp+crot*cp;
-      eulermat[1][2] = sssp;
-      eulermat[1][3] = 0.0;
+    eulermat[1][0] = crot*cssp-srot*cp ;
+    eulermat[1][1] = srot*cssp+crot*cp;
+    eulermat[1][2] = sssp;
+    eulermat[1][3] = 0.0;
 
-      eulermat[2][0] = -crot*ss;
-      eulermat[2][1] = -srot*ss;
-      eulermat[2][2] = cs;
-      eulermat[2][3] = 0.0;
+    eulermat[2][0] = -crot*ss;
+    eulermat[2][1] = -srot*ss;
+    eulermat[2][2] = cs;
+    eulermat[2][3] = 0.0;
 
-      eulermat[3][0] = 0.0;
-      eulermat[3][1] = 0.0;
-      eulermat[3][2] = 0.0;
-      eulermat[3][3] = 1.0;
+    eulermat[3][0] = 0.0;
+    eulermat[3][1] = 0.0;
+    eulermat[3][2] = 0.0;
+    eulermat[3][3] = 1.0;
 
-      //matrix multiplication
-      this->MatrixMultiply(eulermat);
+    //matrix multiplication
+    this->MatrixMultiply(eulermat);
 //       mat44xmat44( eulermat , this->mat44, this->mat44);
 
 }
@@ -259,14 +259,14 @@ void Rigidbody::ABrotate(const Coord3D& A, const Coord3D& B, dbl theta)
 
 std::string Rigidbody::PrintPDB() const
 {
- uint size=this->Size();
- std::string output;
-  for (uint i=0; i < size ; i++)
-	{
-	output = output + mAtoms[i].ToPdbString();
-	}
- return(std::string) output;
-} 
+    uint size=this->Size();
+    std::string output;
+    for (uint i=0; i < size ; i++)
+    {
+        output = output + mAtoms[i].ToPdbString();
+    }
+    return(std::string) output;
+}
 
 void Rigidbody::m_hookCoords(uint i, Coord3D & co) const {};  //(virtual)
 

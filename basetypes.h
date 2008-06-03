@@ -8,7 +8,7 @@
 #include <boost/shared_array.hpp>
 
 
-//switch to choose between automatic differenciation 
+//switch to choose between automatic differenciation
 //or normal double arithmetic
 
 
@@ -17,9 +17,9 @@
 #include "derivify.h"  //must be included in any cases
 
 #ifdef AUTO_DIFF
-   typedef surreal dbl;
+typedef surreal dbl;
 #else
-   typedef double dbl;
+typedef double dbl;
 #endif
 
 
@@ -37,22 +37,22 @@ typedef std::vector<dbl> Vdouble;
 
 // power (of int) faster much faster than pow()
 // expands pow<6>(a) to a*a*a*a*a*a
- template<size_t I,size_t N> struct metapow
+template<size_t I,size_t N> struct metapow
 {
-  static inline dbl Pow( dbl x )
-  {
-    return x*metapow<I+1,N>::Pow(x);
-  }
+    static inline dbl Pow( dbl x )
+    {
+        return x*metapow<I+1,N>::Pow(x);
+    }
 };
 
 template<size_t N> struct metapow<N,N>
 {
-  static inline dbl Pow( dbl x ) { return 1; }
+    static inline dbl Pow( dbl x ) { return 1; }
 };
 
 template<size_t N> dbl pow(dbl x)
 {
-  return metapow<0,N>::Pow(x);
+    return metapow<0,N>::Pow(x);
 }
 
 
@@ -119,12 +119,12 @@ public:
 
     void Print()
     {
-     for (uint r=0; r<m_rows; r++)
-      {
-        for (uint c=0; c<m_columns; c++)
-           std::cout << (*this)(r,c) << "  " ;
-        std::cout << std::endl;
-      }
+        for (uint r=0; r<m_rows; r++)
+        {
+            for (uint c=0; c<m_columns; c++)
+                std::cout << (*this)(r,c) << "  " ;
+            std::cout << std::endl;
+        }
     }
 
 

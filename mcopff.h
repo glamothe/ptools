@@ -81,7 +81,7 @@ private:
     Mcoprigid _receptor;
 
 
-   void calculate_weights(Mcoprigid& lig);
+    void calculate_weights(Mcoprigid& lig);
 
 
 };

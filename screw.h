@@ -16,14 +16,14 @@ struct Screw
 
     /// returns a summary of the screw:
     std::string print()
-        {
-            std::stringstream result;
-            result << "rotation axis: " << transVector.toString() ;
-            result << "angle: " << angle << "\n" ;
-            result << "translation norm: " <<  Norm(transVector) << "\n" ;
-            result << "axis point: "  <<  point.toString();
-            return result.str();
-        } 
+    {
+        std::stringstream result;
+        result << "rotation axis: " << transVector.toString() ;
+        result << "angle: " << angle << "\n" ;
+        result << "translation norm: " <<  Norm(transVector) << "\n" ;
+        result << "axis point: "  <<  point.toString();
+        return result.str();
+    }
 };
 
 

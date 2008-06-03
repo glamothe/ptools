@@ -51,22 +51,22 @@ public:
         return m_charge[i];
     };
 
-   virtual bool isAtomActive(uint i) const {return (m_atomTypeNumber[i]!=0);  };
+    virtual bool isAtomActive(uint i) const {return (m_atomTypeNumber[i]!=0);  };
 
     void resetForces()
     {
-       m_forces = std::vector<Coord3D> (this->Size() ) ;
+        m_forces = std::vector<Coord3D> (this->Size() ) ;
     }
 
     void addForces(std::vector<Coord3D> forces)
     {
-      for(uint i=0; i<forces.size(); i++)
-         m_forces[i]+=forces[i];
+        for (uint i=0; i<forces.size(); i++)
+            m_forces[i]+=forces[i];
     }
 
     std::vector<uint> m_activeAtoms; ///< list of active atoms (atoms that are taken into account for interaction)
 
-    void setRotation(bool value) {hasrotation  = value;} ///< allow/disallow rotation
+void setRotation(bool value) {hasrotation  = value;} ///< allow/disallow rotation
     void setTranslation(bool value) {hastranslation = value;} ///< allow/disallow translation
 
     void setDummyTypes(const std::vector<uint>& dummy); ///< set a list of ignored atom types
@@ -82,9 +82,9 @@ private:
     bool hastranslation;
     bool hasrotation;
 
-friend class BaseAttractForceField;
-friend class AttractForceField2;
-friend class AttractForceField1;
+    friend class BaseAttractForceField;
+    friend class AttractForceField2;
+    friend class AttractForceField1;
 
 
 };  //end class AttractRigid

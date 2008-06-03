@@ -40,13 +40,13 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 
         std::istringstream iss( extra );
         iss >> atcategory >> atcharge ;
-        m_atomTypeNumber.push_back(atcategory-1);  // -1 to directly use the atomTypeNumber into C-array 
+        m_atomTypeNumber.push_back(atcategory-1);  // -1 to directly use the atomTypeNumber into C-array
         m_charge.push_back(atcharge);
 
-   if (isAtomActive(i))
-   {
-      m_activeAtoms.push_back(i);
-   }
+        if (isAtomActive(i))
+        {
+            m_activeAtoms.push_back(i);
+        }
 
     }
 
@@ -61,7 +61,7 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 
 void AttractRigidbody::setDummyTypes(const std::vector<uint>& dummy)
 {
-m_dummytypes = dummy;
+    m_dummytypes = dummy;
 };
 
 } //namespace PTools

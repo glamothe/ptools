@@ -17,10 +17,10 @@ Coord3D& Coord3D::Normalize(){
 
 std::string Coord3D::toString(bool newline)
 {
-std::stringstream result;
-result << x << "  " << y << "  " << z ;
-if (newline) result << "\n";
-return result.str();
+    std::stringstream result;
+    result << x << "  " << y << "  " << z ;
+    if (newline) result << "\n";
+    return result.str();
 }
 
 

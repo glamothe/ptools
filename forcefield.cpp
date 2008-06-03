@@ -725,9 +725,9 @@ AttractRigidbody BaseAttractForceField::GetLigand(uint i) {return m_movedligand[
 
 void AttractForceField2::setDummyTypeList(AttractRigidbody& lig)
 {
-std::vector<uint> dummy;
-dummy.push_back(0);
-lig.setDummyTypes(dummy);
+    std::vector<uint> dummy;
+    dummy.push_back(0);
+    lig.setDummyTypes(dummy);
 }
 
 

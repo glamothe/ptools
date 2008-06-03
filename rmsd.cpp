@@ -152,7 +152,7 @@ void Mat33xcoord3D(Matrix & mat, Coord3D& in, Coord3D& out)
 /*! \brief (local function only)  extracts a matrix[n][3] from rigidbody coordinates
 *
 */
-void rigidToMatrix(const Rigidbody & rig , Array2D<dbl> & out) 
+void rigidToMatrix(const Rigidbody & rig , Array2D<dbl> & out)
 {
     for (uint atom=0; atom<rig.Size();atom++)
     {
@@ -187,7 +187,7 @@ void MakeTensor(const Rigidbody & ref, const Rigidbody &  mob, Array2D<dbl> & ou
 
     //tensor calculation:
     for (uint c=0; c<3; c++)
-        for(uint l=0;l<3; l++)
+        for (uint l=0;l<3; l++)
         {
             out(l,c)=0;
             for (uint k=0;k<ref.Size();k++)
@@ -275,19 +275,19 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
 
     }
 
-   else     // angle=0
-      { 
-            screw.point = Coord3D(0,0,0);
-            if(Norm(trans)!=0.0)
-            {
-              screw.transVector = trans / Norm(trans);
-            }
-            else {  screw.transVector =  Coord3D(0,0,1); /*arbitrary axis*/ }
+    else     // angle=0
+    {
+        screw.point = Coord3D(0,0,0);
+        if (Norm(trans)!=0.0)
+        {
+            screw.transVector = trans / Norm(trans);
+        }
+        else {  screw.transVector =  Coord3D(0,0,1); /*arbitrary axis*/ }
 
-            normtranslation=Norm(trans);
-            screw.angle=0;
-            screw.transVector = screw.transVector * normtranslation ;
-            return screw;
+        normtranslation=Norm(trans);
+        screw.angle=0;
+        screw.transVector = screw.transVector * normtranslation ;
+        return screw;
 
     }
 
@@ -332,64 +332,64 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
 
 /*! \brief calculates a screw that optimally superimpose mob (mobile) on ref (reference)
 *
-* 
+*
 */
 Superimpose_t superimpose( AtomSelection selref, AtomSelection selmob, int verbosity)
 {
 
-uint refsz = selref.Size();
+    uint refsz = selref.Size();
 
-Rigidbody rref = selref.CreateRigid();
-Rigidbody rmob = selmob.CreateRigid();
-
-
-DtPoint3 ref[refsz];
-DtPoint3 mob[refsz];
-
-for (uint i =0; i <refsz; i++)
- {
-   ref[i][0]=rref.GetCoords(i).x;
-   ref[i][1]=rref.GetCoords(i).y;
-   ref[i][2]=rref.GetCoords(i).z;
-}
+    Rigidbody rref = selref.CreateRigid();
+    Rigidbody rmob = selmob.CreateRigid();
 
 
-for (uint i =0; i <refsz; i++)
- {
-   mob[i][0]=rmob.GetCoords(i).x;
-   mob[i][1]=rmob.GetCoords(i).y;
-   mob[i][2]=rmob.GetCoords(i).z;
-}
+    DtPoint3 ref[refsz];
+    DtPoint3 mob[refsz];
 
-DtMatrix4x4 mat;
+    for (uint i =0; i <refsz; i++)
+    {
+        ref[i][0]=rref.GetCoords(i).x;
+        ref[i][1]=rref.GetCoords(i).y;
+        ref[i][2]=rref.GetCoords(i).z;
+    }
 
 
-Matrix outmat(4,4);
-Superimpose_t super;
+    for (uint i =0; i <refsz; i++)
+    {
+        mob[i][0]=rmob.GetCoords(i).x;
+        mob[i][1]=rmob.GetCoords(i).y;
+        mob[i][2]=rmob.GetCoords(i).z;
+    }
 
-super.rmsd = sqrt(zuker_superpose(ref, mob, refsz, mat)) ; //zuker_superpose returns msd (not rmsd)
-if (verbosity==1)
-  {
-    std::cout << "Rmsd after superposition: " << super.rmsd << std::endl;
-    std::cout << "Matrix: " << std::endl;
-  }
+    DtMatrix4x4 mat;
 
-for(uint i=0; i<4; i++)
-     {
-       for (uint j=0; j<4; j++)
+
+    Matrix outmat(4,4);
+    Superimpose_t super;
+
+    super.rmsd = sqrt(zuker_superpose(ref, mob, refsz, mat)) ; //zuker_superpose returns msd (not rmsd)
+    if (verbosity==1)
+    {
+        std::cout << "Rmsd after superposition: " << super.rmsd << std::endl;
+        std::cout << "Matrix: " << std::endl;
+    }
+
+    for (uint i=0; i<4; i++)
+    {
+        for (uint j=0; j<4; j++)
         {
-          if (verbosity==1)
-              std::cout << mat[j][i] << "  " ;
+            if (verbosity==1)
+                std::cout << mat[j][i] << "  " ;
 
-          outmat(i,j) = mat[j][i];
+            outmat(i,j) = mat[j][i];
         }
-       if (verbosity==1) std::cout << std::endl;
+        if (verbosity==1) std::cout << std::endl;
 
-      }
+    }
 
-super.matrix = outmat;
+    super.matrix = outmat;
 
-return super;
+    return super;
 }
 
 

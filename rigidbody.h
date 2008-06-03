@@ -16,16 +16,16 @@ namespace PTools
 {
 
 
-namespace {  
+namespace {
 // anonymous namespace for copying the mat44xVect from geometry.h
 // this is a pretty ugly hack and if someone finds a better way, then please do it !
 
-   inline void mat44xVect(const dbl mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D& out )
-   {
+inline void mat44xVect(const dbl mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D& out )
+{
     out.x = vect.x * mat[ 0 ][ 0 ] + vect.y * mat[ 0 ][ 1 ] + vect.z * mat[ 0 ][ 2 ] + mat[ 0 ][ 3 ] ;
     out.y = vect.x * mat[ 1 ][ 0 ] + vect.y * mat[ 1 ][ 1 ] + vect.z * mat[ 1 ][ 2 ] + mat[ 1 ][ 3 ] ;
     out.z = vect.x * mat[ 2 ][ 0 ] + vect.y * mat[ 2 ][ 1 ] + vect.z * mat[ 2 ][ 2 ] + mat[ 2 ][ 3 ] ;
-   }
+}
 
 }
 
@@ -63,21 +63,21 @@ public:
     /// Make a deep copy of one atom (the Atom extracted is then totally independent)
     virtual Atom CopyAtom(uint i) const ;
 
-	/// const version of GetAtom
-	Atom GetAtom(uint pos) const
-	{
-        Coord3D co; 
+    /// const version of GetAtom
+    Atom GetAtom(uint pos) const
+    {
+        Coord3D co;
         CoordsArray::GetCoords(pos, co);
         Atom at(mAtomProp[pos], co );
-	return at;
-	}
+        return at;
+    }
 
 
-        /// const version of GetAtom
-        Atomproperty const & GetAtomProperty(uint pos) const
-        {
-          return mAtomProp[pos];
-        }
+    /// const version of GetAtom
+    Atomproperty const & GetAtomProperty(uint pos) const
+    {
+        return mAtomProp[pos];
+    }
 
 
 
@@ -151,8 +151,8 @@ public:
 
     void ABrotate(const Coord3D& A, const Coord3D& B, dbl theta); ///< rotation around (AB) axis.
 
-    /// in some cases atoms may be ignored 
-    virtual bool isAtomActive(uint i) const {return true;}; 
+    /// in some cases atoms may be ignored
+    virtual bool isAtomActive(uint i) const {return true;};
 
 
     //friends

@@ -1,5 +1,5 @@
 //
-// C++ Interface: generic interface for ptools 
+// C++ Interface: generic interface for ptools
 //
 
 #ifndef PTOOLS_H

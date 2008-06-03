@@ -21,7 +21,7 @@ struct AtomPair
 
 /*! \brief Contains list of pairs of atoms in interaction
 *
-* 
+*
 */
 
 class Attract2PairList
@@ -59,7 +59,7 @@ public:
 
 
 private:
-    
+
     dbl squarecutoff ; ///< cutoff^2
     const AttractRigidbody* mp_ligand;
     const AttractRigidbody* mp_receptor;

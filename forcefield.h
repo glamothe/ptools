@@ -32,7 +32,7 @@ public:
     }
 
     ///numerical derivative for testing purpose. Not very accurate
-    virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta, bool print=false); 
+    virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta, bool print=false);
 
     ///size of the problem (number of variables the minimizer must optimize)
     virtual uint ProblemSize()=0;
@@ -109,7 +109,7 @@ private:
     Rigidbody m_receptor, m_ligand;
     Rigidbody m_savligand;
 
-   
+
 
     std::vector<Coord3D> m_ligforces ; //forces
 
@@ -139,7 +139,7 @@ private:
 ///////////////////////////////////////////////////////////////
 /*!  \brief Common base class for Attract forcefields 1 and 2
 *
-*   Attract forcefields 1 and 2 are very similar. 
+*   Attract forcefields 1 and 2 are very similar.
 *   nonbon8 and paramters initialization are different, but
 *   rotational/translational derivatives can be simple base functions
 */
@@ -152,7 +152,7 @@ public:
     virtual void initMinimization();
     ///analytical derivative
     void Derivatives(const Vdouble&, Vdouble&);
-    uint ProblemSize(); 
+    uint ProblemSize();
     dbl Function(const Vdouble&);
 
     ///add a new ligand to the ligand list...
@@ -162,7 +162,7 @@ public:
     AttractRigidbody GetLigand(uint i);
 
     /// this function generates the pairlists before a minimization
-    void MakePairLists(); 
+    void MakePairLists();
 
     ///non-bonded interactions
     virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, bool print=false)
@@ -186,7 +186,7 @@ protected:
     Vuint m_rAtomCat; ///< receptor atom category (std vector)
     std::vector<Attract2PairList> m_pairlists ; ///< pair lists
     std::vector<AttractRigidbody> m_centeredligand; ///< array of ligands with their centroid at O (required for Euler rotations)
-    std::vector<AttractRigidbody> m_movedligand; 
+    std::vector<AttractRigidbody> m_movedligand;
     std::vector<Coord3D> m_ligcenter; ///< list of ligands centroids before centering.
     dbl m_cutoff; ///< cutoff for the pairlist generation
 
@@ -195,7 +195,7 @@ private:
     //private functions members:
 
     ///translational derivatives
-    void Trans(uint molIndex, Vdouble& delta,uint shift, bool print=false); 
+    void Trans(uint molIndex, Vdouble& delta,uint shift, bool print=false);
 
     ///rotational derivatives
     void Rota(uint molIndex, dbl phi, dbl ssi, dbl rot, Vdouble& delta, uint shift, bool print=false);
@@ -268,7 +268,7 @@ class TestForceField: public ForceField
 
 
 /////////////////////////////////////////////////
-//         ForceField2 
+//         ForceField2
 /////////////////////////////////////////////////
 
 /*! \brief Attract ForceField2 parameters
@@ -305,7 +305,7 @@ public:
 
 private:
 
-       virtual void setDummyTypeList(AttractRigidbody& lig);
+    virtual void setDummyTypeList(AttractRigidbody& lig);
 
 };
 

@@ -24,9 +24,9 @@ private:
 
 public:
     /// default constructor
-    Atomproperty() 
+    Atomproperty()
     {
-        mAtomType="X"; 
+        mAtomType="X";
         mAtomElement="X";
         mResidType="XXX";
         mChainId="X";
@@ -35,47 +35,47 @@ public:
         mAtomCharge=0.0;
     };
 
-    /// return atom type 
-    std::string GetType() const  {return mAtomType;}; 
+    /// return atom type
+    std::string GetType() const  {return mAtomType;};
 
     /// define atom type
-    void SetType(std::string newtype) { mAtomType = newtype;}; 
+    void SetType(std::string newtype) { mAtomType = newtype;};
 
     /// return residue type (LEU, ARG, ...)
-    std::string GetResidType() const {return mResidType;}; 
+    std::string GetResidType() const {return mResidType;};
 
     /// define residue type
-    void SetResidType(std::string residtype){mResidType=residtype;}; 
+    void SetResidType(std::string residtype){mResidType=residtype;};
 
     /// return atom charge
-    inline dbl GetAtomCharge() const {return mAtomCharge;}; 
+    inline dbl GetAtomCharge() const {return mAtomCharge;};
 
     /// define atom charge
-    inline void SetAtomCharge(dbl ch) {mAtomCharge=ch;}; 
+    inline void SetAtomCharge(dbl ch) {mAtomCharge=ch;};
 
     /// return chain ID
-    inline std::string GetChainId() const {return mChainId;}; 
+    inline std::string GetChainId() const {return mChainId;};
 
     /// define chain ID
-    inline void SetChainId(std::string chainid) {mChainId=chainid;}; 
+    inline void SetChainId(std::string chainid) {mChainId=chainid;};
 
     /// return residue ID
-    inline uint GetResidId() const {return mResidId;}; 
+    inline uint GetResidId() const {return mResidId;};
 
     /// define residue ID
-    inline void SetResidId(uint id) {mResidId = id;}; 
+    inline void SetResidId(uint id) {mResidId = id;};
 
     /// return atom ID
-    inline uint GetAtomId() const {return mAtomId;}; 
+    inline uint GetAtomId() const {return mAtomId;};
 
     /// define atom ID
-    inline void SetAtomId(uint atomnumber) {mAtomId=atomnumber;}; 
+    inline void SetAtomId(uint atomnumber) {mAtomId=atomnumber;};
 
     /// set the extra data field
-    inline void SetExtra(std::string extra){mExtra=extra;}; 
+    inline void SetExtra(std::string extra){mExtra=extra;};
 
     /// get the extra data field
-    inline std::string GetExtra() const {return mExtra;}; 
+    inline std::string GetExtra() const {return mExtra;};
 
 };
 
@@ -93,28 +93,28 @@ public:
     Coord3D GetCoords() const; ///< return atom coordinates
 
     /// define atom coordinates
-    inline void SetCoords(const Coord3D& coords) {mCoords=coords;}; 
+    inline void SetCoords(const Coord3D& coords) {mCoords=coords;};
 
     /// convert atom properties and coordinates to std::string
-    std::string ToString() const; 
+    std::string ToString() const;
 
     /// converts atom to classical PDB-like string
-    std::string ToPdbString() const ; 
+    std::string ToPdbString() const ;
 
     /// Translation of an atom
-    void Translate(const Coord3D& tr); 
+    void Translate(const Coord3D& tr);
 
 };
 
 
 /// distance between two atoms
-inline dbl Dist(const Atom& at1, const Atom& at2) 
+inline dbl Dist(const Atom& at1, const Atom& at2)
 {
     return Norm(at1.GetCoords()-at2.GetCoords());
 }
 
 /// distance**2 between two atoms
-inline dbl Dist2(const Atom& at1, const Atom& at2) 
+inline dbl Dist2(const Atom& at1, const Atom& at2)
 {
     return Norm2(at1.GetCoords()-at2.GetCoords());
 }

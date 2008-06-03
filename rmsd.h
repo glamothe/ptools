@@ -16,8 +16,8 @@ namespace PTools
 
 struct Superimpose_t
 {
-dbl rmsd;
-Matrix matrix;
+    dbl rmsd;
+    Matrix matrix;
 };
 
 
