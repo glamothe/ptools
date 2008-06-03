@@ -218,11 +218,14 @@ public:
     virtual ~AttractForceField1(){};
 private:
 
-    Vdouble m_rad ; //rad parameter ... RADius?
-    Vdouble m_amp ; //amp parameter ... AMPlitude??
+    Vdouble m_rad ; //Ri LJ (8,6) parameter
+    Vdouble m_amp ; //Ai LJ (8,6) parameter
+    // m_rad and m_amp are the Ri (in Angstrom) and Ai (in [RT]^1/2) Lennard-Jones (8,6) parameters respectively as described in M. Zacharias Prot. Sci. 2003, 12, 1271-1282.
+
 
     dbl m_rc[64][64]; //some pre-calculated results
     dbl m_ac[64][64]; //some pre-calculated results
+    // m_rc[i][j] and m_ac[i][j] are the pre-calculated repulsive (Bij) and attractive (Cij) pair-wise interactions between pseudo atom i and j at a distance rij calculated from: Eij= [Bij/(rij)^8 - Cij/(rij)^6] with Bij = AiAj(Ri+Rj)^8 and Cij = AiAj(Ri+Rj)^6
 
     int m_ligRestraintIndex;
 
@@ -276,16 +279,22 @@ class TestForceField: public ForceField
 */
 struct AttFF2_params
 {
-    int ipon[31][31];
+    int ipon[31][31];  // flag to switch between saddle point and "normal" minimum curve of the LJ potential.
 
-    dbl rc[31][31];
-    dbl ac[31][31];
+    dbl rc[31][31];  // some pre-calculated results equal to abc[i][j]*rbc[i][j]^8
+    dbl ac[31][31];  // some pre-calculated results equal to abc[i][j]*rbc[i][j]^6
 
-    dbl emin[31][31];
-    dbl rmin2[31][31];
-    dbl rbc[31][31];
-    dbl abc[31][31];
-    int iflo[31][31];
+    dbl emin[31][31];  // pre-calculated energy needed to flip the curve from the "normal" LJ minimum to the saddle point.
+    dbl rmin2[31][31];  // pre-calculated square distance to switch between the saddle point part and the "normal" minimum one of the LJ potential.
+    dbl rbc[31][31];  // pair-wise LJ (8,6) parameters
+    dbl abc[31][31];  // pair-wise LJ (8,6) parameters
+    int iflo[31][31];  // flag equivalent to ipon (should be removed!)
+
+    // In the FF2, the LJ potential flips from a "normal" minimum curve in case of an attractive interaction between pseudo-atoms (iflo=1) to a repulsive saddle-point one in case of a repulsive interaction (iflo=-1).
+    // the LJ curve is split into 2 parts: 
+    // if the square distance (rij^2) between the pseudo atoms is above rmin2 value, the LJ energy is equal to : Eij = ivor*(rc[i][j]/rij^8 - ac[i][j]/rij^6)
+    // if the square distance (rij^2) between the pseudo atoms is below rmin2 value, the LJ energy is equal to : Eij = ivor*(rc[i][j]/rij^8 - ac[i][j]/rij^6) + (ivor-1)*emin
+
 
 };
 
