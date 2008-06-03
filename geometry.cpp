@@ -286,8 +286,7 @@ void MakeVect( const Coord3D& a, const Coord3D& b, Coord3D& result )
 
 
 
-
-dbl dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3D& d )
+dbl Dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3D& d )
 {
     //calculate the dihedral angle defined by a, b, c and d.
     //The method is described in: J.K Rainey, Ph.D. Thesis,
@@ -296,38 +295,26 @@ dbl dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3
     //and also described here: http://structbio.biochem.dal.ca/jrainey/dihedralcalc.html
 
 
-    //Here we go !
+    Coord3D b1 = b-a;
+    Coord3D b2 = c-b;
+    Coord3D b3 = d-c;
 
-    //vecteur ba :
-    Coord3D BA;
-    MakeVect( b, a, BA );
-
-
-    Coord3D CD;
-    MakeVect( c, d, CD );
-    Coord3D BC;
-    MakeVect( b, c, BC );
-    Coord3D n1, n2 ;
-
-    VectProd( BC, BA, n1 ); // n1=
-    VectProd( BC, CD, n2 );
-
-    //std::cout <<"ScalProd: " <<ScalProd(BA,n1)<< "\n" ;
-
-    dbl n1n2 = ScalProd( n1, n2 );
-    dbl cost = n1n2 / sqrt( ScalProd( n1, n1 ) * ScalProd( n2, n2 ) );
-
-    dbl theta = acos( cost );
-    std::cout << "Theta: " << theta / 3.14159265*180 << "\n" ;
+    Coord3D n1;
+    VectProd (b2, b3, n1);
+    Coord3D n2;
+    VectProd(b1, b2, n2);
 
     Coord3D n3;
-    VectProd( n2, n1, n3 );
+    VectProd(b2,b3,n3);
 
-    throw "incomplete implemenation of dihedral";
-
-    return 0.0;
+    dbl phi  = atan2( Norm(b2) * ScalProd(b1, n1),  ScalProd(n2 , n3) ) ;
+    return phi;
 
 }
+
+
+
+
 
 
 

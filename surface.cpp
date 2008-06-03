@@ -133,7 +133,7 @@ Rigidbody Surface::surfpoint(const Rigidbody & rigid, dbl srad)
 
 			// fill the top and bottom positions
 			dbl costh = -1;
-			while (costh<=1)
+			while (costh<=1.0)
 				{
 				Coord3D coord4;
 				coord4.x = 0.0;

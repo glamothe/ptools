@@ -35,7 +35,8 @@ typedef std::vector<dbl> Vdouble;
 
 
 
-
+// power (of int) faster much faster than pow()
+// expands pow<6>(a) to a*a*a*a*a*a
  template<size_t I,size_t N> struct metapow
 {
   static inline dbl Pow( dbl x )

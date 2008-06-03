@@ -278,7 +278,7 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
    else     // angle=0
       { 
             screw.point = Coord3D(0,0,0);
-            if(Norm(trans)!=0)
+            if(Norm(trans)!=0.0)
             {
               screw.transVector = trans / Norm(trans);
             }
@@ -311,10 +311,10 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
     VectProd(screw.transVector,u,usec);
     dbl sint = ScalProd(usec,uprime);
 
-    if (cost < -1 ) cost=-1;
-    if (cost >1 ) cost= 1 ;
+    if (cost < -1.0 ) cost=-1.0;
+    if (cost >1.0 ) cost= 1.0 ;
     screw.angle = acos(cost);
-    if (sint < 0) screw.angle = -screw.angle ;
+    if (sint < 0.0) screw.angle = -screw.angle ;
     screw.transVector = screw.transVector * normtranslation;
     return screw ;
 }

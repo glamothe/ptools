@@ -83,7 +83,9 @@ dbl Rigidbody::RadiusGyration()
     {
         r += Norm2( c - this->GetCoords(i) );
     }
-    return ( sqrt( r/ this->Size() ));
+
+    dbl result = sqrt( r/ (double) this->Size() );
+    return result;
 }
 
 dbl Rigidbody::Radius()
