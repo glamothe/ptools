@@ -46,6 +46,8 @@ private:
     std::vector<Atom> mAtoms; ///< vector of Atoms
     std::vector<Coord3D> mForces; ///< forces for each atom
 
+    std::string _description; ///< some string to describe the molecule
+
     virtual void m_hookCoords(uint i, Coord3D & co) const ; ///< private hook to give a chance for class childs to change the coordinates before rotations and translations
 
 
@@ -55,8 +57,8 @@ protected:
 
 public:
     Rigidbody();  ///< basic constructor
-    Rigidbody(std::string filename);
-    Rigidbody(const Rigidbody& model); ///< copy
+    Rigidbody(std::string filename); ///create a Rigidbody object and loads a PDB file
+    Rigidbody(const Rigidbody& model); ///< copy constructor
 
     virtual ~Rigidbody(){};
 
@@ -79,13 +81,6 @@ public:
         return mAtomProp[pos];
     }
 
-
-
-    /// return number of atoms
-//     inline uint Size() const
-//     {
-//         return mAtomProp.size();
-//     };
 
     /// add an atom to the molecule (deep copy)
     void AddAtom(const Atomproperty& at, Coord3D co);
@@ -141,11 +136,6 @@ public:
     /// selection shortcut for C-alpha
     AtomSelection CA();
 
-    // operator =
-    // TODO: one should check but this operator doesn't seem to be that necessary
-    // (the compilers can use Rigidbody(const Rigidbody&) instead)
-    //Rigidbody& operator= (const Rigidbody& rig);
-
     /// operator + : merge two Rigdibody by extending the first coordinates with the second coordinates.
     Rigidbody operator+ (const Rigidbody& rig);
 
@@ -154,6 +144,10 @@ public:
     /// in some cases atoms may be ignored
     virtual bool isAtomActive(uint i) const {return true;};
 
+    /// set a description for the object (ex: "mutant A192G")
+    void setDescription(const std::string & descr) {_description = descr;};
+    /// return the object name/description
+    std::string getDescription(){return _description;};
 
     //friends
     friend void ABrotate( Coord3D A, Coord3D B, Rigidbody& target, dbl theta );

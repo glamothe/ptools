@@ -15,7 +15,7 @@ Mcoprigid::Mcoprigid()
 
 
 
-void Mcoprigid::SetMain(AttractRigidbody& main) {
+void Mcoprigid::setMain(AttractRigidbody& main) {
     _main=main;
     _center = _main.FindCenter();
 
@@ -51,6 +51,29 @@ void Mcoprigid::Translate(const Coord3D& c)
             _vregion[i][j].Translate(c);
 
 }
+
+
+
+void Mcoprigid::PrintWeights()
+{
+    for (uint loopregion=0; loopregion<_weights.size(); loopregion++)
+    {
+        std::cout << "copy region: " << loopregion << std::endl << "weights: ";
+        for (uint copy=0; copy<_weights[loopregion].size(); copy++)
+        {
+            std::cout << _weights[loopregion][copy] << "  " ;
+        }
+
+    }
+}
+
+
+
+
+
+///////////////////////////////////////////////////
+//     Forcefield implementation
+///////////////////////////////////////////////////
 
 
 
@@ -105,25 +128,13 @@ void McopForceField::calculate_weights(Mcoprigid& lig)
 }
 
 
-void Mcoprigid::PrintWeights()
-{
-    for (uint loopregion=0; loopregion<_weights.size(); loopregion++)
-    {
-        std::cout << "copy region: " << loopregion << std::endl << "weights: ";
-        for (uint copy=0; copy<_weights[loopregion].size(); copy++)
-        {
-            std::cout << _weights[loopregion][copy] << "  " ;
-        }
-
-    }
-}
 
 
 
 /** \brief calculates energy of the system
-
-this functions returns nonbonded energy of a receptor with multicopy and a ligand without copy.
-
+*
+* this functions returns nonbonded energy of a receptor with multicopy and a ligand without copy.
+*
 */
 dbl McopForceField::Function(const Vdouble & v)
 {
@@ -132,7 +143,10 @@ dbl McopForceField::Function(const Vdouble & v)
     dbl enercopy =0.0;
 
 // 1) put the objects to the right place
-    Mcoprigid lig (_centered_ligand);
+
+    _moved_ligand = _centered_ligand;
+
+    Mcoprigid & lig = _moved_ligand ;
     assert(lig._vregion.size()==0);
 
 
@@ -151,20 +165,48 @@ dbl McopForceField::Function(const Vdouble & v)
 
     //2.2) main lignd with receptor copies:
     assert(_receptor._vregion.size() == _receptor._weights.size());
-
+        
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++)
     {
 
         //calculates interaction energy between receptor copies and ligand body:
 //         std::vector<dbl> Eik;
 
-        assert(_receptor._vregion[loopregion].size() == _receptor._weights[loopregion].size());
 
-        for (uint copy = 0; copy < _receptor._vregion[loopregion].size(); copy++)
+        ensemble& ref_ensemble = _receptor._vregion[loopregion];
+        std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
+
+        assert( ref_ensemble.size() == ref_weights.size());
+
+        for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++)
         {
-            Attract2PairList cpl ( lig._main, _receptor._vregion[loopregion][copy], _cutoff );
-            dbl e = _ff.nonbon8( lig._main, _receptor._vregion[loopregion][copy] , cpl );
-            enercopy += e * lig._weights[loopregion][copy];
+
+            dbl& weight = ref_weights[copynb];
+            AttractRigidbody& copy = ref_ensemble[copynb];
+
+            Attract2PairList cpl ( lig._main, copy, _cutoff );
+            std::vector<Coord3D> copyforce(copy.Size());
+            std::vector<Coord3D> mainforce(lig._main.Size());
+
+//             dbl e = _ff.nonbon8( lig._main, _receptor._vregion[loopregion][copy] , cpl );
+            dbl e = _ff.nonbon8_forces(lig._main, copy, cpl, mainforce, copyforce);
+            enercopy += e * weight;//lig._weights[loopregion][copy];
+
+            //multiply forces by copy weight:
+            for(uint i=0; i<copyforce.size(); i++)
+            { copyforce[i] = weight*copyforce[i]; }
+            for(uint i=0; i<mainforce.size(); i++)
+            { mainforce[i] = weight*mainforce[i]; }
+
+            //add force to main ligand and receptor copy
+            assert(lig._main.Size() == mainforce.size());
+            for (uint i=0; i<lig._main.Size(); i++)
+               lig._main.m_forces[i]+=mainforce[i];
+
+            assert(copy.Size()==copyforce.size());
+            for(uint i=0; i<copyforce.size(); i++)
+               copy.m_forces[i]+=copyforce[i];
+
 
         }
 
@@ -178,6 +220,44 @@ dbl McopForceField::Function(const Vdouble & v)
 
 void McopForceField::Derivatives(const Vdouble& v, Vdouble & g )
 {
+
+//sum the forces over x, y and z:
+
+Coord3D ligtransForces; //translational forces for the ligand:
+for(uint i=0; i<_moved_ligand._main.Size(); i++)
+ {
+     ligtransForces += _moved_ligand._main.m_forces[i];
+ }
+
+
+Coord3D receptortransForces;
+for(uint i=0; i<_receptor._main.Size(); i++)
+{
+receptortransForces+= _receptor._main.m_forces[i];
+}
+
+
+for (uint i=0; i <_receptor._vregion.size(); i++)
+ {
+   ensemble& ens = _receptor._vregion[i];
+   std::vector<dbl> & weights =  _receptor._weights[i];
+
+   for(uint j=0; j<ens.size(); j++)
+   {
+     AttractRigidbody& copy = ens[j];
+       for (uint atomnb=0; atomnb < copy.Size(); ++atomnb)
+       {
+            receptortransForces += weights[j] * copy.m_forces[atomnb];
+       }
+
+   }
+
+//TODO DEBUG:
+std::cout << "differences between the two forces: " <<  (ligtransForces - receptortransForces).toString() << std::endl ;
+
+ }
+
+
 
 
 

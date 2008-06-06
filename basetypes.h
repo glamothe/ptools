@@ -74,8 +74,7 @@ template<size_t N> dbl pow(dbl x)
 *  sharing the same memory (this reduce the cost of copying and transmission by value,
 *  like for Python objects). To make array2 independant of array1 (deep copy), use: array2.detach() after the
 *  copy.
-*  speed test are needed, but it should be reasonably fast for most daily usages
-*  TODO: make speed tests ...
+*  It should be reasonably fast for most usages
 */
 template <class mytype>
 class Array2D

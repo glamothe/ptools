@@ -24,8 +24,8 @@ public:
 
     //using default copy operator
 
-    void SetMain(AttractRigidbody& main) ;
-    void AddCopyRegion(const ensemble& cr){ _vregion.push_back(cr); std::vector<dbl> v; _weights.push_back(v);  };
+    void setMain(AttractRigidbody& main) ;
+    void addEnsemble(const ensemble& cr){ _vregion.push_back(cr); std::vector<dbl> v; _weights.push_back(v);  };
 
 
     void AttractEulerRotate(const dbl& phi, const dbl& ssi, const dbl& rot);
@@ -78,6 +78,7 @@ private:
     bool _update_weights;
 
     Mcoprigid _centered_ligand ;
+    Mcoprigid _moved_ligand ;
     Mcoprigid _receptor;
 
 

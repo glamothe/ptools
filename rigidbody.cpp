@@ -26,12 +26,16 @@ Rigidbody::Rigidbody(const Rigidbody& model)
 {
 //this copy constructor is needed because dbl[4][4] is not
 // automatically copied with the default copy constructor
+//TODO: verifier si c'est toujours le cas ...
+
 
 //     this->mAtoms = model.mAtoms;
     this->mForces = model.mForces;
 //     this->_coords = model._coords;
     this->mAtomProp = model.mAtomProp;
     this->mAtoms = model.mAtoms;
+    this-> _description = model._description;
+
 
 }
 

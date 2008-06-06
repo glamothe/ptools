@@ -176,10 +176,19 @@ public:
         return ener;
     }
 
-    ///non-bonded interactions
+    ///non-bonded interactions, forces are returned separately
     virtual dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false)=0;
 
     virtual ~BaseAttractForceField(){};
+
+
+    ///translational derivatives
+    void Trans(uint molIndex, Vdouble& delta,uint shift, bool print=false);
+
+    ///rotational derivatives
+    void Rota(uint molIndex, dbl phi, dbl ssi, dbl rot, Vdouble& delta, uint shift, bool print=false);
+
+
 
 protected:
     //private variables
@@ -191,14 +200,12 @@ protected:
     dbl m_cutoff; ///< cutoff for the pairlist generation
 
 
+    
+
+
 private:
     //private functions members:
 
-    ///translational derivatives
-    void Trans(uint molIndex, Vdouble& delta,uint shift, bool print=false);
-
-    ///rotational derivatives
-    void Rota(uint molIndex, dbl phi, dbl ssi, dbl rot, Vdouble& delta, uint shift, bool print=false);
 
     ///set list of ignored atom types (dummy atoms)
     virtual void setDummyTypeList(AttractRigidbody& lig)=0;
