@@ -71,6 +71,8 @@ void setRotation(bool value) {hasrotation  = value;} ///< allow/disallow rotatio
 
     void setDummyTypes(const std::vector<uint>& dummy); ///< set a list of ignored atom types
 
+    bool operator==(const AttractRigidbody& at) {return false;}; //don't use it, needed to expose vector<AttractRigidobdy> to python by boost::vector indexing suite. 
+
 
 private:
     std::vector<uint> m_atomTypeNumber ;

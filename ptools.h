@@ -20,5 +20,6 @@
 #include "screw.h"
 #include "surface.h"
 #include "attractrigidbody.h"
+#include "mcopff.h"
 
 #endif // PTOOLS_H

@@ -32,6 +32,14 @@ rigidbody.include()
 attractrigidbody=mb.class_("AttractRigidbody")
 attractrigidbody.include()
 
+
+Region = mb.class_("Region")
+Region.include()
+
+Mcoprigid=mb.class_("Mcoprigid")
+Mcoprigid.include()
+
+
 atomproperty=mb.class_("Atomproperty")
 atomproperty.include()
 
@@ -52,6 +60,9 @@ attractForceField1.include()
 
 attractForceField2 = mb.class_("AttractForceField2")
 attractForceField2.include()
+
+McopForceField = mb.class_("McopForceField")
+McopForceField.include()
 
 
 AtomPair = mb.class_("AtomPair")

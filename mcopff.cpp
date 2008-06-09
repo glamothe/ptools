@@ -77,13 +77,17 @@ void Mcoprigid::PrintWeights()
 
 
 
-void McopForceField::calculate_weights(Mcoprigid& lig)
+void McopForceField::calculate_weights(Mcoprigid& lig, bool print)
 {
 
 
 //loop over copies regions
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++)
     {
+        if (print)
+          {
+             std::cout << " Region: " << loopregion << "\n";
+          }
 
         //calculates interaction energy between receptor copies and ligand body:
         std::vector<dbl> Eik;
@@ -115,9 +119,11 @@ void McopForceField::calculate_weights(Mcoprigid& lig)
         for (uint i=0; i< weights.size(); i++)
         {
             weights[i] = weights[i]/sumweights ;
+            if (print) std::cout << "copy " << i << "  weight: " << weights[i] << std::endl; 
         }
 
         _receptor._weights[loopregion]=weights;
+
 
 
 
@@ -173,7 +179,7 @@ dbl McopForceField::Function(const Vdouble & v)
 //         std::vector<dbl> Eik;
 
 
-        ensemble& ref_ensemble = _receptor._vregion[loopregion];
+        Region& ref_ensemble = _receptor._vregion[loopregion];
         std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
 
         assert( ref_ensemble.size() == ref_weights.size());
@@ -239,7 +245,7 @@ receptortransForces+= _receptor._main.m_forces[i];
 
 for (uint i=0; i <_receptor._vregion.size(); i++)
  {
-   ensemble& ens = _receptor._vregion[i];
+   Region& ens = _receptor._vregion[i];
    std::vector<dbl> & weights =  _receptor._weights[i];
 
    for(uint j=0; j<ens.size(); j++)

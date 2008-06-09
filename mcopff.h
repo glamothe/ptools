@@ -13,7 +13,46 @@
 namespace PTools{
 
 
-typedef std::vector<AttractRigidbody> ensemble ;
+// typedef std::vector<AttractRigidbody> ensemble ;
+
+
+class Region
+{
+private:
+
+std::vector<AttractRigidbody> _copies;
+
+public:
+/*
+   void AttractEulerRotate(const dbl& phi, const dbl& ssi, const dbl& rot)
+   {
+      for (uint i=0; i<_copies.size(); i++)
+      {
+          _copies[i].AttractEulerRotate(phi, ssi, rot);
+      }
+
+   };
+
+   void Translate(const Coord3D& co)
+   {
+       for(uint i =0; i< _copies.size(); ++i)
+       {
+          _copies[i].Translate(co);
+       }
+   }*/
+
+
+   void addCopy(const AttractRigidbody& cop){_copies.push_back(cop);};
+
+   size_t size() const {return _copies.size();};
+
+
+   AttractRigidbody& operator[](uint i){return _copies[i];};
+
+};
+
+
+
 
 class Mcoprigid //multicopy rigidbody
 {
@@ -25,7 +64,7 @@ public:
     //using default copy operator
 
     void setMain(AttractRigidbody& main) ;
-    void addEnsemble(const ensemble& cr){ _vregion.push_back(cr); std::vector<dbl> v; _weights.push_back(v);  };
+    void addEnsemble(const Region& reg){ _vregion.push_back(reg); std::vector<dbl> v; _weights.push_back(v);  };
 
 
     void AttractEulerRotate(const dbl& phi, const dbl& ssi, const dbl& rot);
@@ -39,7 +78,7 @@ public:
 private:
 
     AttractRigidbody _main;
-    std::vector< ensemble > _vregion ;
+    std::vector< Region > _vregion ;
 
     bool _complete ;
     Coord3D _center ; ///<center of mass of the main region
@@ -70,6 +109,14 @@ public:
     void Derivatives(const Vdouble& v, Vdouble & g );
 
 
+    void setReceptor(const Mcoprigid& rec) {_receptor = rec;};
+    void setLigand(const Mcoprigid& lig) { _centered_ligand = lig;  };
+
+    void calculate_weights(Mcoprigid& lig, bool print=false);
+
+    uint ProblemSize() {return 6;};
+    void initMinimization(){};
+
 private:
 
     BaseAttractForceField& _ff ;
@@ -82,7 +129,7 @@ private:
     Mcoprigid _receptor;
 
 
-    void calculate_weights(Mcoprigid& lig);
+    
 
 
 };
