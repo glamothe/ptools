@@ -69,7 +69,7 @@ if python25dir is None:
    if python24dir is None:
       print "cannot locate Python2.4, the library may not compile..."
    else:
-      PYTHON_CPPPATH.append(python24dir)
+      PYTHON_CPPPATH=[python24dir]
       PYTHON_LIBS=["python2.4"]
 
 
@@ -104,7 +104,6 @@ common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN
 #common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = 'g95 -fPIC -g',  FORTRANFLAGS="-g", ENV = {'PATH' : os.environ['PATH']})
 
 #common.Append(CCFLAGS='-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG')                  #fastest(?) release
-common.Append(CCFLAGS='-Wall -O2 -g -fPIC -Woverloaded-virtual')                     #debuging normal
 #common.Append(CCFLAGS='-Wall -O2 -g -fPIC -D_GLIBCXX_DEBUG')    #debuging high (use with care !)
 #common.Append(CCFLAGS='-Wall -O0 -g -pg -fPIC -DNDEBUG ')        #profiling
 
