@@ -23,6 +23,7 @@ typedef double dbl;
 #endif
 
 
+typedef unsigned int uint;
 typedef std::vector<int> Vint;
 typedef std::vector<uint> Vuint;
 typedef std::vector<dbl> Vdouble;

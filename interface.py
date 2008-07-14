@@ -7,6 +7,8 @@ mb = module_builder.module_builder_t( [os.path.abspath('./ptools.h'), os.path.ab
                                       , define_symbols=[] )
 
 
+
+
 #Well, don't you want to see what is going on?
 #mb.print_declarations()
 
@@ -94,6 +96,9 @@ Norm2.include()
 Dist = mb.free_function("Dist").include()
 Dist2 = mb.free_function("Dist2").include()
 
+mb.free_function("Dihedral").include()
+mb.free_function("Angle").include()
+
 
 PrintCoord=mb.free_function("PrintCoord")
 PrintCoord.include()
@@ -115,6 +120,17 @@ superimpose.include()
 surf=mb.class_("Surface")
 surf.include()
 
+Matrix=mb.class_("Array2D<double>")
+Matrix.include()
+Matrix.alias = "Matrix"
+Matrix.operators("()", arg_types=["int","int"]).exclude()
+Matrix.member_function("id").exclude()
+
+mb.class_("Model").include()
+mb.class_("Pdb").include()
+
+
+
 try:
     surreal = mb.class_("surreal")
     surreal.include()
@@ -123,6 +139,8 @@ except :
 
 #Creating code creator. After this step you should not modify/customize declarations.
 mb.build_code_creator( module_name='_ptools' )
+mb.code_creator.replace_included_headers( ["ptools.h"] )
+
 
 #Writing code to file.
 mb.split_module( 'Pybindings' )

@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cassert>
+#include <stdexcept>
+
 
 #include "rmsd.h"
 #include "atom.h"
@@ -30,7 +32,7 @@ dbl Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2)
     if (atsel1.Size() != atsel2.Size())
     {
         std::cerr << "Error: trying to superpose two rigidbody of different sizes" << std::endl ;
-        throw "RmsdSizesDiffers";
+        throw std::invalid_argument("RmsdSizesDiffers");
     }
 
     dbl sum = 0.0;

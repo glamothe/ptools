@@ -8,7 +8,7 @@ using namespace std;
 
 namespace PTools{
 
-Coord3D Atom::GetCoords() const {return mCoords;};
+Coord3D Atom::GetCoords() const {return mCoords;}
 
 std::string Atom::ToString() const {
     std::stringstream info;
@@ -17,7 +17,7 @@ std::string Atom::ToString() const {
     Coord3D coord = GetCoords();
     info<<PrintCoord(coord);
     return info.str();
-};
+}
 
 
 

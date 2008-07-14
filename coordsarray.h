@@ -21,6 +21,7 @@
 #define _COORDS_ARRAY_H_
 
 #include <vector>
+#include<stdexcept>
 
 
 #include "coord3d.h"
@@ -84,9 +85,6 @@ private: //private methods
 
 
 
-
-
-
 public:
 
 
@@ -100,13 +98,23 @@ public:
     uint Size() const {return _refcoords.size();};
 
 
-    void GetCoords(const uint i, Coord3D& co)  const;
+    void GetCoords(const uint i, Coord3D& co)  const throw(std::out_of_range) ;
 
-    void Translate(const Coord3D& tr); ///< Translate the whole object
+    void SetCoords(const uint i, const Coord3D& co);
+
+    /// Translate the whole object
+    void Translate(const Coord3D& tr);
+     /// Euler Rotation
+    void AttractEulerRotate(dbl phi, dbl ssi, dbl rot);
 
     void ResetMatrix();
 
     std::string PrintMatrix() const;
+
+    ///return the rotation/translation matrix
+    Matrix GetMatrix() const;
+
+
 
 protected:
 
@@ -118,7 +126,7 @@ protected:
 
 
 
-}; //namespace PTools
+} //namespace PTools
 
 
 

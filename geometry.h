@@ -44,7 +44,7 @@ inline dbl ScalProd( const Coord3D& a, const Coord3D& b )
     return a.x * b.x + a.y * b.y + a.z * b.z ;
 }
 
-dbl dihedral(const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3D& d);
+dbl Dihedral(const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3D& d);
 
 dbl Angle(const Coord3D& vector1, const Coord3D& vector2);
 

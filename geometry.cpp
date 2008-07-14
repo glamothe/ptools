@@ -235,7 +235,7 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
 
     mat44xmat44( mat1, mat3, out );
 
-};
+}
 
 
 

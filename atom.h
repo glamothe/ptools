@@ -3,6 +3,7 @@
 #ifndef ATOM_H
 #define ATOM_H
 
+#include "basetypes.h"
 
 #include <string>
 #include <iostream>
@@ -120,7 +121,7 @@ inline dbl Dist2(const Atom& at1, const Atom& at2)
 }
 
 
-};
+}
 
 #endif
 

@@ -59,8 +59,8 @@ inline Coord3D operator- (const Coord3D& A,const Coord3D& B)
 }
 
 
-inline Coord3D & operator+=(Coord3D & a, const Coord3D & x ){a = a + x ; return a; };  //operator +=
-inline Coord3D & operator-=(Coord3D & a, const Coord3D & x ){a = a - x ; return a; };  //operator -=
+inline Coord3D & operator+=(Coord3D & a, const Coord3D & x ){a = a + x ; return a; }  //operator +=
+inline Coord3D & operator-=(Coord3D & a, const Coord3D & x ){a = a - x ; return a; }  //operator -=
 
 
 
@@ -103,8 +103,9 @@ inline Coord3D operator/ (const Coord3D& A, dbl d) {
 /// print coordinates in string
 inline std::string PrintCoord(const Coord3D& A) {
     int size=100;
-    char info[size];
+    char *info = new char [size];
     snprintf(info, size, "%8.3f %8.3f %8.3f", real(A.x), real(A.y), real(A.z));
+    delete[] info;
     return info;
 }
 
@@ -121,7 +122,7 @@ inline Coord3D minus(const Coord3D& orig)
 
 
 
-};
+}
 
 #endif //CORRD3D_H
 

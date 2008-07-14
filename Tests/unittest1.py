@@ -92,6 +92,12 @@ class TestCoordsArray(unittest.TestCase):
         self.c.GetCoords(0, c1 )
         self.c.GetCoords(1, c2 )
         self.assertTrue(c1 == Coord3D(6.0, 8.5, 2.0))
-        
+    def testSetCoords(self):
+        self.c.Translate(self.tr);
+        self.c.AttractEulerRotate(2.0,4.0,5.0)
+        co = Coords3D(3,2,1)
+        self.c.SetCoords(0,co)
+        co2 = self.c.GetCoords(0)
+        self.assertTrue(Norm2(co-co2)<1.0e-6)
 
 unittest.main()
