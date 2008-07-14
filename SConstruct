@@ -1,6 +1,7 @@
 import os
 import os.path
 
+
 COMMON_CPP = Split ("""atom.cpp
                        rigidbody.cpp
                        attractrigidbody.cpp
@@ -22,14 +23,57 @@ COMMON_CPP = Split ("""atom.cpp
 
 
 
- #minimizers/lbfgs_wrapper/lbfgsb_wrapper.c   #with bounds
- #minimizers/lbfgs_wrapper/lbfgsb.f    #with bounds
+COMMON_LIBS=["g2c"]
+#COMMON_LIBS=["gfortran"]
+#COMMON_CPPPATH=['.', '/sw/include/boost-1_33_1']
+COMMON_CPPPATH=['.']
+FFLAGS="-g"
 
- #minimizers/lbfgs_wrapper/lbfgs_wrapper.cpp 
- #minimizers/lbfgs_wrapper/lbfgs.f
- #minimizers/lbfgs_wrapper/lbfgsb.f
 
 
+def FIND_HEADER(names, paths):
+   #find a library in a given set of directories
+   
+   for p in paths:
+      if os.path.exists(p):
+         files=os.listdir(p)
+	 for n in names:
+	    if os.path.exists(p+"/"+n):
+	       return p
+	       	       
+   return None
+
+
+boostdir=FIND_HEADER(["boost/shared_array.hpp"], ["/usr/include", \
+"/sw/include/boost-1_33_1"] )
+
+if boostdir is None:
+   print "cannot locate Boost hearders directory, still trying to compile..."
+else:
+   print "boost directory found here: ", boostdir 
+   COMMON_CPPPATH.append(boostdir)
+
+python25dir=FIND_HEADER(["Python.h"], ["/usr/include/python2.5", \
+"/sw/include/python2.5/Python.h"])
+
+if python25dir is not None:
+   print "python2.5 found, configuring path and libs"
+   PYTHON_CPPPATH=[python25dir]
+   PYTHON_LIBS=["python2.5"]
+
+
+if python25dir is None:
+   print "cannot locate python2.5, tying with python2.4:"
+   python24dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.4/",
+   "/sw/include/python2.4/"])
+   if python24dir is None:
+      print "cannot locate Python2.4, the library may not compile..."
+   else:
+      PYTHON_CPPPATH.append(python24dir)
+      PYTHON_LIBS=["python2.4"]
+
+
+ 
 
 PYTHON_CPP=[]
 import fnmatch
@@ -49,13 +93,13 @@ for file in os.listdir("Pybindings"):
 #	f95="f95_g95_LINUX_32"
 
 
-COMMON_LIBS=["g2c"]
-#COMMON_LIBS=["gfortran"]
 
-COMMON_CPPPATH=['.']
-FFLAGS="-g"
+#boost, mac os 10.5
+#if os.path.exists('/sw/include/boost-1_33_1'):
+#    COMMON_CPPPATH.append('/sw/include/boost-1_33_1')
 
-                
+print "common cpp path:", COMMON_CPPPATH                
+		
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN='g77 -g -O3 -fPIC' ,   FORTRANFLAGS="-g -fPIC" )
 #common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = 'g95 -fPIC -g',  FORTRANFLAGS="-g", ENV = {'PATH' : os.environ['PATH']})
 
@@ -65,17 +109,26 @@ common.Append(CCFLAGS='-Wall -O2 -g -fPIC -Woverloaded-virtual')                
 #common.Append(CCFLAGS='-Wall -O0 -g -pg -fPIC -DNDEBUG ')        #profiling
 
 
-conf = Configure(common)
 #check for some boost header files:
-if not conf.CheckCXXHeader("boost/shared_array.hpp"):
+has_boost=False
+conf = Configure(common)
+if conf.CheckCXXHeader("boost/shared_array.hpp"):
+    has_boost=True
+
+if not has_boost:
     print "cannot find boost::shared_array include file"
     Exit(1)
 common = conf.Finish()
 
 
 
+
+
 python=common.Copy()
 nopython=common.Copy()
+
+python.Append(CPPPATH=PYTHON_CPPPATH, LIBS=PYTHON_LIBS)
+
 
 objects=common.SharedObject(COMMON_CPP)
 statics=common.StaticObject(COMMON_CPP)  #to make a static library
@@ -83,23 +136,9 @@ statics=common.StaticObject(COMMON_CPP)  #to make a static library
 python.Append(LIBS=['boost_python'])
 
 
-
-#trying to locate Python-dev and determine which version of Python is here:
+#check python header file:
 conf = Configure(python)
-if os.path.exists("/usr/include/python2.5"):
-    print "python2.5 directory found"
-    python.Append(LIBS=["python2.5"])
-    python.Append(CPPPATH="/usr/include/python2.5")
-else:
-    print "python2.5 directory not found, checking python2.4:"
-    if os.path.exists("/usr/include/python2.4"):
-        print "python2.4 directory found"
-        python.Append(LIBS=["python2.4"])
-        python.Append(CPPPATH="/usr/include/python2.4")
-    else:
-        print "no python include files directory found, last try:"
-
-if not conf.CheckCXXHeader('Python.h'):
+if not conf.CheckCHeader('Python.h'):
         print "you must install either python2.4-dev or python2.5-dev"
         Exit(1)
 
