@@ -350,9 +350,17 @@ or locally \footnote{\tt \$HOME/soft/ptools/trunk/Tutorial/README}.
 
 \subsection{From Python through the C++ binding}
 
-\vspace*{2cm}
+\vspace*{1cm}
 {\bf Explain here the different level of objects between rigidbody, selection, atom and points}
-\vspace*{2cm}
+\vspace*{1cm}
+
+If PTools has been installed in the {\tt \$HOME/soft/ptools/branches/1.0rc/} directory, 
+declare it in your PYTHONPATH :
+
+\begin{verbatim}
+export PYTHONPATH=$PYTHONPATH:$HOME/soft/ptools/branches/1.0rc/
+\end{verbatim}
+or add this line at the end of your {\tt \$HOME/.bashrc} file.
 
 
 From the Python interpreter or in a Python script, first load the PTools library:
@@ -368,15 +376,18 @@ from ptools import *
 pdb = Rigidbody("1BTA.pdb")
 \end{verbatim}
 
-\paragraph{Number of atoms.}
+
+\paragraph{Number of atoms}
 \begin{verbatim}
 pdb.Size()
 \end{verbatim}
+
 
 \paragraph{Maximum distance from geometric center} in \AA.
 \begin{verbatim}
 pdb.Radius()
 \end{verbatim}
+
 
 \paragraph{Radius of gyration} in \AA.
 \begin{verbatim}
