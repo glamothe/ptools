@@ -98,9 +98,13 @@ for file in os.listdir("Pybindings"):
 #if os.path.exists('/sw/include/boost-1_33_1'):
 #    COMMON_CPPPATH.append('/sw/include/boost-1_33_1')
 
+# bug in Fedora Core for the g2c library
+LIB_PATH=['.','/usr/lib/gcc/x86_64-redhat-linux/3.4.6/'] 
+
+
 print "common cpp path:", COMMON_CPPPATH                
 		
-common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN='g77 -g -O3 -fPIC' ,   FORTRANFLAGS="-g -fPIC" )
+common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=LIB_PATH, FORTRAN='g77 -g -O3 -fPIC' ,   FORTRANFLAGS="-g -fPIC" )
 #common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = 'g95 -fPIC -g',  FORTRANFLAGS="-g", ENV = {'PATH' : os.environ['PATH']})
 
 #common.Append(CCFLAGS='-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG')                  #fastest(?) release
