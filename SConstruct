@@ -95,7 +95,7 @@ else: #g77 compiler
       print "using fortran compiler: g77"
       FORTRANPROG="g77 -O2 -g"
       g2clib = FIND_HEADER(["libg2c.a", "libg2c.so", "libg2c.la"], ["/usr/lib",
-      "/usr/local/lib/", "/sw/lib/"],True)
+      "/usr/local/lib/", "/sw/lib/","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/"],True)
       if g2clib is None:
          print "Warning: libg2c not found, may not compile..."
       else:
