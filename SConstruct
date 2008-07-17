@@ -31,8 +31,24 @@ FFLAGS="-g"
 
 
 
-def FIND_HEADER(names, paths):
+def FIND_FILE(name,path, useEnvPath=False):
+   if useEnvPath:
+      additional_path = os.environ['PATH'].split(':')
+      path.extend(additional_path)
+   
+   for p in path:
+     if os.path.exists(p+'/'+name):
+        return p+'/'+name
+   return None 
+
+
+
+def FIND_HEADER(names, paths, useEnvPath=False):
    #find a library in a given set of directories
+   
+   if useEnvPath:
+      additional_path = os.environ['PATH'].split(':')
+      paths.extend(additional_path)
    
    for p in paths:
       if os.path.exists(p):
@@ -42,6 +58,58 @@ def FIND_HEADER(names, paths):
 	       return p
 	       	       
    return None
+
+
+
+#find g++ / g77 or g++/gfortran:
+FORTRANPROG = ""
+LIB_PATH=['.']
+
+print "Searching for compilers..."
+gpp = FIND_FILE("g++", ["/usr/bin"], True)
+if gpp is None:
+   print "Error: cannot locate g++, compilation aborted"
+   Exit(1)
+else:
+   print "g++ found here: ", gpp
+
+g77 = FIND_FILE("g77", ["/usr/bin","/sw/bin/"], True)
+if g77 is None:
+   print "Cannot locate g77 fortran compiler, trying gfortran:"
+   gfortran=FIND_FILE("gofrtran", ["/usr/bin"], True)
+   if gfortran is None:
+      print "Error: no fortran compiler found, aborting"
+      Exit(1)
+   else: #gfortran compiler, try to locate libgfortran
+      print "using fortran compiler: gfortran"
+      FORTRANPROG="gfortran -O2 -g"
+      gfortranlib=FIND_HEADER(["libgfortran.a", "libgfortran.la",\
+      "libgfortran.so"], ["/usr/lib","/sw/lib","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/"], True)
+      if gfortranlib is not None:
+         print "libgfortran found here: ", gfortranlib
+         LIB_PATH.append(gfortranlib)
+      else:
+         print "WARNING: libgfortran not found, may not compile..."      
+    
+else: #g77 compiler
+      print "using fortran compiler: g77"
+      FORTRANPROG="g77 -O2 -g"
+      g2clib = FIND_HEADER(["libg2c.a", "libg2c.so", "libg2c.la"], ["/usr/lib",
+      "/usr/local/lib/", "/sw/lib/"],True)
+      if g2clib is None:
+         print "Warning: libg2c not found, may not compile..."
+      else:
+         print "   libg2c found here:", g2clib
+	 LIB_PATH.append(g2clib)
+
+      
+   
+   
+
+
+
+
+
 
 
 boostdir=FIND_HEADER(["boost/shared_array.hpp"], ["/usr/include", \
@@ -75,6 +143,8 @@ if python25dir is None:
 
  
 
+
+
 PYTHON_CPP=[]
 import fnmatch
 import os
@@ -94,18 +164,11 @@ for file in os.listdir("Pybindings"):
 
 
 
-#boost, mac os 10.5
-#if os.path.exists('/sw/include/boost-1_33_1'):
-#    COMMON_CPPPATH.append('/sw/include/boost-1_33_1')
-
-# bug in Fedora Core for the g2c library
-LIB_PATH=['.','/usr/lib/gcc/x86_64-redhat-linux/3.4.6/'] 
-
 
 print "common cpp path:", COMMON_CPPPATH                
 		
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=LIB_PATH, FORTRAN='g77 -g -O3 -fPIC' ,   FORTRANFLAGS="-g -fPIC" )
-#common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=".", FORTRAN = 'g95 -fPIC -g',  FORTRANFLAGS="-g", ENV = {'PATH' : os.environ['PATH']})
+
 
 #common.Append(CCFLAGS='-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG')                  #fastest(?) release
 #common.Append(CCFLAGS='-Wall -O2 -g -fPIC -D_GLIBCXX_DEBUG')    #debuging high (use with care !)
