@@ -116,7 +116,7 @@ print "Number of atoms: " ,allAtom.Size()
 #extract all 'atoms' objects
 atoms=[]
 for i in xrange(allAtom.Size()):
-      atoms.append(allAtom.GetAtom(i))
+      atoms.append(allAtom.CopyAtom(i))
 
 
 
