@@ -83,6 +83,11 @@ public:
         return mAtomProp[pos];
     }
 
+    void SetAtomProperty(uint pos, const Atomproperty& atprop)
+    {
+       mAtomProp[pos] = atprop;
+    }
+
 
     /// add an atom to the molecule (deep copy)
     void AddAtom(const Atomproperty& at, Coord3D co);
@@ -98,8 +103,14 @@ public:
         CoordsArray::GetCoords(i,c) ;  //get the coordinates after translation/rotation
 
         return c;  //finally returns the final coordinates
-    };
+    }
 
+
+    void SetCoords(uint i, const Coord3D& co)
+    {
+       assert(i<Size());
+       CoordsArray::SetCoords(i,co);
+    }
 
     /// return geometric center of all atoms
     Coord3D FindCenter() const;
