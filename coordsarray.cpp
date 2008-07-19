@@ -144,7 +144,7 @@ void CoordsArray::GetCoords(const uint i, Coord3D& co)  const throw(std::out_of_
 };
 
 
-void CoordsArray::SetCoords(const uint i, const Coord3D& co)
+void CoordsArray::SetCoords(const uint k, const Coord3D& co)
 {
 //sets the coordinate [i] to be 'co' after rotation/translation
 
@@ -167,6 +167,15 @@ for(uint i=0; i<4; i++)
    matinv[3][i]=0;
  }
    matinv[3][3]=1;
+
+
+Coord3D final;
+
+
+PTools::mat44xVect(matinv,co2, final );
+
+_refcoords[k] = final;
+_modified();
 
 
 }

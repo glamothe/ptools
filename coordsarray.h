@@ -100,7 +100,7 @@ public:
 
     void GetCoords(const uint i, Coord3D& co)  const throw(std::out_of_range) ;
 
-    void SetCoords(const uint i, const Coord3D& co);
+    void SetCoords(const uint k, const Coord3D& co);
 
     /// Translate the whole object
     void Translate(const Coord3D& tr);
