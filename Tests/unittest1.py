@@ -93,12 +93,17 @@ class TestCoordsArray(unittest.TestCase):
         self.assertTrue(c1 == Coord3D(6.0, 8.5, 2.0))
 
     def testSetCoords(self):
-        self.c.Translate(self.tr);
-        self.c.AttractEulerRotate(2.0,4.0,5.0)
-        co = Coord3D(3,2,1)
+        """brief explanation:
+        For lazy evaluation, corrdinates are stored unrotated/untranslated along
+        with the rotation/translation 4x4 matrix. When user set the coordinates,
+        this means: 'change the current coordinates of atom i' and not 'change
+        the initial coordinates of atom i' so here we check that this is the case"""
+        self.c.Translate(self.tr); #do some translation
+        self.c.AttractEulerRotate(2.0,4.0,5.0) # do a rotation
+        co = Coord3D(3,2,1) #new coordinates to be added
         self.c.SetCoords(0,co)
         co2=Coord3D()
-        self.c.GetCoords(0,co2)
+        self.c.GetCoords(0,co2) #get the coordinates back
         self.assertTrue(Norm2(co-co2)<1.0e-6)
 
 unittest.main()
