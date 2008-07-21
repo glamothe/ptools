@@ -108,10 +108,8 @@ beadCorresp['VAL'] = defaultBB + [  ['CSE',     ['CB', 'CG1', 'CG2']   , 29, 0.]
 
 
 
-
-
 allAtom=Rigidbody(sys.argv[1])
-print "Number of atoms: " ,allAtom.Size()
+sys.stderr.write("Number of atoms: %d\n" %(allAtom.Size()))
 
 #extract all 'atoms' objects
 atoms=[]
