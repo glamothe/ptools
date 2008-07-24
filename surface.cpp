@@ -29,7 +29,7 @@ void Surface::setUp(int nphi, int ncosth)
     if (!fsolv)
     {
         //  the file cannot be opened
-        std::string msg = " Cannot Locate file  solv.dat \n"  ;
+        std::string msg = " Cannot Locate file  aminon.par \n"  ;
         std::cout << msg ;
         throw msg;
     }
@@ -37,7 +37,7 @@ void Surface::setUp(int nphi, int ncosth)
     int somedata1;
     dbl trad, somedata2;
     std::string somedata3;
-    for (int i=0; i<29 ; i++)
+    for (int i=0; i<42 ; i++)
     {
         fsolv >> somedata1 >> trad >> somedata2 >> somedata3 ;
         radi.push_back(trad);
