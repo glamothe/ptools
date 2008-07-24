@@ -114,8 +114,12 @@ printscrew = screw.member_function("print")
 printscrew.rename("Print")
 screw.include()
 
-superimpose=mb.free_function("superimpose")
-superimpose.include()
+superpose=mb.free_function("superpose")
+superpose.include()
+
+superpose_t = mb.class_("Superpose_t")
+superpose_t.include()
+
 
 surf=mb.class_("Surface")
 surf.include()

@@ -14,7 +14,7 @@
 namespace PTools
 {
 
-struct Superimpose_t
+struct Superpose_t
 {
     dbl rmsd;
     Matrix matrix;
@@ -25,7 +25,7 @@ struct Superimpose_t
 /// root mean square deviation without superposition
 dbl Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2);
 
-Superimpose_t superimpose( AtomSelection selref, AtomSelection selmob, int verbosity=0);
+Superpose_t superpose( AtomSelection selref, AtomSelection selmob, int verbosity=0);
 
 
 

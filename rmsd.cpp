@@ -298,7 +298,7 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
 
     //creates a non-aligned vector with  screw.transVector:
     Coord3D v (1,0,0);
-    if (fabs(Angle(screw.transVector,v)) < 0.1) v = Coord3D(0,0,1); //v et axe colinéaires: on change v
+    if (fabs(Angle(screw.transVector,v)) < 0.1) v = Coord3D(0,0,1); //v et axe colinï¿½aires: on change v
 
 
     Coord3D u = v - ScalProd(v,screw.transVector)*screw.transVector;
@@ -332,11 +332,11 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
 
 
 
-/*! \brief calculates a screw that optimally superimpose mob (mobile) on ref (reference)
+/*! \brief calculates a screw that optimally superpose mob (mobile) on ref (reference)
 *
 *
 */
-Superimpose_t superimpose( AtomSelection selref, AtomSelection selmob, int verbosity)
+Superpose_t superpose( AtomSelection selref, AtomSelection selmob, int verbosity)
 {
 
     uint refsz = selref.Size();
@@ -367,7 +367,7 @@ Superimpose_t superimpose( AtomSelection selref, AtomSelection selmob, int verbo
 
 
     Matrix outmat(4,4);
-    Superimpose_t super;
+    Superpose_t super;
 
     super.rmsd = sqrt(zuker_superpose(ref, mob, refsz, mat)) ; //zuker_superpose returns msd (not rmsd)
     if (verbosity==1)
