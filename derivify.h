@@ -1,6 +1,31 @@
+/****************************************************************************
+ *   Copyright Joaquim R. R. A. Martins,  Peter Sturdza                     *
+ *                                                                          *
+ *                                                                          *
+ *   This program is free software: you can redistribute it and/or modify   *
+ *   it under the terms of the GNU General Public License as published by   *
+ *   the Free Software Foundation, either version 3 of the License, or      *
+ *   (at your option) any later version.                                    *
+ *                                                                          *
+ *   This program is distributed in the hope that it will be useful,        *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+ *   GNU General Public License for more details.                           *
+ *                                                                          *
+ *   You should have received a copy of the GNU General Public License      *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
+ *                                                                          *
+ ***************************************************************************/
+
+
+
+
+
 // NOTE: taken from website http://mdolab.utias.utoronto.ca/resources/complex-step/cpp
-// no explicit license given.
 //
+// please cite:        @article{Martins:2003:CSD, Author = {Joaquim R. R. A. Martins and Peter Sturdza and Juan J. Alonso}, Journal = {{ACM} Transactions on Mathematical Software}, Number = {3}, Pages = {245--262}, Title = {The Complex-Step Derivative Approximation}, Volume = {29}, Year = {2003}}
+
+
 /***
  *  For automatic differentiation of a C/C++ code:
  *  f'(x) =  imag [ f(surreal(x,1)) ]
