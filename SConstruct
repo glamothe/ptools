@@ -23,7 +23,7 @@ COMMON_CPP = Split ("""atom.cpp
 
 
 
-COMMON_LIBS=["g2c"]
+COMMON_LIBS=[""]
 #COMMON_LIBS=["gfortran"]
 #COMMON_CPPPATH=['.', '/sw/include/boost-1_33_1']
 COMMON_CPPPATH=['.']
@@ -76,24 +76,25 @@ else:
 g77 = FIND_FILE("g77", ["/usr/bin","/sw/bin/"], True)
 if g77 is None:
    print "Cannot locate g77 fortran compiler, trying gfortran:"
-   gfortran=FIND_FILE("gofrtran", ["/usr/bin"], True)
+   gfortran=FIND_FILE("gfortran", ["/usr/bin"], True)
    if gfortran is None:
       print "Error: no fortran compiler found, aborting"
       Exit(1)
    else: #gfortran compiler, try to locate libgfortran
       print "using fortran compiler: gfortran"
-      FORTRANPROG="gfortran -O2 -g"
+      FORTRANPROG="gfortran -O2 -g -fPIC"
       gfortranlib=FIND_HEADER(["libgfortran.a", "libgfortran.la",\
       "libgfortran.so"], ["/usr/lib","/sw/lib","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/"], True)
       if gfortranlib is not None:
          print "libgfortran found here: ", gfortranlib
          LIB_PATH.append(gfortranlib)
+         COMMON_LIBS.append("gfortran")
       else:
          print "WARNING: libgfortran not found, may not compile..."      
     
 else: #g77 compiler
       print "using fortran compiler: g77"
-      FORTRANPROG="g77 -O2 -g"
+      FORTRANPROG="g77 -O2 -g -fPIC"
       g2clib = FIND_HEADER(["libg2c.a", "libg2c.so", "libg2c.la"], ["/usr/lib",
       "/usr/local/lib/", "/sw/lib/","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/"],True)
       if g2clib is None:
@@ -101,6 +102,7 @@ else: #g77 compiler
       else:
          print "   libg2c found here:", g2clib
 	 LIB_PATH.append(g2clib)
+         COMMON_LIBS.append("g2c")
 
       
    
@@ -167,7 +169,7 @@ for file in os.listdir("Pybindings"):
 
 print "common cpp path:", COMMON_CPPPATH                
 		
-common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=LIB_PATH, FORTRAN='g77 -g -O3 -fPIC' ,   FORTRANFLAGS="-g -fPIC" )
+common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=LIB_PATH, FORTRAN=FORTRANPROG,   FORTRANFLAGS="-g -fPIC" )
 
 
 #common.Append(CCFLAGS='-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG')                  #fastest(?) release
