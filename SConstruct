@@ -84,13 +84,14 @@ if g77 is None:
       print "using fortran compiler: gfortran"
       FORTRANPROG="gfortran -O2 -g -fPIC"
       gfortranlib=FIND_HEADER(["libgfortran.a", "libgfortran.la",\
-      "libgfortran.so"], ["/usr/lib","/sw/lib","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/"], True)
+      "libgfortran.so", "libgfortran.so.3"], ["/usr/lib","/sw/lib","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/"], True)
       if gfortranlib is not None:
          print "libgfortran found here: ", gfortranlib
          LIB_PATH.append(gfortranlib)
          COMMON_LIBS.append("gfortran")
       else:
          print "WARNING: libgfortran not found, may not compile..."      
+         COMMON_LIBS.append("gortran")
     
 else: #g77 compiler
       print "using fortran compiler: g77"
@@ -99,6 +100,7 @@ else: #g77 compiler
       "/usr/local/lib/", "/sw/lib/","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/"],True)
       if g2clib is None:
          print "Warning: libg2c not found, may not compile..."
+         COMMON_LIBS.append("g2c")
       else:
          print "   libg2c found here:", g2clib
 	 LIB_PATH.append(g2clib)
