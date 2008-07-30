@@ -51,7 +51,12 @@ public:
         return m_charge[i];
     };
 
-    virtual bool isAtomActive(uint i) const {return (m_atomTypeNumber[i]!=0);  };
+    virtual bool isAtomActive(uint i) const {
+       for(uint j=0; j<m_dummytypes.size(); j++)
+         if(m_dummytypes[i]==i) return false;
+       return true; 
+    };
+
 
     void resetForces()
     {
