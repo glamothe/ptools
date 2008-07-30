@@ -4,7 +4,7 @@ namespace PTools
 {
 
 
-Attract2PairList::Attract2PairList(const AttractRigidbody & receptor , const AttractRigidbody & ligand, dbl cutoff )
+AttractPairList::AttractPairList(const AttractRigidbody & receptor , const AttractRigidbody & ligand, dbl cutoff )
 {
     mp_ligand = &ligand;
     mp_receptor = &receptor;
@@ -16,7 +16,7 @@ Attract2PairList::Attract2PairList(const AttractRigidbody & receptor , const Att
 
 
 
-Attract2PairList::Attract2PairList(const AttractRigidbody & receptor, const AttractRigidbody & ligand)
+AttractPairList::AttractPairList(const AttractRigidbody & receptor, const AttractRigidbody & ligand)
 {
 
     mp_ligand = &ligand;
@@ -32,7 +32,7 @@ Attract2PairList::Attract2PairList(const AttractRigidbody & receptor, const Attr
 
 }
 
-Attract2PairList::~Attract2PairList()
+AttractPairList::~AttractPairList()
 {
 
 }
@@ -41,7 +41,7 @@ Attract2PairList::~Attract2PairList()
 /**
    Very basic implementation of an atom pairlist.
 */
-void Attract2PairList::update()
+void AttractPairList::update()
 {
 
 
@@ -99,7 +99,7 @@ void Attract2PairList::update()
 }
 
 
-void Attract2PairList::addPair(const AttractRigidbody & ligand, const AttractRigidbody & receptor, const AtomPair& pair)
+void AttractPairList::addPair(const AttractRigidbody & ligand, const AttractRigidbody & receptor, const AtomPair& pair)
 {
     if (&ligand==mp_ligand && &receptor==mp_receptor)
     {

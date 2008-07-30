@@ -16,7 +16,7 @@
 template<typename T>
 bool from_string( const std::string & Str, T & Dest )
 {
-    // créer un flux à partir de la chaîne donnée
+    // crï¿½er un flux ï¿½ partir de la chaï¿½ne donnï¿½e
     std::istringstream iss( Str );
     // tenter la conversion vers Dest
     return (iss >> Dest) != 0;
@@ -174,7 +174,7 @@ void AttractForceField1::InitParams(const std::string & paramsFileName )
 
 
 
-dbl AttractForceField1::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print)
+dbl AttractForceField1::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print)
 {
 
     assert(forcerec.size() == rec.Size());
@@ -475,7 +475,7 @@ void BaseAttractForceField::Derivatives(const Vdouble& stateVars, Vdouble& delta
 *   translated from fortran file nonbon8.f
 *   TODO: add comments in the code, remove debug instructions
 */
-dbl AttractForceField2::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, Attract2PairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print)
+dbl AttractForceField2::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print)
 {
 
     dbl enon = 0.0;
@@ -713,7 +713,7 @@ void BaseAttractForceField::MakePairLists()
     for (uint i=0; i < m_movedligand.size(); i++)
         for (uint j=i+1; j<m_movedligand.size(); j++)
         {
-            Attract2PairList plist(m_movedligand[i], m_movedligand[j], m_cutoff);
+            AttractPairList plist(m_movedligand[i], m_movedligand[j], m_cutoff);
             m_pairlists.push_back(plist);
         }
 

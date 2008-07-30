@@ -78,8 +78,8 @@ AtomPair.include()
 
 #att2pairlist=mb.class_("T_PairList<PTools::AttractRigidbody>") #the new Attract 2 pairlist (works with AttractRigidbody)
 
-att2pairlist=mb.class_("Attract2PairList")
-att2pairlist.include()
+attpairlist=mb.class_("AttractPairList")
+attpairlist.include()
 #mb.namespace( 'py_details' ).exclude()  #exclude the py_details ugly namespace
 
 

@@ -291,7 +291,7 @@ for trans in translations:
         #with the new ligand position
         forcefield=AttractForceField2("mbest1k.par", surreal(50))
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
-        pl = Attract2PairList(rec, ligand,surreal(50))
+        pl = AttractPairList(rec, ligand,surreal(50))
         print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
         output.PrintMatrix()
 

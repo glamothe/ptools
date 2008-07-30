@@ -24,14 +24,14 @@ struct AtomPair
 *
 */
 
-class Attract2PairList
+class AttractPairList
 {
 public:
-    Attract2PairList(const AttractRigidbody & receptor, const AttractRigidbody & ligand, dbl cutoff );
-    Attract2PairList(const AttractRigidbody & receptor,const AttractRigidbody &  ligand); ///< constructor with infinite cutoff ;
-    Attract2PairList(){}; //null constructor for use with std::vector
+    AttractPairList(const AttractRigidbody & receptor, const AttractRigidbody & ligand, dbl cutoff );
+    AttractPairList(const AttractRigidbody & receptor,const AttractRigidbody &  ligand); ///< constructor with infinite cutoff ;
+    AttractPairList(){}; //null constructor for use with std::vector
 
-    ~Attract2PairList();
+    ~AttractPairList();
 
     ///update pairlist
     void update();
