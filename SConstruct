@@ -91,7 +91,7 @@ if g77 is None:
          COMMON_LIBS.append("gfortran")
       else:
          print "WARNING: libgfortran not found, may not compile..."      
-         COMMON_LIBS.append("gortran")
+         COMMON_LIBS.append("gfortran")
     
 else: #g77 compiler
       print "using fortran compiler: g77"
