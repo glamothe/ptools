@@ -336,13 +336,10 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
 *
 *
 */
-Superpose_t superpose( AtomSelection selref, AtomSelection selmob, int verbosity)
+Superpose_t superpose( const CoordsArray& cref, const  CoordsArray& cmob, int verbosity)
 {
 
-    uint refsz = selref.Size();
-
-    Rigidbody rref = selref.CreateRigid();
-    Rigidbody rmob = selmob.CreateRigid();
+    uint refsz = cref.Size();
 
 
     DtPoint3 ref[refsz];
@@ -350,17 +347,21 @@ Superpose_t superpose( AtomSelection selref, AtomSelection selmob, int verbosity
 
     for (uint i =0; i <refsz; i++)
     {
-        ref[i][0]=rref.GetCoords(i).x;
-        ref[i][1]=rref.GetCoords(i).y;
-        ref[i][2]=rref.GetCoords(i).z;
+        Coord3D c;
+        cref.GetCoords(i,c);
+        ref[i][0]=c.x;
+        ref[i][1]=c.y;
+        ref[i][2]=c.z;
     }
 
 
     for (uint i =0; i <refsz; i++)
     {
-        mob[i][0]=rmob.GetCoords(i).x;
-        mob[i][1]=rmob.GetCoords(i).y;
-        mob[i][2]=rmob.GetCoords(i).z;
+        Coord3D c;
+        cmob.GetCoords(i,c);
+        mob[i][0]=c.x;
+        mob[i][1]=c.y;
+        mob[i][2]=c.z;
     }
 
     DtMatrix4x4 mat;
@@ -393,6 +394,17 @@ Superpose_t superpose( AtomSelection selref, AtomSelection selmob, int verbosity
 
     return super;
 }
+
+
+
+Superpose_t superpose( const Rigidbody & ref, const Rigidbody& mob, int verbosity)
+{
+CoordsArray cref = ref.ToCoordsArray() ;
+CoordsArray cmob = mob.ToCoordsArray() ;
+
+return superpose( cref, cmob, verbosity);
+
+};
 
 
 } //namespace PTools

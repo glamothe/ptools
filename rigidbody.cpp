@@ -226,6 +226,17 @@ std::string Rigidbody::PrintPDB() const
 void Rigidbody::m_hookCoords(uint i, Coord3D & co) const {}  //(virtual)
 
 
+void Rigidbody::ApplyMatrix(const Matrix& mat)
+{
+
+   dbl mat44[4][4];
+   for(uint i=0; i<4;i++)
+    for(uint j=0;j<4;j++)
+      mat44[i][j]=mat(i,j);
+   CoordsArray::MatrixMultiply(mat44);
+}
+
+
 
 
 } //namespace PTools

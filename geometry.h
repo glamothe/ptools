@@ -5,12 +5,12 @@
 #include "rigidbody.h"
 
 #include <iostream>
-
+#include <string.h> //for memcpy
 
 
 namespace PTools{
 
-class Rigidbody;
+// class Rigidbody;
 
 typedef dbl Mat44[4][4];
 

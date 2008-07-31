@@ -62,9 +62,9 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     mat1[ 2 ][ 3 ] = -A.z;
 
     //rotation pour ramener sur le plan Oxz: Rotation 1 autour de X, angle -gamma (-g).
-    dbl d = sqrt( dy*dy + dz*dz ) ; //projeté de AB sur le plan Oxy
+    dbl d = sqrt( dy*dy + dz*dz ) ; //projetï¿½ de AB sur le plan Oxy
 
-    if ( real(d) == 0 )  // AB appartient à (Ox)
+    if ( real(d) == 0 )  // AB appartient ï¿½ (Ox)
     {
         dbl cost = cos( theta );
         dbl sint = sin( theta );
@@ -144,7 +144,7 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     mat1[ 3 ][ 2 ] = 0 ;
     mat1[ 3 ][ 3 ] = 1 ;
 
-    mat44xmat44( mat1, mat3, mat2 ); //résultat dans mat2
+    mat44xmat44( mat1, mat3, mat2 ); //rï¿½sultat dans mat2
 
 
     //rotation effective (autour axe 0z, angle theta)
@@ -169,7 +169,7 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     rotmatrix[ 3 ][ 2 ] = 0;
     rotmatrix[ 3 ][ 3 ] = 1;
 
-    mat44xmat44( rotmatrix, mat2, mat3 ); //résultat dans mat3
+    mat44xmat44( rotmatrix, mat2, mat3 ); //rï¿½sultat dans mat3
 
 
     //rotation -2:
@@ -193,7 +193,7 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
 
 
 
-    mat44xmat44( mat1, mat3, rotmatrix ); //résultat dans rotmatrix;
+    mat44xmat44( mat1, mat3, rotmatrix ); //rï¿½sultat dans rotmatrix;
 
     //rotation -1:
 
@@ -314,10 +314,6 @@ dbl Dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3
 
 
 
-
-
-
-
 dbl Angle(const Coord3D& vector1, const Coord3D& vector2)
 {
     dbl pdtscal=ScalProd(vector1,vector2);
@@ -327,6 +323,10 @@ dbl Angle(const Coord3D& vector1, const Coord3D& vector2)
     dbl costheta = pdtscal / (A*B) ;
     return acos(costheta);
 }
+
+
+
+
 
 } //namespace PTools
 

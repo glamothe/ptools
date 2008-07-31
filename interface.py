@@ -114,7 +114,7 @@ printscrew = screw.member_function("print")
 printscrew.rename("Print")
 screw.include()
 
-superpose=mb.free_function("superpose")
+superpose=mb.free_functions("superpose")
 superpose.include()
 
 superpose_t = mb.class_("Superpose_t")

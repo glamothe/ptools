@@ -172,7 +172,7 @@ for(uint i=0; i<4; i++)
 Coord3D final;
 
 
-PTools::mat44xVect(matinv,co2, final );
+PTools::matrix44xVect(matinv,co2, final );
 
 _refcoords[k] = final;
 _modified();
