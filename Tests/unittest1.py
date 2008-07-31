@@ -112,7 +112,7 @@ class TestSuperposition(unittest.TestCase):
     def setUp(self):
         self.prot1 = Rigidbody("1FIN_r.pdb")
         random.seed(123)
-    def testTranslation(self):
+    def testTransRot(self):
         prot2 = Rigidbody(self.prot1)
 
 
@@ -131,43 +131,6 @@ class TestSuperposition(unittest.TestCase):
             matrix = sup.matrix
             prot2.ApplyMatrix(matrix)
             self.assertTrue(Rmsd(prot2,self.prot1)<1e-6)
-
-    def testFundamentalBugInAtomSelection(self):
-        #first populate two Rigidbody:
-        l = list()
-        for i in range(8):
-            at = self.prot1.CopyAtom(i)
-            l.append(at)
-        p1 = Rigidbody()
-        p2 = Rigidbody()
-        
-        for i in l:
-            p1.AddAtom(i)
-        l.reverse()
-        for i in l:
-            p2.AddAtom(i)
-        self.assertTrue(p1.Size()==p2.Size())
-        
-        #now create two AtomSelection objects to superpose p1 and p2:
-        atsel1 = AtomSelection()
-        atsel1.SetRigid(p1)
-        atsel2 = AtomSelection()
-        atsel2.SetRigid(p2)
-        
-        
-        asel1 = atsel1 | p1.SelectAtomType("N")
-        asel1 = atsel1 | p1.SelectAtomType("CA")
-        asel1 = atsel1 | p1.SelectAtomType("C")
-        asel1 = atsel1 | p1.SelectAtomType("O")
-        
-        
-        atsel2 = atsel2 | p2.SelectAtomType("N")
-        atsel2 = atsel2 | p2.SelectAtomType("CA")
-        atsel2 = atsel2 | p2.SelectAtomType("C")
-        atsel2 = atsel2 | p2.SelectAtomType("O")
-        
-        sup = superpose(atsel1, atsel2)
-
 
 
 unittest.main()
