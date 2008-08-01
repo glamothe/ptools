@@ -135,7 +135,7 @@ void ReadPDB(ifstream& fichier, Rigidbody& protein) {
             a.SetResidType(readresidtype(ligne));
             a.SetChainId(ligne.substr(21,1));
             a.SetResidId(atoi(ligne.substr(22,4).c_str()));
-            a.SetAtomId(atoi(ligne.substr(7,4).c_str()));
+            a.SetAtomId(atoi(ligne.substr(6,5).c_str()));
             std::string extra = ligne.substr(54,ligne.size()-1-54+1); //extracts everything after the position 27 to the end of line
             a.SetExtra(extra);
 
