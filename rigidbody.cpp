@@ -193,6 +193,37 @@ AtomSelection Rigidbody::CA() {
     return SelectAtomType("CA");
 }
 
+bool isBackbone(const std::string &  atomtype)
+{
+
+    const std::string bbtypes[] = {"N", "CA", "C", "O"};
+    int const bbsize = sizeof(bbtypes)/sizeof(std::string);
+
+    for (int i =0; i<bbsize; i++)
+    {
+        if (atomtype == bbtypes[i] ) return true;
+    }
+
+    return false;
+}
+
+
+AtomSelection Rigidbody::Backbone()
+{
+    AtomSelection newsel;
+    newsel.SetRigid(*this);
+
+    for (uint i=0; i<this->Size(); i++)
+    {
+        if (isBackbone(CopyAtom(i).GetType()) )
+        {
+            newsel.AddAtomIndex(i);
+        }
+
+    }
+    return newsel;
+}
+
 
 /// operator +
 Rigidbody Rigidbody::operator+(const Rigidbody& rig) {

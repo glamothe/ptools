@@ -32,6 +32,7 @@ private:
 
     virtual void m_hookCoords(uint i, Coord3D & co) const ; ///< private hook to give a chance for class childs to change the coordinates before rotations and translations
 
+    bool isBackbone(const std::string &  atomtype); ///<return true if a given atomtype string matches a backbone atom name
 
 protected:
     std::vector<Atomproperty> mAtomProp; ///< array of atom properties
@@ -136,6 +137,9 @@ public:
 
     /// selection shortcut for C-alpha
     AtomSelection CA();
+
+    /// selection of backbone atoms:
+    AtomSelection Backbone();
 
     /// operator + : merge two Rigdibody by extending the first coordinates with the second coordinates.
     Rigidbody operator+ (const Rigidbody& rig);
