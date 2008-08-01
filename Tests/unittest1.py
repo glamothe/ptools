@@ -34,6 +34,13 @@ class TestRigidbody(unittest.TestCase):
         self.assertEqual(self.r.FindCenter(), s.FindCenter())
     def testSize(self):
         self.assertEqual(self.r.Size(), 2365)
+    def testSetAtom(self):
+        atom = self.r.CopyAtom(3)
+        atom.SetCoords(Coord3D(3,4,5))
+        self.r.SetAtom(3,atom)
+        #test to see if the mofification worked:
+        atom2 = self.r.CopyAtom(3)
+        self.assertTrue( Norm2(atom2.GetCoords() - Coord3D(3,4,5) ) < 1e6 )
 
 
 class TestBasicMoves(unittest.TestCase):
