@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
 from ptools import *
-import math
 import sys
-import os
-from stat import *
+
 
 def contact(receptor, ligand):
     "return residues in interaction, use ptools::pairlist"
@@ -14,15 +12,15 @@ def contact(receptor, ligand):
     
     resnblig = []
     for i in range(ligand.Size()):
-        at = ligand.GetAtom(i)
+        at = ligand.CopyAtom(i)
         resnblig.append(at.GetResidId())
     resnbrec = []
     for j in range(receptor.Size()):
-        at = receptor.GetAtom(j)
+        at = receptor.CopyAtom(j)
         resnbrec.append(at.GetResidId())
     
     
-    pl = PairList(receptor,ligand,7)
+    pl = AttractPairList(receptor,ligand,7)
     contactnat = {} # residue list in interaction
 
     for i in range(pl.Size()):

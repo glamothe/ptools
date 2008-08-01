@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from ptools import *
-import os
+import sys
 
 def selectListOfResidues(rigidbody, lst):
     "takes a rigidbody and a list of residues and returns an AtomSelection object"
