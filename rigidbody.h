@@ -74,6 +74,9 @@ public:
     }
 
 
+    void SetAtom(uint pos, const Atom& atom);
+
+
     /// add an atom to the molecule (deep copy)
     void AddAtom(const Atomproperty& at, Coord3D co);
 

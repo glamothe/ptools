@@ -53,6 +53,23 @@ Atom Rigidbody::CopyAtom(uint i) const
     return at;
 }
 
+    void Rigidbody::SetAtom(uint pos, const Atom& atom)
+    {
+
+       if (pos<0  || pos >= this->Size())
+       {
+          std::string message = "SetAtom: position ";
+          message += pos;
+          message += " is out of range";
+          throw std::out_of_range(message);
+       }
+       Atomproperty atp(atom);
+       Coord3D co(atom.GetCoords());
+       SetAtomProperty(pos, atp);
+       SetCoords(pos,co);
+    }
+
+
 
 void Rigidbody::AddAtom(const Atom& at)
 {
