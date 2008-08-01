@@ -105,8 +105,9 @@ inline std::string PrintCoord(const Coord3D& A) {
     int size=100;
     char *info = new char [size];
     snprintf(info, size, "%8.3f %8.3f %8.3f", real(A.x), real(A.y), real(A.z));
+    std::string result(info);
     delete[] info;
-    return info;
+    return result;
 }
 
 
