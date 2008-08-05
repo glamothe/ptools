@@ -58,7 +58,7 @@ def irmsd(receptor, ligref, ligprobe, receptorprobe=None,reducedmodel=False):
     
     ref=Rigidbody(ligrefpdb+recrefpdb)
     pred=Rigidbody(ligdockpdb+recrefpdb)
-    super= superpose(ref,pred,1)
+    super= superpose(ref,pred,0)
     mat=super.matrix
     pred.ApplyMatrix(mat)
     assert(ligrefBBInterface.Size()==ligBBInterface.Size())
