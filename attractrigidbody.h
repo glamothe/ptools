@@ -53,7 +53,7 @@ public:
 
     virtual bool isAtomActive(uint i) const {
        for(uint j=0; j<m_dummytypes.size(); j++)
-         if(m_dummytypes[i]==i) return false;
+         if(m_dummytypes[j]==i) return false;
        return true; 
     };
 
