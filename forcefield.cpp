@@ -6,8 +6,10 @@
 
 #include <fstream>
 #include <math.h>  //for fabs()
+#include <sstream> //for istringstream
 
 
+using std::ios_base;
 
 //temporaire:
 //convertit une chaine de caracteres std::string en un autre type
@@ -265,7 +267,26 @@ void BaseAttractForceField::initMinimization()
 
 static AttFF2_params* m_params = 0;
 
-AttractForceField2::AttractForceField2(std::string filename, dbl cutoff)
+AttractForceField2::AttractForceField2(const std::string & filename, dbl cutoff)
+{
+     loadParams(filename, cutoff);
+}
+
+void AttractForceField2::resetParams()
+{
+     delete m_params;
+     m_params = NULL;
+     m_filename = "";
+}
+
+void AttractForceField2::reloadParams(const std::string & filename, dbl cutoff)
+{
+  resetParams();
+  loadParams(filename, cutoff);
+}
+
+
+void AttractForceField2::loadParams(const std::string & filename, dbl cutoff)
 {
 
     m_cutoff=cutoff;
@@ -279,8 +300,54 @@ AttractForceField2::AttractForceField2(std::string filename, dbl cutoff)
         {
             //the file cannot be opened
             std::string msg = "Forcefield.cpp: Cannot Locate file  " + filename + "\n" ;
+            ios_base::failure fail(msg);
             std::cout << msg ;
-            throw msg;
+            throw fail;
+        }
+        m_filename = filename;
+
+
+
+        std::string line;
+        getline(mbest, line); //read the first line into "line"
+        std::istringstream iss (line); // iss allows formated extraction from "line"
+
+        std::string magic;
+        iss >> magic;   //reads magic constant
+        if (magic == "AFF")   // file format version 2 at least
+        {
+           int revnb;
+           iss >> revnb;  //get revision number
+           if (revnb == 2 ) // file format version 2:
+             {
+                 //get list of dummy types:
+                 uint numdummy;
+                 iss >> numdummy;
+                 std::vector<int> dummyatomtypes;
+                 for(uint i=0; i<numdummy; i++)
+                    {
+                       int type;
+                       iss >> type;
+                       dummyatomtypes.push_back(type);
+                    }
+                 std::swap(dummyatomtypes, this->_dummytypes);
+             }
+            else
+             {
+                std::string msg = "AttractForceField2: cannot read parameter file version \n";
+                msg += revnb ;
+                std::cerr << msg ;
+                ios_base::failure fail(msg);
+                throw fail;
+             }
+        }
+        else 
+        {
+          //declare forcefield file as invalid:
+          std::string msg = "AttractForceField2: invalid paramters file format: doesn't contain AFF string \n";
+          std::cerr << msg ;
+          ios_base::failure fail(msg);
+          throw fail;
         }
 
 

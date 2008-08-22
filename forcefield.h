@@ -316,12 +316,22 @@ class AttractForceField2 : public BaseAttractForceField
 
 public:
 
-    AttractForceField2(std::string paramsFileName, dbl cutoff);
+    AttractForceField2(const std::string & paramsFileName, dbl cutoff);
     dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
+
+    ///allows to reload a file of parameters
+    void reloadParams(const std::string & filename, dbl cutoff);
+
 
 private:
 
+    void resetParams();
+    void loadParams(const std::string & filename, dbl cutoff);
+
     virtual void setDummyTypeList(AttractRigidbody& lig);
+    std::string m_filename;   ///< name of parameter file
+
+    std::vector<int> _dummytypes;
 
 };
 

@@ -39,7 +39,7 @@
 #include <iostream>
 #include <math.h>
 
-using namespace std;
+// using namespace std;
 
 
 // #define AUTO_DIFF   //uncomment this line to use automatic differenciation
