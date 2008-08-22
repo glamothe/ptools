@@ -381,12 +381,9 @@ void AttractForceField2::loadParams(const std::string & filename, dbl cutoff)
                 dbl rbc2 = m_params->rbc[ii][jj]*m_params->rbc[ii][jj];
                 dbl rbc6 = rbc2*rbc2*rbc2;
                 dbl rbc8 = rbc6*rbc2;
-                m_params->rc[ii][jj] = m_params->abc[ii][jj] * rbc8; //*pow(rbc[ii][jj],8); this optimization modifies the final result
-                m_params->ac[ii][jj] = m_params->abc[ii][jj] * rbc6; //*pow(rbc[ii][jj],6); *but* the difference between the 2 c++ versions
-                // is less than between C++(any version) and fortran
-                // by the way pow() is very very slow. We should check why...
-                assert(ii<31);
-                assert(jj<31);
+                m_params->rc[ii][jj] = m_params->abc[ii][jj] * rbc8;
+                m_params->ac[ii][jj] = m_params->abc[ii][jj] * rbc6;
+
                 m_params->ipon[ii][jj] = m_params->iflo[ii][jj] ;
                 assert(m_params->ipon[ii][jj]==1 || m_params->ipon[ii][jj]==-1);
 
@@ -560,8 +557,8 @@ dbl AttractForceField2::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
         uint j = atpair.atlig ;
         uint ii=rec.m_atomTypeNumber[i];
         uint jj=lig.m_atomTypeNumber[j];
-        assert(ii<=30);
-        assert(jj<=30);
+        assert(ii<=31);
+        assert(jj<=31);
         dbl alen = m_params->ac[ii][jj];
         dbl rlen = m_params->rc[ii][jj];
         int ivor = m_params->ipon[ii][jj];
