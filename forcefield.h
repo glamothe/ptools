@@ -331,7 +331,7 @@ private:
     virtual void setDummyTypeList(AttractRigidbody& lig);
     std::string m_filename;   ///< name of parameter file
 
-    std::vector<int> _dummytypes;
+    std::vector<uint> _dummytypes;
 
 };
 

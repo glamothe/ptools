@@ -323,10 +323,10 @@ void AttractForceField2::loadParams(const std::string & filename, dbl cutoff)
                  //get list of dummy types:
                  uint numdummy;
                  iss >> numdummy;
-                 std::vector<int> dummyatomtypes;
+                 std::vector<uint> dummyatomtypes;
                  for(uint i=0; i<numdummy; i++)
                     {
-                       int type;
+                       uint type;
                        iss >> type;
                        dummyatomtypes.push_back(type);
                     }
@@ -792,9 +792,7 @@ AttractRigidbody BaseAttractForceField::GetLigand(uint i) {return m_movedligand[
 
 void AttractForceField2::setDummyTypeList(AttractRigidbody& lig)
 {
-    std::vector<uint> dummy;
-    dummy.push_back(0);
-    lig.setDummyTypes(dummy);
+    lig.setDummyTypes(this->_dummytypes);
 }
 
 
