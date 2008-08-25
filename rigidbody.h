@@ -48,7 +48,7 @@ public:
     uint Size() const {return CoordsArray::Size();};
 
     
-    void PrintMatrix() const {CoordsArray::PrintMatrix();}
+    void PrintMatrix() const {std::cout << CoordsArray::PrintMatrix() << std::endl; }
 
     /// Make a deep copy of one atom (the Atom extracted is then totally independent)
     virtual Atom CopyAtom(uint i) const ;
