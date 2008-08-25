@@ -291,7 +291,7 @@ for trans in translations:
         #with the new ligand position
         forcefield=AttractForceField2("mbest1u.par", surreal(50))
         forcefield.AddLigand(rec)
-        forcefield.AddLigand(lig)
+        forcefield.AddLigand(ligand)
         X = Vdouble()
         for i in range(12):
              X.append(0)
