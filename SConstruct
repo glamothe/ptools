@@ -168,10 +168,10 @@ for file in os.listdir("Pybindings"):
 
 
 
-
+ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG"
 print "common cpp path:", COMMON_CPPPATH                
 		
-common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, LIBPATH=LIB_PATH, FORTRAN=FORTRANPROG,   FORTRANFLAGS="-g -fPIC" )
+common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, CCFLAGS=ccflags, LIBPATH=LIB_PATH, FORTRAN=FORTRANPROG,   FORTRANFLAGS="-g -fPIC" )
 
 
 #common.Append(CCFLAGS='-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG')                  #fastest(?) release
