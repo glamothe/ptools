@@ -179,8 +179,8 @@ ligand_name=args[1]
 print """
 **********************************************************************
 **                ATTRACT  (Python edition)                         **
-**                version: 0.3b                                     **
-**                USING FORCEFIELD 2                                **
+**                version: 0.3c                                     **
+**                USING FORCEFIELD 2u                               **
 ********************************************************************** """
 
 import locale
@@ -290,9 +290,15 @@ for trans in translations:
         #calculates true energy, and rmsd if possible
         #with the new ligand position
         forcefield=AttractForceField2("mbest1u.par", surreal(50))
+        forcefield.AddLigand(rec)
+        forcefield.AddLigand(lig)
+        X = Vdouble()
+        for i in range(12):
+             X.append(0)
+        energy=forcefield.Function(X)
+	
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
-        pl = AttractPairList(rec, ligand,surreal(50))
-        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
+        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, energy, str(rms))
         output.PrintMatrix()
 
 

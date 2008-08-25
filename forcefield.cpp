@@ -328,9 +328,10 @@ void AttractForceField2::loadParams(const std::string & filename, dbl cutoff)
                     {
                        uint type;
                        iss >> type;
+                       std::cerr << "ignoring atom type: " << type << "\n";
                        dummyatomtypes.push_back(type-1); //types counting begins at 0
                     }
-                 std::swap(dummyatomtypes, this->_dummytypes);
+                 std::swap(dummyatomtypes, m_params->_dummytypes);
              }
             else
              {
@@ -557,8 +558,9 @@ dbl AttractForceField2::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
         uint j = atpair.atlig ;
         uint ii=rec.m_atomTypeNumber[i];
         uint jj=lig.m_atomTypeNumber[j];
-        assert(ii<=31);
-        assert(jj<=31);
+
+        assert(ii<31);
+        assert(jj<31);
         dbl alen = m_params->ac[ii][jj];
         dbl rlen = m_params->rc[ii][jj];
         int ivor = m_params->ipon[ii][jj];
@@ -789,7 +791,7 @@ AttractRigidbody BaseAttractForceField::GetLigand(uint i) {return m_movedligand[
 
 void AttractForceField2::setDummyTypeList(AttractRigidbody& lig)
 {
-    lig.setDummyTypes(this->_dummytypes);
+    lig.setDummyTypes(m_params->_dummytypes);
 }
 
 

@@ -297,6 +297,8 @@ struct AttFF2_params
     dbl abc[31][31];  // pair-wise LJ (8,6) parameters
     int iflo[31][31];  // flag equivalent to ipon (should be removed!)
 
+    std::vector<uint> _dummytypes;
+
     // In the FF2, the LJ potential flips from a "normal" minimum curve in case of an attractive interaction between pseudo-atoms (iflo=1) to a repulsive saddle-point one in case of a repulsive interaction (iflo=-1).
     // the LJ curve is split into 2 parts: 
     // if the square distance (rij^2) between the pseudo atoms is above rmin2 value, the LJ energy is equal to : Eij = ivor*(rc[i][j]/rij^8 - ac[i][j]/rij^6)
@@ -331,7 +333,7 @@ private:
     virtual void setDummyTypeList(AttractRigidbody& lig);
     std::string m_filename;   ///< name of parameter file
 
-    std::vector<uint> _dummytypes;
+
 
 };
 

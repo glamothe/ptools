@@ -52,8 +52,11 @@ public:
     };
 
     virtual bool isAtomActive(uint i) const {
+
+       uint atomtype = this->m_atomTypeNumber[i];
        for(uint j=0; j<m_dummytypes.size(); j++)
-         if(m_dummytypes[j]==i) return false;
+         if(m_dummytypes[j]==atomtype)
+               return false;
        return true; 
     };
 
@@ -69,15 +72,15 @@ public:
             m_forces[i]+=forces[i];
     }
 
-    std::vector<uint> m_activeAtoms; ///< list of active atoms (atoms that are taken into account for interaction)
 
-void setRotation(bool value) {hasrotation  = value;} ///< allow/disallow rotation
+    void setRotation(bool value) {hasrotation  = value;} ///< allow/disallow rotation
     void setTranslation(bool value) {hastranslation = value;} ///< allow/disallow translation
 
     void setDummyTypes(const std::vector<uint>& dummy); ///< set a list of ignored atom types
 
     bool operator==(const AttractRigidbody& at) {return false;}; //don't use it, needed to expose vector<AttractRigidobdy> to python by boost::vector indexing suite. 
 
+    void updateActiveList();
 
 private:
     std::vector<uint> m_atomTypeNumber ;
@@ -85,6 +88,7 @@ private:
     std::vector<Coord3D> m_forces ;
 
     std::vector<uint> m_dummytypes; ///< list of ignored atom types
+    std::vector<uint> m_activeAtoms; ///< list of active atoms (atoms that are taken into account for interaction)
 
     bool hastranslation;
     bool hasrotation;

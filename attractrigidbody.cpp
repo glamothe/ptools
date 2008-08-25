@@ -43,11 +43,6 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
         m_atomTypeNumber.push_back(atcategory-1);  // -1 to directly use the atomTypeNumber into C-array
         m_charge.push_back(atcharge);
 
-        if (isAtomActive(i))
-        {
-            m_activeAtoms.push_back(i);
-        }
-
     }
 
     setRotation(true);
@@ -62,7 +57,25 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 void AttractRigidbody::setDummyTypes(const std::vector<uint>& dummy)
 {
     m_dummytypes = dummy;
+    this->updateActiveList();
 }
+
+
+
+void AttractRigidbody::updateActiveList()
+{
+ std::vector<uint> newactivelist;
+
+ for(uint i=0; i<this->Size(); i++)
+ {
+   if( isAtomActive(i) ) newactivelist.push_back(i);
+ }
+
+std::swap(m_activeAtoms, newactivelist);
+
+}
+
+
 
 } //namespace PTools
 
