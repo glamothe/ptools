@@ -94,6 +94,15 @@ public:
     }
 
 
+    void unsafeGetCoords(uint i, Coord3D& co)
+      { CoordsArray::unsafeGetCoords(i,co); }
+
+    void syncCoords()
+    {
+      GetCoords(0);
+    }
+
+
     void SetCoords(uint i, const Coord3D& co)
     {
        assert(i<Size());

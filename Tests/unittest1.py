@@ -43,6 +43,28 @@ class TestRigidbody(unittest.TestCase):
         self.assertTrue( Norm2(atom2.GetCoords() - Coord3D(3,4,5) ) < 1e6 )
 
 
+    def testUnsafeGetCoords(self):
+        """in principle GetCoords(i,co) and unsafeGetCoords(i,co) should
+        lead to the exact same coordinates if a sync has been done before
+        calling the 'unsafe' version"""
+        self.r2 = Rigidbody("1FIN_r.pdb")
+        A = Coord3D(4.23, 5.72, 99.02)
+        B = Coord3D(1.23, 6.33, 1.234)
+        self.r.ABrotate(A,B, 2.2345)
+        self.r2.ABrotate(A,B, 2.2345)
+        self.r.Translate(Coord3D(34.23, 123.45,11.972))
+        self.r2.Translate(Coord3D(34.23, 123.45,11.972))
+
+        self.r2.syncCoords()
+        #same rotation and translation for r and r2: should have exact same coordinates
+        for i in range(self.r.Size()):
+            co1 = Coord3D()
+            co2 = Coord3D()
+            co1 = self.r.GetCoords(i)
+            self.r2.unsafeGetCoords(i,co2)
+            self.assertEqual(co1,co2)
+
+
 class TestBasicMoves(unittest.TestCase):
     def setUp(self):
         self.rigid1=Rigidbody("1FIN_r.pdb")
@@ -112,6 +134,7 @@ class TestCoordsArray(unittest.TestCase):
         co2=Coord3D()
         self.c.GetCoords(0,co2) #get the coordinates back
         self.assertTrue(Norm2(co-co2)<1.0e-6)
+
 
 
 

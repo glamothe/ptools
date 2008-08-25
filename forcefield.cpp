@@ -549,6 +549,13 @@ dbl AttractForceField2::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
 
     std::cout.precision(20);
 
+    //synchronise coordinates to later use unsafeGetCoords (should be faster)
+    rec.syncCoords();
+    lig.syncCoords();
+
+    Coord3D a;
+    Coord3D b;
+
     for (uint ik=0; ik<pairlist.Size(); ik++ )
     {
         AtomPair atpair = pairlist[ik];
@@ -570,8 +577,11 @@ dbl AttractForceField2::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
         dbl charge= rec.m_charge[i]* lig.m_charge[j];  //charge product of the two atoms
         //std::cout << "charge: " << charge << std::endl;
 
+        rec.unsafeGetCoords(i,a); lig.unsafeGetCoords(j,b);
 
-        Coord3D dx = rec.GetCoords(i) - lig.GetCoords(j);
+        Coord3D dx  ( a-b ) ;
+
+
         dbl r2 = Norm2(dx);
         if (r2 < 0.001) r2=0.001 ;
 
