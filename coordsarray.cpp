@@ -102,7 +102,7 @@ std::string CoordsArray::PrintMatrix() const
         {
             char tmp[14]; tmp[14]=0;
 
-            sprintf(tmp, "%13.7f", real(this->mat44[i][j])) ;
+            sprintf(tmp, "%14.7f ", real(this->mat44[i][j])) ;
             out += tmp;
         }
         out +="\n";
