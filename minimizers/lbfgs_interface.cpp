@@ -190,12 +190,26 @@ void Lbfgs::minimize(int maxiter)
 
 
     std::cout << m_opt->task  << " |  " << m_opt->niter << " iterations\n";
-
-
-
-
-
 }
+
+
+
+
+std::vector<double>Lbfgs::GetMinimizedVarsAtIter(uint iter)
+{
+if (iter>=m_vars_over_time.size())
+  {
+   std::string msg = "";
+   msg+= iter;
+   msg += " is out of range (max: ";
+   msg += m_vars_over_time.size()-1 ;
+   msg += " )\n"; 
+   throw std::out_of_range(msg);
+  }
+return m_vars_over_time[iter];
+}
+
+
 
 
 

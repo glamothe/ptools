@@ -25,7 +25,7 @@ class Lbfgs
             void minimize(int maxiter);
             std::vector<double> GetMinimizedVars() const {return x;};
 
-            std::vector<double> GetMinimizedVarsAtIter(uint iter){return m_vars_over_time[iter];}
+            std::vector<double> GetMinimizedVarsAtIter(uint iter);
             int GetNumberIter() {return m_opt->niter;}
 
 
