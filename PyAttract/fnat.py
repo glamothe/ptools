@@ -40,6 +40,9 @@ def fnat(receptor, ligcrist, ligprobe):
 
 def main():
 
+    if len(sys.argv) < 4 : 
+        print "usage:  fnat.py receptor lig_ref lig"
+	sys.exit(1)
     recname = sys.argv[1]
     ligname = sys.argv[2]
     ligname2 = sys.argv[3]

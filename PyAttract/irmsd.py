@@ -68,7 +68,9 @@ def irmsd(receptor, ligref, ligprobe, receptorprobe=None,reducedmodel=False):
 
 
 def main():
-
+    if len(sys.argv) < 4 : 
+       print "usage: irmsd receptor lig_ref lig_ToTest"
+       sys.exit(1)
     recname = sys.argv[1]
     ligname = sys.argv[2]
     ligname2 = sys.argv[3]
