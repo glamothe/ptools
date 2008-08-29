@@ -205,6 +205,9 @@ if (options.single and options.transnb):
     parser.error("options -s and -t are mutually exclusive")
 
 
+if (options.single):
+    ftraj = open("minimtraj.trj", "w")
+
 if (options.reffile):
     print "using reference file: %s"%options.reffile
     ref=Rigidbody(options.reffile)
@@ -278,6 +281,14 @@ for trans in translations:
             output.Translate(center)
 
             ligand=AttractRigidbody(output)
+            if (options.single):
+                ntraj=lbfgs_minimizer.GetNumberIter()
+                for iteration in range(ntraj):
+                    traj = lbfgs_minimizer.GetMinimizedVarsAtIter(iteration)
+                    for t in traj:
+                        ftraj.write("%f "%t)
+                    ftraj.write("\n")
+                ftraj.write("~~~~~~~~~~~~~~\n")
 
 
         #computes RMSD if reference structure available
