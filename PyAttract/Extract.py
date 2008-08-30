@@ -8,6 +8,8 @@ from stat import *
 
 import shelve
 import re
+import bz2
+import base64
 
 
 class StructureI:
@@ -35,6 +37,11 @@ class Extractor:
         return self.d[key].matrix
     def getStructure(self, lig, key):
         return rigidXMat44(lig ,self.d[key].matrix)
+    def getFile(self, filename):
+        f=self.d[filename]
+        compressed=base64.b64decode(f)
+        file = bz2.decompress(compressed)
+        return file
 
 
 
@@ -178,11 +185,15 @@ def main():
     rotNB =   int(sys.argv[4])
 
     lig = Rigidbody(ligname)
-    lig2=extract(outfile, lig, transNB, rotNB)
+
+    e=Extractor(outfile)
+    lig3=e.getStructure(lig, "%i:%i"%(transNB,rotNB))
+
+    #print e.getFile("attract.inp")
 
     pdb=[]
-    for i in range(lig2.Size()):
-        atom=lig2.CopyAtom(i)
+    for i in range(lig3.Size()):
+        atom=lig3.CopyAtom(i)
         pdb.append(atom.ToPdbString())
     print "".join(pdb)
 
@@ -198,4 +209,4 @@ if __name__ == "__main__":
     main()
 
 
-__all__=["extract"]
+__all__=["extract", "Extractor"]
