@@ -7,7 +7,16 @@ import time
 import datetime
 import math
 import string
+import bz2  #for compression of Ligand and receptor data
+import base64 #compressed ligand and receptor as base64 strings
 
+
+def compress_file(filename):
+    fobject = open(filename,"r")
+    all = fobject.read()
+    compressed = bz2.compress(all)
+    encoded = base64.b64encode(compressed)
+    return "compressed %s : \"%s\""%(filename,encoded)
 
 
 
@@ -172,7 +181,6 @@ parser.add_option("-t", "--translation", action="store", type="int", dest="trans
 (options, args) = parser.parse_args()
 
 
-
 receptor_name=args[0]
 ligand_name=args[1]
 
@@ -232,6 +240,12 @@ if (options.transnb!=None):
     co=trans.GetCoords(options.transnb)
     translations=[[options.transnb+1,co]]
     transnb=options.transnb
+
+
+
+
+
+
 
 
 # core attract algorithm
@@ -311,6 +325,19 @@ for trans in translations:
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
         print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, energy, str(rms))
         output.PrintMatrix()
+
+
+
+#output compressed ligand and receptor:
+if ( not options.single ): 
+    #TODO: be sure that if -t option is used, only output this for the last translation point
+    print compress_file(receptor_name)
+    print compress_file(ligand_name)
+    print compress_file("mbest1u.par")
+    print compress_file("translat.dat")
+    print compress_file("rotation.dat")
+    print compress_file("attract.inp")
+
 
 
 
