@@ -114,27 +114,13 @@ def store(structures,filename):
 
 
 
-def applyFromDatabase(dbfile,lig,key):
-    struct = dbfile[key]
-    
-    lig2 = rigidXMat44(lig,struct.matrix)
-    #assert( abs(float(struct.rmsd) - Rmsd(lig2.CA(),lig.CA())) < 1e-4 )
-
-    #print the pdb structure
-    pdb=[]
-    for i in range(lig2.Size()):
-        atom=lig2.CopyAtom(i)
-        pdb.append(atom.ToPdbString())
-    print "".join(pdb)
-
-
 
 
 def openDatabase(filename):
     databasefile = "%s.db"%filename
     flag1 = os.path.exists(databasefile)
     if flag1:
-        print "file exists"
+        sys.stderr.write("file exists\n")
         #check to see if database is more recent than outfile
         statdb=os.stat(databasefile)
         statout=os.stat(filename)
@@ -169,6 +155,17 @@ def openDatabase(filename):
  
 
 
+def extract(outputfilename, ligand, transnb, rotnb):
+    d=openDatabase(outputfilename)
+    key="%i:%i"%(transnb,rotnb)
+    struct = d[key]
+    lig2 = rigidXMat44(ligand,struct.matrix)
+    return lig2
+
+
+
+
+
 def main():
     nargs = len(sys.argv)
     if nargs < 5:
@@ -179,11 +176,16 @@ def main():
     ligname = sys.argv[2]
     transNB = int(sys.argv[3])
     rotNB =   int(sys.argv[4])
-    
-    lig = Rigidbody(ligname)
 
-    d = openDatabase(outfile)
-    applyFromDatabase(d,lig,"%s:%s"%(transNB,rotNB))
+    lig = Rigidbody(ligname)
+    lig2=extract(outfile, lig, transNB, rotNB)
+
+    pdb=[]
+    for i in range(lig2.Size()):
+        atom=lig2.CopyAtom(i)
+        pdb.append(atom.ToPdbString())
+    print "".join(pdb)
+
 
 
 
@@ -194,3 +196,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+__all__=["extract"]
