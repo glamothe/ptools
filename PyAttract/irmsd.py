@@ -52,19 +52,9 @@ def irmsd(receptor, ligref, ligprobe, receptorprobe=None,reducedmodel=False):
     ligBBInterface = ligprobe.Backbone() & selectListOfResidues(ligprobe,ligResidues) #interface bb residues of docked ligand
     receptorBBInterface=selectListOfResidues(recBB,recResidues)
     
-    ligrefpdb=ligrefBBInterface.CreateRigid()
-    ligdockpdb=ligBBInterface.CreateRigid()
-    recrefpdb=receptorBBInterface.CreateRigid()
-    
-    ref=Rigidbody(ligrefpdb+recrefpdb)
-    pred=Rigidbody(ligdockpdb+recrefpdb)
-    super= superpose(ref,pred,0)
-    mat=super.matrix
-    pred.ApplyMatrix(mat)
     assert(ligrefBBInterface.Size()==ligBBInterface.Size())
 
-    return Rmsd(pred,ref)
-    #return Rmsd(ligrefBBInterface, ligBBInterface)
+    return Rmsd(ligrefBBInterface, ligBBInterface)
 
 
 def main():
