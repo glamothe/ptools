@@ -233,6 +233,8 @@ else: #(single mode)
     print "Single mode"
 
 
+
+printFiles=True
 # option -t used: define the selected translation
 transnb=0
 if (options.transnb!=None):
@@ -240,6 +242,8 @@ if (options.transnb!=None):
     co=trans.GetCoords(options.transnb)
     translations=[[options.transnb+1,co]]
     transnb=options.transnb
+    if transnb!=trans.Size()-1:
+        printFiles=False #don't append ligand, receptor, etc. unless this is the last translation point of the simulation
 
 
 
@@ -329,8 +333,7 @@ for trans in translations:
 
 
 #output compressed ligand and receptor:
-if ( not options.single ): 
-    #TODO: be sure that if -t option is used, only output this for the last translation point
+if ( not options.single and printFiles==True): 
     print compress_file(receptor_name)
     print compress_file(ligand_name)
     print compress_file("mbest1u.par")
