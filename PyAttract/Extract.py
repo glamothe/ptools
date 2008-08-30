@@ -124,7 +124,7 @@ def applyFromDatabase(dbfile,lig,key):
     #print the pdb structure
     pdb=""
     for i in range(lig2.Size()):
-        atom=lig2.GetAtom(i)
+        atom=lig2.CopyAtom(i)
         pdb=pdb+atom.ToPdbString()
     print pdb
 
