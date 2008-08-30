@@ -105,7 +105,6 @@ def readStructures(file):
 
 
 def store(structures,filename):
-    import shelve
     sys.stderr.write("storing database\n")
     d = shelve.open(filename)
     for struct in structures:
@@ -122,11 +121,12 @@ def applyFromDatabase(dbfile,lig,key):
     #assert( abs(float(struct.rmsd) - Rmsd(lig2.CA(),lig.CA())) < 1e-4 )
 
     #print the pdb structure
-    pdb=""
+    pdb=[]
     for i in range(lig2.Size()):
         atom=lig2.CopyAtom(i)
-        pdb=pdb+atom.ToPdbString()
-    print pdb
+        pdb.append(atom.ToPdbString())
+    print "".join(pdb)
+
 
 
 
