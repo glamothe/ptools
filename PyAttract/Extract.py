@@ -7,7 +7,7 @@ import os
 from stat import *
 
 import shelve
-
+import re
 
 
 class StructureI:
@@ -153,6 +153,17 @@ def openDatabase(filename):
     structures,lststruct = readStructures(filename)
 
     d=store(lststruct, databasefile)
+    
+    #reads included receptor, ligand, etc:
+    p=re.compile("^compressed ([a-zA-Z0-9\.]+) : \"([^\"]+)\"")
+    file = open(filename,'r')
+    for l in file.readlines():
+        m=p.match(l)
+        if m:
+            g=m.groups()
+            sys.stderr.write("adding filename: %s\n"%g[0])
+            d[g[0]]=g[1]
+
     sys.stderr.write(" done !\n")
     return d
  
