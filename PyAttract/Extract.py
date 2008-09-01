@@ -127,7 +127,7 @@ def openDatabase(filename):
     databasefile = "%s.db"%filename
     flag1 = os.path.exists(databasefile)
     if flag1:
-        sys.stderr.write("file exists\n")
+        sys.stderr.write("Database file (%s) exists\n" %(databasefile))
         #check to see if database is more recent than outfile
         statdb=os.stat(databasefile)
         statout=os.stat(filename)
@@ -142,7 +142,7 @@ def openDatabase(filename):
             if flag1: os.remove(databasefile)
     #at this point there is no database or it has been removed
     #we must generate it
-    sys.stderr.write("reading outfile and creating database\n")
+    sys.stderr.write("Reading outfile and creating database (%s)\n" %(databasefile))
     structures,lststruct = readStructures(filename)
 
     d=store(lststruct, databasefile)
