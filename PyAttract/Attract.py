@@ -222,7 +222,7 @@ else: #(single mode)
 # option -t used: define the selected translation
 transnb=0
 if (options.transnb!=None):
-    trans=Rigidbody("translat.dat")
+    trans=Rigidbody("translation.dat")
     co=trans.GetCoords(options.transnb)
     translations=[[options.transnb+1,co]]
     transnb=options.transnb
