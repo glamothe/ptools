@@ -3,171 +3,347 @@
 
 import sys
 import copy
+import copy
 
 from ptools import *
 
+from optparse import OptionParser
+usage = "%prog --at file.pdb --cg file.pdb --red file --ff file [--conv file]"
+version = "%prog 1.0"
+parser = OptionParser(usage)
+
+# --at option: all atom pdb file (input file)
+parser.add_option("--at", action="store", type="string", dest="atomicName", help="input all atom pdb file")
+
+# --cg option: output coarse grain reduced file
+parser.add_option("--cg", action="store", type="string", dest="coarsegrainName", help="ouput coarse grain (reduced) file")
+
+# --red option: correspondance between atoms and beads (coarse grain)
+parser.add_option("--red", action="store", type="string", dest="redName", help="correspondance file between atoms and beads")
+
+# --ff option: coarse grain force field parameters
+parser.add_option("--ff", action ="store", type="string", dest="ffName", help="force field parameters")
+
+## --conv option: eventually, a correspondance between different names for the same atom
+parser.add_option("--conv", action='store', type='string', dest='convName', help='type conversion file')
+
+(options, args) = parser.parse_args()
+
+#==========================================================
+# check options
+#==========================================================
+if (options.atomicName and options.coarsegrainName and options.redName and options.ffName):
+	atomicName = options.atomicName
+	coarsegrainName = options.coarsegrainName
+	redName = options.redName
+	ffName = options.ffName
+else:
+	parser.error("Not enough arguments")
 
 
-class IncompleteBead:
-      pass
+#==========================================================
+# classe Atom
+#==========================================================
+class AtomInBead:
+	'Class definition for an atom in a bead'
+	def __init__(self, name, wgt):
+		self.name = name    # atom name
+		self.x = 0.0        # x coordinate
+		self.y = 0.0        # y coordiante
+		self.z = 0.0        # z coordinate
+		self.weight = wgt   # atom weight (within a bead)
+		self.found = 0      # atom found or not (not found by default)
 
-class BeadCreator:
-
-      def __init__(self, reducedname, reducedtypenb, reducedcharge,lstofAtoms):
-            self._reducedname=reducedname
-            self._reducedtypenb=reducedtypenb
-            self._reducedcharge=reducedcharge
-            self._lstofAtoms=copy.deepcopy(lstofAtoms)
-            self._CoM=Coord3D()  #from ptools
-            self.size=0
-
-            atProp=Atomproperty()
-            #print "*******reducedname: ",reducedname
-            atProp.SetType(reducedname)
-            atProp.SetAtomCharge(reducedcharge)
-            atProp.SetChainId('')
-            self.atProp=atProp
-
-      def submit(self, atom):
-            "try to add an atom to the bead"
-            atomtype=atom.GetType()
-            #trick to handle 'OTn' instead of 'O' for last pdb atom:
-            if atomtype[:2]=='OT': atomtype='O'
-            if atomtype in self._lstofAtoms:
-                  self._CoM+=atom.GetCoords()
-                  self._lstofAtoms.remove(atomtype)
-                  self.size+=1
-                  #print self.size
-      def create(self):
-            "creates a new atom bead"
-            if len(self._lstofAtoms)!=0:
-                  raise IncompleteBead
-            CoM=self._CoM*(1.0/float(self.size))
-            at=Atom(self.atProp,CoM)
-            return at
+	def Show(self):
+		return "%s %8.3f %8.3f %8.3f %3.1f %d" %(self.name, self.x, self.y, self.z, self.weight, self.found)
 
 
+#==========================================================
+# class Bead
+#==========================================================
+class Bead:
+	'Class definition for a bead'
+	def __init__(self, name, id):
+		self.name = name        # bead name
+		self.id = id            # bead id
+		self.size = 0           # bead size (number of atoms inside)
+		self.listOfAtomNames = []  # list of all atom names
+		self.listOfAtoms = []  # list of all atoms (AtomInBead)
 
-defaultBB=[ ['CA',    ['CA'] ,  1 , 0.0 ] ]
-
-beadCorresp={}
-beadCorresp["ARG"] = defaultBB + [[  'CG',        ['CG']        ,   3 ,  0.0  ],
-                                 [  'NEC',      ['NE','CZ']     ,   4 ,  1.0   ]]
-
-beadCorresp["GLU"] = defaultBB + [
-                                  [   'CB',       ['CG']        ,   10  , 0.0  ] ,
-                                  [ 'CO1',  ['CD', 'OE1', 'OE2'],   11  , -1.0 ]
-                                  ]
-
-beadCorresp["GLN"] = defaultBB + [
-                                   [ 'CB',        ['CG']        ,   8,    0.0 ],
-                                   [ 'CN1', ['CD', 'OE1', 'NE2'],   9,    0.0 ]
-                                  ]
+	def Show(self):
+		return "%s %d %d" %(self.name, self.id, self.size)
 
 
-beadCorresp["LYS"] = defaultBB + [
-                                   ['CB', ['CG'], 16, 0.0],
-                                   ['CE', ['CE'], 17, 1.0]
-                                 ]
+#==========================================================
+# class Res
+#==========================================================
+class CoarseRes:
+	'Class definition for coarse grain (reduced) protein residue (or DNA base)'
+	def __init__(self):
+		self.listOfBeadId = []   # list of bead id in res
+		self.listOfBeads = []       # list of beads in res
+	
+	def Add(self, residue):
+		'Add in a residue atoms from bead'
+		for at in residue:
+			at_name = at[1]
+			at_wgt = float(at[2])
+			bd_id = int(at[3])
+			bd_name = at[4]
+			if at_name != 'EMPTY': # EMPTY is a special tag to deal with glycine
+				# in bead not in residue than create it
+				if bd_id not in self.listOfBeadId:
+					self.listOfBeadId.append(bd_id)
+					self.listOfBeads.append(Bead(bd_name, bd_id))
+				# add atom in bead in residue
+				bead_position = self.listOfBeadId.index(bd_id)
+				bead = self.listOfBeads[bead_position]
+				bead.listOfAtomNames.append(at_name)
+				atInBd = AtomInBead(at_name, at_wgt)
+				bead.listOfAtoms.append(atInBd)
+				bead.size += 1
+				# update bead in residue
+				self.listOfBeads[bead_position] = bead
+		# return the number of bead per residue
+		return 	len(self.listOfBeadId)	
+		
+	
+	def FillAtom(self, at_name, x, y, z):
+		'Fill an atom from bead with coordinates'
+		# quickly check atom in atom list
+		# 1: browse beads
+		for bead in self.listOfBeads:
+			# 2: browse atoms in bead
+			if at_name in bead.listOfAtomNames:
+				# then find exactly where this atom is present
+				for atom in bead.listOfAtoms:
+					if at_name == atom.name:
+						atom.x = x
+						atom.y = y
+						atom.z = z
+						atom.found = 1
+						#print "fill", atom.name, atom.x, atom.y, atom.z
+	
+	def Reduce(self, infoResName, infoResId):
+		'Reduce a bead with atoms present in bead'
+		output = []
+		# reduce all beads in a residue
+		# for each bead in the residue
+		for bead in self.listOfBeads:
+			#print "reducing", bead.name, bead.id, "with", bead.listOfAtomNames
+			reduce_size = 0
+			reduce_x = 0.0
+			reduce_y = 0.0
+			reduce_z = 0.0
+			sum_wgt = 0.0
+			# for each atom of a bead
+			for atom in bead.listOfAtoms:
+				if atom.found == 1:
+					reduce_size += 1
+					reduce_x += atom.x * atom.weight
+					reduce_y += atom.y * atom.weight
+					reduce_z += atom.z * atom.weight
+					sum_wgt += atom.weight
+				else:
+					print "WARNING: missing atom %s in bead %s %2d for residue %s %d" \
+					%(atom.name, bead.name, bead.id, infoResName, infoResId)
+					print "       : incomplete bead will not be created"
+			if reduce_size == bead.size:
+				coord = Coord3D(reduce_x/sum_wgt, reduce_y/sum_wgt, reduce_z/sum_wgt)
+				output.append([coord, bead.name, bead.id])				
+		return output
 
-beadCorresp["TRP"] = defaultBB + [
-                                   ['CG', ['CG'], 25, 0.0],
-                                   ['CSE', ['CD2','CE2','CE3','CH2','CZ3','CZ2'], 26, 0.0]
-                                 ]
+	def Show(self):
+		for bead in self.listOfBeads:
+			print bead.name, bead.id, bead.size, bead.atomIdList
+				
+				
+#==========================================================
+# definition of the ATTRACT coarse grain model
+# needs beads definition from redName file 
+# and bead charges from ff_name file
+#==========================================================
+f = open(redName, 'r')
+lines = f.readlines()
+f.close()
+#
+# ARG       CG        1.0       3         CG        
+#
+resBeadAtomModel = {}
 
-beadCorresp["MET"] =  defaultBB + [
-                                    ['CSE', ['CB','CG'], 18, 0.0],
-                                    ['CSE', ['SD','CE'], 19, 0.0]
-                                  ]
+# quickly parse file to get full list of protein residues / DNA bases
+# and to create an empty dictionnary with residues or bases as keys
+sys.stdout.write("%s: found the definition of residues " %(redName))
+for line in lines:
+	if (len(line) > 1) and (line[0] != '#'):
+		item = line.split()
+		if len(item) >= 5: # at least 5 fields are expected
+			res = item[0]
+			if (res != '*') and (res not in resBeadAtomModel.keys()):
+				resBeadAtomModel[res] = CoarseRes()
+				sys.stdout.write('%s ' %(res))
+sys.stdout.write('\n')
 
-beadCorresp["PHE"] = defaultBB + [
-                                   ['CSE', ['CB','CG'], 20, 0.0],
-                                   ['CSE', ['CD1','CD2','CE1','CE2','CZ'], 21, 0.0 ]
-                                 ]
-
-beadCorresp["TYR"] = defaultBB + [  ['CSE', ['CB','CG'], 27, 0.0],
-                                    ['CSE', ['CD1','CD2','CE1','CE2','CZ','OH'],28,0.0]  ]
-
-beadCorresp["HIS"] = defaultBB + [  ['CSE', ['CB','CG'], 12, 0.0],
-                                    ['CSE', ['ND1','CD2','NE2','CE1'], 13, 0.0]  ]
-
-beadCorresp["GLY"] = defaultBB
-
-
-
-beadCorresp['ASN'] = defaultBB + [  ['CSE', ['CB', 'CG', 'OD1', 'ND2'] , 5, 0.0]  ]
-beadCorresp["ALA"] = defaultBB + [  ['CSE',      ['CB'],                 2, 0.0]]
-beadCorresp['ASP'] = defaultBB + [  ['CSE', ['CB', 'CG', 'OD1', 'OD2'] , 6 ,-1.0] ]
-beadCorresp['CYS'] = defaultBB + [  ['CSE',    ['CB', 'SG']            , 7 , 0.]  ]
-beadCorresp['ILE'] = defaultBB + [  ['CSE', ['CB', 'CG1', 'CG2', 'CD1'], 14, 0.]  ]
-beadCorresp['LEU'] = defaultBB + [  ['CSE', ['CB', 'CG', 'CD1', 'CD2'] , 15, 0.]  ]
-beadCorresp['PRO'] = defaultBB + [  ['CSE',     ['CB', 'CG', 'CD']     , 22, 0.]  ]
-beadCorresp['SER'] = defaultBB + [  ['CSE',     ['CB', 'OG']           , 23, 0.]  ]
-beadCorresp['THR'] = defaultBB + [  ['CSE',     ['CB', 'OG1', 'CG2']   , 24, 0.]  ]
-beadCorresp['VAL'] = defaultBB + [  ['CSE',     ['CB', 'CG1', 'CG2']   , 29, 0.]  ]
+# fill for each residue or base, the beads and atoms
+sys.stdout.write("%s: created the partition for residues " %(redName))
+beadsInResidue = []
+for line in lines:
+	if (len(line) > 1) and (line[0] != '#'):
+		col = line.split()
+		if len(col) >= 5: # at least 5 fields are expected
+			beadsInResidue.append(col[0:5])
+	if (line[0:4] == '#===') and (len(beadsInResidue) != 0):
+		if beadsInResidue[0][0] == "*":
+			# "*" means a common bead for all residues or bases
+			for res in resBeadAtomModel.keys():
+				resBeadAtomModel[res].Add(beadsInResidue)
+		else:
+			# if not a common bead, add it just to the right residue (or base)
+			res = beadsInResidue[0][0]
+			bead_nb = resBeadAtomModel[res].Add(beadsInResidue)
+			sys.stdout.write('%s(%d beads) ' %(res, bead_nb))
+		beadsInResidue = []
+sys.stdout.write('\n')
 
 
+#==========================================================
+# read force field parameter file to get bead charge
+#==========================================================
+f = open(ffName, 'r')
+lines = f.readlines()
+f.close()
+sys.stdout.write('%s: reading force field parameters for bead ' %(ffName))
+beadChargeDic = {}
+for line in lines:
+	if (len(line) > 1) and (line[0] != '#'):
+		item = line.split()
+		if len(item) < 5: # at least 5 fields are expected
+			break
+		beadId = int(item[0])
+		beadCharge = float(item[3])
+		beadChargeDic[beadId] = beadCharge
+		sys.stdout.write('%d ' %(beadId))
+sys.stdout.write('\n')
 
-allAtom=Rigidbody(sys.argv[1])
-sys.stderr.write("Number of atoms: %d\n" %(allAtom.Size()))
+
+#==========================================================
+# read file for type conversions (residues or atoms)
+#==========================================================
+resConv = {}
+atomConv = {}
+if options.convName:
+	f = open(options.convName, 'r')
+	lines = f.readlines()
+	f.close()
+	for line in lines:
+		if (len(line) > 1) and (line[0] != '#'):
+			item = line.split()
+			if len(item) == 2: # 2 fields => residue type conversion
+				resOld = item[0]
+				resNew = item[1]
+				if resOld not in resConv.keys():
+					resConv[resOld] = resNew
+			if len(item) == 3: # 3 fields => atom type conversion
+				res = item[0]
+				atomOld = item[1]
+				atomNew = item[2]
+				atomTagOld = res + '-' + atomOld
+				atomTagNew = res + '-' + atomNew
+				if atomTagOld not in atomConv.keys():
+					atomConv[atomTagOld] = atomTagNew
+
+
+#==========================================================
+# load atomic pdb file into Rigidbody object
+#==========================================================
+allAtom=Rigidbody(atomicName)
+print "Load atomic file %s with %d atoms " %(atomicName, allAtom.Size())
 
 #extract all 'atoms' objects
-atoms=[]
+atomList=[]
 for i in xrange(allAtom.Size()):
-      atoms.append(allAtom.CopyAtom(i))
+	atom = allAtom.CopyAtom(i)
+	if options.convName:
+		# look for residue or base type conversion
+		resName = atom.GetResidType()
+		if resName in resConv.keys():
+			atom.SetResidType( resConv[resName] )
+		# look for atom type conversion
+		atomTag = atom.GetResidType() + '-' + atom.GetType()
+		if atomTag in atomConv.keys():
+			atomName = atomConv[atomTag].split('-')[1] 
+			atom.SetType( atomName )
+	atomList.append(atom)
 
+#count residues
+residueTagList=[]
+coarseResList=[]
+for atom in atomList:
+	resName = atom.GetResidType()
+	# create a unique identifier for every residue
+	# resTag is for instance "LEU-296-A"
+	resTag = resName + '-'+ str(atom.GetResidId()) + '-' + atom.GetChainId() 
+	if resTag not in residueTagList:
+		if resBeadAtomModel.has_key(resName):
+			residueTagList.append(resTag)
+			# add a pattern residue to the list of coarse residues for the protein
+			# beware of the hugly list copy: use copy.deepcopy() !
+			coarseResList.append(copy.deepcopy(resBeadAtomModel[resName]))
+		else:
+			print "WARNING: residue %s is unknown the residues <-> beads <-> atoms list !!" %(resName)
+			print "       : residue %s will not be reduced into coarse grain" %(resName)
+print "Number of residues: %i\n" %(len(residueTagList))
 
+#==========================================================
+# iterate through all atoms and residues to fill beads
+#==========================================================
+print "Reading all atoms and filling beads:"
+for atom in atomList:
+	#resTag is like "LEU-296-A"
+	resTag = atom.GetResidType() + '-' + str(atom.GetResidId()) + '-' + atom.GetChainId()
+	if resTag in residueTagList:
+		id = residueTagList.index(resTag)
+		coarseResList[id].FillAtom(atom.GetType(), atom.GetCoords().x, atom.GetCoords().y, atom.GetCoords().z)
+print "OK"
+#==========================================================
+# reduce beads
+#==========================================================
+coarsegrainPdb = ""   # complete coarse grain (reduced) pdb file
+atomCnt = 0           # atom counter
+print "Coarse graining:"
+for i in range(len(residueTagList)):
+	tag = residueTagList[i].split('-')
+	resName = tag[0]
+	resId = int(tag[1])
+	coarseRes = coarseResList[i].Reduce(resName, resId)
+	for bead in coarseRes:
+		coord = bead[0]
+		atomName = bead[1]
+		atomTypeId = bead[2]
+		if atomTypeId in beadChargeDic:
+			atomCharge = beadChargeDic[atomTypeId]
+		else:
+			print "WARNING: cannot find charge of bead %s %2d in %s" %(atomName, atomTypeId, ffName)
+			print "       : set default charge to 0.0"
+			atomCharge = 0.0
+		prop = Atomproperty()
+		prop.SetType(atomName)
+		atomCnt += 1
+		prop.SetAtomId(atomCnt)
+		prop.SetResidId(resId)
+		prop.SetResidType(resName)
+		prop.SetChainId(' ')
+		extra = ('%5i%8.3f%2i%2i') %(atomTypeId,atomCharge,0,0)
+		prop.SetExtra(extra)
+		newAtom = Atom(prop, coord)
+		coarsegrainPdb += newAtom.ToPdbString()
+print "OK"
+#==========================================================
+# output coarse grain (reduced) pdb file
+#==========================================================
+f = open(coarsegrainName, 'w')
+f.write(coarsegrainPdb)
+f.close()
+sys.stdout.write("Coarse grain (reduced) file wrote in "+coarsegrainName)
+sys.stdout.write(": %d beads \n" %(atomCnt))
 
-#count residues:
-residuMap={}
-residulist=[]
-for at in atoms:
-      residueIdentifier = at.GetResidType() + str(at.GetChainId())  + str(at.GetResidId())
-      #residueIdentifier is like "LEU296"
-      residuMap.setdefault(residueIdentifier, []).append(at)
-      if residueIdentifier not in residulist:
-            residulist.append(residueIdentifier)
-
-sys.stderr.write("Number of residues: %i\n" %(len(residuMap)))
-sys.stderr.write("Start atom of each residue:\n")
-orderedresid=[residuMap[i] for i in residulist ]
-startatoms=[lat[0].GetAtomId() for lat in orderedresid ]
-out = ""
-for statom in startatoms:
-      out+=(str(statom))+" "
-sys.stderr.write(out+"\n")
-
-
-#iterates through all the residues and create reduced beads:
-
-totAtoms=0
-
-for residKey, atomList in zip(residulist,orderedresid):
-      residType=residKey[:3]
-      if (residType)=="HIE": residType="HIS" #fix for an amber output file
-      residNumber=int(residKey[4:])
-      #print "reducing residue %s of type %s" % (residKey, residType)
-      correspList=beadCorresp[residType]
-      #print correspList
-      for correspUnit in correspList:
-            atomTypeName=correspUnit[0]
-            lstToReduce=correspUnit[1]
-            atomTypeNumber=correspUnit[2]
-            atomCharge=correspUnit[3]
-            beadcreator=BeadCreator(atomTypeName,atomTypeNumber, atomCharge, lstToReduce)
-            for atom in atomList:
-                  beadcreator.submit(atom)
-            try:
-                  bead = beadcreator.create()
-            except IncompleteBead:
-                  print "The bead %i of residue %s is incomplete. Please check your pdb!"\
-                      %(totAtoms+1,residKey)
-                  raise 
-            totAtoms+=1
-            #now we must modify the bead: change the residue type and set the "extra" field correctly
-            bead.SetResidType(residType)
-            extra = ('%5i'+'%8.3f'+'%2i'*2) %(atomTypeNumber,atomCharge,0, 0)
-            bead.SetExtra(extra)
-            bead.SetAtomId(totAtoms)
-            bead.SetResidId(residNumber)
-            print bead.ToPdbString(),  # ',' because of the extra \n caracter from the ptools C++ library
