@@ -471,100 +471,80 @@ ca_trace = sel_ca.CreateRigid()
 
 \section{Docking with PTools: ATTRACT}
 
-This part is illustrated by the docking of the protein and DNA found in the 1DNJ complex.
+This part is illustrated by the docking of 1F34 complex.
 
-\subsection{Extraction of the docking partners and coarse grain reduction}
+\subsection{Protein--protein complex: 1F34}
+
+The 1F34 complex is made of two partners. Chain A: 326 residues, 2433 atoms and chain B: 148 residues, 1074 atoms.
+
+\subsubsection{Extraction of the docking partners}
 
 Before docking, one has to separate both partners. This is possible with visualisation
-software such as Pymol \footnote{\tt http://pymol.sourceforge.net/} or VMD \footnote{\tt http://www.ks.uiuc.edu/Research/vmd/}, and also directly with the PTools library.
-
-\subsubsection{Partner preparation}
+software such as Pymol \footnote{\tt http://pymol.sourceforge.net/} or VMD \footnote{\tt http://www.ks.uiuc.edu/Research/vmd/}, 
+and also directly with the PTools library.
 
 Within the Python interpreter, first load the PTools library:
 \begin{verbatim}
 from ptools import *
 \end{verbatim}
 
-Read the PDB file 2NJ.pdb:
+Read the PDB file 1F34.pdb:
 \begin{verbatim}
-pdb=Rigidbody("2DNJ.pdb")
+pdb=Rigidbody("1F34.pdb")
 \end{verbatim}
 
-The chain selection allows the separation between the protein (chain A) and the DNA (chains B and C).
+The chain selection allows the separation between chain A and B.
 \begin{verbatim}
 selectA=pdb.SelectChainId("A")
 selectB=pdb.SelectChainId("B")
-selectC=pdb.SelectChainId("C")
 \end{verbatim}
 
-Reunion of both DNA strands:
+Creation of both chains as independant rigid body and file saving as a PDB:
 \begin{verbatim}
-selectBC=selectB | selectC
+protA=selectA.CreateRigid()
+protB=selectB.CreateRigid()
+WritePDB(protA,"1F34_A.pdb")
+WritePDB(protB,"1F34_B.pdb")
 \end{verbatim}
-
-Creation of the protein as a rigid body and file saving as a PDB:
+Or more quickly:
 \begin{verbatim}
-prot=selectA.CreateRigid()
-WritePDB(prot,"2DNJ_prot.pdb")
+WritePDB(selectA.CreateRigid(),"1F34_A.pdb")
+WritePDB(selectB.CreateRigid(),"1F34_B.pdb")
 \end{verbatim}
 
-Creation of the DNA as a rigid body and file saving as a PDB:
+\subsubsection{Coarse grain reduction}
+
+This step translates all atom molecule into coarse grain (reduced) molecule for a further docking. 
+
+Chain A: 
 \begin{verbatim}
-DNA=selectBC.CreateRigid()
-WritePDB(DNA,"2DNJ_dna.pdb")
+./reduce.py --at 1F34_A.pdb --cg 1F34_A.cg.pdb --red at2cg.prot.dat --ff ff_param.dat 
+--conv type_conversion.dat 
 \end{verbatim}
+{\tt 1F34\_A.cg.pdb} contains 684 beads.\\
 
-Once both partners are isolated in separe files, close the Python interpreter.
-
-To check DNA atom names are compatible with the one used is the reduced model, use the {\tt parse.pl} script:
+Chain B:
 \begin{verbatim}
-parse.pl 2DNJ_dna.pdb >2DNJ_dnaf.pdb
+./reduce.py --at 1F34_B.pdb --cg 1F34_B.cg.pdb --red at2cg.prot.dat --ff ff_param.dat 
+--conv type_conversion.dat 
 \end{verbatim}
+{\tt 1F34\_B.cg.pdb} 318 beads. \\
 
-\subsubsection{Protein coarse grain reduction}
+The {\tt reduce.py} script required the following input files:
 
-\begin{verbatim}
-reduce.py 2DNJ_prot.pdb 2DNJ_prot.cg.z.pdb
-\end{verbatim}
-
-Parameters:
 \begin{itemize}
-\item an all-atom protein pdb file ({\tt 2DNJ\_prot.pdb})
-\item a reduced output pdb file ({\tt 2DNJ\_prot.cg.z.pdb})
+\item an all-atom protein pdb file (option {\tt --at}, for instance {\tt 1F34\_A.pdb})
+\item a reduced output pdb file (option {\tt --cg}, for instance {\tt 1F34\_A.cg.pdb})
+\item a bead topololgie file (option {\tt --ff}, for instance {\tt at2cg.prot.dat})
+\item a forcefield parameter file (option {\tt --ff}, for instance {\tt ff\_param.dat})
+\item optionnaly, a filetype conversion file (option {\tt --conv}, for instance {\tt type\_conversion.dat})
 \end{itemize}
 
-Visualise both to check that the reduction worked properly.
+Visualise both coarse grain partners to check the reduction worked properly.
 
-\subsubsection{DNA coarse grain reduction}
 
-DNA is reduced using two scripts: {\tt reduceDna.py} and {\tt convertPdb2Zacharias.py}. The first one perform the proper reduction.
-\begin{verbatim}
-reduceDna.py atom2cgDna.dat 2DNJ_dnaf.pdb 2DNJ_dna.cg.pdb
-\end{verbatim}
-Parameters are the following:
-\begin{itemize}
-\item the correspondance between atoms and beads ({\tt atom2cgDna.dat})
-\item an input all-atom pdb file ({\tt 2DNJ\_dnaf.pdb})
-\item an output coarse grain pdb file ({\tt 2DNJ\_dna.cg.pdb})
-\end{itemize}
-
-The second program converts the output DNA reduced pdb file into a pdb-like file compatible with ATTRACT. Its usage is:
-\begin{verbatim}
-convertPdb2Zacharias.py ffParamDna.dat 2DNJ_dna.cg.pdb 2DNJ_dna.cg.z.pdb
-\end{verbatim}
-with the parameters:
-\begin{itemize}
-\item the parameters of the coarse grain force field (bead type and charge) ({\tt ffParamDna.dat})
-\item an input coarse grain pdb file ({\tt 2DNJ\_dna.cg.pdb})
-\item an output coarse grain pdb file compatible with ATTRACT ({\tt 2DNJ\_dna.cg.z.pdb})
-\end{itemize}
-
-As for protein reduction, a visual inspection with any visualisation software is preferable.
-
-\subsection{Docking simulation}
 
 \subsubsection{Initial ligand positions}
-
 
 The systematic docking simulation uses starting points placed around the
 receptor.  The Python script {\tt translate.py} employs a slightly modified
@@ -583,15 +563,16 @@ points (in \AA$^2$). The default value is 100.0 (\AA$^2$).
 \item the {\tt -h} options, shows the help message and exit.
 \end{itemize}
 
-In the case of the 1DNK complex, it gives:
+In the case of the 1F34 complex, the chain A (biggest) is defined as the receptor
+and the chain B (smaller) is defined as the ligand.
 \begin{verbatim}
-translate.py 2DNJ_prot.cg.z.pdb 2DNJ_dna.cg.z.pdb > translat.dat
+./translate.py 1F34_A.cg.pdb 1F34_B.cg.pdb > translation.dat
 \end{verbatim}
 
+The visualisation of the starting points may be viewed with any visualisation software by renaming {\tt translation.dat} in {\tt translation.pdb}.
 
-
-
-The visualisation of the starting points may be viewed with any visualisation software by renaming {\tt translat.dat} in {\tt translat.pdb}.
+For each position in translation (each line of the file {\tt translation.dat}), 
+there are XX associated rotations defined in the file {\tt rotation.dat}. 
 
 \subsubsection{ATTRACT parameters}
 
@@ -607,7 +588,9 @@ ATTRACT parameters are found in the file {\tt attract.inp}. A typical configurat
  500 2 1 1 0 0 0 0 0   50.00
 \end{verbatim}
 
-The first line indicates the number of minimisations performed by ATTRACT for each starting position. The last six lines are the caracteristics of each minimisation. The first column is the number of steps before the minimisation stops. The last column is the square of the cutoff distance for the calculation of the interaction energy between both partners.
+The first line indicates the number of minimisations performed by ATTRACT for each starting position. 
+The last six lines are the caracteristics of each minimisation. The first column is the number of steps before the minimisation stops. 
+The last column is the square of the cutoff distance for the calculation of the interaction energy between both partners.
 
 \paragraph{Remarques:} Columns with zeros or ones should not be modfied, as well as the second line.
 
@@ -615,12 +598,12 @@ The first line indicates the number of minimisations performed by ATTRACT for ea
 
 A docking simulation with ATTRACT requires:
 \begin{itemize}
-\item a receptor (fixed partner) file ({\tt 2DNJ\_prot.cg.z.pdb})
-\item a ligand (mobile partner) file ({\tt 2DNJ\_dna.cg.z.pdb})
-\item the ATTRACT program (here for protein--DNA docking, {\tt  Attract\_dna.py})
-\item the coarse grain parameters ({\tt aminon.dna.par})
+\item a receptor (fixed partner) file ({\tt 1F34\_A.cg.pdb})
+\item a ligand (mobile partner) file ({\tt 1F34\_B.cg.pdb})
+\item the ATTRACT program ({\tt  Attract.py})
+\item the coarse grain parameters ({\tt aminon.par})
 \item rotations performed for each translational starting point ({\tt rotation.dat})
-\item translational starting points ({\tt translat.dat})
+\item translational starting points ({\tt translation.dat})
 \item docking parameters ({\tt attract.inp})
 \end{itemize}
 
@@ -632,35 +615,35 @@ ATTRACT can be used with different options:
 
 A single ATTRACT simulation may thus be obtained by:
 \begin{verbatim}
-Attract_dna.py 2DNJ_prot.cg.z.pdb 2DNJ_dna.cg.z.pdb 
--s -ref=2DNJ_dna.cg.z.pdb > 2DNJ_single.att
+Attract.py 1F34_A.cg.pdb 1F34_B.cg.pdb 
+-s -ref=1F34_B.cg.pdb > 1F34_single.att
 \end{verbatim}
 
 The first pdb file provided must be the receptor file (and the second the ligand).
 
 For a full systematic docking in the translational and rotational space:
 \begin{verbatim}
-Attract_dna.py 2DNJ_prot.cg.z.pdb 2DNJ_dna.cg.z.pdb 
--ref=2DNJ_dna.cg.z.pdb > 2DNJ_dock.att
+Attract.py 1F34_A.cg.pdb AF34_B.cg.pdb 
+-ref=1F34_B.cg.pdb > 1F34_dock.att
 \end{verbatim}
 
-The output file {\tt 2DNJ\_dock.att} contains all informations on the docking simulation.
+The output file {\tt 1F34\_dock.att} contains all informations on the docking simulation.
 
-\subsection{Docking output analysis}
+\subsubsection{Docking output analysis}
 
 Any simulated ligand structure can be extracted with the script {\tt Extract.py}:
 
 \begin{verbatim}
-Extract.py 2DNJ_dock.att 2DNJ_dna.cg.z.pdb 101 153 > 2DNJ_dock.pdb
+Extract.py 1F34_dock.att 1F34_B.cg.pdb 101 153 > 1F34_dock.pdb
 \end{verbatim}
 
 with the parameters:
 \begin{itemize}
-\item an ouput of the docking simulation ({\tt 2DNJ\_dock.att})
-\item the inital ligand file ({\tt 2DNJ\_dna.cg.z.pdb})
+\item an ouput of the docking simulation ({\tt 1F34\_dock.att})
+\item the inital ligand file ({\tt 1F34\_B.cg.z.pdb})
 \item a translation index ({\tt 101})
 \item a rotation index ({\tt 153})
-\item an output ligand structure file ({\tt 2DNJ\_dock.pdb})
+\item an output ligand structure file ({\tt 1F34\_dock.pdb})
 \end{itemize}
 
 
@@ -672,7 +655,8 @@ with the parameters:
 \subsection{Troubleshooting}
 
 \subsubsection{Bus error}
-On Mac OS, the command "import ptools" can lead to a "bus error" error message. This happens with MacPorts or fink versions of python. Solution: use the python provided with the system instead (/usr/bin/python)
+On Mac OS, the command "import ptools" can lead to a "bus error" error message. This happens with MacPorts or 
+fink versions of python. Solution: use the python provided with the system instead (/usr/bin/python)
 
 
 
