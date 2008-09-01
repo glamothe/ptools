@@ -154,11 +154,13 @@ def rigidXstd_vector(rigid, mat_std):
         out.SetCoords(i, coords2)
     return out
 
-
-
-
-
-
+# check if a required file is found
+def checkFile(name, comment):
+	flag = os.path.exists(name)
+	if  not flag :
+		print "ERROR: file %s is missing" %(name)
+		print "ERROR: %s" %(comment)
+		exit(2)	
 
 
 ###########################
@@ -170,8 +172,6 @@ parser.add_option("-s", "--single", action="store_true", dest="single",default=F
 parser.add_option("--ref", action="store", type="string", dest="reffile", help="reference ligand for rmsd" )
 parser.add_option("-t", "--translation", action="store", type="int", dest="transnb", help="translation number (distributed mode) starting from 0 for the first one!")
 (options, args) = parser.parse_args()
-
-
 
 receptor_name=args[0]
 ligand_name=args[1]
@@ -190,6 +190,26 @@ import datetime
 now = datetime.datetime.now()
 print now,"(",now.strftime("%A %B %d %Y, %H:%M"),")"
 
+#==========================
+# check required files
+#==========================
+# receptor
+checkFile(receptor_name, "A receptor file is needed.")
+# ligand
+checkFile(ligand_name, "A ligand file is needed.")
+# attract.inp
+checkFile("attract.inp", "A parameters file is needed.")
+# aminon.par
+checkFile("aminon.par", "A forcefield file is needed.")
+# rotation.dat
+checkFile("rotation.dat", "A rotation file is needed.")
+# translation.dat
+checkFile("translation.dat", "A translation file is needed.\nFormer users may rename translat.dat into translation.dat.")
+
+
+#==========================
+# read parameter file
+#==========================
 
 (nbminim,lignames,minimlist,rstk) = readParams("attract.inp")
 print "rstk = ",rstk
