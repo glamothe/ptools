@@ -72,15 +72,15 @@ class Rotation:
 
 class Translation:
     def __init__(self):
-        self.translat_dat=Rigidbody("translat.dat")
-        print "Reading %i translations from translat.dat"%self.translat_dat.Size()
+        self.translation_dat=Rigidbody("translation.dat")
+        print "Reading %i translations from translation.dat"%self.translation_dat.Size()
 
     def __iter__(self):
         self.i=0
         return self
     def next(self):
-        if (self.i == self.translat_dat.Size()): raise StopIteration
-        coord=self.translat_dat.GetCoords(self.i)
+        if (self.i == self.translation_dat.Size()): raise StopIteration
+        coord=self.translation_dat.GetCoords(self.i)
         self.i+=1
         return [self.i,coord]
         
