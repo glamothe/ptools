@@ -7,7 +7,7 @@ import os
 from ptools import *
 
 from optparse import OptionParser
-usage = "%prog --prot --dna atomic_file.pdb [--red file] [--ff file] [--conv file]"
+usage = "%prog --prot --dna atomic_file.pdb [--red file] [--ff file] [--conv file] > reduced_file.red"
 version = "%prog 1.0"
 parser = OptionParser(usage)
 
