@@ -572,7 +572,7 @@ and the chain B (smaller) is defined as the ligand.
 The visualisation of the starting points may be viewed with any visualisation software by renaming {\tt translation.dat} in {\tt translation.pdb}.
 
 For each position in translation (each line of the file {\tt translation.dat}), 
-there are XX associated rotations defined in the file {\tt rotation.dat}. 
+there are 258 associated rotations defined in the file {\tt rotation.dat}. 
 
 \subsubsection{ATTRACT parameters}
 
@@ -631,6 +631,11 @@ The output file {\tt 1F34\_dock.att} contains all informations on the docking si
 
 \subsubsection{Docking output analysis}
 
+Best geometries found during the docking simulation can be listed with
+\begin{verbatim}
+cat 1F34_dock.att | egrep -e "^==" | sort -n -k4 | head
+\end{verbatim}
+
 Any simulated ligand structure can be extracted with the script {\tt Extract.py}:
 
 \begin{verbatim}
@@ -660,8 +665,6 @@ fink versions of python. Solution: use the python provided with the system inste
 
 
 
-
-
 \begin{thebibliography}{99}
 
 \bibitem{shrake1973} A. Shrake, and J.A. Rupley, 
@@ -672,7 +675,5 @@ Journal of Molecular Biology, {\bf 79}:351-364, 1973.
 \end{thebibliography}
 \end{document}
 
-\begin{verbatim}
 
-\end{verbatim}
 		
