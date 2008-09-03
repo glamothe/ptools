@@ -3,10 +3,12 @@
 import sys
 import copy
 import os
+from optparse import OptionParser
+
 
 from ptools import *
 
-from optparse import OptionParser
+
 usage = "%prog --prot --dna atomic_file.pdb [--red file] [--ff file] [--conv file] > reduced_file.red"
 version = "%prog 1.0"
 parser = OptionParser(usage)
@@ -33,12 +35,14 @@ parser.add_option("--conv", action='store', type='string', dest='convName', help
 #==========================================================
 if ( (options.molProt or options.molDna) and (args[0]) ) :
 	atomicName = args[0]
+        completePath=sys.argv[0]
+        directory,scriptname = os.path.split(completePath)
 	if options.molProt:
-		redName = "at2cg.prot.dat"
+		redName = "%s/at2cg.prot.dat"%directory
 	if options.molDna:
-		redName = "at2cg.dna.dat"
-	ffName = "ff_param.dat"
-	convName = "type_conversion.dat"
+		redName = "%s/at2cg.dna.dat"%directory
+	ffName = "%s/ff_param.dat"%directory
+	convName = "%s/type_conversion.dat"%directory  
 	
 else:
 	parser.error("please specify molecule type (--prot or --dna) and atomic file")
