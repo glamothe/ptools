@@ -36,13 +36,13 @@ parser.add_option("--conv", action='store', type='string', dest='convName', help
 if ( (options.molProt or options.molDna) and (args[0]) ) :
 	atomicName = args[0]
         completePath=sys.argv[0]
-        directory,scriptname = os.path.split(completePath)
+        dir,scriptname = os.path.split(completePath)
 	if options.molProt:
-		redName = "%s/at2cg.prot.dat"%directory
+		redName = os.path.join(dir,"at2cg.prot.dat")
 	if options.molDna:
-		redName = "%s/at2cg.dna.dat"%directory
-	ffName = "%s/ff_param.dat"%directory
-	convName = "%s/type_conversion.dat"%directory  
+		redName = os.path.join(dir,"at2cg.dna.dat")
+	ffName = os.path.join(dir,"ff_param.dat")
+	convName = os.path.join(dir,"type_conversion.dat")  
 	
 else:
 	parser.error("please specify molecule type (--prot or --dna) and atomic file")
