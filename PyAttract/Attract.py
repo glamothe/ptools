@@ -9,6 +9,9 @@ import math
 import string
 
 
+def rmsdca(l1,l2):
+    return Rmsd(l1.CA(), l2.CA())
+
 
 
 def PrintVect(vect):
@@ -225,7 +228,12 @@ if (options.single and options.transnb):
 if (options.reffile):
     print "using reference file: %s"%options.reffile
     ref=Rigidbody(options.reffile)
-
+    refca = ref.CA()
+    if refca.Size() == 0:  #No C alpha atom, ligand is probably a dna
+        Rmsd_alias = Rmsd
+        print "No Calpha atom found for ligand (dna ?), I will calculate rmsd on all grains"
+    else:
+        Rmsd_alias = rmsdca
 
 
 if (not options.single):
@@ -300,7 +308,7 @@ for trans in translations:
 
         #computes RMSD if reference structure available
         if (options.reffile):
-            rms=Rmsd(ref.CA(), output.CA())
+            rms=Rmsd_alias(ref.CA(), output.CA())
         else:
             rms="XXXX"
 
