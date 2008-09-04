@@ -308,7 +308,7 @@ for trans in translations:
 
         #computes RMSD if reference structure available
         if (options.reffile):
-            rms=Rmsd_alias(ref.CA(), output.CA())
+            rms=Rmsd_alias(ref, output)
         else:
             rms="XXXX"
 
