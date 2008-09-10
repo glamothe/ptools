@@ -204,11 +204,6 @@ checkFile(ligand_name, "A ligand file is needed.")
 checkFile("attract.inp", "A parameters file is needed.")
 # aminon.par
 checkFile("aminon.par", "A forcefield file is needed.")
-# rotation.dat
-checkFile("rotation.dat", "A rotation file is needed.")
-# translation.dat
-checkFile("translation.dat", "A translation file is needed.\nFormer users may rename translat.dat into translation.dat.")
-
 
 #==========================
 # read parameter file
@@ -225,6 +220,7 @@ if (options.single and options.transnb):
     parser.error("options -s and -t are mutually exclusive")
 
 
+
 if (options.reffile):
     print "using reference file: %s"%options.reffile
     ref=Rigidbody(options.reffile)
@@ -238,6 +234,9 @@ if (options.reffile):
 
 if (not options.single):
     #systematic docking with default translations and rotations
+    # check for rotation.dat and translation.dat
+    checkFile("rotation.dat", "A rotation file is needed.")
+    checkFile("translation.dat", "A translation file is needed.\nFormer users may rename translat.dat into translation.dat.")
     translations=Translation()
     rotations=Rotation()
 else: #(single mode)
@@ -250,6 +249,9 @@ else: #(single mode)
 # option -t used: define the selected translation
 transnb=0
 if (options.transnb!=None):
+    # check for rotation.dat and translation.dat
+    checkFile("rotation.dat", "A rotation file is needed.")
+    checkFile("translation.dat", "A translation file is needed.\nFormer users may rename translat.dat into translation.dat.")
     trans=Rigidbody("translation.dat")
     co=trans.GetCoords(options.transnb)
     translations=[[options.transnb+1,co]]
