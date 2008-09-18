@@ -24,24 +24,6 @@ void Surface::setUp(int nphi, int ncosth)
         sin_phgh.push_back ( sin(2.0 * pi *  ((dbl)ik-1.0)/(dbl) nphi )) ;
     }
 
-
-    std::ifstream fsolv ("aminon.par");
-    if (!fsolv)
-    {
-        //  the file cannot be opened
-        std::string msg = " Cannot Locate file  aminon.par \n"  ;
-        std::cout << msg ;
-        throw msg;
-    }
-
-    int somedata1;
-    dbl trad, somedata2;
-    std::string somedata3;
-    for (int i=0; i<42 ; i++)
-    {
-        fsolv >> somedata1 >> trad >> somedata2 >> somedata3 ;
-        radi.push_back(trad);
-    }
 }
 
 void Surface::surfpointParams(int max, dbl shift)
@@ -49,6 +31,35 @@ void Surface::surfpointParams(int max, dbl shift)
     m_numneh = max;
     m_sradshift = shift;
     m_init=true;
+}
+
+void Surface::readsolvparam(std::string file)
+{
+    std::string line ;
+    //int count = 0;
+    radi.clear();
+
+    std::ifstream sfile(file.c_str());
+    if (! sfile)
+        {
+            //  the file cannot be opened
+            std::string msg = " Cannot Locate file ";
+	    msg.append(file.c_str());
+	    msg.append("\n");
+            std::cerr << msg ;
+            throw msg;
+	}
+
+    while (std::getline(sfile, line))
+    {
+        //count++ ; // count number of line (unused at the moment)
+        //int size_line = line.size(); // count line length (unused at the moment)
+        //dbl data1=atof(line.substr(1,6).c_str()); // read first column - atom type id (unused at the moment)
+        dbl data2=atof(line.substr(7,13).c_str()); // read second column - radius (unused at the moment)
+        //dbl data3=atof(line.substr(14,20).c_str()); // read third column - solvation parameters (unused at the moment)
+        //std::string data4=line.substr(21,size_line).c_str(); // read last column (unused at the moment)
+        radi.push_back(data2);
+     }
 }
 
 Rigidbody Surface::surfpoint(const Rigidbody & rigid, dbl srad)
@@ -187,6 +198,7 @@ Rigidbody Surface::removeclosest(const Rigidbody & rigid, dbl srad)
     int size=rigid.Size();
     Rigidbody rigid2;
     list.clear();
+    srad=srad*srad;
     for (int i=0; i<size; i++) { list.push_back(true); }
     for (int i=0; i<size; i++)
     {

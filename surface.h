@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "ptools.h"
 #include "rigidbody.h"
@@ -16,19 +17,21 @@ class Surface
 
 public:
 
-    Surface(int nphi, int ncosth) /// Constructor (initialize private data)
+    Surface(int nphi, int ncosth, std::string file) /// Constructor (initialize private data)
     {
         m_nphi=nphi;
         m_ncosth=ncosth;
         setUp(nphi, ncosth);
         m_init=false;
+        readsolvparam(file);
     };
 
     Rigidbody surfpoint(const Rigidbody & rigid, dbl srad); /// generate a grid of point around the protein
     void surfpointParams(int max, dbl shift); /// initialize some parameters of the grid generation
     Rigidbody outergrid(const Rigidbody & rigid1, const Rigidbody & rigid2, dbl srad); /// remove overlap between rigid1 and rigid2
     Rigidbody removeclosest(const Rigidbody & rigid1, dbl srad); /// fix the density of the grid (remove points that are too close to eachother)
-
+    void readsolvparam(std::string file); /// read solvation parameters
+    
 private:
 
     //private functions

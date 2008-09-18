@@ -23,7 +23,7 @@ rec = AttractRigidbody(sys.argv[1])
 lig = AttractRigidbody(sys.argv[2])
 
 # initialize some parameters
-surf=Surface(30,30,"aminon.par")
+surf=Surface(30,30,"solv.dat")
 center_rec=rec.FindCenter()
 center_lig=lig.FindCenter()
 rad=lig.Radius()
