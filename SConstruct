@@ -84,7 +84,7 @@ if g77 is None:
       print "using fortran compiler: gfortran"
       FORTRANPROG="gfortran -O2 -g -fPIC"
       gfortranlib=FIND_HEADER(["libgfortran.a", "libgfortran.la",\
-      "libgfortran.so", "libgfortran.so.3"], ["/usr/lib","/sw/lib","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/"], True)
+      "libgfortran.so", "libgfortran.so.3"], ["/usr/lib","/sw/lib","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/","/usr/lib64/gcc/x86_64-suse-linux/4.1.2/"], True)
       if gfortranlib is not None:
          print "libgfortran found here: ", gfortranlib
          LIB_PATH.append(gfortranlib)
