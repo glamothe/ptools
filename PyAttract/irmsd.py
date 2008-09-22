@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
 from ptools import *
+import math
 import sys
+import os
+from stat import *
 
 def selectListOfResidues(rigidbody, lst):
     "takes a rigidbody and a list of residues and returns an AtomSelection object"
@@ -52,10 +55,26 @@ def irmsd(receptor, ligref, ligprobe, receptorprobe=None,reducedmodel=False):
     ligBBInterface = ligprobe.Backbone() & selectListOfResidues(ligprobe,ligResidues) #interface bb residues of docked ligand
     receptorBBInterface=selectListOfResidues(recBB,recResidues)
     
-    assert(ligrefBBInterface.Size()==ligBBInterface.Size())
+    if (options.superpose):
+        ligrefpdb=ligrefBBInterface.CreateRigid()
+        ligdockpdb=ligBBInterface.CreateRigid()
+        recrefpdb=receptorBBInterface.CreateRigid()
+        ref=Rigidbody(ligrefpdb+recrefpdb)
+        pred=Rigidbody(ligdockpdb+recrefpdb)
+        super= superpose(ref,pred,0)
+        mat=super.matrix
+        pred.ApplyMatrix(mat)
+        assert(ligrefBBInterface.Size()==ligBBInterface.Size())
+        return Rmsd(pred,ref)
+    else:
+        assert(ligrefBBInterface.Size()==ligBBInterface.Size())
+        return Rmsd(ligrefBBInterface, ligBBInterface)
 
-    return Rmsd(ligrefBBInterface, ligBBInterface)
 
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option("-s", "--superpose", action="store_true", dest="superpose",default=False,help="interface superposition")
+(options, args) = parser.parse_args()
 
 def main():
     if len(sys.argv) < 4 : 
