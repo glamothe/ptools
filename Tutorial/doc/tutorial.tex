@@ -355,11 +355,13 @@ or locally \footnote{\tt \$HOME/soft/ptools/trunk/Tutorial/README}.
 
 \subsection{Directly from C++}
 
-\subsection{From Python through the C++ binding}
+Source code may be parsed by an automatic documentation generator called 'Doxygen'.
+This documentation may only help for the C++ part of the library.
+after installing Doxygen, simply type 'doxygen' in the directory which contains the 'Doxyfile'.
+Then look into the html/ directory and find the index.html file generated...
+The most important objects and functions to manipulate pdb are explained in the following section.
 
-\vspace*{1cm}
-{\bf Explain here the different level of objects between rigidbody, selection, atom and points}
-\vspace*{1cm}
+\subsection{From Python through the C++ binding}
 
 If PTools has been installed in the {\tt \$HOME/soft/ptools/branches/1.0rc/} directory, 
 declare it in your PYTHONPATH :
@@ -474,7 +476,52 @@ sel_chainAB = pdb.SelectChainId("A") | pdb.SelectChainId("B")
 ca_trace = sel_ca.CreateRigid()
 \end{verbatim}
 
+\subsubsection{atom object}
 
+\paragraph{copy atom from rigidbody object.}
+\begin{verbatim}
+at = pdb.CopyAtom(2)
+\end{verbatim}
+
+\paragraph{Set new coordinates}
+\begin{verbatim}
+new_XYZ = Coord3D(2.1,3.9,5.5)
+at.SetCoords(new_XYZ)
+\end{verbatim}
+
+\paragraph{translate atom}
+\begin{verbatim}
+vector = Coord3D(1.0,1.0,1.0)
+at.Translate(vector)
+\end{verbatim}
+
+
+\paragraph{print atom in pdb-like format}
+\begin{verbatim}
+at.ToPdbString()
+\end{verbatim}
+
+\paragraph{Get atom properties}
+\begin{verbatim}
+at.GetType()
+at.GetResidType()
+at.GetAtomCharge()
+at.GetChainId()
+at.GetResidId()
+at.GetAtomId()
+at.GetExtra()
+\end{verbatim}
+
+\paragraph{Set atom properties}
+\begin{verbatim}
+at.SetType()
+at.SetResidType()
+at.SetAtomCharge()
+at.SetChainId()
+at.SetResidId()
+at.SetAtomId()
+at.SetExtra()
+\end{verbatim}
 
 \section{Docking with PTools: ATTRACT}
 
@@ -561,14 +608,8 @@ the PTools library. The script first reads the coarse grain (reduced)
 receptor and ligand files, then generates a grid of points at a certain
 distance from the receptor and outputs the grid with a given density.
 
-Remarks:
-\begin{itemize}
-\item {\tt translate.py} reads the {\tt aminon.par} parameter file. This file must be
-in the directory of the receptor and ligand files.
-\item the density option ({\tt -d}) controls the minimum distance between starting
+Note: a density option ({\tt -d}) controls the minimum distance between starting
 points (in \AA$^2$). The default value is 10.0 (\AA$^2$). 
-\item the {\tt -h} options, shows the help message and exit.
-\end{itemize}
 
 In the case of the 1F34 complex, the chain A (biggest) is defined as the receptor
 and the chain B (smaller) is defined as the ligand.
@@ -658,6 +699,35 @@ with the parameters:
 \item an output ligand structure file ({\tt 1F34\_dock.pdb})
 \end{itemize}
 
+In case you know the experimental structure of your system (as in this example), it is possible to calculate the
+interface rmsd and the native fraction as defined by the CAPRI contest \footnote{\tt http://capri.ebi.ac.uk}
+using the following scripts:
+
+\begin{verbatim}
+irmsd.py 1F34_A.cg.pdb 1F34_B.cg.pdb 1F34_dock.pdb
+fnat.py 1F34_A.cg.pdb 1F34_B.cg.pdb 1F34_dock.pdb
+\end{verbatim}
+
+with the parameters:
+\begin{itemize}
+\item the receptor file (1F34\_A.cg.pdb)
+\item the initial ligand file (1F34\_B.cg.pdb)
+\item the output ligand file (1F34\_dock.pdb)
+\end{itemize}
+
+Our clustering algorithm implemented in cluster.py can rapidly filter near identical solutions without requiring a preselected number of desired clusters.
+The algorithm is based on rmsd comparison and an additional energy criterion could be included (see script options).
+
+\begin{verbatim}
+cluster.py 1F34_dock.att 1F34_B.cg.pdb > 1F34_dock.clust
+\end{verbatim}
+
+with the parameters:
+\begin{itemize}
+\item an ouput of the docking simulation (1F34\_dock.att)
+\item the initial ligand file (1F34\_B.cg.pdb)
+\item an output cluster file (1F34\_B.cg.pdb)
+\end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
