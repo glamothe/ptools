@@ -551,7 +551,7 @@ receptor.  The Python script {\tt translate.py} employs a slightly modified
 Shrake and Rupley \cite{shrake1973} method to define starting positions
 from receptor surface.  The surface generation fonctions are implemented in
 the PTools library. The script first reads the coarse grain (reduced)
-receptor and ligand files, then generates a grid of points at the certain
+receptor and ligand files, then generates a grid of points at a certain
 distance from the receptor and outputs the grid with a given density.
 
 Remarks:
@@ -559,7 +559,7 @@ Remarks:
 \item {\tt translate.py} reads the {\tt aminon.par} parameter file. This file must be
 in the directory of the receptor and ligand files.
 \item the density option ({\tt -d}) controls the minimum distance between starting
-points (in \AA$^2$). The default value is 100.0 (\AA$^2$). 
+points (in \AA$^2$). The default value is 10.0 (\AA$^2$). 
 \item the {\tt -h} options, shows the help message and exit.
 \end{itemize}
 
@@ -592,7 +592,7 @@ The first line indicates the number of minimisations performed by ATTRACT for ea
 The last six lines are the caracteristics of each minimisation. The first column is the number of steps before the minimisation stops. 
 The last column is the square of the cutoff distance for the calculation of the interaction energy between both partners.
 
-\paragraph{Remarques:} Columns with zeros or ones should not be modfied, as well as the second line.
+\paragraph{Note:} Columns with zeros or ones should not be modfied, as well as the second line.
 
 \subsubsection{Initial docking simulation}
 
@@ -610,13 +610,13 @@ A docking simulation with ATTRACT requires:
 ATTRACT can be used with different options:
 \begin{itemize}
 \item -s, performs one single serie of minimisations with the ligand in its initial position.
-\item -ref=, provides a ligand pdb file as a reference. After each docking, the RMSD is calculated between this reference structure and the simulated ligand.
+\item --ref=, provides a ligand pdb file as a reference. After each docking, the RMSD is calculated between this reference structure and the simulated ligand.
 \end{itemize}
 
 A single ATTRACT simulation may thus be obtained by:
 \begin{verbatim}
 Attract.py 1F34_A.cg.pdb 1F34_B.cg.pdb 
--s -ref=1F34_B.cg.pdb > 1F34_single.att
+-s --ref=1F34_B.cg.pdb > 1F34_single.att
 \end{verbatim}
 
 The first pdb file provided must be the receptor file (and the second the ligand).
@@ -624,7 +624,7 @@ The first pdb file provided must be the receptor file (and the second the ligand
 For a full systematic docking in the translational and rotational space:
 \begin{verbatim}
 Attract.py 1F34_A.cg.pdb AF34_B.cg.pdb 
--ref=1F34_B.cg.pdb > 1F34_dock.att
+--ref=1F34_B.cg.pdb > 1F34_dock.att
 \end{verbatim}
 
 The output file {\tt 1F34\_dock.att} contains all informations on the docking simulation.
