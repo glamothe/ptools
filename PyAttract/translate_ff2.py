@@ -11,6 +11,7 @@
 
 from ptools import *
 import sys
+import os
 from math import *
 from optparse import OptionParser
 
@@ -22,8 +23,13 @@ parser.add_option("-d", "--density", action="store", type="float", dest="density
 rec = AttractRigidbody(sys.argv[1])
 lig = AttractRigidbody(sys.argv[2])
 
+# search solvation parameters file
+completePath=sys.argv[0]
+scriptdir,scriptname = os.path.split(completePath)
+solvname = os.path.join(scriptdir,"solv.dat")
+
 # initialize some parameters
-surf=Surface(30,30,"solv.dat")
+surf=Surface(30,30,solvname)
 center_rec=rec.FindCenter()
 center_lig=lig.FindCenter()
 rad=lig.Radius()

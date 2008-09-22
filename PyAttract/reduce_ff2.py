@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+#modified reduce_ff2 for mbest1u 
+#Calpha are dummy atom type 32. 
+#Gly Calpha have dummy atom type 1
 
 import sys
 import copy
@@ -49,8 +52,8 @@ class BeadCreator:
 
 
 defaultBB=[ [ 'N',    ['N']  , 30 , 0.0 ],
-            ['CA',    ['CA'] ,  1 , 0.0 ],
-            ['C' ,    ['C']  ,  1 , 0.0  ],
+            ['CA',    ['CA'] ,  32 , 0.0 ],
+            ['C' ,    ['C']  ,  32, 0.0  ],
             ['O',     ['O']  ,  31, 0.0  ]
            ]
 
@@ -95,7 +98,10 @@ beadCorresp["TYR"] = defaultBB + [  ['CSE', ['CB','CG'], 27, 0.0],
 beadCorresp["HIS"] = defaultBB + [  ['CSE', ['CB','CG'], 12, 0.0],
                                     ['CSE', ['ND1','CD2','NE2','CE1'], 13, 0.0]  ]
 
-beadCorresp["GLY"] = defaultBB
+beadCorresp["GLY"] = copy.deepcopy(defaultBB)
+assert(beadCorresp["GLY"][1][2] == 32)
+beadCorresp["GLY"][1][2] = 1
+
 
 
 

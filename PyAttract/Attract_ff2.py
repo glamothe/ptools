@@ -7,7 +7,16 @@ import time
 import datetime
 import math
 import string
+import bz2  #for compression of Ligand and receptor data
+import base64 #compressed ligand and receptor as base64 strings
 
+
+def compress_file(filename):
+    fobject = open(filename,"r")
+    all = fobject.read()
+    compressed = bz2.compress(all)
+    encoded = base64.b64encode(compressed)
+    return "compressed %s : \"%s\""%(filename,encoded)
 
 
 
@@ -72,15 +81,15 @@ class Rotation:
 
 class Translation:
     def __init__(self):
-        self.translat_dat=Rigidbody("translat.dat")
-        print "Reading %i translations from translat.dat"%self.translat_dat.Size()
+        self.translation_dat=Rigidbody("translation.dat")
+        print "Reading %i translations from translat.dat"%self.translation_dat.Size()
 
     def __iter__(self):
         self.i=0
         return self
     def next(self):
-        if (self.i == self.translat_dat.Size()): raise StopIteration
-        coord=self.translat_dat.GetCoords(self.i)
+        if (self.i == self.translation_dat.Size()): raise StopIteration
+        coord=self.translation_dat.GetCoords(self.i)
         self.i+=1
         return [self.i,coord]
         
@@ -156,8 +165,13 @@ def rigidXstd_vector(rigid, mat_std):
 
 
 
-
-
+# check if a required file is found
+def checkFile(name, comment):
+	flag = os.path.exists(name)
+	if  not flag :
+		print "ERROR: file %s is missing" %(name)
+		print "ERROR: %s" %(comment)
+		exit(2)	
 
 
 
@@ -172,15 +186,14 @@ parser.add_option("-t", "--translation", action="store", type="int", dest="trans
 (options, args) = parser.parse_args()
 
 
-
 receptor_name=args[0]
 ligand_name=args[1]
 
 print """
 **********************************************************************
 **                ATTRACT  (Python edition)                         **
-**                version: 0.3b                                     **
-**                USING FORCEFIELD 2                                **
+**                version: 0.3c                                     **
+**                USING FORCEFIELD 2u                               **
 ********************************************************************** """
 
 import locale
@@ -191,6 +204,21 @@ import datetime
 now = datetime.datetime.now()
 print now,"(",now.strftime("%A %B %d %Y, %H:%M"),")"
 
+#==========================
+# check required files
+#==========================
+# receptor
+checkFile(receptor_name, "A receptor file is needed.")
+# ligand
+checkFile(ligand_name, "A ligand file is needed.")
+# attract.inp
+checkFile("attract.inp", "A parameters file is needed.")
+# aminon.par
+checkFile("mbest1u.par", "A forcefield file is needed.")
+
+#==========================
+# read parameter file
+#==========================
 
 (nbminim,lignames,minimlist,rstk) = readParams("attract.inp")
 print "rstk = ",rstk
@@ -205,6 +233,9 @@ if (options.single and options.transnb):
     parser.error("options -s and -t are mutually exclusive")
 
 
+if (options.single):
+    ftraj = open("minimtraj.trj", "w")
+
 if (options.reffile):
     print "using reference file: %s"%options.reffile
     ref=Rigidbody(options.reffile)
@@ -213,6 +244,9 @@ if (options.reffile):
 
 if (not options.single):
     #systematic docking with default translations and rotations
+    # check for rotation.dat and translation.dat
+    checkFile("rotation.dat", "A rotation file is needed.")
+    checkFile("translation.dat", "A translation file is needed.\nFormer users may rename translat.dat into translation.dat.")
     translations=Translation()
     rotations=Rotation()
 else: #(single mode)
@@ -222,13 +256,21 @@ else: #(single mode)
     print "Single mode"
 
 
+
+printFiles=True
 # option -t used: define the selected translation
 transnb=0
 if (options.transnb!=None):
-    trans=Rigidbody("translat.dat")
+    # check for rotation.dat and translation.dat
+    checkFile("rotation.dat", "A rotation file is needed.")
+    checkFile("translation.dat", "A translation file is needed.\nFormer users may rename translat.dat into translation.dat.")
+    trans=Rigidbody("translation.dat")
     co=trans.GetCoords(options.transnb)
     translations=[[options.transnb+1,co]]
     transnb=options.transnb
+    if transnb!=trans.Size()-1:
+        printFiles=False #don't append ligand, receptor, etc. unless this is the last translation point of the simulation
+
 
 
 # core attract algorithm
@@ -255,7 +297,7 @@ for trans in translations:
 
 
             #performs single minimization on receptor and ligand, given maxiter=niter and restraint constant rstk
-            forcefield=AttractForceField2("mbest1k.par",surreal(cutoff))
+            forcefield=AttractForceField2("mbest1u.par",surreal(cutoff))
             rec.setTranslation(False)
             rec.setRotation(False)
             
@@ -278,6 +320,14 @@ for trans in translations:
             output.Translate(center)
 
             ligand=AttractRigidbody(output)
+            if (options.single):
+                ntraj=lbfgs_minimizer.GetNumberIter()
+                for iteration in range(ntraj):
+                    traj = lbfgs_minimizer.GetMinimizedVarsAtIter(iteration)
+                    for t in traj:
+                        ftraj.write("%f "%t)
+                    ftraj.write("\n")
+                ftraj.write("~~~~~~~~~~~~~~\n")
 
 
         #computes RMSD if reference structure available
@@ -289,11 +339,29 @@ for trans in translations:
 
         #calculates true energy, and rmsd if possible
         #with the new ligand position
-        forcefield=AttractForceField2("mbest1k.par", surreal(50))
+        forcefield=AttractForceField2("mbest1u.par", surreal(50))
+        forcefield.AddLigand(rec)
+        forcefield.AddLigand(ligand)
+        X = Vdouble()
+        for i in range(12):
+             X.append(0)
+        energy=forcefield.Function(X)
+	
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
-        pl = AttractPairList(rec, ligand,surreal(50))
-        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
+        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, energy, str(rms))
         output.PrintMatrix()
+
+
+
+#output compressed ligand and receptor:
+if ( not options.single and printFiles==True): 
+    print compress_file(receptor_name)
+    print compress_file(ligand_name)
+    print compress_file("mbest1u.par")
+    print compress_file("translation.dat")
+    print compress_file("rotation.dat")
+    print compress_file("attract.inp")
+
 
 
 

@@ -7,11 +7,20 @@ import time
 import datetime
 import math
 import string
+import bz2  #for compression of Ligand and receptor data
+import base64 #compressed ligand and receptor as base64 strings
 
 
 def rmsdca(l1,l2):
     return Rmsd(l1.CA(), l2.CA())
 
+
+def compress_file(filename):
+    fobject = open(filename,"r")
+    all = fobject.read()
+    compressed = bz2.compress(all)
+    encoded = base64.b64encode(compressed)
+    return "compressed %s : \"%s\""%(filename,encoded)
 
 
 def PrintVect(vect):
@@ -220,6 +229,8 @@ if (options.single and options.transnb):
     parser.error("options -s and -t are mutually exclusive")
 
 
+if (options.single):
+    ftraj = open("minimtraj.trj", "w")
 
 if (options.reffile):
     print "using reference file: %s"%options.reffile
@@ -246,6 +257,8 @@ else: #(single mode)
     print "Single mode"
 
 
+
+printFiles=True
 # option -t used: define the selected translation
 transnb=0
 if (options.transnb!=None):
@@ -256,7 +269,8 @@ if (options.transnb!=None):
     co=trans.GetCoords(options.transnb)
     translations=[[options.transnb+1,co]]
     transnb=options.transnb
-
+    if transnb!=trans.Size()-1:
+        printFiles=False #don't append ligand, receptor, etc. unless this is the last translation point of the simulation
 
 # core attract algorithm
 for trans in translations:
@@ -306,6 +320,14 @@ for trans in translations:
             output.Translate(center)
 
             ligand=AttractRigidbody(output)
+            if (options.single):
+                ntraj=lbfgs_minimizer.GetNumberIter()
+                for iteration in range(ntraj):
+                    traj = lbfgs_minimizer.GetMinimizedVarsAtIter(iteration)
+                    for t in traj:
+                        ftraj.write("%f "%t)
+                    ftraj.write("\n")
+                ftraj.write("~~~~~~~~~~~~~~\n")
 
 
         #computes RMSD if reference structure available
@@ -322,6 +344,16 @@ for trans in translations:
         pl = AttractPairList(rec, ligand,surreal(500))
         print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
         output.PrintMatrix()
+
+
+#output compressed ligand and receptor:
+if ( not options.single and printFiles==True): 
+    print compress_file(receptor_name)
+    print compress_file(ligand_name)
+    print compress_file("mbest1u.par")
+    print compress_file("translation.dat")
+    print compress_file("rotation.dat")
+    print compress_file("attract.inp")
 
 
 
