@@ -319,6 +319,13 @@ If scons complains about the g2c library, you may do (as root):
 ln -s /usr/lib64/libg2c.so.0 /usr/lib64/libg2c.so
 \end{verbatim}
 
+In case of problem with the gfortran library, you should add directly to the search path (l.87)
+of the SConstruct file the location of libgfortran files. For instance: 
+\newline Initial search path:
+\newline ["/usr/lib","/sw/lib","/usr/lib/gcc/x86\_64-redhat-linux/3.4.6/"]
+\newline Add specific path for suse distribution:
+\newline ["/usr/lib","/sw/lib","/usr/lib/gcc/x86\_64-redhat-linux/3.4.6/","/usr/lib64/gcc/x86\_64-suse-linux/4.1.2/"]
+
 \subsection{Final test and further documentation}
 
 In the {\tt Test} directory, one can test the compilation worked:
