@@ -26,7 +26,7 @@ from ptools import *
 from optparse import OptionParser
 parser = OptionParser()
 parser.usage = 'cluster2.py <out_file> <lig_file> [options]'
-parser.add_option("-e", "--energy_cutoff", action="store", type="float", dest="energy_cutoff", help="Energy cutoff value (default=1000.)")
+parser.add_option("-e", "--energy_cutoff", action="store", type="float", dest="energy_cutoff", help="Energy cutoff value (default=1000.0)")
 parser.add_option("-r", "--rmsd_cutoff", action="store", type="float", dest="rmsd_cutoff", help="Rmsd cutoff value (default=1.0)")
 parser.add_option("-s", "--structure_cutoff", action="store", type="int", dest="structure_cutoff", help="number of structures to cluster, an increase of this value will increase significantly the time processing (default = 2000)")
 parser.add_option("-c", "--cluster_cutoff", action="store", type="int", dest="cluster_cutoff", help="number of cluster that are compared during the clustering process, an increase of this value will increase significantly the time processing  (default=50)")
@@ -91,8 +91,8 @@ def readStructures(file):
                 struct = StructureI()
                 struct.trans = int(lspl[1])
                 struct.rot = int(lspl[2])
-                struct.ener = float(lspl[5])
-                struct.rmsd = lspl[6]
+                struct.ener = float(lspl[3])
+                struct.rmsd = lspl[4]
                 matrix=[]
             if (begin):
                 lspl = l.split()
@@ -185,6 +185,6 @@ for s in structures[:structure_cutoff]:
     #print cluster[i].count,
 
 cluster.sort(key=lambda i: i.ext.ener)
-print "%-4s %6s %6s %13s %13s %8s"  %(" ", "Trans", "Rot", "RmsdCA_ref", "Ener", "Weight")
+print "%-4s %6s %6s %13s %13s %6s %8s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref","Rank", "Weight")
 for i in range(len(cluster)):
-	print "%-4s %6s %6s %13.7f %13.7f %8s" %("==", str(cluster[i].ext.trans), str(cluster[i].ext.rot), float(cluster[i].ext.ener), float(cluster[i].ext.rmsd), str(cluster[i].count))
+	print "%-4s %6s %6s %13.7f %13.7f %6i %8s" %("==", str(cluster[i].ext.trans), str(cluster[i].ext.rot), float(cluster[i].ext.ener), float(cluster[i].ext.rmsd), i+1, str(cluster[i].count))
