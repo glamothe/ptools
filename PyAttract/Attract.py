@@ -156,7 +156,7 @@ def rigidXstd_vector(rigid, mat_std):
             line.append(mat_std[iline*4+icol])
         mat.append(line)
 
-    out=Rigidbody(rigid)
+    out=AttractRigidbody(rigid)
     for i in range(rigid.Size()):
         coords=rigid.GetCoords(i)
         coords2=Coord3D()
@@ -222,6 +222,8 @@ checkFile("aminon.par", "A forcefield file is needed.")
 print "rstk = ",rstk
 rec=Rigidbody(receptor_name)
 lig=Rigidbody(ligand_name)
+rec=AttractRigidbody(rec)
+lig=AttractRigidbody(lig)
 print "Receptor (fixed) %s  has %d particules" %(receptor_name,rec.Size())
 print "Ligand (mobile) %s  has %d particules" %(ligand_name,lig.Size())
 
@@ -281,7 +283,6 @@ for trans in translations:
         rotnb+=1
         print "----- Rotation nb %i -----"%rotnb
         minimcounter=0
-        rec=AttractRigidbody(rec)
         ligand=AttractRigidbody(lig)
 
         center=ligand.FindCenter()
