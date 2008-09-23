@@ -66,7 +66,7 @@ public:
         m_forces = std::vector<Coord3D> (this->Size() ) ;
     }
 
-    void addForces(std::vector<Coord3D> forces)
+    void addForces(const std::vector<Coord3D>& forces)
     {
         for (uint i=0; i<forces.size(); i++)
             m_forces[i]+=forces[i];
