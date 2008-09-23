@@ -238,7 +238,7 @@ private:
 
     dbl m_rstk;
 
-    void setDummyTypeList(AttractRigidbody& lig){}; //forcefield1 has no dummy type
+    void setDummyTypeList(AttractRigidbody& lig){std::vector<uint> dummytypes; lig.setDummyTypes(dummytypes);}; //forcefield1 has no dummy type
 };
 
 
