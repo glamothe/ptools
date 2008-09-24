@@ -186,6 +186,12 @@ dbl AttractForceField1::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
     dbl sumElectrostatic=0.0;
 
 
+    //synchronize coordinates for using unsafeGetCoords
+    rec.syncCoords();
+    lig.syncCoords();
+
+    Coord3D a, b;
+
 
     for (uint iter=0; iter<pairlist.Size(); iter++)
     {
@@ -203,7 +209,11 @@ dbl AttractForceField1::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
         dbl alen = m_ac[ rAtomCat ][ lAtomCat ];
         dbl rlen = m_rc[ rAtomCat ][ lAtomCat ];
 
-        Coord3D dx = lig.GetCoords(jl) - rec.GetCoords(ir) ;
+
+        lig.unsafeGetCoords(jl,a);
+        rec.unsafeGetCoords(ir,b);
+
+        Coord3D dx = a-b ;
         dbl r2 = Norm2(dx);
 
         if (r2 < 0.001 ) r2=0.001;
