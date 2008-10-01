@@ -9,7 +9,7 @@ from optparse import OptionParser
 from ptools import *
 
 
-usage = "%prog --prot --dna atomic_file.pdb [--red file] [--ff file] [--conv file] > reduced_file.red"
+usage = "%prog --prot --dna atomic_file.pdb [--red file] [--ff file] [--conv file] [--warnonly]> reduced_file.red"
 version = "%prog 1.0"
 parser = OptionParser(usage)
 
@@ -37,7 +37,7 @@ parser.add_option("--warnonly", action="store_true", dest="warning",default=Fals
 #==========================================================
 # check options
 #==========================================================
-if ( (options.molProt or options.molDna) and (args[0]) ) :
+if ( (options.molProt or options.molDna) and ( len(args) > 0) ):
         atomicName = args[0]
         completePath=sys.argv[0]
         scriptdir,scriptname = os.path.split(completePath)
