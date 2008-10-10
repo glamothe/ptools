@@ -169,6 +169,7 @@ for file in os.listdir("Pybindings"):
 
 
 ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG"
+#ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual"
 print "common cpp path:", COMMON_CPPPATH                
 		
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, CCFLAGS=ccflags, LIBPATH=LIB_PATH, FORTRAN=FORTRANPROG,   FORTRANFLAGS="-g -fPIC" )
