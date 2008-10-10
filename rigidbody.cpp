@@ -271,8 +271,6 @@ std::string Rigidbody::PrintPDB() const
     return(std::string) output;
 }
 
-void Rigidbody::m_hookCoords(uint i, Coord3D & co) const {}  //(virtual)
-
 
 void Rigidbody::ApplyMatrix(const Matrix& mat)
 {

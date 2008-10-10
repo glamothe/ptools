@@ -30,7 +30,6 @@ private:
 
     std::string _description; ///< some string to describe the molecule
 
-    virtual void m_hookCoords(uint i, Coord3D & co) const ; ///< private hook to give a chance for class childs to change the coordinates before rotations and translations
 
 //    bool isBackbone(const std::string &  atomtype); ///<return true if a given atomtype string matches a backbone atom name
 
