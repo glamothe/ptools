@@ -9,7 +9,7 @@ from optparse import OptionParser
 from ptools import *
 
 
-usage = "%prog --prot --dna atomic_file.pdb [--red file] [--ff file] [--conv file] [--warnonly]> reduced_file.red"
+usage = "%prog --prot --dna atomic_file.pdb [--red file] [--ff file] [--conv file] [--warnonly] > reduced_file.red"
 version = "%prog 1.0"
 parser = OptionParser(usage)
 
@@ -300,16 +300,15 @@ sys.stderr.write("Load atomic file %s with %d atoms \n" %(atomicName, allAtom.Si
 atomList=[]
 for i in xrange(allAtom.Size()):
         atom = allAtom.CopyAtom(i)
-        if options.convName:
-                # look for residue or base type conversion
-                resName = atom.GetResidType()
-                if resName in resConv.keys():
-                        atom.SetResidType( resConv[resName] )
-                # look for atom type conversion
-                atomTag = atom.GetResidType() + '-' + atom.GetType()
-                if atomTag in atomConv.keys():
-                        atomName = atomConv[atomTag].split('-')[1] 
-                        atom.SetType( atomName )
+        # look for residue or base type conversion
+        resName = atom.GetResidType()
+        if resName in resConv.keys():
+                atom.SetResidType( resConv[resName] )
+        # look for atom type conversion
+        atomTag = atom.GetResidType() + '-' + atom.GetType()
+        if atomTag in atomConv.keys():
+                atomName = atomConv[atomTag].split('-')[1] 
+                atom.SetType( atomName )
         atomList.append(atom)
 
 #count residues

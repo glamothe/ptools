@@ -12,8 +12,18 @@ HIE      HIS
 #residue_or_base  atom_name_found  atom_name_known
 
 # oxygen atoms in DNA phosphate
-P         OP1       O1P
-P         OP2       O2P
+A         OP1       O1P
+A         OP2       O2P
+
+C         OP1       O1P
+C         OP2       O2P
+
+G         OP1       O1P
+G         OP2       O2P
+
+T         OP1       O1P
+T         OP2       O2P
+
 
 # ' and * notations in DNA sugar
 A         O3*       O3'
