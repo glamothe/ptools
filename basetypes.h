@@ -121,9 +121,9 @@ public:
 
     void Print()
     {
-        for (uint r=0; r<m_rows; r++)
+        for (int r=0; r<m_rows; r++)
         {
-            for (uint c=0; c<m_columns; c++)
+            for (int c=0; c<m_columns; c++)
                 std::cout << (*this)(r,c) << "  " ;
             std::cout << std::endl;
         }
