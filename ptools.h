@@ -21,5 +21,8 @@
 #include "surface.h"
 #include "attractrigidbody.h"
 #include "mcopff.h"
+#include "vissage.h"
+#include "superpose.h"
+
 
 #endif // PTOOLS_H

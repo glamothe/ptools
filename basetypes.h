@@ -109,6 +109,8 @@ public:
     const void * id() {
         return (void *) &msa_data[0];
     }
+
+    /// "deep copy" of the array
     void detach()
     {
         mytype * olddata = msa_data.get();
@@ -133,9 +135,6 @@ private:
     int m_rows;
     int m_columns;
     size_t m_size;
-
-
-//friend void Array2D_deepCopy(const Array2D & src, Array2D & dest);
 
 } ;
 

@@ -19,6 +19,7 @@ COMMON_CPP = Split ("""atom.cpp
                        surface.cpp
                        coordsarray.cpp
                        QBestFit.cpp
+		       superpose.cpp
                     """)
 
 
