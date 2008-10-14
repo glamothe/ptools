@@ -17,10 +17,15 @@ class TestSuperpose(unittest.TestCase):
             y=30
             z=50
 
+
+            self.r2.ABrotate(Coord3D(), Coord3D(0,0,1), 3.1415926/2.0)
+
             self.r2.Translate(Coord3D(x,y,z))
             
             v = superpose_sippl(self.r1,self.r2)
             v.Print()
+            s = superpose(self.r1,self.r2)
+            s.matrix.Print()
 
         def testsippl_et_quatern(self):
             random.seed(123)

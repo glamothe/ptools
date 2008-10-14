@@ -21,8 +21,11 @@ private:
     PTools::Coord3D axetranslation; //vecteur unitaire directeur de l'axe de translation
     PTools::Coord3D point; //un point de l'axe de rotation
     dbl normtranslation; // scalar. t = normtranslation.axetranslation
-    dbl matrot[3][3];  // variable a conserver ? 
     dbl angle;
+
+    Matrix matrix;
+//     dbl matrot[3][3];  // variable a conserver ? 
+
 
 
 public:
@@ -34,20 +37,13 @@ public:
             std::cout << "vecteur translation (recalc): " << (normtranslation*axetranslation).toString() << std::endl;
             std::cout << "point axe: " << point.toString();
             std::cout << "matrice: " << std::endl;
-            for (int i=0; i<3; i++)
-            {
-               for (int j=0; j<3; j++)
-               {
-                  printf("%8.3f ",matrot[i][j]) ;
-               }
-              printf("\n");
-            }
+            matrix.Print();
 
             std::cout << "####### </vissage> #######" << std::endl ; 
         } 
 
 friend Vissage superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosity);
-friend Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D trans);
+friend Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D t0, Coord3D t1);
 };
 
 

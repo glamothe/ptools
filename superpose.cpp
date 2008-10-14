@@ -1,3 +1,28 @@
+/****************************************************************************
+ *   Copyright (C) 2006-2008   Adrien Saladin                               *
+ *   adrien.saladin@gmail.com                                               *
+ *   Copyright (C) 2008   Pierre Poulain                                    *
+ *   Copyright (C) 2008   Sebastien Fiorucci                                *
+ *   Copyright (C) 2008   Chantal Prevost                                   *
+ *   Copyright (C) 2008   Martin Zacharias                                  *
+ *                                                                          *
+ *   This program is free software: you can redistribute it and/or modify   *
+ *   it under the terms of the GNU General Public License as published by   *
+ *   the Free Software Foundation, either version 3 of the License, or      *
+ *   (at your option) any later version.                                    *
+ *                                                                          *
+ *   This program is distributed in the hope that it will be useful,        *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+ *   GNU General Public License for more details.                           *
+ *                                                                          *
+ *   You should have received a copy of the GNU General Public License      *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
+ *                                                                          *
+ ***************************************************************************/
+
+
+
 #include <iostream>
 #include <iomanip>
 #include <cassert>
@@ -225,8 +250,12 @@ trans.z = mat44[3][2];
 Retourne les parametres uniques du vissage correspondant au couple rotation/translation. 
 Ref algorithme: Hexanions: 6D Space for Twists. Alexis Angelidis. Departement of Computer Science, University of Otago. (2004). Technical Report
  */
-Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D trans)
+Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D t0, Coord3D t1)
 {
+
+    Coord3D trans = t0-t1;
+
+    std::cout << trans.toString();
 
     Vissage vissage;
     Coord3D eigenvect;
@@ -236,7 +265,25 @@ Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D trans)
     y.x = rotmatrix[0][1] ; y.y = rotmatrix[1][1]; y.z=rotmatrix[2][1];
     z.x = rotmatrix[0][2] ; z.y = rotmatrix[1][2]; z.z=rotmatrix[2][2];
 
-    memcpy(vissage.matrot, rotmatrix, 3*3*sizeof(dbl));
+    Matrix mat(4,4);
+    for (int i=0; i<3; i++)
+     for(int j=0; j<3; j++)
+       mat(i,j)=rotmatrix[i][j];
+
+    Coord3D rotatedtranslation;
+    Mat33xcoord3D(rotmatrix, t1, rotatedtranslation);
+    Coord3D t2 = t0 - rotatedtranslation;
+
+     mat(0,3) = t2.x;
+    mat(1,3) = t2.y;
+    mat(2,3) = t2.z;
+
+    mat(3,3) = 1.0;
+    mat(3,0) = 0.0;
+    mat(3,1) = 0.0;
+    mat(3,2) = 0.0;
+
+    vissage.matrix = mat;
 
     Coord3D pt ; //un point de l'axe de rotation
 
@@ -416,7 +463,7 @@ Vissage superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosit
     }
 
     
-    vissage = MatTrans2screw(ident, t0-t1);
+    vissage = MatTrans2screw(ident, t0, t1);
     vissage.point = vissage.point + t1 ;
 
 /*
