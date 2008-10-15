@@ -10,6 +10,7 @@ namespace PTools{
 
 Coord3D Atom::GetCoords() const {return mCoords;}
 
+//! Convert an atom to a string
 std::string Atom::ToString() const {
     std::stringstream info;
     info<<GetAtomId()<<" "<<GetType()<<" ";
@@ -20,7 +21,7 @@ std::string Atom::ToString() const {
 }
 
 
-
+//! convert an atom to a string in PDB format
 std::string Atom::ToPdbString() const
 {
     char output[81];
@@ -42,7 +43,7 @@ std::string Atom::ToPdbString() const
     return (std::string) output;
 }
 
-
+//! translate an atom with a Coord3D vector
 void Atom::Translate(const Coord3D& tr)
 {
     mCoords=mCoords+tr;

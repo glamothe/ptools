@@ -11,16 +11,15 @@
 
 using std::ios_base;
 
-//temporaire:
-//convertit une chaine de caracteres std::string en un autre type
-// si >> a ete correctement defini.
+// temporary:
+// convert a std::string in an other type if >> is correctly defined 
 #include <sstream>
 template<typename T>
 bool from_string( const std::string & Str, T & Dest )
 {
-    // cr�er un flux � partir de la cha�ne donn�e
+    // create a stream from the input string
     std::istringstream iss( Str );
-    // tenter la conversion vers Dest
+    // try the conversion toward Dest
     return (iss >> Dest) != 0;
 }
 

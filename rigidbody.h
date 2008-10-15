@@ -38,18 +38,22 @@ protected:
 
 
 public:
-    Rigidbody();  ///< basic constructor
-    Rigidbody(std::string filename); ///create a Rigidbody object and loads a PDB file
-    Rigidbody(const Rigidbody& model); ///< copy constructor
+    /// basic constructor
+	Rigidbody();
+	/// constructor that loads a PDB file
+    Rigidbody(std::string filename);
+	/// copy constructor
+    Rigidbody(const Rigidbody& model);
 
     virtual ~Rigidbody(){};
 
+	/// return number of atoms in the rigidbody
     uint Size() const {return CoordsArray::Size();};
 
     
     void PrintMatrix() const {std::cout << CoordsArray::PrintMatrix() << std::endl; }
 
-    /// Make a deep copy of one atom (the Atom extracted is then totally independent)
+    /// make a deep copy of one atom (the atom extracted is then totally independent)
     virtual Atom CopyAtom(uint i) const ;
 
 /*    /// const version of GetAtom*/
@@ -61,20 +65,20 @@ public:
         return at;
     }*/
 
-    
+    /// return atom properties
     Atomproperty const & GetAtomProperty(uint pos) const
     {
         return mAtomProp[pos];
     }
-
+	
+	/// define atom properties
     void SetAtomProperty(uint pos, const Atomproperty& atprop)
     {
        mAtomProp[pos] = atprop;
     }
 
-
+	/// define atom pos
     void SetAtom(uint pos, const Atom& atom);
-
 
     /// add an atom to the molecule (deep copy)
     void AddAtom(const Atomproperty& at, Coord3D co);
@@ -101,7 +105,7 @@ public:
       GetCoords(0);
     }
 
-
+	/// define coordinates of atom i
     void SetCoords(uint i, const Coord3D& co)
     {
        assert(i<Size());
@@ -115,14 +119,14 @@ public:
     void CenterToOrigin();
 
 
-    /// Translate the whole object
+    /// translate the whole object
     void Translate(const Coord3D& tr);
 
-    /// Apply a 4x4 matrix
+    /// apply a 4x4 matrix
     void ApplyMatrix(const Matrix & mat);
 
 
-    ///Radius of gyration
+    /// returns radius of gyration
     dbl RadiusGyration();
 
     /// returns the radius of a Rigidbody (max distance from center)

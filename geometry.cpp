@@ -22,7 +22,7 @@ void mat44xmat44( const dbl mat1[ 4 ][ 4 ], const dbl mat2[ 4 ][ 4 ], dbl result
     for ( int rl = 0; rl < 4; rl++ )
         for ( int rc = 0; rc < 4; rc++ )
         {
-            // calcul element result[rl][rc]:
+            // compute the element result[rl][rc]:
             dbl sum = 0.0 ;
             for ( int p = 0; p < 4; p++ )
                 sum += mat1[ rl ][ p ] * mat2[ p ][ rc ] ;
@@ -39,7 +39,7 @@ void mat44xmat44( const dbl mat1[ 4 ][ 4 ], const dbl mat2[ 4 ][ 4 ], dbl result
 void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
 {
 
-    //calcul vecteur AB (dx;dy;dz):
+    // compute AB vector (dx; dy; dz):
     dbl dx = B.x - A.x ;
     dbl dy = B.y - A.y ;
     dbl dz = B.z - A.z ;
@@ -47,7 +47,7 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     dbl mat1[ 4 ][ 4 ] ;
 
 
-    //translation vecteur BA:
+    // translation of vector BA
     for ( int i = 0; i < 4; i++ )
         for ( int j = 0; j < 4; j++ )
             if ( i != j )
@@ -61,10 +61,10 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     mat1[ 1 ][ 3 ] = -A.y;
     mat1[ 2 ][ 3 ] = -A.z;
 
-    //rotation pour ramener sur le plan Oxz: Rotation 1 autour de X, angle -gamma (-g).
-    dbl d = sqrt( dy*dy + dz*dz ) ; //projet� de AB sur le plan Oxy
+    // rotation to get back to plan Oxz: rotation 1 around X, angle -gamma (-g).
+    dbl d = sqrt( dy*dy + dz*dz ) ; // projection of AB on the Oxy plan
 
-    if ( real(d) == 0 )  // AB appartient � (Ox)
+    if ( real(d) == 0 )  // AB belongs to (Ox)
     {
         dbl cost = cos( theta );
         dbl sint = sin( theta );
@@ -118,8 +118,8 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     mat44xmat44( mat2, mat1, mat3 ); // mat3 == mat2*mat1 (!= mat1*mat2 )
 
 
-    // rotation pour ramener sur l'axe Oz: Rotation 2. Axe (Oy), angle p.
-    dbl f = sqrt(  dx*dx + dy*dy + dz*dz ); //norme
+    // rotation to get back to the Oz axis: rotation 2. Axis (Oy), angle p.
+    dbl f = sqrt(  dx*dx + dy*dy + dz*dz ); // norm
     dbl cosp, sinp ;
     cosp = d / f;
     sinp = dx / f;
@@ -144,10 +144,10 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     mat1[ 3 ][ 2 ] = 0 ;
     mat1[ 3 ][ 3 ] = 1 ;
 
-    mat44xmat44( mat1, mat3, mat2 ); //r�sultat dans mat2
+    mat44xmat44( mat1, mat3, mat2 ); // result stored in mat2
 
 
-    //rotation effective (autour axe 0z, angle theta)
+    // effective rotation (around 0z axis, angle theta)
     dbl rotmatrix[ 4 ][ 4 ] ;
     dbl cost = cos( theta );
     dbl sint = sin( theta );
@@ -169,7 +169,7 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     rotmatrix[ 3 ][ 2 ] = 0;
     rotmatrix[ 3 ][ 3 ] = 1;
 
-    mat44xmat44( rotmatrix, mat2, mat3 ); //r�sultat dans mat3
+    mat44xmat44( rotmatrix, mat2, mat3 ); // result stored in mat3
 
 
     //rotation -2:
@@ -193,7 +193,7 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
 
 
 
-    mat44xmat44( mat1, mat3, rotmatrix ); //r�sultat dans rotmatrix;
+    mat44xmat44( mat1, mat3, rotmatrix ); // result in rotmatrix
 
     //rotation -1:
 
@@ -288,12 +288,13 @@ void MakeVect( const Coord3D& a, const Coord3D& b, Coord3D& result )
 
 dbl Dihedral( const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3D& d )
 {
-    //calculate the dihedral angle defined by a, b, c and d.
-    //The method is described in: J.K Rainey, Ph.D. Thesis,
-    // University of Toronto, 2003. Collagen structure and preferential assembly explored by parallel microscopy and
-    //bioinformatics.
-    //and also described here: http://structbio.biochem.dal.ca/jrainey/dihedralcalc.html
-
+    // calculate the dihedral angle defined by a, b, c and d.
+    // The method is described in: J.K Rainey, Ph.D. Thesis,
+    // University of Toronto, 2003. 
+	// Collagen structure and preferential assembly explored 
+	// by parallel microscopy and bioinformatics.
+    // also described here: 
+	// http://structbio.biochem.dal.ca/jrainey/dihedralcalc.html
 
     Coord3D b1 = b-a;
     Coord3D b2 = c-b;

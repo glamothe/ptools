@@ -21,10 +21,6 @@ Pdb::Pdb(const std::string& pdbname)
 
 
 
-
-
-
-
 std::string strip( std::string const& str, char const* sepSet ) {
     std::string::size_type const first = str.find_first_not_of(sepSet);
     return ( first==std::string::npos )
@@ -67,7 +63,7 @@ std::string readatomtype(const std::string &ligne) {
     type=ligne.substr(i,j-i) ;
     std::transform(type.begin(),type.end(),
                    type.begin(), //destination
-                   (int(*)(int)) toupper //to upper: met en majuscules
+                   (int(*)(int)) toupper //to upper: convert to upper case
                   );
 
     //cout << type <<"a" ;
@@ -93,7 +89,7 @@ std::string readresidtype(const std::string &ligne) {
     type=ligne.substr(i,j-i) ;
     std::transform(type.begin(),type.end(),
                    type.begin(), //destination
-                   (int(*)(int)) toupper //to upper: met en majuscules
+                   (int(*)(int)) toupper //to upper: convert to upper case
                   );
 
     //cout << type <<"a" ;
@@ -108,7 +104,7 @@ void ReadPDB(ifstream& fichier, Rigidbody& protein) {
 
     std::string ligne ;
     int compteur = 0 , compteur1=0;
-    //std::cout << "ouverture fichier  " << nomfich.c_str() << std::endl ;
+    //std::cout << "file opening  " << nomfich.c_str() << std::endl ;
 
 
     while ( std::getline(fichier, ligne))
@@ -152,7 +148,8 @@ void ReadPDB(ifstream& fichier, Rigidbody& protein) {
 
 void ReadPDB(const std::string name,Rigidbody& protein ) {
     std::string nomfich=name ;
-    ifstream fichier(nomfich.c_str()); //pointeur vers nom fichier donne en argument constructeur
+	// pointer toward the filename given in the constructor argument
+    ifstream fichier(nomfich.c_str()); 
     if (!fichier)
     {
         std::ostringstream oss;

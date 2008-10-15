@@ -70,8 +70,8 @@ void PrintMat(Array2D<dbl> & mat)
 }
 
 
-
-void Mat33xMat33(Matrix left, Matrix right, Matrix out) //matrix multiplication. Works with out==left or out==right
+//matrix multiplication. Works with out==left or out==right
+void Mat33xMat33(Matrix left, Matrix right, Matrix out) 
 {
     Matrix tmp(3,3);
     for (uint k=0; k<3; k++)
@@ -206,7 +206,9 @@ void MakeTensor(const Rigidbody & ref, const Rigidbody &  mob, Array2D<dbl> & ou
 
 /*! \brief Returns uniques screw parameters that corresponds to the rotation/translation parameters
 *
-*Ref: Hexanions: 6D Space for Twists. Alexis Angelidis. Departement of Computer Science, University of Otago. (2004). Technical Report
+* Ref: Hexanions: 6D Space for Twists. 
+* Alexis Angelidis. 
+* Departement of Computer Science, University of Otago. (2004). Technical Report
 */
 Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
 {
@@ -298,7 +300,7 @@ Screw MatTrans2screw(Matrix & rotmatrix, const Coord3D & trans)
 
     //creates a non-aligned vector with  screw.transVector:
     Coord3D v (1,0,0);
-    if (fabs(Angle(screw.transVector,v)) < 0.1) v = Coord3D(0,0,1); //v et axe colin�aires: on change v
+    if (fabs(Angle(screw.transVector,v)) < 0.1) v = Coord3D(0,0,1); // v and axis are colinear: change v
 
 
     Coord3D u = v - ScalProd(v,screw.transVector)*screw.transVector;

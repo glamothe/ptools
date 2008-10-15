@@ -36,16 +36,16 @@ public:
         mAtomCharge=0.0;
     };
 
-    /// return atom type
+    /// return atom type (CA, CB, O, N...)
     std::string GetType() const  {return mAtomType;};
 
-    /// define atom type
+    /// define atom type (CA, CB, O, N...)
     void SetType(std::string newtype) { mAtomType = newtype;};
 
-    /// return residue type (LEU, ARG, ...)
+    /// return residue type (LEU, ARG...)
     std::string GetResidType() const {return mResidType;};
 
-    /// define residue type
+    /// define residue type (LEU, ARG...)
     void SetResidType(std::string residtype){mResidType=residtype;};
 
     /// return atom charge
@@ -54,22 +54,22 @@ public:
     /// define atom charge
     inline void SetAtomCharge(dbl ch) {mAtomCharge=ch;};
 
-    /// return chain ID
+    /// return chain ID (A, B...)
     inline std::string GetChainId() const {return mChainId;};
 
-    /// define chain ID
+    /// define chain ID (A, B...)
     inline void SetChainId(std::string chainid) {mChainId=chainid;};
 
-    /// return residue ID
+    /// return residue ID (1, 2...)
     inline uint GetResidId() const {return mResidId;};
 
-    /// define residue ID
+    /// define residue ID (1, 2...)
     inline void SetResidId(uint id) {mResidId = id;};
 
-    /// return atom ID
+    /// return atom ID (1, 2...)
     inline uint GetAtomId() const {return mAtomId;};
 
-    /// define atom ID
+    /// define atom ID (1, 2...)
     inline void SetAtomId(uint atomnumber) {mAtomId=atomnumber;};
 
     /// set the extra data field
@@ -96,13 +96,13 @@ public:
     /// define atom coordinates
     inline void SetCoords(const Coord3D& coords) {mCoords=coords;};
 
-    /// convert atom properties and coordinates to std::string
+    /// convert atom (properties and coordinates) to std::string
     std::string ToString() const;
 
-    /// converts atom to classical PDB-like string
+    /// convert atom (properties and coordinates) to classical PDB-like string
     std::string ToPdbString() const ;
 
-    /// Translation of an atom
+    /// translation of an atom
     void Translate(const Coord3D& tr);
 
 };
