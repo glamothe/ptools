@@ -351,7 +351,7 @@ for trans in translations:
 if ( not options.single and printFiles==True): 
     print compress_file(receptor_name)
     print compress_file(ligand_name)
-    print compress_file("mbest1u.par")
+    print compress_file("aminon.par.par")
     print compress_file("translation.dat")
     print compress_file("rotation.dat")
     print compress_file("attract.inp")

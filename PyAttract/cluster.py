@@ -25,7 +25,7 @@ import sys
 from ptools import *
 from optparse import OptionParser
 parser = OptionParser()
-parser.usage = 'cluster2.py <out_file> <lig_file> [options]'
+parser.usage = 'cluster.py <out_file> <lig_file> [options]'
 parser.add_option("-e", "--energy_cutoff", action="store", type="float", dest="energy_cutoff", help="Energy cutoff value (default=1000.0)")
 parser.add_option("-r", "--rmsd_cutoff", action="store", type="float", dest="rmsd_cutoff", help="Rmsd cutoff value (default=1.0)")
 parser.add_option("-s", "--structure_cutoff", action="store", type="int", dest="structure_cutoff", help="number of structures to cluster, an increase of this value will increase significantly the time processing (default = 2000)")
