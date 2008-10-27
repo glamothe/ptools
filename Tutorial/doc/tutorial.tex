@@ -601,7 +601,9 @@ This script also needs definition files:
 \item filetype conversion file ({\tt type\_conversion.dat})
 \end{itemize}
 
-Visualise both coarse grain partners to check the reduction worked properly.
+The reduced files generated are PDB-like structure files that can be read by most visualisation
+programs (rasmol, pymol, to test VMD). 
+Always, visualize both all-atom and coarse grain structures to check the reduction worked properly.
 
 
 \begin{figure}[htbp]
@@ -770,29 +772,61 @@ The output file {\tt docking.att} is roughly 77~Mo.
 
 \subsubsection{Docking output analysis}
 
-Best geometries found during the docking simulation can be listed with
+The 10 best geometries found during the docking simulation can be listed with
+
 \begin{verbatim}
 cat docking.att | egrep -e "^==" | sort -n -k4 | head
 \end{verbatim}
 
+For the previsous docking simulation of 1CGI, it gives:
+
+\begin{verbatim}
+==      181    114   -57.4411654 1.10599878835
+==       75    210   -57.4408805 1.10386797285
+==      136    240   -57.4408059 1.10497880686
+==      128    115   -57.4406227  1.1065086208
+==       72    253   -57.4403268 1.10469314189
+==      136    184   -57.4403213 1.10354544969
+==      128     13   -57.4402706 1.10351871162
+==       73    147   -57.4402011 1.10626548925
+==      133    149   -57.4401622  1.1059746571
+==      136     50   -57.4401590 1.10652040931
+\end{verbatim}
+
+With each column meaning:
+\begin{enumerate}
+\item tag characters ({\tt ==}) to quickly find the result of each set of minimizations
+\item translation number (starts at 1)
+\item rotation number (starts at 1)
+\item final energy of the complex in RT unit
+\item final RMSD in \AA, if the {\tt --ref} option is provided.
+\end{enumerate}
+
 Any simulated ligand structure can be extracted with the script {\tt Extract.py}:
 
 \begin{verbatim}
-Extract.py 1F34_dock.att 1F34_B.cg.pdb 101 153 > 1F34_dock.pdb
+./Extract.py docking.att ligand.red 181 114 > ligand_1.red
 \end{verbatim}
 
 with the parameters:
 \begin{itemize}
-\item an ouput of the docking simulation ({\tt 1F34\_dock.att})
-\item the inital ligand file ({\tt 1F34\_B.cg.z.pdb})
-\item a translation index ({\tt 101})
-\item a rotation index ({\tt 153})
-\item an output ligand structure file ({\tt 1F34\_dock.pdb})
+\item the ouput file of the docking simulation ({\tt docking.att})
+\item the inital ligand file ({\tt ligand.red})
+\item a translation number ({\tt 181})
+\item a rotation index ({\tt 114})
+\item an output ligand file ({\tt ligand_1.red})
 \end{itemize}
+
+
+TO ADD : visualization with Pymol
+
+
+
 
 In case you know the experimental structure of your system (as in this example), it is possible to calculate the
 interface rmsd and the native fraction as defined by the CAPRI contest \footnote{\tt http://capri.ebi.ac.uk}
 using the following scripts:
+
 
 \begin{verbatim}
 irmsd.py 1F34_A.cg.pdb 1F34_B.cg.pdb 1F34_dock.pdb
