@@ -17,7 +17,7 @@ from optparse import OptionParser
 
 parser = OptionParser()
 parser.usage = 'translate.py <receptor_file> <ligand_file> [options]'
-parser.add_option("-d", "--density", action="store", type="float", dest="density",help="distance between starting points (the value must be > 1.0), default=10.0")
+parser.add_option("-d", "--density", action="store", type="float", dest="density",help="distance in angstroem between starting points (the value must be > 1.0), default is 10.0 angstroem")
 (options, args) = parser.parse_args()
 
 rec = AttractRigidbody(sys.argv[1])
