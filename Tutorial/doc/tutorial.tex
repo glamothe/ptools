@@ -4,6 +4,7 @@
 %\usepackage[cm]{aeguill}
 \textwidth 16.5cm \textheight 26cm \oddsidemargin -0.5cm \topmargin -2cm
 \usepackage{graphicx} % figures
+\usepackage{lineno}
 
 \begin{document}
 
@@ -525,11 +526,11 @@ at.SetExtra()
 
 \section{Docking with PTools: ATTRACT}
 
-This part is illustrated by the docking of 1F34 complex.
+This part is illustrated by the docking of 1CGI complex.
 
-\subsection{Protein--protein complex: 1F34}
+\subsection{Protein--protein complex: 1CGI}
 
-The 1F34 complex is made of two partners. Chain A: 326 residues, 2433 atoms and chain B: 148 residues, 1074 atoms.
+The 1CGI complex is made of two partners. Chain A: 245 residues, 1799 atoms and chain I: 56 residues, 440 atoms.
 
 \subsubsection{Extraction of the docking partners}
 
@@ -542,61 +543,76 @@ Within the Python interpreter, first load the PTools library:
 from ptools import *
 \end{verbatim}
 
-Read the PDB file 1F34.pdb:
+Read the PDB file 1CGI.pdb:
 \begin{verbatim}
-pdb=Rigidbody("1F34.pdb")
+pdb=Rigidbody("1CGI.pdb")
 \end{verbatim}
 
 The chain selection allows the separation between chain A and B.
 \begin{verbatim}
-selectA=pdb.SelectChainId("A")
-selectB=pdb.SelectChainId("B")
+selectE=pdb.SelectChainId("E")
+selectI=pdb.SelectChainId("I")
 \end{verbatim}
 
-Creation of both chains as independant rigid body and file saving as a PDB:
+Create both chains as independant rigid bodys and save them in PDB file. The biggest 
+protein is define as the receptor (chain E) and the smallest as the ligand (chain I):
+
 \begin{verbatim}
-protA=selectA.CreateRigid()
-protB=selectB.CreateRigid()
-WritePDB(protA,"1F34_A.pdb")
-WritePDB(protB,"1F34_B.pdb")
+protE=selectE.CreateRigid()
+protI=selectI.CreateRigid()
+WritePDB(protE,"receptor.pdb")
+WritePDB(protI,"ligand.pdb")
 \end{verbatim}
 Or more quickly:
 \begin{verbatim}
-WritePDB(selectA.CreateRigid(),"1F34_A.pdb")
-WritePDB(selectB.CreateRigid(),"1F34_B.pdb")
+WritePDB(selectE.CreateRigid(),"receptot.pdb")
+WritePDB(selectI.CreateRigid(),"ligand.pdb")
 \end{verbatim}
 
 \subsubsection{Coarse grain reduction}
 
 This step translates all atom molecule into coarse grain (reduced) molecule for a further docking. 
 
-Chain A: 
+For the receptor: 
 \begin{verbatim}
-./reduce.py --at 1F34_A.pdb --cg 1F34_A.cg.pdb --red at2cg.prot.dat --ff ff_param.dat 
---conv type_conversion.dat 
+./reduce.py --prot receptor.pdb > receptor.red
 \end{verbatim}
-{\tt 1F34\_A.cg.pdb} contains 684 beads.\\
+{\tt receptor.red} contains 522 beads.\\
 
-Chain B:
+For the ligand:
 \begin{verbatim}
-./reduce.py --at 1F34_B.pdb --cg 1F34_B.cg.pdb --red at2cg.prot.dat --ff ff_param.dat 
---conv type_conversion.dat 
+./reduce.py --prot ligand.pdb > ligand.red
 \end{verbatim}
-{\tt 1F34\_B.cg.pdb} 318 beads. \\
+{\tt ligand.red} 126 beads. \\
 
-The {\tt reduce.py} script required the following input files:
+The {\tt reduce.py} script required the following parameters:
 
 \begin{itemize}
-\item an all-atom protein pdb file (option {\tt --at}, for instance {\tt 1F34\_A.pdb})
-\item a reduced output pdb file (option {\tt --cg}, for instance {\tt 1F34\_A.cg.pdb})
-\item a bead topololgie file (option {\tt --ff}, for instance {\tt at2cg.prot.dat})
-\item a forcefield parameter file (option {\tt --ff}, for instance {\tt ff\_param.dat})
-\item optionnaly, a filetype conversion file (option {\tt --conv}, for instance {\tt type\_conversion.dat})
+\item {\tt --prot} or {\tt --dna} option, specifies the type of molecule to reduce (protein or DNA)
+\item an input all-atom PDB file, for instance {\tt receptor.pdb}
+\item an output coarse grain file, for instance {\tt receptor.red}
+\end{itemize}
+
+This script also needs definition files:
+
+\begin{itemize}
+\item bead topologie files ({\tt at2cg.prot.dat} for protein reduction and {\tt at2cg.dna.dat} for DNA reduction )
+\item forcefield parameter file ({\tt ff\_param.dat})
+\item filetype conversion file ({\tt type\_conversion.dat})
 \end{itemize}
 
 Visualise both coarse grain partners to check the reduction worked properly.
 
 
+\begin{figure}[htbp]
+\center
+{\textbf A}
+\includegraphics*[width=0.30\textwidth]{img/1CGI_receptor.png}
+\hspace*{2cm}
+{\textbf B}
+\includegraphics*[width=0.25\textwidth]{img/1CGI_ligand.png}
+\caption{All-atom (green sticks) and reduced (red spheres) representation of both proteins in 1CGI. Receptor (A) and ligand (B).}
+\end{figure}
 
 \subsubsection{Initial ligand positions}
 
@@ -609,31 +625,37 @@ receptor and ligand files, then generates a grid of points at a certain
 distance from the receptor and outputs the grid with a given density.
 
 Note: a density option ({\tt -d}) controls the minimum distance between starting
-points (in \AA$^2$). The default value is 10.0 (\AA$^2$). 
+points (in \AA). The default value is 10.0~\AA. 
 
-In the case of the 1F34 complex, the chain A (biggest) is defined as the receptor
-and the chain B (smaller) is defined as the ligand.
+In the present case:
 \begin{verbatim}
-./translate.py 1F34_A.cg.pdb 1F34_B.cg.pdb > translation.dat
+./translate.py receptor.red ligand.red > translation.dat
 \end{verbatim}
 
 The visualisation of the starting points may be viewed with any visualisation software by renaming {\tt translation.dat} in {\tt translation.pdb}.
+Then, remove the first line of {\tt translation.pdb} (indicated the total number of starting points).
 
-For each position in translation (each line of the file {\tt translation.dat}), 
+\begin{figure}[htbp]
+\center
+\includegraphics*[width=0.4\textwidth]{img/1CGI_translation.png}
+\caption{(All-atom) receptor in green sticks and starting points as orange spheres.}
+\end{figure}
+
+For each position in translation (each {\tt ATOM} line of the file {\tt translation.dat}), 
 there are 258 associated rotations defined in the file {\tt rotation.dat}. 
 
 \subsubsection{ATTRACT parameters}
 
 ATTRACT parameters are found in the file {\tt attract.inp}. A typical configuration file is:
 \begin{verbatim}
- 6 0 0
--34.32940 38.75490 -3.66956 0.00050
- 30  2 1 1 0 0 0 0 1 2000.00
- 30  2 1 1 0 0 0 0 1 1000.00
- 50  2 1 1 0 0 0 0 0  500.00
- 50  2 1 1 0 0 0 0 0   50.00
- 100 2 1 1 0 0 0 0 0   50.00
- 500 2 1 1 0 0 0 0 0   50.00
+    6    0    0
+ -34.32940  38.75490  -3.66956   0.00050
+  100  2  1  1  0  0  0  0  1  3000.00   
+  100  2  1  1  0  0  0  0  1  1000.00   
+  100  2  1  1  0  0  0  0  0   500.00   
+  100  2  1  1  0  0  0  0  0    50.00   
+  100  2  1  1  0  0  0  0  0    50.00   
+  300  2  1  1  0  0  0  0  0    50.00
 \end{verbatim}
 
 The first line indicates the number of minimisations performed by ATTRACT for each starting position. 
@@ -646,12 +668,12 @@ The last column is the square of the cutoff distance for the calculation of the 
 
 A docking simulation with ATTRACT requires:
 \begin{itemize}
-\item a receptor (fixed partner) file ({\tt 1F34\_A.cg.pdb})
-\item a ligand (mobile partner) file ({\tt 1F34\_B.cg.pdb})
+\item a coarse grain receptor (fixed partner) file ({\tt receptor.red})
+\item a coarse grain (mobile partner) file ({\tt ligand.red})
 \item the ATTRACT program ({\tt  Attract.py})
 \item the coarse grain parameters ({\tt aminon.par})
-\item rotations performed for each translational starting point ({\tt rotation.dat})
 \item translational starting points ({\tt translation.dat})
+\item rotations performed for each translational starting point ({\tt rotation.dat})
 \item docking parameters ({\tt attract.inp})
 \end{itemize}
 
@@ -663,25 +685,94 @@ ATTRACT can be used with different options:
 
 A single ATTRACT simulation may thus be obtained by:
 \begin{verbatim}
-Attract.py 1F34_A.cg.pdb 1F34_B.cg.pdb 
--s --ref=1F34_B.cg.pdb > 1F34_single.att
+./Attract.py receptor.red ligand.red --ref=ligand.red -s > single.att
 \end{verbatim}
 
 The first pdb file provided must be the receptor file (and the second the ligand).
+The content of the output file {\tt single.att} is the following:
 
-For a full systematic docking in the translational and rotational space:
+\newpage
+\linenumbers
 \begin{verbatim}
-Attract.py 1F34_A.cg.pdb AF34_B.cg.pdb 
---ref=1F34_B.cg.pdb > 1F34_dock.att
+**********************************************************************
+**                ATTRACT  (Python edition)                         **
+**                version: 0.3                                      **
+********************************************************************** 
+2008-10-27 15:21:30.433798 ( Monday October 27 2008, 15:21 )
+6 series of minimizations
+rstk =  0.0005
+Receptor (fixed) receptor.red  has 522 particules
+Ligand (mobile) ligand.red  has 126 particules
+using reference file: ligand.red
+Single mode
+@@@@@@@ Translation nb 1 @@@@@@@
+----- Rotation nb 1 -----
+{{ minimization nb 1 of 6 ; cutoff= 54.77 (A) ; maxiter= 100
+number of free variables for the minimizer: 6
+STOP, max iterations reached                                |  100 iterations
+{{ minimization nb 2 of 6 ; cutoff= 31.62 (A) ; maxiter= 100
+number of free variables for the minimizer: 6
+CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  1 iterations
+{{ minimization nb 3 of 6 ; cutoff= 22.36 (A) ; maxiter= 100
+number of free variables for the minimizer: 6
+CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  11 iterations
+{{ minimization nb 4 of 6 ; cutoff= 7.07 (A) ; maxiter= 100
+number of free variables for the minimizer: 6
+CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  94 iterations
+{{ minimization nb 5 of 6 ; cutoff= 7.07 (A) ; maxiter= 100
+number of free variables for the minimizer: 6
+CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  35 iterations
+{{ minimization nb 6 of 6 ; cutoff= 7.07 (A) ; maxiter= 300
+number of free variables for the minimizer: 6
+CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  1 iterations
+      Trans    Rot          Ener    RmsdCA_ref
+==        1      1   -57.4385916 1.10578043721
+### MAT BEGIN
+MAT        0.9978729      0.0425669     -0.0493744      0.3166520 
+MAT       -0.0440559      0.9985943     -0.0294718      2.1806519 
+MAT        0.0480505      0.0315843      0.9983454     -2.5887244 
+MAT        0.0000000      0.0000000      0.0000000      1.0000000 
+### MAT END
+
+Finished at:  Monday October 27 2008, 15:21
+\end{verbatim}
+\nolinenumbers
+
+\begin{itemize}
+\item{\bf line 5:} starting date and time of the simulation
+\item{\bf lines 14--16:} minimization 1. Details of minimization number, cutoff in \AA\ and maximum number of iterations (line~14). 
+Number of variables (line~15). End of minimization (line~16), either convergence is achieved (iteration number is specified), either maximum number of steps is reached.
+\item{\bf lines 17--19:} minimization 2.
+\item{\bf lines 20--22:} minimization 3.
+\item{\bf lines 23--25:} minimization 4.
+\item{\bf lines 26--28:} minimization 5.
+\item{\bf lines 29--31:} minimization 6.
+\item{\bf lines 31--32:} final result after the 6 minimizations. With a single minimization, 
+the default translation ({\tt Trans}) is 1 and the default rotation ({\tt Rot}) is 1. 
+Energy is given, as well as the C$_{\alpha}$-RMSD (in \AA) if the {\tt --ref} option is specified.
+\item{\bf lines 34--39:} rotation/translation matrix of the ligand compared to its initial position.
+\item{\bf line 41:} end date and time of the simulation.
+\end{itemize}
+
+Here, the final energy is -57.44~RT unit and the RMSD is 1.10~\AA, that is pretty close from initial position (RMSD would be 0).
+
+For a full systematic docking in the translational and rotational space (using both {\tt translation.dat}
+and {\tt rotation.dat} files):
+\begin{verbatim}
+./Attract.py receptor.red ligand.red --ref=ligand.red > docking.att &
 \end{verbatim}
 
-The output file {\tt 1F34\_dock.att} contains all informations on the docking simulation.
+The output file {\tt docking.att} contains all informations on the docking simulation. 
+It contains ouput of all series of minimizations (with the specification of translation and rotation number).
+
+For the 1CGI system, the systematic docking tooks 13 houres on one processor of a 64~bit Intel Xeon 1.86 GHz 2 Go RAM computer.
+The output file {\tt docking.att} is roughly 77~Mo.
 
 \subsubsection{Docking output analysis}
 
 Best geometries found during the docking simulation can be listed with
 \begin{verbatim}
-cat 1F34_dock.att | egrep -e "^==" | sort -n -k4 | head
+cat docking.att | egrep -e "^==" | sort -n -k4 | head
 \end{verbatim}
 
 Any simulated ligand structure can be extracted with the script {\tt Extract.py}:
