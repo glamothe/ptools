@@ -33,16 +33,22 @@ This tutorial presents the PTools library features and its docking application A
 
 \section{Set up, compilation and installation}
 
-\subsection{Set up: Dell D420 laptop, Debian Lenny, 32-bit}
-This example installation has been performed on a Dell D420 laptop (Intel
-Core Duo 1.2~GHz, Debian Lenny, linux kernel 2.6.22-2-686).
+\subsection{Basic requirements}
 
 The basic requirements are:
 \begin{itemize}
 \item Python 2.4 or 2.5 and its development library (python2.4-dev or python2.5-dev)
 \item gcc (4.x)
 \item gfortran (4.x)
+\item cvs
+\item svn
+\item cmake
+\item doxygen (optional)
 \end{itemize}
+
+\subsection{Set up: Dell D420 laptop, Debian Lenny, 32-bit}
+This example installation has been performed on a Dell D420 laptop (Intel
+Core Duo 1.2~GHz, Debian Lenny, linux kernel 2.6.22).
 
 \paragraph{SCons (make substitute):} {\tt apt-get install scons} \\
 (1.34.1-11 version installed)
@@ -103,14 +109,7 @@ of PyPlusPlus:
 
 \subsection{Set up: Dell Precision T7400, Linux Fedora Core 9, 64-bit}
 This example installation has been performed on a Dell Precision T7400 (Intel
-Xeon quad-core 2.3~GHz, Linux Fedora Core 9, linux kernel 2.6.25.6-55.FC9.x86\_64).
-
-The basic requirements are:
-\begin{itemize}
-\item Python 2.5 and its development library python2.5-dev
-\item gcc (4.x)
-\item gfortran (4.x)
-\end{itemize}
+Xeon quad-core 2.3~GHz, Linux Fedora Core 9, linux kernel 2.6.25).
 
 \paragraph{SCons (make substitute):}
 The scons package provided by Fedora is not up-to-date enough to link Fortran and C++ together and then rise an
@@ -185,14 +184,7 @@ of PyPlusPlus:
 
 \subsection{Set up: Dell Precision 690, Linux Fedora Core 7, 64-bit}
 This example installation has been performed on a Dell Precision 690 (Intel
-Xeon bi-quad core 1.9~GHz, Linux Fedora Core 7, linux kernel 2.6.23.17-88.fc7).
-
-The basic requirements are:
-\begin{itemize}
-\item Python 2.5 and its development library python2.5-dev
-\item gcc (4.x)
-\item gfortran (4.x)
-\end{itemize}
+Xeon bi-quad core 1.9~GHz, Linux Fedora Core 7, linux kernel 2.6.23).
 
 \paragraph{SCons (make substitute):}
 The scons package provided by Fedora is not up-to-date enough to link Fortran and C++ together and then rise an
@@ -216,16 +208,6 @@ get the stable file {\tt scons-0.98.5-1.noarch.rpm}.
 
 \paragraph{gccxml:}The homepage of {\tt gccxml} project is {\tt http://www.gccxml.org}. 
 To install gccxml from the official CVS repository \footnote{\tt http://www.gccxml.org/HTML/Download.html}.
-
-\begin{verbatim}
-yum install cvs
-\end{verbatim}
-1.11.22-9.1.fc7 version installed
-
-\begin{verbatim}
-yum install cmake
-\end{verbatim}
-2.4.8-1.fc7 version installed
 
 \begin{verbatim}
 cvs -d :pserver:anoncvs@www.gccxml.org:/cvsroot/GCC_XML login
@@ -334,13 +316,13 @@ In the {\tt Test} directory, one can test the compilation worked:
 python unittest1.py
 \end{verbatim}
 
-The expected output is:
+The expected output is similar to:
 \begin{verbatim}
-....... 
----------------------------------------------------------------------- 
-Ran 7 tests in 0.813s 
+...............
+----------------------------------------------------------------------
+Ran 15 tests in 0.316s
 
-OK 
+OK
 \end{verbatim}
 
 Further document may be obtained from the Trac server {\tt http://svn-lbt.ibpc.fr/PTools/wiki}. 
@@ -356,7 +338,7 @@ or locally \footnote{\tt \$HOME/soft/ptools/trunk/Tutorial/README}.
 
 \subsection{Directly from C++}
 
-Source code may be parsed by an automatic documentation generator called 'Doxygen'.
+Source code may be parsed by Doxygen, an automatic documentation generator.
 This documentation may only help for the C++ part of the library.
 after installing Doxygen, simply type 'doxygen' in the directory which contains the 'Doxyfile'.
 Then look into the html/ directory and find the index.html file generated...
@@ -406,7 +388,8 @@ pdb.RadiusGyration()
 
 
 \paragraph{Structure translation.}
-First create a translation vector as a Coord3D object (for instance 5, 0, 1):
+First create a translation vector as a Coord3D object (for instance 5~\AA\ along x, 
+-3~\AA\ along y and 1~\AA\ along the z axis):
 \begin{verbatim}
 trans = Coord3D(5, 0, 1)
 \end{verbatim}
@@ -430,39 +413,39 @@ WritePDB(pdb, "1BTA_centered.pdb")
 
 \subsubsection{Selection objects}
 
-\paragraph{Selection of CA atoms.}
+\paragraph{Select CA atoms.}
 \begin{verbatim}
 sel_ca = pdb.CA()
 \end{verbatim}
 
 
-\paragraph{Selection of backbone atoms.}
+\paragraph{Select backbone atoms.}
 \begin{verbatim}
 sel_bkbn = pdb.Backbone()
 \end{verbatim}
 
 
-\paragraph{Selection by chain.}
+\paragraph{Select by chain.}
 \begin{verbatim}
 sel_chainA = pdb.SelectChainId("A")
 sel_chainB = pdb.SelectChainId("B")
 \end{verbatim}
 
 
-\paragraph{Selection of a range of residues.}
+\paragraph{Select a range of residues.}
 \begin{verbatim}
 sel_res = pdb.SelectResRange(10, 20)
 \end{verbatim}
 
 
-\paragraph{Selection number of atoms.}
+\paragraph{Get the number of atomes (the size) of a selection.}
 \begin{verbatim}
 sel_res.Size()
 \end{verbatim}
 
 
 
-\paragraph{Selection reunion.}
+\paragraph{Reunion between two selections.}
 \begin{verbatim}
 sel_chainAB = sel_chainA | sel_chainB
 \end{verbatim}
@@ -472,7 +455,7 @@ sel_chainAB = pdb.SelectChainId("A") | pdb.SelectChainId("B")
 \end{verbatim}
 
 
-\paragraph{Selection to rigidbody conversion.}
+\paragraph{Convert selection to rigidbody object.}
 \begin{verbatim}
 ca_trace = sel_ca.CreateRigid()
 \end{verbatim}
@@ -490,14 +473,14 @@ new_XYZ = Coord3D(2.1,3.9,5.5)
 at.SetCoords(new_XYZ)
 \end{verbatim}
 
-\paragraph{translate atom}
+\paragraph{Translate atom}
 \begin{verbatim}
 vector = Coord3D(1.0,1.0,1.0)
 at.Translate(vector)
 \end{verbatim}
 
 
-\paragraph{print atom in pdb-like format}
+\paragraph{Print atom in pdb-like format}
 \begin{verbatim}
 at.ToPdbString()
 \end{verbatim}
@@ -526,11 +509,14 @@ at.SetExtra()
 
 \section{Docking with PTools: ATTRACT}
 
-This part is illustrated by the docking of 1CGI complex.
+This part is illustrated by the docking of 1CGI complex 
+\footnote{\tt http://www.rcsb.org/pdb/cgi/explore.cgi?pdbId=1CGI} between 
+the bovine chymotrypsinogen A and a variant of the human pancreatic secretory 
+trypsin inhibitor.
 
 \subsection{Protein--protein complex: 1CGI}
 
-The 1CGI complex is made of two partners. Chain A: 245 residues, 1799 atoms and chain I: 56 residues, 440 atoms.
+The 1CGI complex is made of two partners. Chain E: 245 residues, 1799 atoms and chain I: 56 residues, 440 atoms.
 
 \subsubsection{Extraction of the docking partners}
 
@@ -664,7 +650,7 @@ The first line indicates the number of minimisations performed by ATTRACT for ea
 The last six lines are the caracteristics of each minimisation. The first column is the number of steps before the minimisation stops. 
 The last column is the square of the cutoff distance for the calculation of the interaction energy between both partners.
 
-\paragraph{Note:} Columns with zeros or ones should not be modfied, as well as the second line.
+\paragraph{Note:} Columns with zeros or ones should not be modified, as well as the second line.
 
 \subsubsection{Initial docking simulation}
 
@@ -814,7 +800,7 @@ with the parameters:
 \item the inital ligand file ({\tt ligand.red})
 \item a translation number ({\tt 181})
 \item a rotation index ({\tt 114})
-\item an output ligand file ({\tt ligand_1.red})
+\item an output ligand file ({\tt ligand\_1.red})
 \end{itemize}
 
 
