@@ -591,7 +591,6 @@ The reduced files generated are PDB-like structure files that can be read by mos
 programs (rasmol, pymol, to test VMD). 
 Always, visualize both all-atom and coarse grain structures to check the reduction worked properly.
 
-
 \begin{figure}[htbp]
 \center
 {\textbf A}
@@ -646,11 +645,14 @@ ATTRACT parameters are found in the file {\tt attract.inp}. A typical configurat
   300  2  1  1  0  0  0  0  0    50.00
 \end{verbatim}
 
-The first line indicates the number of minimisations performed by ATTRACT for each starting position. 
-The last six lines are the caracteristics of each minimisation. The first column is the number of steps before the minimisation stops. 
-The last column is the square of the cutoff distance for the calculation of the interaction energy between both partners.
+The first line indicates the number of minimisations performed by ATTRACT
+for each starting position.  The last six lines are the caracteristics of
+each minimisation. The first column is the number of steps before the
+minimisation stops.  The last column is the square of the cutoff distance
+for the calculation of the interaction energy between both partners.
 
-\paragraph{Note:} Columns with zeros or ones should not be modified, as well as the second line.
+\paragraph{Note:} Columns with zeros or ones should not be modified, as
+well as the second line.
 
 \subsubsection{Initial docking simulation}
 
@@ -753,7 +755,7 @@ and {\tt rotation.dat} files):
 The output file {\tt docking.att} contains all informations on the docking simulation. 
 It contains ouput of all series of minimizations (with the specification of translation and rotation number).
 
-For the 1CGI system, the systematic docking tooks 13 houres on one processor of a 64~bit Intel Xeon 1.86 GHz 2 Go RAM computer.
+For the 1CGI system, the systematic docking tooks 13 hours a single processor of a 64~bit Intel Xeon 1.86 GHz 2 Go RAM computer.
 The output file {\tt docking.att} is roughly 77~Mo.
 
 \subsubsection{Docking output analysis}
@@ -797,16 +799,27 @@ Any simulated ligand structure can be extracted with the script {\tt Extract.py}
 with the parameters:
 \begin{itemize}
 \item the ouput file of the docking simulation ({\tt docking.att})
-\item the inital ligand file ({\tt ligand.red})
+\item the initial ligand file ({\tt ligand.red})
 \item a translation number ({\tt 181})
-\item a rotation index ({\tt 114})
+\item a rotation number ({\tt 114})
 \item an output ligand file ({\tt ligand\_1.red})
 \end{itemize}
 
+\begin{figure}[htbp]
+\center
+{\textbf A}
+\includegraphics*[width=0.30\textwidth]{img/1CGI_dock1_front.png}
+\hspace*{2cm}
+{\textbf B}
+\includegraphics*[width=0.30\textwidth]{img/1CGI_dock1_top.png}
+\caption{Reduced representations of receptor (green), ligand at reference position (red)
+and ligand from the best solution (lowest energy) of the docking (blue). Front (A) and top (B).
+With a RMSD of 1.1~\AA\ between the reference and the simulated ligand structures, the docking 
+simulation found very well the initial complex structure.}
+\end{figure}
 
-TO ADD : visualization with Pymol
 
-
+TODO : to continue...
 
 
 In case you know the experimental structure of your system (as in this example), it is possible to calculate the
