@@ -3,7 +3,6 @@
 from ptools import *
 import sys
 
-
 def contact(receptor, ligand):
     "return residues in interaction, use ptools::pairlist"
     assert(isinstance(receptor,Rigidbody))
@@ -55,11 +54,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
 
 

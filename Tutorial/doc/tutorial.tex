@@ -819,40 +819,64 @@ simulation found very well the initial complex structure.}
 \end{figure}
 
 
-TODO : to continue...
-
-
 In case you know the experimental structure of your system (as in this example), it is possible to calculate the
-interface rmsd and the native fraction as defined by the CAPRI contest \footnote{\tt http://capri.ebi.ac.uk}
+interface RMSD (iRMSD) and the native fraction (fnat) as defined by the CAPRI contest \footnote{\tt http://capri.ebi.ac.uk}
 using the following scripts:
 
+\begin{verbatim}
+irmsd.py receptor.red ligand.red ligand_1.red
+fnat.py receptor.red ligand.red ligand_1.red
+\end{verbatim}
+
+For iRMSD, output is in \AA\ and fnat is given as a proportion (between 0.0 and 1.0). Parameters are defined as:
+\begin{itemize}
+\item the receptor file ({\tt receptor.red})
+\item the initial ligand file ({\tt ligand.red})
+\item the output ligand file ({\tt ligand\_1.red})
+\end{itemize}
+
+Our clustering algorithm implemented in cluster.py can rapidly filter near identical solutions 
+without requiring a preselected number of desired clusters.
+The algorithm is based on RMSD comparison and an additional energy criterion could be included 
+(see script options, by default RMSD and energy criterions are 1~\AA and 1~RT unit respectively).
 
 \begin{verbatim}
-irmsd.py 1F34_A.cg.pdb 1F34_B.cg.pdb 1F34_dock.pdb
-fnat.py 1F34_A.cg.pdb 1F34_B.cg.pdb 1F34_dock.pdb
+cluster.py docking.att ligand.red > docking.clust
 \end{verbatim}
 
 with the parameters:
 \begin{itemize}
-\item the receptor file (1F34\_A.cg.pdb)
-\item the initial ligand file (1F34\_B.cg.pdb)
-\item the output ligand file (1F34\_dock.pdb)
+\item an ouput of the docking simulation ({\tt docking.att})
+\item the initial ligand file ({\tt ligand.red})
+\item an output cluster file ({\tt docking.clust})
 \end{itemize}
 
-Our clustering algorithm implemented in cluster.py can rapidly filter near identical solutions without requiring a preselected number of desired clusters.
-The algorithm is based on rmsd comparison and an additional energy criterion could be included (see script options).
-
+The first lines of the output cluster file are:
+\linenumbers
 \begin{verbatim}
-cluster.py 1F34_dock.att 1F34_B.cg.pdb > 1F34_dock.clust
+      Trans    Rot          Ener    RmsdCA_ref   Rank   Weight
+==      181    114   -57.4411654     1.1059988      1       59
+==      196    163   -39.2885528    49.1604392      2        2
+==      164    116   -37.7804737     6.4643961      3        3
+==      168    178   -37.5647788    16.0492776      4       18
+==      136     79   -37.3438698    12.3197825      5        4
+==      125     99   -37.2556675    14.5942088      6       18
+==       63    208   -37.0285594    14.1813900      7        7
+==      166    219   -36.7396540    13.4191739      8        5
+==       69     66   -36.6592016    19.9349136      9       21
 \end{verbatim}
+\nolinenumbers
 
-with the parameters:
+Line 1 is a comment line, next lines are clusters. For each cluster (line)
+is specified:
 \begin{itemize}
-\item an ouput of the docking simulation (1F34\_dock.att)
-\item the initial ligand file (1F34\_B.cg.pdb)
-\item an output cluster file (1F34\_B.cg.pdb)
+\item a representative structure with the translation and rotation
+numbers (columns 2 and 3), interaction energy (column 4) and RMSD (column
+5) from the reference ligand structure
+\item the number of the cluster (column 6)
+\item the number of structures (docking solutions) in this cluster (column
+7)
 \end{itemize}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Misc. tips and tricks}
