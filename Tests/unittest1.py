@@ -162,5 +162,23 @@ class TestSuperposition(unittest.TestCase):
             prot2.ApplyMatrix(matrix)
             self.assertTrue(Rmsd(prot2,self.prot1)<1e-6)
 
+class TestForceFields(unittest.TestCase):
+    """ test if calculated energies are stable through library versions """
+    def testFF2k(self):
+        a = Rigidbody("pk6a.red")
+        c = Rigidbody("pk6c.red")
+        a = AttractRigidbody(a)
+        c = AttractRigidbody(c)
+        FF = AttractForceField2("mbest1k.par", 20.0)
+        FF.AddLigand(a)
+        FF.AddLigand(c)
+        x = Vdouble()
+        for i in range(6):
+            x.append(0)
+        self.assertTrue( (FF.Function(x)+32.9487770656) < 1e6) #energy from ptools 0.3
+
+         
+
+
 
 unittest.main()
