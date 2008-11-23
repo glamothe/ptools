@@ -126,24 +126,24 @@ else:
    print "boost directory found here: ", boostdir 
    COMMON_CPPPATH.append(boostdir)
 
-python25dir=FIND_HEADER(["Python.h"], ["/usr/include/python2.5", \
-"/sw/include/python2.5/Python.h"])
+python24dir=FIND_HEADER(["Python.h"], ["/usr/include/python2.4", \
+"/sw/include/python2.4/Python.h"])
 
-if python25dir is not None:
-   print "python2.5 found, configuring path and libs"
-   PYTHON_CPPPATH=[python25dir]
-   PYTHON_LIBS=["python2.5"]
+if python24dir is not None:
+   print "python2.4 found, configuring path and libs"
+   PYTHON_CPPPATH=[python24dir]
+   PYTHON_LIBS=["python2.4"]
 
 
-if python25dir is None:
-   print "cannot locate python2.5, tying with python2.4:"
-   python24dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.4/",
-   "/sw/include/python2.4/"])
+if python24dir is None:
+   print "cannot locate python2.4, tying with python2.5:"
+   python25dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.5/",
+   "/sw/include/python2.5/"])
    if python24dir is None:
-      print "cannot locate Python2.4, the library may not compile..."
+      print "cannot locate Python2.5, the library may not compile..."
    else:
-      PYTHON_CPPPATH=[python24dir]
-      PYTHON_LIBS=["python2.4"]
+      PYTHON_CPPPATH=[python25dir]
+      PYTHON_LIBS=["python2.5"]
 
 
  
@@ -169,8 +169,8 @@ for file in os.listdir("Pybindings"):
 
 
 
-ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG"
-#ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual"
+#ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG"
+ccflags = "-Wall -O2 -fPIC -g -Woverloaded-virtual"
 print "common cpp path:", COMMON_CPPPATH                
 		
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, CCFLAGS=ccflags, LIBPATH=LIB_PATH, FORTRAN=FORTRANPROG,   FORTRANFLAGS="-g -fPIC" )
