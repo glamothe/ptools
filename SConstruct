@@ -139,7 +139,7 @@ if python24dir is None:
    print "cannot locate python2.4, tying with python2.5:"
    python25dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.5/",
    "/sw/include/python2.5/"])
-   if python24dir is None:
+   if python25dir is None:
       print "cannot locate Python2.5, the library may not compile..."
    else:
       PYTHON_CPPPATH=[python25dir]
