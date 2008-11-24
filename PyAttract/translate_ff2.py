@@ -6,7 +6,7 @@
 ## usage : translate arg1 arg2 [options]
 ## arg1 : receptor file in the reduce model
 ## arg2 : ligand file in the reduce model
-## to modify the density, use the -d option (the value must be > 1.0), default=100.0
+## to modify the density, use the -d option (the value must be > 1.0), default=10.0
 ##
 
 from ptools import *

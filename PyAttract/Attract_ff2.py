@@ -339,7 +339,7 @@ for trans in translations:
 
         #calculates true energy, and rmsd if possible
         #with the new ligand position
-        forcefield=AttractForceField2("mbest1u.par", surreal(50))
+        forcefield=AttractForceField2("mbest1u.par", surreal(math.sqrt(50)))
         forcefield.AddLigand(rec)
         forcefield.AddLigand(ligand)
         X = Vdouble()
