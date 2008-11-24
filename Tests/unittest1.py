@@ -169,6 +169,8 @@ class TestForceFields(unittest.TestCase):
         c = Rigidbody("pk6c.red")
         a = AttractRigidbody(a)
         c = AttractRigidbody(c)
+        a.setRotation(False)
+        a.setTranslation(False)
         FF = AttractForceField2("mbest1k.par", 20.0)
         FF.AddLigand(a)
         FF.AddLigand(c)
