@@ -1,3 +1,4 @@
+// $Id$
 #include "rigidbody.h"
 #include "atomselection.h"
 #include "geometry.h"

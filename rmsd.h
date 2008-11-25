@@ -1,3 +1,4 @@
+// $Id$
 #ifndef RMSD_H
 #define RMSD_H
 
@@ -29,6 +30,8 @@ Superpose_t superpose( const CoordsArray & cref, const CoordsArray & cmob, int v
 
 Superpose_t superpose( const Rigidbody & ref, const Rigidbody& mob, int verbosity=0);
 
+
+// Superpose_t superpose_sippl(const Rigidbody & ref, const Rigidbody& mob, int verbosity=0);
 
 }
 

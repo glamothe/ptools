@@ -22,16 +22,39 @@
 ##
 
 import sys
-from ptools import *
 from optparse import OptionParser
-import Extract
 import re
+import shelve
+
+import Extract
+from ptools import *
+from calculateonce import NoRecalc
+
+
+limit_rmsd = 1.0 
+limit_ener = 1.0e30
+
+
+
+class Clusterize(NoRecalc):
+    def generate(self, db, dep, args):
+        retval = cluster(args[0],args[1],args[2],args[3])
+        d = shelve.open(db)
+        d['data']=retval
+        d.close()
+        return retval
+
+    def load(self, db):
+        d = shelve.open(db)
+        return d['data']
+
 
 
 
 class Struct:
-    structure = None
-    count = 0
+    pass
+    #structure = None
+    #count = 0
 
 
 ########################
@@ -55,7 +78,7 @@ class StructureI:
 
 
 def cluster(lig,structures, nstruct, cluster_memory):
-    cluster_memory_=options.cluster_memory+1
+    cluster_memory_= cluster_memory+1
     thecluster = []
 
     structures.sort(key=lambda i: i.ener)
@@ -83,9 +106,11 @@ def cluster(lig,structures, nstruct, cluster_memory):
                 del thecluster[-cluster_memory_].structure
             #print "new cluster"
     
-    
+    for i in thecluster:
+        if hasattr(i,"structure"): del i.structure
     thecluster.sort(key=lambda i: i.ext.ener)
     return thecluster
+
 
 
 if (__name__=="__main__"):
@@ -99,8 +124,7 @@ if (__name__=="__main__"):
     
     
     
-    limit_rmsd = 1.0 
-    limit_ener = 1000.0 
+
     nstruct=2000
     #cluster_memory=50
     
@@ -112,7 +136,7 @@ if (__name__=="__main__"):
         nstruct=options.nstruct
     if (options.cluster_memory):
         cluster_memory=options.cluster_memory
-            
+
 
     outputfile = sys.argv[1]
     ligandfile = sys.argv[2]
@@ -132,10 +156,18 @@ if (__name__=="__main__"):
         structures.append(e.d[k])
 
 
-    thecluster=cluster(lig,structures, nstruct, cluster_memory)
+    dependencies=[outputfile]
+    args = [lig,structures, nstruct, cluster_memory]
+
+
+
+    print "clustering, new way"
+    thecluster=Clusterize("%s.cluster.db"%outputfile,dependencies,args,info_output=sys.stderr.write, error_output=sys.stderr.write).db
+
 
     print "%-4s %6s %6s %13s %13s %6s %8s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref","Rank", "Weight")
     for i in range(len(thecluster)):
             print "%-4s %6s %6s %13.7f %13.7f %6i %8s" %("==", str(thecluster[i].ext.trans), str(thecluster[i].ext.rot), float(thecluster[i].ext.ener), float(thecluster[i].ext.rmsd), i+1, str(thecluster[i].count))
+
 
 

@@ -1,3 +1,4 @@
+// $Id$
 #ifndef COORD3D_H
 #define COORD3D_H
 

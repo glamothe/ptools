@@ -19,7 +19,8 @@ COMMON_CPP = Split ("""atom.cpp
                        surface.cpp
                        coordsarray.cpp
                        QBestFit.cpp
-		       superpose.cpp
+                       superpose.cpp
+                       version.cpp
                     """)
 
 
@@ -156,6 +157,15 @@ import os
 for file in os.listdir("Pybindings"):
     if fnmatch.fnmatch(file, "*.cpp"):
         PYTHON_CPP.append("Pybindings/%s"%file)
+
+
+#generate svnrev.h (revision number of the library)
+os.system("gcc svnrev.c -o svnrev")
+svnrevfiles = [f for f in os.listdir('.') if fnmatch.fnmatch(f, "*.cpp") or fnmatch.fnmatch(f,"*.h") ]  #list every .h or .cpp
+os.system("./svnrev %s"%(" ".join(svnrevfiles)))
+
+
+
 #print PYTHON_CPP
 
 #determine architecture (unix only ?) to determine which 

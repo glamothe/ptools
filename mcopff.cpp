@@ -1,3 +1,4 @@
+// $Id$
 #include "mcopff.h"
 #include <cassert>
 

@@ -1,3 +1,4 @@
+// $Id$
 /*
  * This program is for 3D superposition of sets of coordinates.
  * It is based on the quaternions, as proposed by:

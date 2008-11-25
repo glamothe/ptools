@@ -1,6 +1,13 @@
 import os
 from pyplusplus import module_builder
 
+import fnmatch
+
+#generate svnrev.h (revision number of the library)
+os.system("gcc svnrev.c -o svnrev")
+svnrevfiles = [f for f in os.listdir(".") if fnmatch.fnmatch(f, "*.cpp") or fnmatch.fnmatch(f,"*.h") ]  #list every .h or .cpp
+os.system("./svnrev %s"%(" ".join(svnrevfiles)))
+
 #Creating an instance of class that will help you to expose your declarations
 mb = module_builder.module_builder_t( [os.path.abspath('./ptools.h'), os.path.abspath('./py_details.h')]
                                       , gccxml_path=r"" 
@@ -138,6 +145,8 @@ Matrix.member_function("id").exclude()
 
 mb.class_("Model").include()
 mb.class_("Pdb").include()
+
+Version = mb.class_("Version").include()
 
 
 

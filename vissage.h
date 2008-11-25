@@ -1,3 +1,4 @@
+// $Id$
 #ifndef _VISSAGE_H_
 #define _VISSAGE_H_
 

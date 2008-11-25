@@ -1,3 +1,4 @@
+// $Id$
 #include <iostream>
 #include <cassert>
 #include <stdexcept>
@@ -407,6 +408,22 @@ CoordsArray cmob = mob.ToCoordsArray() ;
 return superpose( cref, cmob, verbosity);
 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 } //namespace PTools

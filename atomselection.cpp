@@ -1,3 +1,4 @@
+// $Id$
 //
 // C++ Implementation: atomselection
 //

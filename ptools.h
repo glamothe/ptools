@@ -1,3 +1,4 @@
+// $Id$
 //
 // C++ Interface: generic interface for ptools
 //
@@ -23,6 +24,7 @@
 #include "mcopff.h"
 #include "vissage.h"
 #include "superpose.h"
+#include "version.h"
 
 
 #endif // PTOOLS_H

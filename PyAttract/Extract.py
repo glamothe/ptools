@@ -171,6 +171,18 @@ def extract(outputfilename, ligand, transnb, rotnb):
 
 
 
+def getAllStruct(outputfilename):
+    e = Extractor(outputfilename)
+    validkeys=[]
+    regexp = re.compile("[0-9]+:[0-9]+")  #filter keys of the form "23:356"
+    for k in e.d.keys():
+        if regexp.match(k):
+            validkeys.append(k)
+    structures=[]
+    for k in validkeys:
+        structures.append(e.d[k])
+    return structures
+
 
 
 def main():
@@ -209,4 +221,4 @@ if __name__ == "__main__":
     main()
 
 
-__all__=["extract", "Extractor"]
+__all__=["extract", "Extractor", "getAllStruct"]
