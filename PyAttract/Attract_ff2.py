@@ -194,7 +194,10 @@ print """
 **                ATTRACT  (Python edition)                         **
 **                version: 0.3c                                     **
 **                USING FORCEFIELD 2u                               **
-********************************************************************** """
+**********************************************************************
+Attract.py: $Id$
+using PTools: %s
+"""%(Version().revstr)
 
 import locale
 import datetime
