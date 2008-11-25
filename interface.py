@@ -5,7 +5,7 @@ import fnmatch
 
 #generate svnrev.h (revision number of the library)
 os.system("gcc svnrev.c -o svnrev")
-svnrevfiles = [f for f in os.listdir(".") if fnmatch.fnmatch(f, "*.cpp") or fnmatch.fnmatch(f,"*.h") ]  #list every .h or .cpp
+svnrevfiles = [f for f in os.listdir('.') if fnmatch.fnmatch(f, "*.cpp") or fnmatch.fnmatch(f,"*.h") and not fnmatch.fnmatch(f,"svnrev.*") ]  #list every .h or .cpp
 os.system("./svnrev %s"%(" ".join(svnrevfiles)))
 
 #Creating an instance of class that will help you to expose your declarations
