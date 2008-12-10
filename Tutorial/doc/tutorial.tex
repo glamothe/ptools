@@ -49,7 +49,7 @@ The basic requirements are:
 \item gcc (4.x)
 \item gfortran (4.x)
 \item cvs
-\item svn
+\item subversion and subversion-tools
 \item cmake
 \item doxygen (optional)
 \end{itemize}
@@ -78,9 +78,6 @@ Core Duo 1.2~GHz, Debian Lenny, linux kernel 2.6.22).
 
 \paragraph{gccxml:} {\tt apt-get install gccxml} \\
 (0.9.0+cvs20071228-2 version installed)
-
-Some Ubuntu linux distribution have an incompatible gccxml 0.7 version that crashes when parsing headers files. The solution is to install gccxml from the official CVS repository ( {\tt http://www.gccxml.org/HTML/Download.html} )
-
 
 \paragraph{Pyplusplus and Pygccxml: }
 The homepage of {\tt pyplusplus} and {\tt pygccxml} projects is 
@@ -114,6 +111,75 @@ of PyPlusPlus:
 >>> import pyplusplus
 \end{verbatim}
 
+\subsection{Set up: Dell D420 laptop, Ubuntu 8.04, 32-bit}
+This example installation has been performed on a Dell D420 laptop (Intel
+Core Duo 1.2~GHz, Ubuntu 8.04, linux kernel 2.6.24).
+
+\paragraph{SCons (make substitute):} {\tt apt-get install scons} \\
+(0.97.0d20071203-1ubuntu1 version installed)
+
+\paragraph{Boost C++ Libraries} {\tt apt-get install libboost-dev} \\
+(1.34.1-4ubuntu3 version installed)
+
+\paragraph{Boost Python Library:} {\tt apt-get install libboost-python1.34.1} \\
+(1.34.1-4ubuntu3 version installed)
+
+\paragraph{libboost Python dev:} {\tt apt-get install libboost-python-dev} \\
+(1.34.1-4ubuntu3 version installed)
+
+\paragraph{gccxml:} This Ubuntu linux distribution have an incompatible gccxml 0.7 version that crashes when parsing headers files. The solution is then to install gccxml from the official CVS repository
+
+The homepage of {\tt gccxml} project is {\tt http://www.gccxml.org} and its official 
+CVS repository is {\tt http://www.gccxml.org/HTML/Download.html}.
+
+\begin{verbatim}
+cvs -d :pserver:anoncvs@www.gccxml.org:/cvsroot/GCC_XML login
+\end{verbatim}
+(just press enter when prompted for a password)\\
+Follow this command by checking out the source code:
+\begin{verbatim}
+cvs -d :pserver:anoncvs@www.gccxml.org:/cvsroot/GCC_XML co gccxml
+mkdir gccxml-build
+cd gccxml-build
+cmake ../gccxml -DCMAKE_INSTALL_PREFIX:PATH=/installation/path
+make
+make install
+\end{verbatim}
+The "-DC\_MAKE\_INSTALL\_PREFIX" option can be left off if you want to use "/usr/local" as the installation prefix.
+
+\paragraph{Pyplusplus and Pygccxml: }
+The homepage of {\tt pyplusplus} and {\tt pygccxml} projects is 
+{\tt http://www.language-binding.net/pyplusplus/pyplusplus.html}. From the
+download section \footnote{\tt https://sourceforge.net/project/showfiles.php?group\_id=118209}, 
+get the files {\tt pygccxml-1.0.0.zip} and {\tt Py++-1.0.0.zip}.
+
+\begin{verbatim}
+unzip pygccxml-1.0.0.zip
+cd pygccxml-1.0.0/
+python setup.py build
+python setup.py install --prefix=$HOME/soft
+\end{verbatim}
+
+\begin{verbatim}
+unzip Py++-1.0.0.zip 
+cd Py++-1.0.0/
+python setup.py build
+python setup.py install --prefix=$HOME/soft
+\end{verbatim}
+
+In your {\tt \$HOME/.bashrc} file, then add:
+\begin{verbatim}
+export PATH=PATH:$HOME/soft/bin/
+export PYTHONPATH=$HOME/soft/lib/python2.5/site-packages/
+\end{verbatim}
+
+In a Python shell (obtained with the {\tt python} command), test the installation
+of PyPlusPlus:
+\begin{verbatim}
+>>> import pyplusplus
+\end{verbatim}
+
+
 
 \subsection{Set up: Dell Precision T7400, Linux Fedora Core 9, 64-bit}
 This example installation has been performed on a Dell Precision T7400 (Intel
@@ -132,12 +198,8 @@ get the stable file {\tt scons-0.98.5-1.noarch.rpm}.
 \paragraph{Boost C++ Libraries:} {\tt yum install boost boost-devel} \\
 (1.34.1-13 version installed)
 
-
 \paragraph{Python dev:} {\tt yum install python-devel} \\
 (2.5.1-26 version installed)
-
-\paragraph{Subversion:} {\tt yum install subversion} \\
-(1.4.6-7 version installed)
 
 \paragraph{gccxml:}The homepage of {\tt gccxml} project is {\tt http://www.gccxml.org}. 
 To install gccxml from the official CVS repository \footnote{\tt http://www.gccxml.org/HTML/Download.html}.
@@ -156,7 +218,6 @@ make
 make install
 \end{verbatim}
 The "-DC\_MAKE\_INSTALL\_PREFIX" option can be left off if you want to use "/usr/local" as the installation prefix.
-
 
 \paragraph{Pyplusplus and Pygccxml: }
 The homepage of {\tt pyplusplus} and {\tt pygccxml} projects is 
@@ -189,6 +250,7 @@ of PyPlusPlus:
 \begin{verbatim}
 >>> import pyplusplus
 \end{verbatim}
+
 
 \subsection{Set up: Dell Precision 690, Linux Fedora Core 7, 64-bit}
 This example installation has been performed on a Dell Precision 690 (Intel
@@ -207,12 +269,8 @@ get the stable file {\tt scons-0.98.5-1.noarch.rpm}.
 \paragraph{Boost C++ Libraries:} {\tt yum install boost boost-devel} \\
 (1.33.1-15.fc7 version installed)
 
-
 \paragraph{Python dev:} {\tt yum install python-devel} \\
 (2.5-15.fc7 version installed)
-
-\paragraph{Subversion:} {\tt yum install subversion} \\
-(1.4.4-1.fc7 version installed)
 
 \paragraph{gccxml:}The homepage of {\tt gccxml} project is {\tt http://www.gccxml.org}. 
 To install gccxml from the official CVS repository \footnote{\tt http://www.gccxml.org/HTML/Download.html}.
@@ -231,7 +289,6 @@ make
 make install
 \end{verbatim}
 The "-DC\_MAKE\_INSTALL\_PREFIX" option can be left off if you want to use "/usr/local" as the installation prefix.
-
 
 \paragraph{Pyplusplus and Pygccxml: }
 The homepage of {\tt pyplusplus} and {\tt pygccxml} projects is 
@@ -265,13 +322,8 @@ of PyPlusPlus:
 >>> import pyplusplus
 \end{verbatim}
 
-\paragraph{g2c library: }
-
-\begin{verbatim}
-yum install g2clib-devel
-\end{verbatim}
-1.0.5-3.fc7 version installed
-
+\paragraph{g2c library:} {\tt yum install g2clib-devel} \\
+(1.0.5-3.fc7 version installed)
 
 \subsection{Source download with subversion}
 
@@ -821,7 +873,7 @@ with the parameters:
 {\textbf B}
 \includegraphics*[width=0.30\textwidth]{img/1CGI_dock1_top.png}
 \caption{Reduced representations of receptor (green), ligand at reference position (red)
-and ligand from the best solution (lowest energy) of the docking (blue). Front (A) and top (B).
+and ligand from the best solution (lowest energy) of the docking (blue). Front (A) and top (B) views.
 With a RMSD of 1.1~\AA\ between the reference and the simulated ligand structures, the docking 
 simulation found very well the initial complex structure.}
 \end{figure}
