@@ -610,13 +610,13 @@ WritePDB(protI,"ligand.pdb")
 \end{verbatim}
 Or more quickly:
 \begin{verbatim}
-WritePDB(selectE.CreateRigid(),"receptot.pdb")
+WritePDB(selectE.CreateRigid(),"receptor.pdb")
 WritePDB(selectI.CreateRigid(),"ligand.pdb")
 \end{verbatim}
 
 \subsubsection{Coarse grain reduction}
 
-This step translates all atom molecule into coarse grain (reduced) molecule for a further docking. 
+This step translates all atom molecule into coarse grain (reduced) molecule for further docking. 
 
 For the receptor: 
 \begin{verbatim}
@@ -641,14 +641,15 @@ The {\tt reduce.py} script required the following parameters:
 This script also needs definition files:
 
 \begin{itemize}
-\item bead topologie files ({\tt at2cg.prot.dat} for protein reduction and {\tt at2cg.dna.dat} for DNA reduction )
+\item bead topology files ({\tt at2cg.prot.dat} for protein reduction and {\tt at2cg.dna.dat} for DNA reduction )
 \item forcefield parameter file ({\tt ff\_param.dat})
 \item filetype conversion file ({\tt type\_conversion.dat})
 \end{itemize}
 
 The reduced files generated are PDB-like structure files that can be read by most visualisation
-programs (rasmol, pymol, to test VMD). 
-Always, visualize both all-atom and coarse grain structures to check the reduction worked properly.
+programs (rasmol, pymol, VMD). Adjutment of van de Waals radii is recommended for an accurate 
+representation of the occupied volume.
+Always visualize both all-atom and coarse grain structures to check the reduction worked properly.
 
 \begin{figure}[htbp]
 \center
@@ -665,7 +666,7 @@ Always, visualize both all-atom and coarse grain structures to check the reducti
 The systematic docking simulation uses starting points placed around the
 receptor.  The Python script {\tt translate.py} employs a slightly modified
 Shrake and Rupley \cite{shrake1973} method to define starting positions
-from receptor surface.  The surface generation fonctions are implemented in
+from the receptor surface.  The surface generation fonctions are implemented in
 the PTools library. The script first reads the coarse grain (reduced)
 receptor and ligand files, then generates a grid of points at a certain
 distance from the receptor and outputs the grid with a given density.
@@ -678,8 +679,9 @@ In the present case:
 ./translate.py receptor.red ligand.red > translation.dat
 \end{verbatim}
 
-The visualisation of the starting points may be viewed with any visualisation software by renaming {\tt translation.dat} in {\tt translation.pdb}.
-Then, remove the first line of {\tt translation.pdb} (indicated the total number of starting points).
+Visualisation of the starting points may be obtained with any visualisation software by 
+renaming {\tt translation.dat} in {\tt translation.pdb}.
+Then, remove the first line of {\tt translation.pdb} (indicating the total number of starting points).
 
 \begin{figure}[htbp]
 \center
@@ -705,11 +707,13 @@ ATTRACT parameters are found in the file {\tt attract.inp}. A typical configurat
 \end{verbatim}
 
 The first line indicates the number of minimisations performed by ATTRACT
-for each starting position (six in the present case). The last six lines are the caracteristics of
+for each starting position (six in the present case). The last six lines are the characteristics of
 each minimisation. The first column is the number of steps before the
 minimisation stops.  The last column is the square of the cutoff distance
-for the calculation of the interaction energy between both partners. Starting with a very large value of 9900~\AA$^2$ ($\sim$ 99~\AA), we gradually dicrease
-the cutoff value to end with 500~\AA$^2$ ($\sim$ 22~\AA).
+for the calculation of the interaction energy between both partners. 
+In the present case, the simulation starts with a very large cutoff value of 9900~\AA$^2$ 
+($\sim$ 99~\AA), which is gradually dicreased
+to end with 500~\AA$^2$ ($\sim$ 22~\AA).
 
 \paragraph{Note:} Columns with zeros or ones should not be modified, as
 well as the second line.
@@ -809,7 +813,7 @@ Energy ({\tt Ener} is given in RT unit, as well as the C$_{\alpha}$-RMSD
 \item{\bf line 45:} end date and time of the simulation.
 \end{itemize}
 
-Here, the final energy is -58.35~RT unit and the RMSD is 1.19~\AA, that is pretty close from the initial position. (In a "perfect" simulation, RMSD would
+Here, the final energy is -58.35~RT unit and the RMSD is 1.19~\AA, which is pretty close from the initial position. (In a "perfect" simulation, RMSD would
 be 0.0).
 
 For a full systematic docking in the translational and rotational space (using both {\tt translation.dat} and {\tt rotation.dat} files):
@@ -818,10 +822,10 @@ For a full systematic docking in the translational and rotational space (using b
 \end{verbatim}
 
 The output file {\tt docking.att} contains all informations on the docking simulation. 
-It contains ouput of all series of minimizations (with the specification of translation and rotation number).
+It contains ithe ouput of all series of minimizations (with the specification of translation and rotation number).
 
-For the 1CGI system, the systematic docking tooks 19 hours on a single processor of a 64~bit Intel Xeon 1.86 GHz 2 Go RAM computer.
-The output file {\tt docking.att} is roughly 77~Mo.
+For the 1CGI system, the systematic docking took 19 hours on a single processor of a 64~bit Intel Xeon 1.86 GHz 2 Go RAM computer.
+The size of the output file {\tt docking.att} is roughly 77~Mo.
 
 \subsubsection{Docking output analysis}
 
@@ -831,7 +835,7 @@ The 10 best geometries found during the docking simulation can be listed with
 cat docking.att | egrep -e "^==" | sort -n -k4 | head
 \end{verbatim}
 
-For the previsous docking simulation of 1CGI, it gives:
+For the previsous docking simulation of 1CGI, this gives:
 
 \begin{verbatim}
 ==      133     92   -58.3541443 1.19429783478
@@ -902,7 +906,7 @@ For iRMSD, output is in \AA\ and fnat is given as a proportion (between 0.0 and 
 
 Our clustering algorithm implemented in cluster.py can rapidly filter near identical solutions 
 without requiring a preselected number of desired clusters.
-The algorithm is based on RMSD comparison and an additional energy criterion could be included 
+The algorithm is based on RMSD comparison and an additional energy criterion can be included 
 (see script options, by default RMSD and energy criterions are 1~\AA and 1~RT unit respectively).
 
 \begin{verbatim}
