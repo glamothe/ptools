@@ -325,32 +325,28 @@ of PyPlusPlus:
 \paragraph{g2c library:} {\tt yum install g2clib-devel} \\
 (1.0.5-3.fc7 version installed)
 
-\subsection{Source download with subversion}
+\subsection{Archive download}
 
-From the local {\tt \$HOME/soft/} directory, download the full PTools sources with subversion (use the {\it checkout} option):
+From the PTools website {\tt  http://www.ibpc.fr/$\sim$chantal/ptools/},
+download the current PTools archive {\tt ptools-XX.tgz} where {\tt XX} is
+the version number. Copy the archive {\tt ptools-XX.tgz} in your local 
+{\tt \$HOME/soft/} directory and uncompress it:
+
 \begin{verbatim}
-svn co http://svn-lbt.ibpc.fr/svn/PTools/ptools ptools
+tar zxvf  ptools-XX.tgz
 \end{verbatim}
-
-\begin{itemize}
-\item for the first use, press {\it Enter} and then indicate your login and password
-\item both login and password are stored (without encryption) in the {\tt \$HOME/.subversion} directory
-\end{itemize}
-
-PTools source updates are then obtained by:
-\begin{verbatim}
-svn update
-\end{verbatim}
-from the {\tt ptools/} or {\tt ptools/trunk} directories.
+The directory {\tt ptools-XX} shoud be created.
 
 
 \subsection{Compilation}
-From the main directory ({\tt trunk}) of the PTools project, create the Python/C++ interface:
+
+From the PTools main directory ({\tt \$HOME/soft/ptools-XX}), 
+first create the Python/C++ interface:
 \begin{verbatim}
 python interface.py
 \end{verbatim}
 
-Compile then the library:
+Then compile the library:
 \begin{verbatim}
 scons
 \end{verbatim}
@@ -362,7 +358,7 @@ If scons complains about the g2c library, you may do (as root):
 ln -s /usr/lib64/libg2c.so.0 /usr/lib64/libg2c.so
 \end{verbatim}
 
-In case of problem with the gfortran library, you should add directly to the search path (l.87)
+In case of problem with the gfortran library, you should add directly to the search path (line~87)
 of the SConstruct file the location of libgfortran files. For instance: 
 \newline Initial search path:
 \newline ["/usr/lib","/sw/lib","/usr/lib/gcc/x86\_64-redhat-linux/3.4.6/"]
@@ -371,27 +367,19 @@ of the SConstruct file the location of libgfortran files. For instance:
 
 \subsection{Final test and further documentation}
 
-In the {\tt Test} directory, one can test the compilation worked:
+In the {\tt Tests} directory, one can test the compilation worked:
 \begin{verbatim}
 python unittest1.py
 \end{verbatim}
 
-The expected output is similar to:
+The expected output should similar to:
 \begin{verbatim}
 ...............
 ----------------------------------------------------------------------
-Ran 15 tests in 0.316s
+Ran 16 tests in 0.316s
 
 OK
 \end{verbatim}
-
-Further document may be obtained from the Trac server {\tt http://svn-lbt.ibpc.fr/PTools/wiki}. 
-The server access is controled by the same login/password of the subversion server. The {\tt Timeline}
-and {\tt Browse Source} sections are usually very usefull.
-
-A {\tt README} file is also available on line 
-\footnote{\tt http://svn-lbt.ibpc.fr/PTools/browser/ptools/trunk/Tutorial/README} 
-or locally \footnote{\tt \$HOME/soft/ptools/trunk/Tutorial/README}.
 
 
 \section{PTools library usages and capabilities}
@@ -399,15 +387,22 @@ or locally \footnote{\tt \$HOME/soft/ptools/trunk/Tutorial/README}.
 \subsection{Directly from C++}
 
 Source code may be parsed by Doxygen, an automatic documentation generator.
-This documentation may only help for the C++ part of the library.
-after installing Doxygen, simply type 'doxygen' in the directory which contains the 'Doxyfile'.
-Then look into the html/ directory and find the index.html file generated...
-The most important objects and functions to manipulate pdb are explained in the following section.
+This documentation may help for the C++ (and indirectly for the Python)
+part of the library. 
+
+If Doxygen is installed, simply type {\tt doxygen} in
+the directory which contains the {\tt Doxyfile} ({\tt
+\$HOME/soft/ptools-XX}). Then look into the {\tt html}
+directory and open with your favorite browser the {\tt index.html} file
+generated with doxygen. 
+
+The most important objects and functions to manipulate PDB files are explained in
+the following section.
 
 \subsection{From Python through the C++ binding}
 
-If PTools has been installed in the {\tt \$HOME/soft/ptools/branches/1.0rc/} directory, 
-declare it in your PYTHONPATH :
+If PTools has been installed in the {\tt \$HOME/soft/ptools-XX} directory, 
+update your {\tt PYTHONPATH}:
 
 \begin{verbatim}
 export PYTHONPATH=$PYTHONPATH:$HOME/soft/ptools/branches/1.0rc/
@@ -415,7 +410,8 @@ export PYTHONPATH=$PYTHONPATH:$HOME/soft/ptools/branches/1.0rc/
 or add this line at the end of your {\tt \$HOME/.bashrc} file.
 
 
-From the Python interpreter or in a Python script, first load the PTools library:
+From the Python interpreter or from a Python script, 
+first load the PTools library:
 \begin{verbatim}
 from ptools import *
 \end{verbatim}
@@ -423,37 +419,37 @@ from ptools import *
 
 \subsubsection{Rigidbody objects}
 
-\paragraph{Load PDB file into a rigidbody object.}
+\paragraph{Load PDB file (for instance {\tt 1BTA.pdb}) into a rigidbody
+object.}
 \begin{verbatim}
 pdb = Rigidbody("1BTA.pdb")
 \end{verbatim}
 
 
-\paragraph{Number of atoms}
+\paragraph{Number of atoms.}
 \begin{verbatim}
 pdb.Size()
 \end{verbatim}
 
 
-\paragraph{Maximum distance from geometric center} in \AA.
+\paragraph{Maximum distance (in \AA) from geometric center.}
 \begin{verbatim}
 pdb.Radius()
 \end{verbatim}
 
 
-\paragraph{Radius of gyration} in \AA.
+\paragraph{Radius of gyration (in \AA).}
 \begin{verbatim}
 pdb.RadiusGyration()
 \end{verbatim}
 
 
 \paragraph{Structure translation.}
-First create a translation vector as a Coord3D object (for instance 5~\AA\ along x, 
--3~\AA\ along y and 1~\AA\ along the z axis):
+First create a translation vector as a Coord3D object (for instance 5~\AA\ along the X axis, -3~\AA\ along Y and 1~\AA\ along the Z axis):
 \begin{verbatim}
 trans = Coord3D(5, 0, 1)
 \end{verbatim}
-Then, apply the translation vector:
+Then, apply the translation vector {\tt trans}:
 \begin{verbatim}
 pdb.Translate(trans)
 \end{verbatim}
@@ -576,7 +572,11 @@ trypsin inhibitor.
 
 \subsection{Protein--protein complex: 1CGI}
 
-The 1CGI complex is made of two partners. Chain E: 245 residues, 1799 atoms and chain I: 56 residues, 440 atoms.
+The 1CGI complex is made of two partners:
+\begin{itemize}
+\item chain E: 245 residues, 1799 atoms
+\item chain I: 56 residues, 440 atoms
+\end{itemize}
 
 \subsubsection{Extraction of the docking partners}
 
@@ -600,8 +600,7 @@ selectE=pdb.SelectChainId("E")
 selectI=pdb.SelectChainId("I")
 \end{verbatim}
 
-Create both chains as independant rigid bodys and save them in PDB file. The biggest 
-protein is define as the receptor (chain E) and the smallest as the ligand (chain I):
+Create both chains as independant rigid bodys and save them in PDB file. The largest protein is define as the receptor (chain E) and the smallest as the ligand (chain I):
 
 \begin{verbatim}
 protE=selectE.CreateRigid()
@@ -623,18 +622,18 @@ For the receptor:
 \begin{verbatim}
 ./reduce.py --prot receptor.pdb > receptor.red
 \end{verbatim}
-{\tt receptor.red} contains 522 beads.\\
+In the present case, {\tt receptor.red} contains 522 beads.\\
 
 For the ligand:
 \begin{verbatim}
 ./reduce.py --prot ligand.pdb > ligand.red
 \end{verbatim}
-{\tt ligand.red} 126 beads. \\
+In the present case, {\tt ligand.red} contains 126 beads. \\
 
 The {\tt reduce.py} script required the following parameters:
 
 \begin{itemize}
-\item {\tt --prot} or {\tt --dna} option, specifies the type of molecule to reduce (protein or DNA)
+\item {\tt --prot} or {\tt --dna} option, specifies the type of molecule to reduce (respectively protein or DNA)
 \item an input all-atom PDB file, for instance {\tt receptor.pdb}
 \item an output coarse grain file, for instance {\tt receptor.red}
 \end{itemize}
@@ -697,19 +696,20 @@ ATTRACT parameters are found in the file {\tt attract.inp}. A typical configurat
 \begin{verbatim}
     6    0    0
  -34.32940  38.75490  -3.66956   0.00050
-  100  2  1  1  0  0  0  0  1  3000.00   
-  100  2  1  1  0  0  0  0  1  1000.00   
-  100  2  1  1  0  0  0  0  0   500.00   
-  100  2  1  1  0  0  0  0  0    50.00   
-  100  2  1  1  0  0  0  0  0    50.00   
-  300  2  1  1  0  0  0  0  0    50.00
+  100  2  1  1  1  0  0  0  1  9900.00
+  100  2  1  1  1  0  0  0  1  1500.00
+  100  2  1  1  1  0  0  0  1  1000.00
+   50  2  1  1  1  0  0  0  0   500.00
+   50  2  1  1  1  0  0  0  0   500.00
+   50  2  1  1  1  0  0  0  0   500.00
 \end{verbatim}
 
 The first line indicates the number of minimisations performed by ATTRACT
-for each starting position.  The last six lines are the caracteristics of
+for each starting position (six in the present case). The last six lines are the caracteristics of
 each minimisation. The first column is the number of steps before the
 minimisation stops.  The last column is the square of the cutoff distance
-for the calculation of the interaction energy between both partners.
+for the calculation of the interaction energy between both partners. Starting with a very large value of 9900~\AA$^2$ ($\sim$ 99~\AA), we gradually dicrease
+the cutoff value to end with 500~\AA$^2$ ($\sim$ 22~\AA).
 
 \paragraph{Note:} Columns with zeros or ones should not be modified, as
 well as the second line.
@@ -729,8 +729,8 @@ A docking simulation with ATTRACT requires:
 
 ATTRACT can be used with different options:
 \begin{itemize}
-\item -s, performs one single serie of minimisations with the ligand in its initial position.
-\item --ref=, provides a ligand pdb file as a reference. After each docking, the RMSD is calculated between this reference structure and the simulated ligand.
+\item {\tt -s}, performs one single serie of minimisations with the ligand in its initial position.
+\item {\tt --ref=}, provides a ligand pdb file as a reference. After each docking, the RMSD is calculated between this reference structure and the simulated ligand.
 \end{itemize}
 
 A single ATTRACT simulation may thus be obtained by:
@@ -742,13 +742,17 @@ The first pdb file provided must be the receptor file (and the second the ligand
 The content of the output file {\tt single.att} is the following:
 
 \newpage
-\linenumbers
+\linenumbers*
 \begin{verbatim}
+
 **********************************************************************
 **                ATTRACT  (Python edition)                         **
 **                version: 0.3                                      **
-********************************************************************** 
-2008-10-27 15:21:30.433798 ( Monday October 27 2008, 15:21 )
+**********************************************************************
+Attract.py: $Id: Attract.py 616 2008-11-25 12:42:39Z asaladin $
+using PTools: 614
+
+2008-12-11 00:08:18.212859 ( Thursday December 11 2008, 00:08 )
 6 series of minimizations
 rstk =  0.0005
 Receptor (fixed) receptor.red  has 522 particules
@@ -757,57 +761,58 @@ using reference file: ligand.red
 Single mode
 @@@@@@@ Translation nb 1 @@@@@@@
 ----- Rotation nb 1 -----
-{{ minimization nb 1 of 6 ; cutoff= 54.77 (A) ; maxiter= 100
+{{ minimization nb 1 of 6 ; cutoff= 99.50 (A) ; maxiter= 100
 number of free variables for the minimizer: 6
-STOP, max iterations reached                                |  100 iterations
-{{ minimization nb 2 of 6 ; cutoff= 31.62 (A) ; maxiter= 100
+CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  72 iterations
+{{ minimization nb 2 of 6 ; cutoff= 38.73 (A) ; maxiter= 100
+number of free variables for the minimizer: 6
+CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  2 iterations
+{{ minimization nb 3 of 6 ; cutoff= 31.62 (A) ; maxiter= 100
+number of free variables for the minimizer: 6
+CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  3 iterations
+{{ minimization nb 4 of 6 ; cutoff= 22.36 (A) ; maxiter= 50
+number of free variables for the minimizer: 6
+CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  10 iterations
+{{ minimization nb 5 of 6 ; cutoff= 22.36 (A) ; maxiter= 50
 number of free variables for the minimizer: 6
 CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  1 iterations
-{{ minimization nb 3 of 6 ; cutoff= 22.36 (A) ; maxiter= 100
-number of free variables for the minimizer: 6
-CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  11 iterations
-{{ minimization nb 4 of 6 ; cutoff= 7.07 (A) ; maxiter= 100
-number of free variables for the minimizer: 6
-CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  94 iterations
-{{ minimization nb 5 of 6 ; cutoff= 7.07 (A) ; maxiter= 100
-number of free variables for the minimizer: 6
-CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  35 iterations
-{{ minimization nb 6 of 6 ; cutoff= 7.07 (A) ; maxiter= 300
+{{ minimization nb 6 of 6 ; cutoff= 22.36 (A) ; maxiter= 50
 number of free variables for the minimizer: 6
 CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH             |  1 iterations
       Trans    Rot          Ener    RmsdCA_ref
-==        1      1   -57.4385916 1.10578043721
+==        1      1   -58.3541422 1.19455904733
 ### MAT BEGIN
-MAT        0.9978729      0.0425669     -0.0493744      0.3166520 
-MAT       -0.0440559      0.9985943     -0.0294718      2.1806519 
-MAT        0.0480505      0.0315843      0.9983454     -2.5887244 
+MAT        0.9973001      0.0414787     -0.0605965      0.4545131 
+MAT       -0.0430245      0.9987753     -0.0244310      1.9814388 
+MAT        0.0595089      0.0269722      0.9978633     -2.8603610 
 MAT        0.0000000      0.0000000      0.0000000      1.0000000 
 ### MAT END
 
-Finished at:  Monday October 27 2008, 15:21
+Finished at:  Thursday December 11 2008, 00:08
+
 \end{verbatim}
 \nolinenumbers
 
 \begin{itemize}
-\item{\bf line 5:} starting date and time of the simulation
-\item{\bf lines 14--16:} minimization 1. Details of minimization number, cutoff in \AA\ and maximum number of iterations (line~14). 
+\item{\bf line 9:} starting date and time of the simulation
+\item{\bf lines 18--20:} minimization 1. Details of minimization number, cutoff in \AA\ and maximum number of iterations (line~14). 
 Number of variables (line~15). End of minimization (line~16), either convergence is achieved (iteration number is specified), either maximum number of steps is reached.
-\item{\bf lines 17--19:} minimization 2.
-\item{\bf lines 20--22:} minimization 3.
-\item{\bf lines 23--25:} minimization 4.
-\item{\bf lines 26--28:} minimization 5.
-\item{\bf lines 29--31:} minimization 6.
-\item{\bf lines 31--32:} final result after the 6 minimizations. With a single minimization, 
-the default translation ({\tt Trans}) is 1 and the default rotation ({\tt Rot}) is 1. 
-Energy is given, as well as the C$_{\alpha}$-RMSD (in \AA) if the {\tt --ref} option is specified.
-\item{\bf lines 34--39:} rotation/translation matrix of the ligand compared to its initial position.
-\item{\bf line 41:} end date and time of the simulation.
+\item{\bf lines 21--23:} minimization 2.
+\item{\bf lines 24--26:} minimization 3.
+\item{\bf lines 27--29:} minimization 4.
+\item{\bf lines 30--32:} minimization 5.
+\item{\bf lines 33--35:} minimization 6.
+\item{\bf lines 36--37:} final result after the 6 minimizations. With a single series of minimization, the default translation ({\tt Trans}) is 1 and the default rotation ({\tt Rot}) is 1. 
+Energy ({\tt Ener} is given in RT unit, as well as the C$_{\alpha}$-RMSD 
+({\tt RmsdCA\_ref} in \AA) if the {\tt --ref} option is specified.
+\item{\bf lines 38--43:} rotation/translation matrix of the ligand compared to its initial position.
+\item{\bf line 45:} end date and time of the simulation.
 \end{itemize}
 
-Here, the final energy is -57.44~RT unit and the RMSD is 1.10~\AA, that is pretty close from initial position (RMSD would be 0).
+Here, the final energy is -58.35~RT unit and the RMSD is 1.19~\AA, that is pretty close from the initial position. (In a "perfect" simulation, RMSD would
+be 0.0).
 
-For a full systematic docking in the translational and rotational space (using both {\tt translation.dat}
-and {\tt rotation.dat} files):
+For a full systematic docking in the translational and rotational space (using both {\tt translation.dat} and {\tt rotation.dat} files):
 \begin{verbatim}
 ./Attract.py receptor.red ligand.red --ref=ligand.red > docking.att &
 \end{verbatim}
@@ -815,7 +820,7 @@ and {\tt rotation.dat} files):
 The output file {\tt docking.att} contains all informations on the docking simulation. 
 It contains ouput of all series of minimizations (with the specification of translation and rotation number).
 
-For the 1CGI system, the systematic docking tooks 13 hours a single processor of a 64~bit Intel Xeon 1.86 GHz 2 Go RAM computer.
+For the 1CGI system, the systematic docking tooks 19 hours on a single processor of a 64~bit Intel Xeon 1.86 GHz 2 Go RAM computer.
 The output file {\tt docking.att} is roughly 77~Mo.
 
 \subsubsection{Docking output analysis}
@@ -829,16 +834,16 @@ cat docking.att | egrep -e "^==" | sort -n -k4 | head
 For the previsous docking simulation of 1CGI, it gives:
 
 \begin{verbatim}
-==      181    114   -57.4411654 1.10599878835
-==       75    210   -57.4408805 1.10386797285
-==      136    240   -57.4408059 1.10497880686
-==      128    115   -57.4406227  1.1065086208
-==       72    253   -57.4403268 1.10469314189
-==      136    184   -57.4403213 1.10354544969
-==      128     13   -57.4402706 1.10351871162
-==       73    147   -57.4402011 1.10626548925
-==      133    149   -57.4401622  1.1059746571
-==      136     50   -57.4401590 1.10652040931
+==      133     92   -58.3541443 1.19429783478
+==       73    229   -58.3541441 1.19413397471
+==      133     21   -58.3541437 1.19566121232
+==       73    235   -58.3541436 1.19394986862
+==      136     21   -58.3541424 1.19584401069
+==      130    141   -58.3541411  1.1930478392
+==      194    219   -58.3541410  1.1961246513
+==       73      7   -58.3541406 1.19314844151
+==      136    155   -58.3541400 1.19273140092
+==      163     70   -58.3541387 1.19596166869
 \end{verbatim}
 
 With each column meaning:
@@ -853,15 +858,15 @@ With each column meaning:
 Any simulated ligand structure can be extracted with the script {\tt Extract.py}:
 
 \begin{verbatim}
-./Extract.py docking.att ligand.red 181 114 > ligand_1.red
+./Extract.py docking.att ligand.red 133 92 > ligand_1.red
 \end{verbatim}
 
 with the parameters:
 \begin{itemize}
 \item the ouput file of the docking simulation ({\tt docking.att})
 \item the initial ligand file ({\tt ligand.red})
-\item a translation number ({\tt 181})
-\item a rotation number ({\tt 114})
+\item a translation number ({\tt 133})
+\item a rotation number ({\tt 92})
 \item an output ligand file ({\tt ligand\_1.red})
 \end{itemize}
 
@@ -874,7 +879,7 @@ with the parameters:
 \includegraphics*[width=0.30\textwidth]{img/1CGI_dock1_top.png}
 \caption{Reduced representations of receptor (green), ligand at reference position (red)
 and ligand from the best solution (lowest energy) of the docking (blue). Front (A) and top (B) views.
-With a RMSD of 1.1~\AA\ between the reference and the simulated ligand structures, the docking 
+With a RMSD of 1.2~\AA\ between the reference and the simulated ligand structures, the docking 
 simulation found very well the initial complex structure.}
 \end{figure}
 
@@ -912,18 +917,18 @@ with the parameters:
 \end{itemize}
 
 The first lines of the output cluster file are:
-\linenumbers
+
+\linenumbers*
 \begin{verbatim}
       Trans    Rot          Ener    RmsdCA_ref   Rank   Weight
-==      181    114   -57.4411654     1.1059988      1       59
-==      196    163   -39.2885528    49.1604392      2        2
-==      164    116   -37.7804737     6.4643961      3        3
-==      168    178   -37.5647788    16.0492776      4       18
-==      136     79   -37.3438698    12.3197825      5        4
-==      125     99   -37.2556675    14.5942088      6       18
-==       63    208   -37.0285594    14.1813900      7        7
-==      166    219   -36.7396540    13.4191739      8        5
-==       69     66   -36.6592016    19.9349136      9       21
+==      133     92   -58.3541443     1.1942978      1       55
+==      196    132   -40.3704483    48.8195971      2        1
+==      164    212   -39.3828793     6.4968451      3        2
+==       71    102   -38.7843145    14.7084754      4       14
+==       73    126   -38.5826662    11.5175880      5        3
+==      129    223   -38.3872389    12.3477797      6        3
+==      132    245   -38.3429828    14.0028863      7       10
+==      133    131   -38.1570360    16.0382603      8       17
 \end{verbatim}
 \nolinenumbers
 
@@ -931,11 +936,10 @@ Line 1 is a comment line, next lines are clusters. For each cluster (line)
 is specified:
 \begin{itemize}
 \item a representative structure with the translation and rotation
-numbers (columns 2 and 3), interaction energy (column 4) and RMSD (column
-5) from the reference ligand structure
-\item the number of the cluster (column 6)
+numbers (column 2, {\tt Trans}, and 3, {\tt Rot}), interaction energy (column 4, {\tt Ener}) and RMSD (column 5, {\tt RmsdCA\_ref}) from the reference ligand structure
+\item the number of the cluster (column 6, {\tt Rank})
 \item the number of structures (docking solutions) in this cluster (column
-7)
+7, {\tt Weight})
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
