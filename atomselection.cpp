@@ -99,6 +99,7 @@ AtomSelection operator! (const AtomSelection& seltoinverse)
 {
       //TODO: tests!
       AtomSelection selout;
+      selout.SetRigid(*seltoinverse.m_rigid);
       AtomSelection all = seltoinverse.m_rigid->SelectAllAtoms();
       set_difference(all.m_list.begin(), all.m_list.end(),
                      seltoinverse.m_list.begin(), seltoinverse.m_list.end(),
