@@ -54,7 +54,11 @@ The basic requirements are:
 \item doxygen (optional)
 \end{itemize}
 
-\subsection{Set up: Dell D420 laptop, Debian Lenny, 32-bit}
+In the following, we assume the PTools library will be installed in the 
+\verb@$HOME/soft/@ directory where \verb@$HOME@ represents the home directory
+(usually {\tt /home/adrien} for the user {\tt adrien}.
+
+\subsection{Set up on Dell D420 laptop, Debian Lenny, 32-bit}
 This example installation has been performed on a Dell D420 laptop (Intel
 Core Duo 1.2~GHz, Debian Lenny, linux kernel 2.6.22).
 
@@ -111,7 +115,7 @@ of PyPlusPlus:
 >>> import pyplusplus
 \end{verbatim}
 
-\subsection{Set up: Dell D420 laptop, Ubuntu 8.04, 32-bit}
+\subsection{Set up on a Dell D420 laptop, Ubuntu 8.04, 32-bit}
 This example installation has been performed on a Dell D420 laptop (Intel
 Core Duo 1.2~GHz, Ubuntu 8.04, linux kernel 2.6.24).
 
@@ -145,7 +149,7 @@ cmake ../gccxml -DCMAKE_INSTALL_PREFIX:PATH=/installation/path
 make
 make install
 \end{verbatim}
-The "-DC\_MAKE\_INSTALL\_PREFIX" option can be left off if you want to use "/usr/local" as the installation prefix.
+The \verb@-DC_MAKE_INSTALL_PREFIX@ option can be left off if you want to use \verb@/usr/local@ as the installation prefix.
 
 \paragraph{Pyplusplus and Pygccxml: }
 The homepage of {\tt pyplusplus} and {\tt pygccxml} projects is 
@@ -181,7 +185,7 @@ of PyPlusPlus:
 
 
 
-\subsection{Set up: Dell Precision T7400, Linux Fedora Core 9, 64-bit}
+\subsection{Set up on a Dell Precision T7400, Linux Fedora Core 9, 64-bit}
 This example installation has been performed on a Dell Precision T7400 (Intel
 Xeon quad-core 2.3~GHz, Linux Fedora Core 9, linux kernel 2.6.25).
 
@@ -189,7 +193,7 @@ Xeon quad-core 2.3~GHz, Linux Fedora Core 9, linux kernel 2.6.25).
 The scons package provided by Fedora is not up-to-date enough to link Fortran and C++ together and then rise an
 error. The last version of scons is obtained at the homepage of the project ({\tt  http://www.scons.org/}).
 From the download section \footnote{\tt http://sourceforge.net/project/showfiles.php?group\_id=30337}, 
-get the stable file {\tt scons-0.98.5-1.noarch.rpm}.
+get the stable file {\tt scons-0.98.5-1.noarch.rpm} and install it:
 
 \begin{verbatim}
  rpm -ivh scons-0.98.5-1.noarch.rpm
@@ -202,7 +206,8 @@ get the stable file {\tt scons-0.98.5-1.noarch.rpm}.
 (2.5.1-26 version installed)
 
 \paragraph{gccxml:}The homepage of {\tt gccxml} project is {\tt http://www.gccxml.org}. 
-To install gccxml from the official CVS repository \footnote{\tt http://www.gccxml.org/HTML/Download.html}.
+To install gccxml from the official CVS repository 
+\footnote{\tt http://www.gccxml.org/HTML/Download.html} do:
 
 \begin{verbatim}
 cvs -d :pserver:anoncvs@www.gccxml.org:/cvsroot/GCC_XML login
@@ -217,7 +222,7 @@ cmake ../gccxml -DCMAKE_INSTALL_PREFIX:PATH=/installation/path
 make
 make install
 \end{verbatim}
-The "-DC\_MAKE\_INSTALL\_PREFIX" option can be left off if you want to use "/usr/local" as the installation prefix.
+The \verb@-DC_MAKE_INSTALL_PREFIX@ option can be left off if you want to use \verb@/usr/local@ as the installation prefix.
 
 \paragraph{Pyplusplus and Pygccxml: }
 The homepage of {\tt pyplusplus} and {\tt pygccxml} projects is 
@@ -252,7 +257,7 @@ of PyPlusPlus:
 \end{verbatim}
 
 
-\subsection{Set up: Dell Precision 690, Linux Fedora Core 7, 64-bit}
+\subsection{Set up on a Dell Precision 690, Linux Fedora Core 7, 64-bit}
 This example installation has been performed on a Dell Precision 690 (Intel
 Xeon bi-quad core 1.9~GHz, Linux Fedora Core 7, linux kernel 2.6.23).
 
@@ -260,7 +265,7 @@ Xeon bi-quad core 1.9~GHz, Linux Fedora Core 7, linux kernel 2.6.23).
 The scons package provided by Fedora is not up-to-date enough to link Fortran and C++ together and then rise an
 error. The last version of scons is obtained at the homepage of the project ({\tt  http://www.scons.org/}).
 From the download section \footnote{\tt http://sourceforge.net/project/showfiles.php?group\_id=30337}, 
-get the stable file {\tt scons-0.98.5-1.noarch.rpm}.
+get the stable file {\tt scons-0.98.5-1.noarch.rpm} and install it:
 
 \begin{verbatim}
  rpm -ivh scons-0.98.5-1.noarch.rpm
@@ -273,7 +278,8 @@ get the stable file {\tt scons-0.98.5-1.noarch.rpm}.
 (2.5-15.fc7 version installed)
 
 \paragraph{gccxml:}The homepage of {\tt gccxml} project is {\tt http://www.gccxml.org}. 
-To install gccxml from the official CVS repository \footnote{\tt http://www.gccxml.org/HTML/Download.html}.
+To install gccxml from the official CVS repository 
+\footnote{\tt http://www.gccxml.org/HTML/Download.html} do:
 
 \begin{verbatim}
 cvs -d :pserver:anoncvs@www.gccxml.org:/cvsroot/GCC_XML login
@@ -288,7 +294,9 @@ cmake ../gccxml -DCMAKE_INSTALL_PREFIX:PATH=/installation/path
 make
 make install
 \end{verbatim}
-The "-DC\_MAKE\_INSTALL\_PREFIX" option can be left off if you want to use "/usr/local" as the installation prefix.
+
+The \verb@-DC_MAKE_INSTALL_PREFIX@ option can be left off if you want to use 
+\verb@/usr/local@ as the installation prefix.
 
 \paragraph{Pyplusplus and Pygccxml: }
 The homepage of {\tt pyplusplus} and {\tt pygccxml} projects is 
@@ -329,13 +337,13 @@ of PyPlusPlus:
 
 From the PTools website {\tt  http://www.ibpc.fr/$\sim$chantal/ptools/},
 download the current PTools archive {\tt ptools-XX.tgz} where {\tt XX} is
-the version number. Copy the archive {\tt ptools-XX.tgz} in your local 
-{\tt \$HOME/soft/} directory and uncompress it:
+the version number. Copy the archive file in your local 
+\verb@$HOME/soft/@ directory and uncompress it:
 
 \begin{verbatim}
-tar zxvf  ptools-XX.tgz
+tar zxvf ptools-XX.tgz
 \end{verbatim}
-The directory {\tt ptools-XX} shoud be created.
+The directory {\tt ptools-XX} should be created.
 
 
 \subsection{Compilation}
@@ -359,11 +367,12 @@ ln -s /usr/lib64/libg2c.so.0 /usr/lib64/libg2c.so
 \end{verbatim}
 
 In case of problem with the gfortran library, you should add directly to the search path (line~87)
-of the SConstruct file the location of libgfortran files. For instance: 
+of the {\tt SConstruct} file the location of libgfortran files. For instance: 
 \newline Initial search path:
-\newline ["/usr/lib","/sw/lib","/usr/lib/gcc/x86\_64-redhat-linux/3.4.6/"]
-\newline Add specific path for suse distribution:
-\newline ["/usr/lib","/sw/lib","/usr/lib/gcc/x86\_64-redhat-linux/3.4.6/","/usr/lib64/gcc/x86\_64-suse-linux/4.1.2/"]
+\newline \verb@["/usr/lib","/sw/lib","/usr/lib/gcc/x86\_64-redhat-linux/3.4.6/"]@
+\newline Add specific path for linux Suse distribution:
+\newline \verb@["/usr/lib","/sw/lib","/usr/lib/gcc/x86\_64-redhat-linux/3.4.6/",@
+\newline \verb@"/usr/lib64/gcc/x86\_64-suse-linux/4.1.2/"]@
 
 \subsection{Final test and further documentation}
 
@@ -372,7 +381,7 @@ In the {\tt Tests} directory, one can test the compilation worked:
 python unittest1.py
 \end{verbatim}
 
-The expected output should similar to:
+The expected output should be similar to:
 \begin{verbatim}
 ...............
 ----------------------------------------------------------------------
@@ -394,20 +403,20 @@ If Doxygen is installed, simply type {\tt doxygen} in
 the directory which contains the {\tt Doxyfile} ({\tt
 \$HOME/soft/ptools-XX}). Then look into the {\tt html}
 directory and open with your favorite browser the {\tt index.html} file
-generated with doxygen. 
+generated by doxygen. 
 
 The most important objects and functions to manipulate PDB files are explained in
 the following section.
 
 \subsection{From Python through the C++ binding}
 
-If PTools has been installed in the {\tt \$HOME/soft/ptools-XX} directory, 
-update your {\tt PYTHONPATH}:
+If PTools has been installed in the \verb@$HOME/soft/ptools-XX@ directory, 
+update your {\tt PYTHONPATH} environment variable accordingly:
 
 \begin{verbatim}
-export PYTHONPATH=$PYTHONPATH:$HOME/soft/ptools/branches/1.0rc/
+export PYTHONPATH=$PYTHONPATH:$HOME/soft/ptools-XX/
 \end{verbatim}
-or add this line at the end of your {\tt \$HOME/.bashrc} file.
+or add this line at the end of your \verb@$HOME/.bashrc@ file.
 
 
 From the Python interpreter or from a Python script, 
@@ -518,7 +527,7 @@ ca_trace = sel_ca.CreateRigid()
 
 \subsubsection{atom object}
 
-\paragraph{copy atom from rigidbody object.}
+\paragraph{Copy atom from rigidbody object.} In this example, the third atom (indexed as 2 since the first atom in numberered 0) is copied.
 \begin{verbatim}
 at = pdb.CopyAtom(2)
 \end{verbatim}
