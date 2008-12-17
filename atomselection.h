@@ -49,12 +49,13 @@ public:
     //friends:
     friend AtomSelection operator& (const AtomSelection& atsel1,const  AtomSelection& atsel2);
     friend AtomSelection operator| (const AtomSelection& atsel1,const AtomSelection& atsel2);
+    friend AtomSelection operator! (const AtomSelection& seltoinverse);
 };
 
 
 AtomSelection operator& (const AtomSelection& atsel1,const  AtomSelection& atsel2);
 AtomSelection operator| (const AtomSelection& atsel1,const AtomSelection& atsel2);
-
+AtomSelection operator! (const AtomSelection& seltoinverse);
 
 }
 

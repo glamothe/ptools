@@ -95,5 +95,16 @@ AtomSelection operator| (const AtomSelection& atsel1,const AtomSelection& atsel2
 }
 
 
+AtomSelection operator! (const AtomSelection& seltoinverse)
+{
+      //TODO: tests!
+      AtomSelection selout;
+      AtomSelection all = seltoinverse.m_rigid->SelectAllAtoms();
+      set_difference(all.m_list.begin(), all.m_list.end(),
+                     seltoinverse.m_list.begin(), seltoinverse.m_list.end(),
+                     back_inserter(selout.m_list));
+
+      return selout;
+}
 
 }
