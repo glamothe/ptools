@@ -55,7 +55,7 @@ The basic requirements are:
 \end{itemize}
 
 In the following, we assume the PTools library will be installed in the 
-\verb@$HOME/soft/@ directory where \verb@$HOME@ represents the home directory
+\verb@$HOME/soft@ directory where \verb@$HOME@ represents the home directory
 (usually {\tt /home/adrien} for the user {\tt adrien}.
 
 \subsection{Set up on Dell D420 laptop, Debian Lenny, 32-bit}
@@ -336,12 +336,12 @@ of PyPlusPlus:
 \subsection{Archive download}
 
 From the PTools website {\tt  http://www.ibpc.fr/$\sim$chantal/ptools/},
-download the current PTools archive {\tt ptools-XX.tgz} where {\tt XX} is
+download the current PTools archive {\tt ptools-XX.tar.gz} where {\tt XX} is
 the version number. Copy the archive file in your local 
 \verb@$HOME/soft/@ directory and uncompress it:
 
 \begin{verbatim}
-tar zxvf ptools-XX.tgz
+tar zxvf ptools-XX.tar.gz
 \end{verbatim}
 The directory {\tt ptools-XX} should be created.
 
@@ -476,6 +476,52 @@ WritePDB(pdb, "1BTA_centered.pdb")
 \end{verbatim}
 
 
+\paragraph{Superpose two structures.} This is a complete example where we
+superpose a structure and its copy after a translation.\\
+
+\noindent
+First, Load pdb file in a rigidbody object
+\begin{verbatim}
+pdb = Rigidbody("1BTA.pdb")
+\end{verbatim}
+Make a copy
+\begin{verbatim}
+pdb2 = pdb
+\end{verbatim}
+Create a translation vector
+\begin{verbatim}
+trans = Coord3D(5, 0, 1)
+\end{verbatim}
+Apply the translation
+\begin{verbatim}
+pdb2.Translate(trans)
+\end{verbatim}
+Superpose both structures
+\begin{verbatim}
+sup = superpose(pdb, pdb2)
+\end{verbatim}
+Extract rmsd and matrix
+\begin{verbatim}
+rmsd = sup.rmsd
+matrix = sup.matrix
+\end{verbatim}
+Print rmsd
+\begin{verbatim}
+print rmsd
+\end{verbatim}
+The output is {\tt 1.22224104574e-07}. Then print the 4x4 matrix:
+\begin{verbatim}
+matrix.Print()
+\end{verbatim}
+with output:
+\begin{verbatim}
+1  8.07909e-09  -5.80388e-09  1.42535e-09  
+-8.07909e-09  1  2.0426e-09  2.54026e-08  
+5.80388e-09  -2.0426e-09  1  -1.86091e-08  
+0  0  0  1  
+\end{verbatim}
+
+
 \subsubsection{Selection objects}
 
 \paragraph{Select CA atoms.}
@@ -580,7 +626,7 @@ a protein/DNA complex (1K79).
 \subsection{Protein--protein complex: 1CGI}
 
 The 1CGI complex \footnote{\tt http://www.rcsb.org/pdb/cgi/explore.cgi?pdbId=1CGI} 
-has two partners:
+has two partners,
 \begin{itemize}
 \item the bovine chymotrypsinogen A: chain E, 245 residues, 1799 atoms
 \item a variant of the human pancreatic secretory trypsin inhibitor: chain I, 56 residues, 440 atoms
@@ -590,14 +636,14 @@ has two partners:
 
 Before docking, one has to separate both partners. This is possible with visualisation
 software such as Pymol \footnote{\tt http://pymol.sourceforge.net/} or VMD \footnote{\tt http://www.ks.uiuc.edu/Research/vmd/}, 
-and also directly with the PTools library.
+and also directly with PTools.
 
 Within the Python interpreter, first load the PTools library:
 \begin{verbatim}
 from ptools import *
 \end{verbatim}
 
-Read the PDB file 1CGI.pdb:
+Read the PDB file of the complex:
 \begin{verbatim}
 pdb=Rigidbody("1CGI.pdb")
 \end{verbatim}
@@ -608,7 +654,9 @@ selectE=pdb.SelectChainId("E")
 selectI=pdb.SelectChainId("I")
 \end{verbatim}
 
-Create both chains as independant rigid bodys and save them in PDB file. The largest protein is define as the receptor (chain E) and the smallest as the ligand (chain I):
+Create both chains as independant rigidbody objects and save them in PDB files. 
+The largest protein is define as the receptor (chain E) and the smallest 
+as the ligand (chain I).
 
 \begin{verbatim}
 protE=selectE.CreateRigid()
@@ -624,7 +672,7 @@ WritePDB(selectI.CreateRigid(),"ligand.pdb")
 
 \subsubsection{Coarse grain reduction}
 
-This step translates all atom molecule into coarse grain (reduced) molecule for further docking. 
+This step translates all-atom molecule into coarse grain (reduced) molecule for further docking. 
 
 For the receptor: 
 \begin{verbatim}
@@ -641,7 +689,7 @@ In the present case, {\tt ligand.red} contains 126 beads. \\
 The {\tt reduce.py} script required the following parameters:
 
 \begin{itemize}
-\item {\tt --prot} or {\tt --dna} option, specifies the type of molecule to reduce (respectively protein or DNA)
+\item \verb@--prot@ or \verb@--dna@ option, specifies the type of molecule to reduce (respectively protein or DNA)
 \item an input all-atom PDB file, for instance {\tt receptor.pdb}
 \item an output coarse grain file, for instance {\tt receptor.red}
 \end{itemize}
@@ -654,10 +702,7 @@ This script also needs definition files:
 \item filetype conversion file ({\tt type\_conversion.dat})
 \end{itemize}
 
-The reduced files generated are PDB-like structure files that can be read by most visualisation
-programs (rasmol, pymol, VMD). Adjustment of van de Waals radii is recommended for an accurate 
-representation of the occupied volume.
-Always visualize both all-atom and coarse grain structures to check the reduction worked properly.
+The reduced files generated are PDB-like structure files that can be read by most visualisation programs (Rasmol, Pymol, VMD). Always visualize both all-atom and coarse grain structures to check the reduction worked properly.
 
 \begin{figure}[htbp]
 \center
@@ -1050,6 +1095,32 @@ Always visualize both all-atom and coarse grain structures to check the reductio
 
 {\Huge To continue....}
 
+\subsection{Accurate bead representation}
+
+Adjustment of van der Waals radii is recommended for a more accurate representation 
+of the occupied volume. In this purpose, we provide a Pymol script called \verb@update_pymol_cg_vdw_radii.pml@ in the \verb@$HOME/ptools-XX/PyAttract/reduce@ directory. Within Pymol, call this script with the command
+\begin{verbatim}
+run update_pymol_cg_vdw_radii.pml
+\end{verbatim}
+or from the menu {\tt File -> Run -> select the file}.
+
+With some representations (dots, spheres, mesh and surface), you also need to ask
+Pymol to refresh its view with the command {\tt rebuild}.
+Coarse grain van der Waals radii have now their real values and reduced molecules
+their real volume. 
+
+\begin{figure}[htbp]
+\center
+{\textbf A}
+\includegraphics*[width=0.15\textwidth]{img/1K79_dna.png}
+\hspace*{2cm}
+{\textbf B}
+\includegraphics*[width=0.20\textwidth]{img/1K79_prot.png}
+\caption{All-atom (green mesh) and reduced (red mesh) representations of both 
+partners in the 1K79 protein--DNA complex. With the correct values of coarse grain
+van der Waals radii, both representations are equivalent.
+DNA (A) and protein (B).}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Misc. tips and tricks}
@@ -1058,8 +1129,11 @@ Always visualize both all-atom and coarse grain structures to check the reductio
 \subsection{Troubleshooting}
 
 \subsubsection{Bus error}
-On Mac OS, the command "import ptools" can lead to a "bus error" error message. This happens with MacPorts or 
-fink versions of python. Solution: use the python provided with the system instead (/usr/bin/python)
+
+On Mac OS, the command \verb@import ptools@ can lead to a "bus error" 
+error message. This happens with MacPorts or fink versions of Python. 
+A solution is to use the Python provided with the system instead 
+(\verb@/usr/bin/python@).
 
 
 
