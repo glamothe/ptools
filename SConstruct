@@ -128,7 +128,7 @@ else:
    COMMON_CPPPATH.append(boostdir)
 
 python24dir=FIND_HEADER(["Python.h"], ["/usr/include/python2.4", \
-"/sw/include/python2.4/Python.h"])
+"/sw/include/python2.4"])
 
 if python24dir is not None:
    print "python2.4 found, configuring path and libs"
