@@ -620,8 +620,10 @@ at.SetExtra()
 
 \section{Docking with PTools: ATTRACT}
 
-This part is illustrated by the docking of a protein/protein complex (1CGI) and
-a protein/DNA complex (1K79).
+This part is illustrated by the docking of a protein--protein complex (1CGI) and
+a protein--DNA complex (1K79). The first example (1CGI) is explained step by step 
+and script usages are exhaustively detailled. The second example (1K79) is
+much more straightforward.
 
 \subsection{Protein--protein complex: 1CGI}
 
@@ -711,12 +713,13 @@ The reduced files generated are PDB-like structure files that can be read by mos
 \hspace*{2cm}
 {\textbf B}
 \includegraphics*[width=0.25\textwidth]{img/1CGI_ligand.png}
-\caption{All-atom (green sticks) and reduced (red spheres) representation of both proteins in 1CGI. Receptor (A) and ligand (B).}
+\caption{All-atom (green sticks) and reduced (red spheres) representation of 
+both proteins in the 1CGI complex. Receptor (A) and ligand (B).}
 \end{figure}
 
 \subsubsection{Initial ligand positions}
 
-The systematic docking simulation uses starting points placed around the
+A systematic docking simulation uses starting points placed all around the
 receptor.  The Python script {\tt translate.py} employs a slightly modified
 Shrake and Rupley \cite{shrake1973} method to define starting positions
 from the receptor surface.  The surface generation fonctions are implemented in
@@ -732,9 +735,10 @@ In the present case:
 ./translate.py receptor.red ligand.red > translation.dat
 \end{verbatim}
 
-Visualisation of the starting points may be obtained with any visualisation software by 
-renaming {\tt translation.dat} in {\tt translation.pdb}.
-Then, remove the first line of {\tt translation.pdb} (indicating the total number of starting points).
+Visualisation of the starting points may be obtained with any visualisation 
+software by renaming {\tt translation.dat} in {\tt translation.pdb} and then
+by removing the first line of {\tt translation.pdb} (that indicates the total 
+number of starting points).
 
 \begin{figure}[htbp]
 \center
@@ -748,6 +752,8 @@ there are 258 associated rotations defined in the file {\tt rotation.dat}.
 \subsubsection{ATTRACT parameters}
 
 ATTRACT parameters are found in the file {\tt attract.inp}. A typical configuration file is:
+
+\linenumbers*
 \begin{verbatim}
     6    0    0
  -34.32940  38.75490  -3.66956   0.00050
@@ -758,9 +764,11 @@ ATTRACT parameters are found in the file {\tt attract.inp}. A typical configurat
    50  2  1  1  1  0  0  0  0   500.00
    50  2  1  1  1  0  0  0  0   500.00
 \end{verbatim}
+\nolinenumbers
 
-The first line indicates the number of minimisations performed by ATTRACT
-for each starting position (six in the present case). The last six lines are the characteristics of
+Line~1 indicates the number of minimisations performed by ATTRACT
+for each starting position (six in the present case). The last six lines (3--8) 
+are the characteristics of
 each minimisation. The first column is the number of steps before the
 minimisation stops.  The last column is the square of the cutoff distance
 for the calculation of the interaction energy between both partners. 
@@ -769,15 +777,15 @@ In the present case, the simulation starts with a very large cutoff value of 990
 to end with 500~\AA$^2$ ($\sim$ 22~\AA).
 
 \paragraph{Note:} Columns with zeros or ones should not be modified, as
-well as the second line.
+well as line~2.
 
-\subsubsection{Initial docking simulation}
+\subsubsection{Initial (single) docking simulation}
 
 A docking simulation with ATTRACT requires:
 \begin{itemize}
+\item the ATTRACT Python script ({\tt  Attract.py})
 \item a coarse grain receptor (fixed partner) file ({\tt receptor.red})
 \item a coarse grain (mobile partner) file ({\tt ligand.red})
-\item the ATTRACT program ({\tt  Attract.py})
 \item the coarse grain parameters ({\tt aminon.par})
 \item translational starting points ({\tt translation.dat})
 \item rotations performed for each translational starting point ({\tt rotation.dat})
@@ -860,24 +868,26 @@ Number of variables (line~15). End of minimization (line~16), either convergence
 \item{\bf lines 30--32:} minimization 5.
 \item{\bf lines 33--35:} minimization 6.
 \item{\bf lines 36--37:} final result after the 6 minimizations. With a single series of minimization, the default translation ({\tt Trans}) is 1 and the default rotation ({\tt Rot}) is 1. 
-Energy ({\tt Ener} is given in RT unit, as well as the C$_{\alpha}$-RMSD 
-({\tt RmsdCA\_ref} in \AA) if the \verb@--ref@ option is specified.
+Energy ({\tt Ener}) is given in RT unit and the C$_{\alpha}$-RMSD 
+({\tt RmsdCA\_ref}) in \AA if the \verb@--ref@ option is specified.
 \item{\bf lines 38--43:} rotation/translation matrix of the ligand compared to its initial position.
 \item{\bf line 45:} end date and time of the simulation.
 \end{itemize}
 
-Here, the final energy is -58.35~RT unit and the RMSD is 1.19~\AA, which is pretty close from the initial position. (In a "perfect" simulation, RMSD would
+Here, the final energy is -58.35~RT unit and the RMSD is 1.19~\AA, which is pretty close from the initial position. (In a \emph{perfect} simulation, RMSD would
 be 0.0).
 
-For a full systematic docking in the translational and rotational space (using both {\tt translation.dat} and {\tt rotation.dat} files):
+\subsubsection{Systematic docking simulation}
+
+For a full systematic docking in the translational and rotational space (using both {\tt translation.dat} and {\tt rotation.dat} files), the command line is:
 \begin{verbatim}
 ./Attract.py receptor.red ligand.red --ref=ligand.red > docking.att &
 \end{verbatim}
 
 The output file {\tt docking.att} contains all informations on the docking simulation. 
-It contains ithe ouput of all series of minimizations (with the specification of translation and rotation number).
+It contains the ouput of all series of minimizations (with the specification of translation and rotation number).
 
-For the 1CGI system, the systematic docking took 19 hours on a single processor of a 64~bit Intel Xeon 1.86 GHz 2 Go RAM computer.
+For the 1CGI complex, the systematic docking took 19 hours on a single processor of a 64~bit Intel Xeon 1.86 GHz 2 Go RAM computer.
 The size of the output file {\tt docking.att} is roughly 77~Mo.
 
 \subsubsection{Docking output analysis}
@@ -957,7 +967,7 @@ For iRMSD, output is in \AA\ and fnat is given as a proportion (between 0.0 and 
 \item the output ligand file ({\tt ligand\_1.red})
 \end{itemize}
 
-Our clustering algorithm implemented in cluster.py can rapidly filter near identical solutions 
+Our clustering algorithm implemented in {\tt cluster.py} can rapidly filter near identical solutions 
 without requiring a preselected number of desired clusters.
 The algorithm is based on RMSD comparison and an additional energy criterion can be included 
 (see script options, by default RMSD and energy criterions are 1~\AA and 1~RT unit respectively).
@@ -1010,7 +1020,7 @@ has two partners,
 
 \subsubsection{Extraction of the docking partners}
 
-Both partners are extracted automatically with the PTools library from the Python interpreter:
+Both partners are extracted automatically with PTools from the Python interpreter:
 \begin{verbatim}
 from ptools import *
 pdb=Rigidbody("1K79.pdb")
@@ -1024,7 +1034,7 @@ exit()
 
 \subsubsection{Coarse grain reduction}
 
-This step translates all atom molecule into coarse grain (reduced) molecule for further docking. 
+All-atom molecules are then translated into coarse grain (reduced) molecule for further docking. 
 
 For the receptor (protein): 
 \begin{verbatim}
@@ -1052,7 +1062,7 @@ For the ligand (DNA), do not forget the \verb@--dna@ option:
 \begin{verbatim}
 ./reduce.py --dna ligand.pdb > ligand.red
 \end{verbatim}
-This also generates few warnings due to incomplete base:
+This also generates few warnings due to incomplete bases:
 \begin{verbatim}
 ./at2cg.dna.dat: found the definition of residues A G C T 
 ./at2cg.dna.dat: created the partition for residues A(6 beads) G(6 beads) C(5 beads) T(5 beads) 
@@ -1078,9 +1088,7 @@ Coarse grain (reduced) output: 162 beads
 
 The reduced DNA, {\tt ligand.red}, ends up with 162 beads. \\
 
-As previously said, the reduced files generated are PDB-like structure files that can be read by most visualisation
-programs (rasmol, pymol, VMD). Adjustment of van de Waals radii is recommended for an accurate 
-representation of the occupied volume.
+As previously said, the reduced files generated are PDB-like structure files that can be read by most visualisation programs (Rasmol, Pymol, VMD). 
 Always visualize both all-atom and coarse grain structures to check the reduction worked properly.
 
 \begin{figure}[htbp]
@@ -1093,7 +1101,86 @@ Always visualize both all-atom and coarse grain structures to check the reductio
 \caption{All-atom (green sticks) and reduced (red spheres) representation of both partners in 1K79. Receptor, protein (A) and ligand, DNA (B).}
 \end{figure}
 
-{\Huge To continue....}
+\subsubsection{Initial ligand position}
+
+\begin{verbatim}
+./translate.py receptor.red ligand.red > translation.dat
+\end{verbatim}
+
+In the present case, the {\tt translation.dat} file contains 179 starting points.
+
+\subsubsection{ATTRACT parameters}
+
+The content of the {\tt attract.inp} parameters file is identical to the one
+previously used for protein--protein docking.
+
+\subsubsection{Initial (single) docking simulation}
+
+A single ATTRACT simulation is done with:
+\begin{verbatim}
+./Attract.py receptor.red ligand.red --ref=ligand.red -s > single.att
+\end{verbatim}
+
+Here, the final energy is -38.4~RT unit and the RMSD is 1.3~\AA\ which is very close
+from the initial position.
+
+Please note, that the RMSD is not computed here on C$_{\alpha}$ atoms since the
+ligand is a DNA molecule. The RMSD is calculated with all DNA beads. 
+
+\subsubsection{Systematic docking simulation}
+
+A systematic docking simulation is then:
+\begin{verbatim}
+./Attract.py receptor.red ligand.red --ref=ligand.red > docking.att &
+\end{verbatim}
+
+The output file {\tt docking.att} contains all informations on the docking simulation. 
+It contains the ouput of all series of minimizations (with the specification of translation and rotation number).
+
+For the 1K79 complex, the systematic docking took roughly 11 hours on a single processor of a 64~bit Intel Xeon 1.86 GHz 2 Go RAM computer.
+The size of the output file {\tt docking.att} is about 67~Mo.
+
+\subsubsection{Docking output analysis}
+
+The 10 best geometries found during the docking simulation can be listed with :
+
+\begin{verbatim}
+cat docking.att | egrep -e "^==" | sort -n -k4 | head
+\end{verbatim}
+
+This gives:
+
+\begin{verbatim}
+==       30    157   -38.4463924 1.25369709657
+==      169     51   -38.4463903 1.25534808001
+==      148    234   -38.4463875 1.25581284912
+==       87    257   -38.4463867 1.25409925951
+==      109    231   -38.4463855 1.25469537295
+==      104    236   -38.4463848 1.25571565339
+==      144     27   -38.4463848 1.25495212761
+==      164    255   -38.4463819 1.25410121719
+==      163     27   -38.4463817 1.25446355377
+==       87    241   -38.4463806  1.2554586922
+\end{verbatim}
+
+
+
+
+
+
+
+
+
+
+
+
+{\Huge To continue with analysing docking results.}
+
+
+
+
+
+
 
 \subsection{Accurate bead representation}
 
