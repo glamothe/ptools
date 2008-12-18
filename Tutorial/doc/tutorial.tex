@@ -738,12 +738,12 @@ In the present case:
 Visualisation of the starting points may be obtained with any visualisation 
 software by renaming {\tt translation.dat} in {\tt translation.pdb} and then
 by removing the first line of {\tt translation.pdb} (that indicates the total 
-number of starting points).
+number of starting points). In this example, there are 204 starting points.
 
 \begin{figure}[htbp]
 \center
 \includegraphics*[width=0.4\textwidth]{img/1CGI_translation.png}
-\caption{(All-atom) receptor in green sticks and starting points as orange spheres.}
+\caption{Coarse grain receptor in green spheres and starting points as orange spheres.}
 \end{figure}
 
 For each position in translation (each {\tt ATOM} line of the file {\tt translation.dat}), 
@@ -779,7 +779,7 @@ to end with 500~\AA$^2$ ($\sim$ 22~\AA).
 \paragraph{Note:} Columns with zeros or ones should not be modified, as
 well as line~2.
 
-\subsubsection{Initial (single) docking simulation}
+\subsubsection{Single docking simulation}
 
 A docking simulation with ATTRACT requires:
 \begin{itemize}
@@ -944,15 +944,18 @@ with the parameters:
 \hspace*{2cm}
 {\textbf B}
 \includegraphics*[width=0.30\textwidth]{img/1CGI_dock1_top.png}
-\caption{Reduced representations of receptor (green), ligand at reference position (red)
-and ligand from the best solution (lowest energy) of the docking (blue). Front (A) and top (B) views.
-With a RMSD of 1.2~\AA\ between the reference and the simulated ligand structures, the docking 
-simulation found very well the initial complex structure.}
+\caption{Reduced representations of receptor (green), ligand at reference 
+position (red) and ligand from the best solution (lowest energy) of the 
+docking (blue). Front (A) and top (B) views. Beads have exact van der 
+Waals radii. With a RMSD of 1.2~\AA\ between the reference and the simulated 
+ligand structures, the docking simulation found very well the initial complex 
+structure.}
 \end{figure}
 
 
-In case you know the experimental structure of your system (as in this example), it is possible to calculate the
-interface RMSD (iRMSD) and the native fraction (fnat) as defined by the CAPRI contest \footnote{\tt http://capri.ebi.ac.uk}
+In case you know the experimental structure of your system (as in this example), 
+it is possible to calculate the interface RMSD (iRMSD) and the native fraction 
+(fnat) as defined by the CAPRI contest \footnote{\tt http://capri.ebi.ac.uk}
 using the following scripts:
 
 \begin{verbatim}
@@ -1008,6 +1011,9 @@ numbers (column 2, {\tt Trans}, and 3, {\tt Rot}), interaction energy (column 4,
 \item the number of structures (docking solutions) in this cluster (column
 7, {\tt Weight})
 \end{itemize}
+
+The large weight of the best solution shows the very good convergence of the
+algorithme.
 
 \subsection{Protein--DNA complex: 1K79}
 
@@ -1114,7 +1120,7 @@ In the present case, the {\tt translation.dat} file contains 179 starting points
 The content of the {\tt attract.inp} parameters file is identical to the one
 previously used for protein--protein docking.
 
-\subsubsection{Initial (single) docking simulation}
+\subsubsection{Single docking simulation}
 
 A single ATTRACT simulation is done with:
 \begin{verbatim}
@@ -1164,23 +1170,65 @@ This gives:
 \end{verbatim}
 
 
+We can than extract the best structure obtained (translation number 30 
+and rotation number 157):
+
+\begin{verbatim}
+./Extract.py docking.att ligand.red 30 157 > ligand_1.red
+\end{verbatim}
+
+\begin{figure}[htbp]
+\center
+{\textbf A}
+\includegraphics*[width=0.30\textwidth]{img/1K79_dock1_front.png}
+\hspace*{2cm}
+{\textbf B}
+\includegraphics*[width=0.30\textwidth]{img/1K79_dock1_top.png}
+\caption{Reduced representations of receptor (green), ligand at reference 
+position (red) and ligand from the best solution (lowest energy) of the 
+docking (blue). Front (A) and top (B) views. Beads have exact van der Waals 
+radii. With a RMSD of 1.6~\AA\ between the reference and the simulated ligand 
+structures, the docking simulation found very well the initial complex structure.}
+\end{figure}
+
+As for protein--protein example, one can compute the native fraction (fnat) but the 
+the interface RMSD (iRMSD) is not yet implemented:
+
+\begin{verbatim}
+fnat.py receptor.red ligand.red ligand_1.red
+\end{verbatim}
+
+That gives {\tt 0.824561403509} in this example.
 
 
+Our clustering algorithm implemented in {\tt cluster.py} can rapidly group
+near identical solutions without requiring a preselected number of desired clusters.
+The algorithm is based on RMSD comparison and an additional energy criterion can 
+be included (see script options, by default RMSD and energy criterions are 
+1~\AA and 1~RT unit respectively).
 
+\begin{verbatim}
+./cluster.py docking.att ligand.red > docking.clust
+\end{verbatim}
 
+The first lines of the output cluster file are:
 
+\linenumbers*
+\begin{verbatim}
+      Trans    Rot          Ener    RmsdCA_ref   Rank   Weight
+==       30    157   -38.4463924     1.2536971      1       46
+==      152    180   -36.8164268    29.0984166      2       17
+==       97    155   -36.3644447    28.7048437      3       21
+==       98     56   -36.0763672     6.3710149      4       22
+==       32    244   -35.1526795    28.8685938      5       31
+==       24      9   -34.8754859    12.7403727      6       13
+==      146     15   -34.3673609    20.3370509      7       13
+==      150    210   -33.6537513    17.1449536      8       17
+\end{verbatim}
+\nolinenumbers
 
-
-
-
-
-{\Huge To continue with analysing docking results.}
-
-
-
-
-
-
+The large weight of the best solution shows the very good convergence of the
+algorithme.
 
 \subsection{Accurate bead representation}
 
