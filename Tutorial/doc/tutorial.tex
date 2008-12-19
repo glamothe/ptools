@@ -8,20 +8,28 @@
 
 \begin{document}
 
-
 \title{\bf PTools tutorial}
-\author{
-Adrien Saladin \and 
-S\'ebastien Fiorucci \and
-Pierre Poulain \and
-Chantal Pr\'evost \and
-Martin Zacharias
+
+\author{Adrien Saladin $^{1,2}$
+\and S\'ebastien Fiorucci$^{1,4}$
+\and Pierre Poulain$^3$
+\and Chantal Pr\'evost$^2$
+ and Martin Zacharias$^1$
 }
 
 \maketitle
-
 \thispagestyle{empty}
 
+\noindent
+{\scriptsize
+$^1$ Computational Biology, School of Engineering and Science, Jacobs University Bremen, 28759 Bremen, Germany\\
+$^2$ LBT, CNRS UPR 9080 and Univ. Paris Diderot - Paris 7, IBPC, 13 rue Pierre et Marie Curie, 75005 Paris, France   \\
+$^3$ EBGM/DSIMB, Inserm UMR-S 726 and Univ. Paris Diderot - Paris 7, INTS,
+6 rue Alexandre Cabanel, 75015 Paris, France   \\
+$^4$ LCMBA, UMR-CNRS 6001, Facult\'e des Sciences, Universit\'e de Nice-Sophia Antipolis, 06108 Nice Cedex 2, France. \\
+}
+
+\vspace*{2cm}
 \begin{figure}[htbp]
 \center
 \includegraphics*[width=0.80\linewidth]{img/docking.png}
@@ -56,9 +64,9 @@ The basic requirements are:
 
 In the following, we assume the PTools library will be installed in the 
 \verb@$HOME/soft@ directory where \verb@$HOME@ represents the home directory
-(usually {\tt /home/adrien} for the user {\tt adrien}.
+(usually {\tt /home/adrien} for the user {\tt adrien}).
 
-\subsection{Set up on Dell D420 laptop, Debian Lenny, 32-bit}
+\subsection{Set up on a Dell D420 laptop, Debian Lenny, 32-bit}
 This example installation has been performed on a Dell D420 laptop (Intel
 Core Duo 1.2~GHz, Debian Lenny, linux kernel 2.6.22).
 
@@ -367,7 +375,7 @@ ln -s /usr/lib64/libg2c.so.0 /usr/lib64/libg2c.so
 \end{verbatim}
 
 In case of problem with the gfortran library, you should add directly to the search path (line~87)
-of the {\tt SConstruct} file the location of libgfortran files. For instance: 
+of the {\tt SConstruct} file the location of the libgfortran files. For instance: 
 \newline Initial search path:
 \newline \verb@["/usr/lib","/sw/lib","/usr/lib/gcc/x86\_64-redhat-linux/3.4.6/"]@
 \newline Add specific path for linux Suse distribution:
@@ -454,9 +462,9 @@ pdb.RadiusGyration()
 
 
 \paragraph{Structure translation.}
-First create a translation vector as a Coord3D object (for instance 5~\AA\ along the X axis, -3~\AA\ along Y and 1~\AA\ along the Z axis):
+First create a translation vector as a Coord3D object (for instance +5~\AA\ along the X axis, -3~\AA\ along Y and +1~\AA\ along the Z axis):
 \begin{verbatim}
-trans = Coord3D(5, 0, 1)
+trans = Coord3D(5, -3, 1)
 \end{verbatim}
 Then, apply the translation vector {\tt trans}:
 \begin{verbatim}
@@ -480,7 +488,7 @@ WritePDB(pdb, "1BTA_centered.pdb")
 superpose a structure and its copy after a translation.\\
 
 \noindent
-First, Load pdb file in a rigidbody object
+First, load a PDB file as a Rigidbody object
 \begin{verbatim}
 pdb = Rigidbody("1BTA.pdb")
 \end{verbatim}
@@ -492,7 +500,7 @@ Create a translation vector
 \begin{verbatim}
 trans = Coord3D(5, 0, 1)
 \end{verbatim}
-Apply the translation
+Apply the translation on the copy
 \begin{verbatim}
 pdb2.Translate(trans)
 \end{verbatim}
@@ -500,16 +508,16 @@ Superpose both structures
 \begin{verbatim}
 sup = superpose(pdb, pdb2)
 \end{verbatim}
-Extract rmsd and matrix
+Extract RMSD and matrix
 \begin{verbatim}
 rmsd = sup.rmsd
 matrix = sup.matrix
 \end{verbatim}
-Print rmsd
+Print RMSD
 \begin{verbatim}
 print rmsd
 \end{verbatim}
-The output is {\tt 1.22224104574e-07}. Then print the 4x4 matrix:
+The output is {\tt 1.22224104574e-07} (in \AA). Then print the 4x4 matrix:
 \begin{verbatim}
 matrix.Print()
 \end{verbatim}
@@ -571,7 +579,7 @@ sel_chainAB = pdb.SelectChainId("A") | pdb.SelectChainId("B")
 ca_trace = sel_ca.CreateRigid()
 \end{verbatim}
 
-\subsubsection{atom object}
+\subsubsection{atom objects}
 
 \paragraph{Copy atom from rigidbody object.} In this example, the third atom (indexed as 2 since the first atom in numberered 0) is copied.
 \begin{verbatim}
@@ -620,10 +628,11 @@ at.SetExtra()
 
 \section{Docking with PTools: ATTRACT}
 
-This part is illustrated by the docking of a protein--protein complex (1CGI) and
-a protein--DNA complex (1K79). The first example (1CGI) is explained step by step 
-and script usages are exhaustively detailled. The second example (1K79) is
-much more straightforward.
+This part shows the PTools docking application called ATTRACT. It usage and 
+capabilities are illustrated by the docking of a protein--protein complex (1CGI) 
+and a protein--DNA complex (1K79). The first example (1CGI) is explained 
+step by step and scripts usages are exhaustively detailled. The second example 
+(1K79) is much more straightforward.
 
 \subsection{Protein--protein complex: 1CGI}
 
@@ -636,7 +645,7 @@ has two partners,
 
 \subsubsection{Extraction of the docking partners}
 
-Before docking, one has to separate both partners. This is possible with visualisation
+Before docking, one has to separate both partners. This is possible with vizualisation
 software such as Pymol \footnote{\tt http://pymol.sourceforge.net/} or VMD \footnote{\tt http://www.ks.uiuc.edu/Research/vmd/}, 
 and also directly with PTools.
 
@@ -650,14 +659,14 @@ Read the PDB file of the complex:
 pdb=Rigidbody("1CGI.pdb")
 \end{verbatim}
 
-The chain selection allows the separation between chain A and B.
+The chain selection allows the separation between chain E and I.
 \begin{verbatim}
 selectE=pdb.SelectChainId("E")
 selectI=pdb.SelectChainId("I")
 \end{verbatim}
 
-Create both chains as independant rigidbody objects and save them in PDB files. 
-The largest protein is define as the receptor (chain E) and the smallest 
+Create both chains as independant Rigidbody objects and save them in PDB files. 
+The largest protein is defined as the receptor (chain E) and the smallest 
 as the ligand (chain I).
 
 \begin{verbatim}
@@ -674,7 +683,7 @@ WritePDB(selectI.CreateRigid(),"ligand.pdb")
 
 \subsubsection{Coarse grain reduction}
 
-This step translates all-atom molecule into coarse grain (reduced) molecule for further docking. 
+This step translates all-atom molecules into coarse grain (reduced) molecules for further docking. 
 
 For the receptor: 
 \begin{verbatim}
@@ -686,9 +695,9 @@ For the ligand:
 \begin{verbatim}
 ./reduce.py --prot ligand.pdb > ligand.red
 \end{verbatim}
-In the present case, {\tt ligand.red} contains 126 beads. \\
+In this example, {\tt ligand.red} contains 126 beads. \\
 
-The {\tt reduce.py} script required the following parameters:
+The {\tt reduce.py} script requires the following parameters:
 
 \begin{itemize}
 \item \verb@--prot@ or \verb@--dna@ option, specifies the type of molecule to reduce (respectively protein or DNA)
@@ -696,15 +705,15 @@ The {\tt reduce.py} script required the following parameters:
 \item an output coarse grain file, for instance {\tt receptor.red}
 \end{itemize}
 
-This script also needs definition files:
+This script also needs some definition files:
 
 \begin{itemize}
-\item bead topology files ({\tt at2cg.prot.dat} for protein reduction and {\tt at2cg.dna.dat} for DNA reduction )
-\item forcefield parameter file ({\tt ff\_param.dat})
-\item filetype conversion file ({\tt type\_conversion.dat})
+\item beads topology files ({\tt at2cg.prot.dat} for protein reduction and {\tt at2cg.dna.dat} for DNA reduction )
+\item forcefield parameters file ({\tt ff\_param.dat})
+\item filetypes conversion file ({\tt type\_conversion.dat})
 \end{itemize}
 
-The reduced files generated are PDB-like structure files that can be read by most visualisation programs (Rasmol, Pymol, VMD). Always visualize both all-atom and coarse grain structures to check the reduction worked properly.
+The reduced files generated are PDB-like structure files that can be read by many visualization programs (Rasmol, Pymol, VMD). Always visualize both all-atom and coarse grain structures to check the reduction worked properly (see Fig.~\ref{1CGI_at_cg} for 1CGI).
 
 \begin{figure}[htbp]
 \center
@@ -715,6 +724,7 @@ The reduced files generated are PDB-like structure files that can be read by mos
 \includegraphics*[width=0.25\textwidth]{img/1CGI_ligand.png}
 \caption{All-atom (green sticks) and reduced (red spheres) representation of 
 both proteins in the 1CGI complex. Receptor (A) and ligand (B).}
+\label{1CGI_at_cg}
 \end{figure}
 
 \subsubsection{Initial ligand positions}
@@ -735,15 +745,17 @@ In the present case:
 ./translate.py receptor.red ligand.red > translation.dat
 \end{verbatim}
 
-Visualisation of the starting points may be obtained with any visualisation 
+Vizualization of the starting points may be obtained with any vizualisation 
 software by renaming {\tt translation.dat} in {\tt translation.pdb} and then
 by removing the first line of {\tt translation.pdb} (that indicates the total 
-number of starting points). In this example, there are 204 starting points.
+number of starting points). In this example, Fig.~\ref{1CGI_translation} shows
+the receptor surounded by the 204 starting points.
 
 \begin{figure}[htbp]
 \center
 \includegraphics*[width=0.4\textwidth]{img/1CGI_translation.png}
 \caption{Coarse grain receptor in green spheres and starting points as orange spheres.}
+\label{1CGI_translation}
 \end{figure}
 
 For each position in translation (each {\tt ATOM} line of the file {\tt translation.dat}), 
@@ -751,7 +763,7 @@ there are 258 associated rotations defined in the file {\tt rotation.dat}.
 
 \subsubsection{ATTRACT parameters}
 
-ATTRACT parameters are found in the file {\tt attract.inp}. A typical configuration file is:
+ATTRACT parameters are found in the file {\tt attract.inp}, which typical content is :
 
 \linenumbers*
 \begin{verbatim}
@@ -777,33 +789,33 @@ In the present case, the simulation starts with a very large cutoff value of 990
 to end with 500~\AA$^2$ ($\sim$ 22~\AA).
 
 \paragraph{Note:} Columns with zeros or ones should not be modified, as
-well as line~2.
+well as line~2. They are used for internal development purposes.
 
-\subsubsection{Single docking simulation}
+\subsubsection{Simple optimization}
 
-A docking simulation with ATTRACT requires:
+A standard simulation with ATTRACT requires:
 \begin{itemize}
 \item the ATTRACT Python script ({\tt  Attract.py})
 \item a coarse grain receptor (fixed partner) file ({\tt receptor.red})
 \item a coarse grain (mobile partner) file ({\tt ligand.red})
 \item the coarse grain parameters ({\tt aminon.par})
-\item translational starting points ({\tt translation.dat})
-\item rotations performed for each translational starting point ({\tt rotation.dat})
+\item translation starting points ({\tt translation.dat})
+\item rotations performed for each translation starting point ({\tt rotation.dat})
 \item docking parameters ({\tt attract.inp})
 \end{itemize}
 
 ATTRACT can be used with different options:
 \begin{itemize}
 \item {\tt -s}, performs one single serie of minimisations with the ligand in its initial position.
-\item \verb@--ref@, provides a ligand pdb file as a reference. After each docking, the RMSD is calculated between this reference structure and the simulated ligand.
+\item \verb@--ref@, provides a ligand PDB file as a reference (reduced). After each docking, the RMSD is calculated between this reference structure and the simulated ligand.
 \end{itemize}
 
-A single ATTRACT simulation may thus be obtained by:
+A single ATTRACT simulation (optimization) may thus be obtained by:
 \begin{verbatim}
 ./Attract.py receptor.red ligand.red --ref=ligand.red -s > single.att
 \end{verbatim}
 
-The first pdb file provided must be the receptor file (and the second the ligand).
+The first PDB file provided must be the receptor file (and the second the ligand).
 The content of the output file {\tt single.att} is the following:
 
 \newpage
@@ -860,8 +872,11 @@ Finished at:  Thursday December 11 2008, 00:08
 
 \begin{itemize}
 \item{\bf line 9:} starting date and time of the simulation
-\item{\bf lines 18--20:} minimization 1. Details of minimization number, cutoff in \AA\ and maximum number of iterations (line~14). 
-Number of variables (line~15). End of minimization (line~16), either convergence is achieved (iteration number is specified), either maximum number of steps is reached.
+\item{\bf lines 18--20:} minimization 1. Minimization index, cutoff 
+in \AA\ and maximum number of iterations (line~18). 
+Number of variables (line~19). End of minimization (line~20), either 
+convergence is achieved (the number of performed iterations is specified), 
+either maximum number of steps is reached.
 \item{\bf lines 21--23:} minimization 2.
 \item{\bf lines 24--26:} minimization 3.
 \item{\bf lines 27--29:} minimization 4.
@@ -869,12 +884,12 @@ Number of variables (line~15). End of minimization (line~16), either convergence
 \item{\bf lines 33--35:} minimization 6.
 \item{\bf lines 36--37:} final result after the 6 minimizations. With a single series of minimization, the default translation ({\tt Trans}) is 1 and the default rotation ({\tt Rot}) is 1. 
 Energy ({\tt Ener}) is given in RT unit and the C$_{\alpha}$-RMSD 
-({\tt RmsdCA\_ref}) in \AA if the \verb@--ref@ option is specified.
+({\tt RmsdCA\_ref}) in \AA\ if the \verb@--ref@ option is specified.
 \item{\bf lines 38--43:} rotation/translation matrix of the ligand compared to its initial position.
 \item{\bf line 45:} end date and time of the simulation.
 \end{itemize}
 
-Here, the final energy is -58.35~RT unit and the RMSD is 1.19~\AA, which is pretty close from the initial position. (In a \emph{perfect} simulation, RMSD would
+Here, the final energy is -58.4~RT unit and the RMSD is 1.2~\AA, which is pretty close from the initial position. (In a \emph{perfect} simulation, RMSD would
 be 0.0).
 
 \subsubsection{Systematic docking simulation}
@@ -937,6 +952,10 @@ with the parameters:
 \item an output ligand file ({\tt ligand\_1.red})
 \end{itemize}
 
+Fig.~\ref{1CGI_dock} shows the best solution of the docking simulation and the
+reference complex. With a RMSD of 1.2~\AA\ between both structures, 
+the docking simulation found very well the initial complex structure.
+
 \begin{figure}[htbp]
 \center
 {\textbf A}
@@ -947,13 +966,12 @@ with the parameters:
 \caption{Reduced representations of receptor (green), ligand at reference 
 position (red) and ligand from the best solution (lowest energy) of the 
 docking (blue). Front (A) and top (B) views. Beads have exact van der 
-Waals radii. With a RMSD of 1.2~\AA\ between the reference and the simulated 
-ligand structures, the docking simulation found very well the initial complex 
-structure.}
+Waals radii.}
+\label{1CGI_dock}
 \end{figure}
 
 
-In case you know the experimental structure of your system (as in this example), 
+In case an experimental structure of the system is known (as in this example), 
 it is possible to calculate the interface RMSD (iRMSD) and the native fraction 
 (fnat) as defined by the CAPRI contest \footnote{\tt http://capri.ebi.ac.uk}
 using the following scripts:
@@ -973,7 +991,7 @@ For iRMSD, output is in \AA\ and fnat is given as a proportion (between 0.0 and 
 Our clustering algorithm implemented in {\tt cluster.py} can rapidly filter near identical solutions 
 without requiring a preselected number of desired clusters.
 The algorithm is based on RMSD comparison and an additional energy criterion can be included 
-(see script options, by default RMSD and energy criterions are 1~\AA and 1~RT unit respectively).
+(see script options, by default RMSD and energy criterions are 1~\AA\ and 1~RT unit respectively).
 
 \begin{verbatim}
 cluster.py docking.att ligand.red > docking.clust
@@ -1005,15 +1023,17 @@ The first lines of the output cluster file are:
 Line 1 is a comment line, next lines are clusters. For each cluster (line)
 is specified:
 \begin{itemize}
-\item a representative structure with the translation and rotation
-numbers (column 2, {\tt Trans}, and 3, {\tt Rot}), interaction energy (column 4, {\tt Ener}) and RMSD (column 5, {\tt RmsdCA\_ref}) from the reference ligand structure
+\item a representative structure with the corresponding translation and rotation
+numbers (column 2, {\tt Trans}, and 3, {\tt Rot}), interaction energy 
+(column 4, {\tt Ener}) and RMSD (column 5, {\tt RmsdCA\_ref}) 
+from the reference ligand structure
 \item the number of the cluster (column 6, {\tt Rank})
 \item the number of structures (docking solutions) in this cluster (column
 7, {\tt Weight})
 \end{itemize}
 
 The large weight of the best solution shows the very good convergence of the
-algorithme.
+docking simulation.
 
 \subsection{Protein--DNA complex: 1K79}
 
@@ -1094,8 +1114,10 @@ Coarse grain (reduced) output: 162 beads
 
 The reduced DNA, {\tt ligand.red}, ends up with 162 beads. \\
 
-As previously said, the reduced files generated are PDB-like structure files that can be read by most visualisation programs (Rasmol, Pymol, VMD). 
-Always visualize both all-atom and coarse grain structures to check the reduction worked properly.
+As previously said, the reduced files generated are PDB-like structure files 
+that can be read by most visualization programs (Rasmol, Pymol, VMD). 
+Always visualize both all-atom and coarse grain structures to check the 
+reduction worked properly (see Fig.~\ref{1K79_at_cg} for 1K79).
 
 \begin{figure}[htbp]
 \center
@@ -1104,7 +1126,9 @@ Always visualize both all-atom and coarse grain structures to check the reductio
 \hspace*{2cm}
 {\textbf B}
 \includegraphics*[width=0.20\textwidth]{img/1K79_ligand.png}
-\caption{All-atom (green sticks) and reduced (red spheres) representation of both partners in 1K79. Receptor, protein (A) and ligand, DNA (B).}
+\caption{All-atom (green sticks) and reduced (red spheres) representation 
+of both partners in 1K79. Receptor, protein (A) and ligand, DNA (B).}
+\label{1K79_at_cg}
 \end{figure}
 
 \subsubsection{Initial ligand position}
@@ -1120,9 +1144,9 @@ In the present case, the {\tt translation.dat} file contains 179 starting points
 The content of the {\tt attract.inp} parameters file is identical to the one
 previously used for protein--protein docking.
 
-\subsubsection{Single docking simulation}
+\subsubsection{Simple optimization}
 
-A single ATTRACT simulation is done with:
+An ATTRACT optimization is done with:
 \begin{verbatim}
 ./Attract.py receptor.red ligand.red --ref=ligand.red -s > single.att
 \end{verbatim}
@@ -1140,8 +1164,9 @@ A systematic docking simulation is then:
 ./Attract.py receptor.red ligand.red --ref=ligand.red > docking.att &
 \end{verbatim}
 
-The output file {\tt docking.att} contains all informations on the docking simulation. 
-It contains the ouput of all series of minimizations (with the specification of translation and rotation number).
+The output file {\tt docking.att} contains all informations on the docking 
+simulation. It contains the ouput of all series of minimizations 
+(with the specification of translation and rotation numbers).
 
 For the 1K79 complex, the systematic docking took roughly 11 hours on a single processor of a 64~bit Intel Xeon 1.86 GHz 2 Go RAM computer.
 The size of the output file {\tt docking.att} is about 67~Mo.
@@ -1170,8 +1195,8 @@ This gives:
 \end{verbatim}
 
 
-We can than extract the best structure obtained (translation number 30 
-and rotation number 157):
+We can then extract the best structure obtained (translation number 30 
+and rotation number 157, illustrated Fig.~\ref{1K79_dock}):
 
 \begin{verbatim}
 ./Extract.py docking.att ligand.red 30 157 > ligand_1.red
@@ -1188,24 +1213,25 @@ and rotation number 157):
 position (red) and ligand from the best solution (lowest energy) of the 
 docking (blue). Front (A) and top (B) views. Beads have exact van der Waals 
 radii. With a RMSD of 1.6~\AA\ between the reference and the simulated ligand 
-structures, the docking simulation found very well the initial complex structure.}
+structures, the docking simulation found very well the initial complex 
+structure.}
+\label{1K79_dock}
 \end{figure}
 
-As for protein--protein example, one can compute the native fraction (fnat) but the 
-the interface RMSD (iRMSD) is not yet implemented:
-
+As for protein--protein example, one can compute the native fraction (fnat).
 \begin{verbatim}
 fnat.py receptor.red ligand.red ligand_1.red
 \end{verbatim}
 
-That gives {\tt 0.824561403509} in this example.
+That gives {\tt 0.824561403509} in this example. However, the interface 
+RMSD (iRMSD) calculation is not yet implemented for DNA.
 
 
 Our clustering algorithm implemented in {\tt cluster.py} can rapidly group
 near identical solutions without requiring a preselected number of desired clusters.
 The algorithm is based on RMSD comparison and an additional energy criterion can 
 be included (see script options, by default RMSD and energy criterions are 
-1~\AA and 1~RT unit respectively).
+1~\AA\ and 1~RT unit respectively).
 
 \begin{verbatim}
 ./cluster.py docking.att ligand.red > docking.clust
@@ -1228,21 +1254,24 @@ The first lines of the output cluster file are:
 \nolinenumbers
 
 The large weight of the best solution shows the very good convergence of the
-algorithme.
+docking simulation.
 
 \subsection{Accurate bead representation}
 
-Adjustment of van der Waals radii is recommended for a more accurate representation 
-of the occupied volume. In this purpose, we provide a Pymol script called \verb@update_pymol_cg_vdw_radii.pml@ in the \verb@$HOME/ptools-XX/PyAttract/reduce@ directory. Within Pymol, call this script with the command
+Adjustment of van der Waals radii is recommended for a more accurate 
+representation of the occupied volume. In this purpose, we provide a Pymol 
+script called \verb@update_pymol_cg_vdw_radii.pml@ in the 
+\verb@$HOME/ptools-XX/PyAttract/reduce@ directory. Within Pymol, call this 
+script with the command
 \begin{verbatim}
 run update_pymol_cg_vdw_radii.pml
 \end{verbatim}
 or from the menu {\tt File -> Run -> select the file}.
 
-With some representations (dots, spheres, mesh and surface), you also need to ask
-Pymol to refresh its view with the command {\tt rebuild}.
-Coarse grain van der Waals radii have now their real values and reduced molecules
-their real volume. 
+With some representations (dots, spheres, mesh and surface), you also need 
+to tell Pymol to refresh its view with the command {\tt rebuild}.
+Coarse grain van der Waals radii have now their real values and 
+reduced molecules their real volume, as shown in Fig.~\ref{real_vdw}.
 
 \begin{figure}[htbp]
 \center
@@ -1255,6 +1284,7 @@ their real volume.
 partners in the 1K79 protein--DNA complex. With the correct values of coarse grain
 van der Waals radii, both representations are equivalent.
 DNA (A) and protein (B).}
+\label{real_vdw}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
