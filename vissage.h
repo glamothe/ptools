@@ -43,7 +43,7 @@ public:
             std::cout << "####### </vissage> #######" << std::endl ; 
         } 
 
-friend Vissage superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosity);
+// friend Vissage superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosity);
 friend Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D t0, Coord3D t1);
 };
 

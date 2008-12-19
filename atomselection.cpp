@@ -12,7 +12,7 @@
 
 namespace PTools {
 
-AtomSelection::AtomSelection(Rigidbody& rigid)
+AtomSelection::AtomSelection(const Rigidbody& rigid)
 {
     m_rigid=&rigid;
     for (uint i=0; i < rigid.Size(); i++)

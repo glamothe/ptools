@@ -3,6 +3,7 @@ import os.path
 
 
 COMMON_CPP = Split ("""atom.cpp
+                       basetypes.cpp
                        rigidbody.cpp
                        attractrigidbody.cpp
                        coord3d.cpp

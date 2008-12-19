@@ -137,7 +137,7 @@ public:
     std::string PrintPDB() const ;
 
     /// selection : complete
-    AtomSelection SelectAllAtoms();
+    AtomSelection SelectAllAtoms() const;
 
     /// selection : by atom type
     AtomSelection SelectAtomType(std::string atomtype);

@@ -5,7 +5,9 @@
 
 #include <vector>
 #include <iostream>
+// #include <iomanip>   //setw, setprecision
 #include <cassert>
+#include <cstdio>
 #include <boost/shared_array.hpp>
 
 
@@ -99,6 +101,7 @@ public:
         return msa_data[r*m_columns+c];
     }
 
+    /// get or set an element of the array
     const mytype& operator() (int r, int c) const
     {
         assert(r<m_rows);
@@ -125,11 +128,19 @@ public:
         for (int r=0; r<m_rows; r++)
         {
             for (int c=0; c<m_columns; c++)
-                std::cout << (*this)(r,c) << "  " ;
-            std::cout << std::endl;
+                printf("%8.2f ",(*this)(r,c));
+            printf("\n");
         }
     }
 
+    ///get size of the array
+    std::pair<int,int> getDim()
+    {
+       std::pair<int,int> out;
+       out.first = m_rows;
+       out.second = m_columns;
+       return out;
+    }
 
 private:
     boost::shared_array<mytype> msa_data;
@@ -141,6 +152,16 @@ private:
 
 
 typedef Array2D<dbl> Matrix;
+
+void MakeIdentity(Matrix & mat);
+
+struct Superpose_t
+{
+    dbl rmsd;
+    Matrix matrix;
+};
+
+
 
 
 

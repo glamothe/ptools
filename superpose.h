@@ -47,7 +47,7 @@ void Rotate(Rigidbody& rigid, Mat33 mat);
 void Mat44toMat33trans(Mat44 mat44, Mat33 mat33, Coord3D& trans);
 Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D trans); // transforme t(r(X)) en un vissage d'axe de rotation colineaire au vecteur translation.
 
-Vissage superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosity=0);
+Superpose_t superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosity=0);
 
 // Superpose_t superpose( const Rigidbody & ref, const Rigidbody& mob, int verbosity=0);
 // 

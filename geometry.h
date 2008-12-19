@@ -49,7 +49,7 @@ dbl Dihedral(const Coord3D& a, const Coord3D& b, const Coord3D& c, const Coord3D
 
 dbl Angle(const Coord3D& vector1, const Coord3D& vector2);
 
-
+dbl MakeTranslationMat44(Coord3D t, dbl out[4][4] );
 
 #endif  //ifndef GEOMETRY
 

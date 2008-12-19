@@ -138,7 +138,7 @@ void Rigidbody::AttractEulerRotate(dbl phi, dbl ssi, dbl rot)
 
 
 
-AtomSelection Rigidbody::SelectAllAtoms()
+AtomSelection Rigidbody::SelectAllAtoms() const
 {
     AtomSelection newsel;
     newsel.SetRigid(*this);

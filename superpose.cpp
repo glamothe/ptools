@@ -33,6 +33,7 @@
 #include "superpose.h"
 #include "geometry.h" // for ScalProd 
 #include "rigidbody.h"
+#include "rmsd.h"
 
 #define EPSILON 1e-3
 
@@ -389,7 +390,7 @@ Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D t0, Coord3D t1)
 Calcule un couple translation/rotation permettant de superposer deux structures pour minimiser leur rmsd.
 Algorithme d�crit par Sippl et Stegbuchner. Computers Chem. Vol 15, No. 1, p 73-78, 1991.
 */
-Vissage superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosity)
+Superpose_t superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosity)
 {
 
     Vissage vissage; // vissage � appliquer sur mob permettant de minimiser le rmsd entre les 2 structures.
@@ -463,9 +464,46 @@ Vissage superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosit
 
     }
 
-    
-    vissage = MatTrans2screw(ident, t0, t1);
-    vissage.point = vissage.point + t1 ;
+    //creates a 4x4 matrix that tracks transformations for mobile
+    Mat44 tracker;
+    MakeTranslationMat44(Coord3D()-t1,tracker);
+
+    //copy the 3x3 matrix into a 4x4 matrix
+    Mat44 rotation;
+    MakeTranslationMat44(Coord3D(),rotation); //identity matrix;
+    for (int i=0; i<3; i++)
+      for (int j=0; j<3; j++)
+         rotation[i][j]=ident[i][j];
+
+
+
+    mat44xmat44(rotation, tracker, tracker);
+
+    MakeTranslationMat44(t0, rotation);
+    mat44xmat44(rotation, tracker, tracker);
+
+    Matrix output(4,4);
+
+    for (int i=0; i<4; i++)
+     for (int j=0; j<4;j++)
+       output(i,j)=tracker[i][j];
+
+    Superpose_t sup;
+    sup.matrix = output;
+
+    Rigidbody probe(mob);
+    probe.ApplyMatrix(output);
+
+    sup.rmsd = Rmsd(ref,probe);
+    return sup;
+
+
+
+//     vissage = MatTrans2screw(ident, t0, t1);
+//     vissage.point = vissage.point + t1 ;
+
+
+
 
 /*
     if (verbosity==1)
@@ -483,7 +521,7 @@ Vissage superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosit
     }
 */
 
-    return vissage;
+//     return vissage;
 }
 
 

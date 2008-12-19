@@ -15,14 +15,6 @@
 namespace PTools
 {
 
-struct Superpose_t
-{
-    dbl rmsd;
-    Matrix matrix;
-};
-
-
-
 /// root mean square deviation without superposition
 dbl Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2);
 

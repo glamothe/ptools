@@ -326,6 +326,18 @@ dbl Angle(const Coord3D& vector1, const Coord3D& vector2)
     return acos(costheta);
 }
 
+dbl MakeTranslationMat44(Coord3D t, dbl out[4][4] )
+{
+    for (int i=0; i<4; i++)
+      for(int j=0; j<4; j++)
+        if (i==j) out[i][i]=1.0;
+        else out[i][j]=0.0;
+
+     out[0][3]=t.x;
+     out[1][3]=t.y;
+     out[2][3]=t.z;
+
+}
 
 
 

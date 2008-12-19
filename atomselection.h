@@ -18,7 +18,7 @@ class AtomSelection{
 
 private:
     //private data
-    Rigidbody* m_rigid;
+    const Rigidbody* m_rigid;
     std::vector<uint> m_list;
 
     //private methods
@@ -28,11 +28,11 @@ private:
 public:
     AtomSelection(){};
     AtomSelection(const AtomSelection& oldsel);
-    AtomSelection(Rigidbody& rigid); ///< translate a Rigidbody object into an AtomSelection
+    AtomSelection(const Rigidbody& rigid); ///< translate a Rigidbody object into an AtomSelection
     ~AtomSelection();
 
     uint Size() const {return m_list.size();}; ///< returns the size of the selection
-    void SetRigid(Rigidbody& rig) {m_rigid=&rig;};
+    void SetRigid(const Rigidbody& rig) {m_rigid=&rig;};
 
     /// return the i-th atom of the list
     Atom operator[] (uint i) const {
