@@ -18,12 +18,6 @@ namespace PTools
 /// root mean square deviation without superposition
 dbl Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2);
 
-Superpose_t superpose( const CoordsArray & cref, const CoordsArray & cmob, int verbosity=0);
-
-Superpose_t superpose( const Rigidbody & ref, const Rigidbody& mob, int verbosity=0);
-
-
-// Superpose_t superpose_sippl(const Rigidbody & ref, const Rigidbody& mob, int verbosity=0);
 
 }
 

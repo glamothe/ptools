@@ -127,9 +127,6 @@ superpose_t.include()
 superpose=mb.free_functions("superpose")
 superpose.include()
 
-superpose_sippl=mb.free_function("superpose_sippl")
-superpose_sippl.include()
-
 vissage = mb.class_("Vissage")
 vissage.include()
 

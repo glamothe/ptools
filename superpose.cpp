@@ -42,7 +42,7 @@
 namespace PTools
 {
 
-void PrintMat(Mat33 mat)
+static void PrintMat(Mat33 mat)
 {
     for (uint i=0; i<3;i++)
     {
@@ -56,7 +56,7 @@ void PrintMat(Mat33 mat)
 
 
 
-void Mat33xMat33(Mat33 left, Mat33 right, Mat33 out) //matrix multiplication. Works with out==left or out==right
+static void Mat33xMat33(Mat33 left, Mat33 right, Mat33 out) //matrix multiplication. Works with out==left or out==right
 {
     Mat33 tmp;
     for (uint k=0; k<3; k++)
@@ -75,7 +75,7 @@ void Mat33xMat33(Mat33 left, Mat33 right, Mat33 out) //matrix multiplication. Wo
 }
 
 
-void XRotMatrix(double theta, Mat33 out)
+static void XRotMatrix(double theta, Mat33 out)
 {
     out[0][0]=1;
     out[0][1]=0;
@@ -92,7 +92,7 @@ void XRotMatrix(double theta, Mat33 out)
 }
 
 
-void YRotMatrix(double theta, Mat33 out)
+static void YRotMatrix(double theta, Mat33 out)
 {
     out[0][0]=cos(theta);
     out[0][1]=0;
@@ -110,7 +110,7 @@ void YRotMatrix(double theta, Mat33 out)
 
 
 
-void ZRotMatrix(double theta, Mat33 out)
+static void ZRotMatrix(double theta, Mat33 out)
 {
     out[0][0]=cos(theta);
     out[0][1]=-sin(theta);
@@ -124,6 +124,7 @@ void ZRotMatrix(double theta, Mat33 out)
     out[2][1]=0;
     out[2][2]=1;
 }
+
 
 
 void Rotate(Rigidbody& rigid, Mat33 mat)
@@ -152,7 +153,7 @@ void Rotate(Rigidbody& rigid, Mat33 mat)
 
 }
 
-void Mat33xcoord3D(Mat33 mat, Coord3D& in, Coord3D& out)
+static void Mat33xcoord3D(Mat33 mat, Coord3D& in, Coord3D& out)
 {
     Coord3D temp;
     temp.x = in.x*mat[0][0] + in.y*mat[0][1] + in.z*mat[0][2] ;
@@ -165,7 +166,7 @@ void Mat33xcoord3D(Mat33 mat, Coord3D& in, Coord3D& out)
 
 
 
-void rigidToMatrix(const Rigidbody & rig, double output[][3])
+static void rigidToMatrix(const Rigidbody & rig, double output[][3])
 {
     for (uint atom=0; atom<rig.Size();atom++)
     {
@@ -181,9 +182,9 @@ void rigidToMatrix(const Rigidbody & rig, double output[][3])
 
 
 /**
-D�termine le tenseur tel qu'indiqu� dans l'article de Sippl.
+Calculates the tensor, as described by Sippl.
  */
-void MakeTensor( Rigidbody & ref, Rigidbody & mob, Mat33 out)
+static void MakeTensor( Rigidbody & ref, Rigidbody & mob, Mat33 out)
 {
 
     if (ref.Size()!=mob.Size())
@@ -216,7 +217,7 @@ void MakeTensor( Rigidbody & ref, Rigidbody & mob, Mat33 out)
 transpose a 3x3 matrix
 also works when (out==in)
 */
-void transpose(Mat33 in, Mat33 out)
+static void transpose(Mat33 in, Mat33 out)
 {
     Mat33 temp;
 
@@ -255,7 +256,7 @@ trans.z = mat44[3][2];
 * Departement of Computer Science, University of Otago. (2004). Technical Report
 */
 // Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D t0, Coord3D t1)
-Vissage MatTrans2screw(const Matrix& mat)
+Screw MatTrans2screw(const Matrix& mat)
 {
 
     Coord3D trans;
@@ -275,7 +276,7 @@ Vissage MatTrans2screw(const Matrix& mat)
 
 //     std::cout << trans.toString();
 
-    Vissage screw;
+    Screw screw;
     Coord3D eigenvect;
 
     Coord3D x,y,z;
@@ -295,10 +296,10 @@ Vissage MatTrans2screw(const Matrix& mat)
         eigenvect.x = x.x + 1 - b - c ;
         eigenvect.y = x.y + y.x ;
         eigenvect.z = x.z + z.x ;
-        screw.axetranslation = eigenvect / Norm(eigenvect);
-        screw.normtranslation = ScalProd(screw.axetranslation,trans);
+        screw.unitVector = eigenvect / Norm(eigenvect);
+        screw.normtranslation = ScalProd(screw.unitVector,trans);
 
-        Coord3D s = trans - screw.normtranslation*screw.axetranslation ;
+        Coord3D s = trans - screw.normtranslation*screw.unitVector ;
         screw.point.x = 0 ;
         screw.point.y = s.z*z.y + s.y*(1-z.z) ;
         screw.point.z = s.y*y.z+s.z*(1-y.y);
@@ -312,10 +313,10 @@ Vissage MatTrans2screw(const Matrix& mat)
         eigenvect.y = y.y + 1 - x.x - z.z ;
         eigenvect.z = y.z + z.y ;
 
-        screw.axetranslation = eigenvect / Norm(eigenvect);
-        screw.normtranslation = ScalProd(screw.axetranslation,trans);
+        screw.unitVector = eigenvect / Norm(eigenvect);
+        screw.normtranslation = ScalProd(screw.unitVector,trans);
 
-        Coord3D s = trans - screw.normtranslation*screw.axetranslation ;
+        Coord3D s = trans - screw.normtranslation*screw.unitVector ;
         screw.point.x =  s.z*z.x + s.x*(1-z.z);
         screw.point.y =  0 ;
         screw.point.z =  s.x*x.z + s.z*(1-x.x);
@@ -327,10 +328,10 @@ Vissage MatTrans2screw(const Matrix& mat)
         eigenvect.y = z.y + y.z ;
         eigenvect.z = z.z + 1 - x.x - y.y ;
 
-        screw.axetranslation = eigenvect / Norm(eigenvect);
-        screw.normtranslation = ScalProd(screw.axetranslation,trans);
+        screw.unitVector = eigenvect / Norm(eigenvect);
+        screw.normtranslation = ScalProd(screw.unitVector,trans);
 
-        Coord3D s = trans - screw.normtranslation*screw.axetranslation ;
+        Coord3D s = trans - screw.normtranslation*screw.unitVector ;
         screw.point.x = s.y*y.x + s.x*(1-y.y) ;
         screw.point.y = s.x*x.y + s.y*(1-x.x) ;
         screw.point.z =  0 ;
@@ -342,9 +343,9 @@ Vissage MatTrans2screw(const Matrix& mat)
             screw.point = Coord3D(0,0,0);
             if(Norm(trans)!=0)
             {
-            screw.axetranslation=trans /Norm(trans);
+            screw.unitVector=trans /Norm(trans);
             }
-            else {  screw.axetranslation =  Coord3D(0,0,1); /*axe arbitraire*/ }
+            else {  screw.unitVector =  Coord3D(0,0,1); /*axe arbitraire*/ }
             screw.normtranslation=Norm(trans);
             screw.angle=0;
             return screw;
@@ -352,12 +353,12 @@ Vissage MatTrans2screw(const Matrix& mat)
 
     }
 
-    //creation d'un vecteur non aligne avec screw.axetranslation:
+    //creation d'un vecteur non aligne avec screw.unitVector:
     Coord3D v (1,0,0);
-    if (fabs(Angle(screw.axetranslation,v)) < 0.1) v= Coord3D(0,0,1); //v et axe colin�aires: on change v
+    if (fabs(Angle(screw.unitVector,v)) < 0.1) v= Coord3D(0,0,1); //v et axe colin�aires: on change v
 
 
-    Coord3D u = v - ScalProd(v,screw.axetranslation)*screw.axetranslation ;
+    Coord3D u = v - ScalProd(v,screw.unitVector)*screw.unitVector ;
     u = u/Norm(u);
 
     Coord3D uprime;
@@ -366,7 +367,7 @@ Vissage MatTrans2screw(const Matrix& mat)
     double cost = ScalProd(u,uprime);
 
     Coord3D usec;
-    VectProd(screw.axetranslation,u,usec);
+    VectProd(screw.unitVector,u,usec);
     double sint = ScalProd(usec,uprime);
 
     
@@ -384,14 +385,13 @@ Vissage MatTrans2screw(const Matrix& mat)
 
 
 
-/**
-Calcule un couple translation/rotation permettant de superposer deux structures pour minimiser leur rmsd.
-Algorithme d�crit par Sippl et Stegbuchner. Computers Chem. Vol 15, No. 1, p 73-78, 1991.
+/** \brief Superpose mob on ref
+Calculates a 4x4 transformation Matrix that should be applied on 'mob' in order to minimize
+RMSD between mob and ref.
+Algorithm taken from Sippl et Stegbuchner. Computers Chem. Vol 15, No. 1, p 73-78, 1991.
 */
-Superpose_t superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosity)
+Superpose_t superpose(const Rigidbody& ref, const Rigidbody& mob, int verbosity)
 {
-
-    Vissage screw; // screw � appliquer sur mob permettant de minimiser le rmsd entre les 2 structures.
 
     Rigidbody reference(ref); //copie de ref pour pouvoir centrer
     Rigidbody mobile(mob); // copie de mobile
@@ -421,7 +421,7 @@ Superpose_t superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verb
     Mat33 U; //mixed tensor
     MakeTensor(reference, mobile, U);
 
-    for(uint i=0; i<30; i++)
+    for(uint i=0; i<35; i++)
     {
 
         double arg1,arg2;

@@ -22,34 +22,27 @@
  *                                                                          *
  ***************************************************************************/
 
-#ifndef _SUPERPOSE_H_
-#define _SUPERPOSE_H_
 
-#include <iostream>
-
-#include "screw.h"
-
-#include "rigidbody.h"
-
+#include "basetypes.h"
 
 namespace PTools
 {
 
-typedef double Mat33[3][3];
-typedef double Mat44[4][4];
 
-
-void Rotate(Rigidbody& rigid, Mat33 mat);
-
-void Mat44toMat33trans(Mat44 mat44, Mat33 mat33, Coord3D& trans);
-Screw MatTrans2screw(const Matrix& mat); // transforme t(r(X)) en un vissage d'axe de rotation colineaire au vecteur translation.
-
-Superpose_t superpose(const Rigidbody& ref, const Rigidbody& mob, int verbosity=0);
-
+void MakeIdentity(Matrix & mat)
+{
+   std::pair<int,int> sz = mat.getDim();
+   assert(sz.first == sz.second);
+   for (int i=0; i<sz.first; i++)
+     for (int j=0; j<sz.second; j++)
+       if (i!=j){
+           mat(i,j)=0.0;
+       }
+       else mat(i,j)=1.0;
 }
 
-#endif
 
+}
 
 
 

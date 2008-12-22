@@ -35,7 +35,7 @@ public:
 
         srand(time(NULL));
 
-        for (int nrepet = 0; nrepet<5; nrepet++)
+        for (int nrepet = 0; nrepet<50; nrepet++)
         {
 
             Rigidbody r1("1FIN_r.pdb");
@@ -48,19 +48,7 @@ public:
 
             r2.Translate(Coord3D(x,y,z));
 
-            Superpose_t  v = superpose_sippl(r1,r2);
-//        cout << endl;
-//        v.matrix.Print();
-//        cout << endl;
             Superpose_t s = superpose(r1,r2);
-//        s.matrix.Print();
-
-            for (int i=0; i<4; i++)
-                for (int j=0; j<4; j++)
-                    TS_ASSERT_DELTA(v.matrix(i,j), s.matrix(i,j), 1e-5);
-
-            TS_ASSERT_DELTA(s.rmsd, v.rmsd, 1e-5);
-            TS_ASSERT(s.matrix.almostEqual(v.matrix,1e-5));
 
             r2.ApplyMatrix(s.matrix);
             TS_ASSERT( Rmsd(r1,r2) < 1e-4 );
@@ -85,14 +73,14 @@ public:
 
         r2.Translate(Coord3D(x,y,z));
 
-        Superpose_t  s = superpose_sippl(r1,r2);
+        Superpose_t  s = superpose(r1,r2);
 
-        Vissage v =  MatTrans2screw(s.matrix);
+        Screw v =  MatTrans2screw(s.matrix);
 //        v.Print();
 
         Rigidbody r3;
-        r3.ABrotate(v.point, v.point+v.axetranslation, v.angle);
-        r3.Translate(v.axetranslation*v.normtranslation);
+        r3.ABrotate(v.point, v.point+v.unitVector, v.angle);
+        r3.Translate(v.normtranslation*v.unitVector);
 
 
 //        r3.GetMatrix().Print();

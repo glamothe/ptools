@@ -2,6 +2,9 @@ import os
 import os.path
 
 
+#if you add a file in this list, please make sure that
+#this .cpp file begins with  " //$Id$"
+#and type: svn propset svn:keywords Id filename
 COMMON_CPP = Split ("""atom.cpp
                        basetypes.cpp
                        rigidbody.cpp
@@ -19,7 +22,6 @@ COMMON_CPP = Split ("""atom.cpp
                        mcopff.cpp
                        surface.cpp
                        coordsarray.cpp
-                       QBestFit.cpp
                        superpose.cpp
                        version.cpp
                     """)
