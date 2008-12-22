@@ -9,6 +9,7 @@
 #include <cassert>
 #include <cstdio>
 #include <boost/shared_array.hpp>
+#include <stdexcept>
 
 
 //switch to choose between automatic differenciation
@@ -84,7 +85,7 @@ template <class mytype>
 class Array2D
 {
 public:
-    Array2D(){};
+    Array2D(){m_rows=0; m_columns=0;};
     Array2D(int row, int columns)
             :m_rows(row),
             m_columns(columns)
@@ -140,6 +141,18 @@ public:
        out.first = m_rows;
        out.second = m_columns;
        return out;
+    }
+
+
+    bool almostEqual(const Array2D<mytype> & tocompare, dbl difference)
+    {
+        if (!( this-> m_rows == tocompare.m_rows && this-> m_columns==tocompare.m_columns))
+             throw std::invalid_argument("Arrays must have the same size to be compared !\n");
+
+        for (uint i=0; i<m_size; i++)
+           if (  fabs(real(msa_data[i] - tocompare.msa_data[i])) > real(difference)) return false;
+
+        return true;
     }
 
 private:

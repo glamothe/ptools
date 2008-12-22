@@ -35,7 +35,7 @@
 #include "rigidbody.h"
 #include "rmsd.h"
 
-#define EPSILON 1e-3
+#define EPSILON 1e-5
 
 
 
@@ -248,44 +248,40 @@ trans.z = mat44[3][2];
 
 
 
-/**
-Retourne les parametres uniques du vissage correspondant au couple rotation/translation. 
-Ref algorithme: Hexanions: 6D Space for Twists. Alexis Angelidis. Departement of Computer Science, University of Otago. (2004). Technical Report
- */
-Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D t0, Coord3D t1)
+/*! \brief Returns uniques screw parameters that corresponds to the rotation/translation parameters
+*
+* Ref: Hexanions: 6D Space for Twists. 
+* Alexis Angelidis. 
+* Departement of Computer Science, University of Otago. (2004). Technical Report
+*/
+// Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D t0, Coord3D t1)
+Vissage MatTrans2screw(const Matrix& mat)
 {
 
-    Coord3D trans = t0-t1;
+    Coord3D trans;
+    Mat33 rotmatrix;
 
-    std::cout << trans.toString();
+    trans.x = mat(0,3);
+    trans.y = mat(1,3);
+    trans.z = mat(2,3);
 
-    Vissage vissage;
+
+//     Coord3D trans = t0-t1;
+
+
+    for(int i=0; i<3; i++)
+      for(int j=0; j<3; j++)
+          rotmatrix[i][j]=mat(i,j);
+
+//     std::cout << trans.toString();
+
+    Vissage screw;
     Coord3D eigenvect;
 
     Coord3D x,y,z;
     x.x = rotmatrix[0][0] ; x.y = rotmatrix[1][0]; x.z=rotmatrix[2][0];
     y.x = rotmatrix[0][1] ; y.y = rotmatrix[1][1]; y.z=rotmatrix[2][1];
     z.x = rotmatrix[0][2] ; z.y = rotmatrix[1][2]; z.z=rotmatrix[2][2];
-
-    Matrix mat(4,4);
-    for (int i=0; i<3; i++)
-     for(int j=0; j<3; j++)
-       mat(i,j)=rotmatrix[i][j];
-
-    Coord3D rotatedtranslation;
-    Mat33xcoord3D(rotmatrix, t1, rotatedtranslation);
-    Coord3D t2 = t0 - rotatedtranslation;
-
-     mat(0,3) = t2.x;
-    mat(1,3) = t2.y;
-    mat(2,3) = t2.z;
-
-    mat(3,3) = 1.0;
-    mat(3,0) = 0.0;
-    mat(3,1) = 0.0;
-    mat(3,2) = 0.0;
-
-    vissage.matrix = mat;
 
     Coord3D pt ; //un point de l'axe de rotation
 
@@ -299,14 +295,14 @@ Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D t0, Coord3D t1)
         eigenvect.x = x.x + 1 - b - c ;
         eigenvect.y = x.y + y.x ;
         eigenvect.z = x.z + z.x ;
-        vissage.axetranslation = eigenvect / Norm(eigenvect);
-        vissage.normtranslation = ScalProd(vissage.axetranslation,trans);
+        screw.axetranslation = eigenvect / Norm(eigenvect);
+        screw.normtranslation = ScalProd(screw.axetranslation,trans);
 
-        Coord3D s = trans - vissage.normtranslation*vissage.axetranslation ;
-        vissage.point.x = 0 ;
-        vissage.point.y = s.z*z.y + s.y*(1-z.z) ;
-        vissage.point.z = s.y*y.z+s.z*(1-y.y);
-        vissage.point = vissage.point/(1+x.x-y.y-z.z) ;
+        Coord3D s = trans - screw.normtranslation*screw.axetranslation ;
+        screw.point.x = 0 ;
+        screw.point.y = s.z*z.y + s.y*(1-z.z) ;
+        screw.point.z = s.y*y.z+s.z*(1-y.y);
+        screw.point = screw.point/(1+x.x-y.y-z.z) ;
 
 
     }
@@ -316,14 +312,14 @@ Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D t0, Coord3D t1)
         eigenvect.y = y.y + 1 - x.x - z.z ;
         eigenvect.z = y.z + z.y ;
 
-        vissage.axetranslation = eigenvect / Norm(eigenvect);
-        vissage.normtranslation = ScalProd(vissage.axetranslation,trans);
+        screw.axetranslation = eigenvect / Norm(eigenvect);
+        screw.normtranslation = ScalProd(screw.axetranslation,trans);
 
-        Coord3D s = trans - vissage.normtranslation*vissage.axetranslation ;
-        vissage.point.x =  s.z*z.x + s.x*(1-z.z);
-        vissage.point.y =  0 ;
-        vissage.point.z =  s.x*x.z + s.z*(1-x.x);
-        vissage.point = vissage.point/(1-x.x+y.y-z.z) ;
+        Coord3D s = trans - screw.normtranslation*screw.axetranslation ;
+        screw.point.x =  s.z*z.x + s.x*(1-z.z);
+        screw.point.y =  0 ;
+        screw.point.z =  s.x*x.z + s.z*(1-x.x);
+        screw.point = screw.point/(1-x.x+y.y-z.z) ;
     }
     else if (fabs(1-a-b+c)>EPSILON)
     {
@@ -331,37 +327,37 @@ Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D t0, Coord3D t1)
         eigenvect.y = z.y + y.z ;
         eigenvect.z = z.z + 1 - x.x - y.y ;
 
-        vissage.axetranslation = eigenvect / Norm(eigenvect);
-        vissage.normtranslation = ScalProd(vissage.axetranslation,trans);
+        screw.axetranslation = eigenvect / Norm(eigenvect);
+        screw.normtranslation = ScalProd(screw.axetranslation,trans);
 
-        Coord3D s = trans - vissage.normtranslation*vissage.axetranslation ;
-        vissage.point.x = s.y*y.x + s.x*(1-y.y) ;
-        vissage.point.y = s.x*x.y + s.y*(1-x.x) ;
-        vissage.point.z =  0 ;
-        vissage.point = vissage.point/(1-x.x-y.y+z.z) ;
+        Coord3D s = trans - screw.normtranslation*screw.axetranslation ;
+        screw.point.x = s.y*y.x + s.x*(1-y.y) ;
+        screw.point.y = s.x*x.y + s.y*(1-x.x) ;
+        screw.point.z =  0 ;
+        screw.point = screw.point/(1-x.x-y.y+z.z) ;
 
     }
     else     // angle=0
       { 
-            vissage.point = Coord3D(0,0,0);
+            screw.point = Coord3D(0,0,0);
             if(Norm(trans)!=0)
             {
-            vissage.axetranslation=trans /Norm(trans);
+            screw.axetranslation=trans /Norm(trans);
             }
-            else {  vissage.axetranslation =  Coord3D(0,0,1); /*axe arbitraire*/ }
-            vissage.normtranslation=Norm(trans);
-            vissage.angle=0;
-            return vissage;
+            else {  screw.axetranslation =  Coord3D(0,0,1); /*axe arbitraire*/ }
+            screw.normtranslation=Norm(trans);
+            screw.angle=0;
+            return screw;
 
 
     }
 
-    //creation d'un vecteur non aligne avec vissage.axetranslation:
+    //creation d'un vecteur non aligne avec screw.axetranslation:
     Coord3D v (1,0,0);
-    if (fabs(Angle(vissage.axetranslation,v)) < 0.1) v= Coord3D(0,0,1); //v et axe colin�aires: on change v
+    if (fabs(Angle(screw.axetranslation,v)) < 0.1) v= Coord3D(0,0,1); //v et axe colin�aires: on change v
 
 
-    Coord3D u = v - ScalProd(v,vissage.axetranslation)*vissage.axetranslation ;
+    Coord3D u = v - ScalProd(v,screw.axetranslation)*screw.axetranslation ;
     u = u/Norm(u);
 
     Coord3D uprime;
@@ -370,15 +366,17 @@ Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D t0, Coord3D t1)
     double cost = ScalProd(u,uprime);
 
     Coord3D usec;
-    VectProd(vissage.axetranslation,u,usec);
+    VectProd(screw.axetranslation,u,usec);
     double sint = ScalProd(usec,uprime);
 
     
     if (cost < -1 ) cost=-1;
     if (cost >1 ) cost= 1 ; 
-    vissage.angle = acos(cost);
-    if (sint < 0) vissage.angle = -vissage.angle ;
-    return vissage ;
+    screw.angle = acos(cost);
+    if (sint < 0) screw.angle = -screw.angle ;
+
+    screw.angle *= -1;
+    return screw ;
 }
 
 
@@ -393,7 +391,7 @@ Algorithme d�crit par Sippl et Stegbuchner. Computers Chem. Vol 15, No. 1, p 7
 Superpose_t superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosity)
 {
 
-    Vissage vissage; // vissage � appliquer sur mob permettant de minimiser le rmsd entre les 2 structures.
+    Vissage screw; // screw � appliquer sur mob permettant de minimiser le rmsd entre les 2 structures.
 
     Rigidbody reference(ref); //copie de ref pour pouvoir centrer
     Rigidbody mobile(mob); // copie de mobile
@@ -499,8 +497,8 @@ Superpose_t superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verb
 
 
 
-//     vissage = MatTrans2screw(ident, t0, t1);
-//     vissage.point = vissage.point + t1 ;
+//     screw = MatTrans2screw(ident, t0, t1);
+//     screw.point = screw.point + t1 ;
 
 
 
@@ -514,14 +512,14 @@ Superpose_t superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verb
         Rigidbody newref(ref);
         selref.setRigid(newref);
         selmob.setRigid(newmob);
-        newmob.transform(vissage);
+        newmob.transform(screw);
 
-        std::cout << "verif vissage, rmsdca = " << rmsd(selmob && CA(newmob),selref && CA(newref)) << std::endl ;
+        std::cout << "verif screw, rmsdca = " << rmsd(selmob && CA(newmob),selref && CA(newref)) << std::endl ;
 
     }
 */
 
-//     return vissage;
+//     return screw;
 }
 
 

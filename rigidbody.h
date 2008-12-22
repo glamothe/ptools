@@ -126,6 +126,12 @@ public:
     /// apply a 4x4 matrix
     void ApplyMatrix(const Matrix & mat);
 
+   /// get the 4x4 matrix
+   Matrix GetMatrix()
+   {
+     return CoordsArray::GetMatrix();
+   }
+
 
     /// returns radius of gyration
     dbl RadiusGyration();

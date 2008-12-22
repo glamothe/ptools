@@ -45,7 +45,7 @@ typedef double Mat44[4][4];
 void Rotate(Rigidbody& rigid, Mat33 mat);
 
 void Mat44toMat33trans(Mat44 mat44, Mat33 mat33, Coord3D& trans);
-Vissage MatTrans2screw(Mat33 rotmatrix, Coord3D trans); // transforme t(r(X)) en un vissage d'axe de rotation colineaire au vecteur translation.
+Vissage MatTrans2screw(const Matrix& mat); // transforme t(r(X)) en un vissage d'axe de rotation colineaire au vecteur translation.
 
 Superpose_t superpose_sippl(const Rigidbody& ref, const Rigidbody& mob, int verbosity=0);
 

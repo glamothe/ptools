@@ -11,7 +11,8 @@ namespace PTools{
 
 struct Screw
 {
-    Coord3D transVector;  ///< the translation vector (because of the screw, this is also a vector director of the rotation axis).
+    Coord3D unitVector;  ///< unit vector of the translation
+    dbl normtranslation; ///< translation norm
     Coord3D point; ///< a point of the rotation axis (to generate the rotation axis)
     dbl angle; ///< angle of rotation
 
@@ -19,9 +20,9 @@ struct Screw
     std::string print()
     {
         std::stringstream result;
-        result << "rotation axis: " << transVector.toString() ;
+        result << "rotation axis: " << unitVector.toString() ;
         result << "angle: " << angle << "\n" ;
-        result << "translation norm: " <<  Norm(transVector) << "\n" ;
+        result << "translation norm: " <<  Norm(unitVector) << "\n" ;
         result << "axis point: "  <<  point.toString();
         return result.str();
     }
