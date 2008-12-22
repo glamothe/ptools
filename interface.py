@@ -127,10 +127,6 @@ superpose_t.include()
 superpose=mb.free_functions("superpose")
 superpose.include()
 
-vissage = mb.class_("Vissage")
-vissage.include()
-
-
 surf=mb.class_("Surface")
 surf.include()
 
