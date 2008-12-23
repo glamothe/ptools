@@ -8,6 +8,9 @@
 
 \begin{document}
 
+\setlength{\parindent}{0pt}
+
+
 \title{\bf PTools tutorial}
 
 \author{Adrien Saladin $^{1,2}$
@@ -98,13 +101,18 @@ error. The last version of scons is obtained at the homepage of the project ({\t
 From the download section \footnote{\tt http://sourceforge.net/project/showfiles.php?group\_id=30337}, 
 get the stable file {\tt scons-0.98.5-1.noarch.rpm} and install it:
 
-
 \begin{verbatim}
  rpm -ivh scons-0.98.5-1.noarch.rpm
 \end{verbatim}
 
+\textbf{Note}: SCons 0.98.5 and 1.0.0 were successfully tested
+
+
 You can then install some packages:
-yum install boost boost-devel python-devel
+
+\begin{verbatim}
+  yum install boost boost-devel python-devel
+\end{verbatim}
 
 
 After that, you still need to manually install gccxml and pyplusplus (see bellow).
@@ -179,6 +187,21 @@ tar zxvf ptools-XX.tar.gz
 The directory {\tt ptools-XX} should be created.
 
 
+\subsubsection{Static pure C++ library}
+
+Move into the new directory and type:
+
+\begin{verbatim}
+ scons cpp
+\end{verbatim}
+
+This should create the file ``libptools.a''.
+
+If SCons cannot locate a fortran compiler or a library, you can set a search path at the beginning of
+the SConstruct file.
+
+
+\subsubsection{The library as a Python module}
 
 From the PTools main directory ({\tt \$HOME/soft/ptools-XX}), 
 first create the Python/C++ interface:
@@ -193,22 +216,33 @@ scons
 
 Note that {\tt scons -j2} compiles with two processors in parallel.
 
-If scons complains about the g2c library, you may do (as root):
-\begin{verbatim}
-ln -s /usr/lib64/libg2c.so.0 /usr/lib64/libg2c.so
-\end{verbatim}
+If SCons cannot locate a fortran compiler or a library, you can set a search path at the beginning of
+the SConstruct file.
 
-In case of problem with the gfortran library, you should add directly to the search path (line~87)
-of the {\tt SConstruct} file the location of the libgfortran files. For instance: 
-\newline Initial search path:
-\newline \verb@["/usr/lib","/sw/lib","/usr/lib/gcc/x86\_64-redhat-linux/3.4.6/"]@
-\newline Add specific path for linux Suse distribution:
-\newline \verb@["/usr/lib","/sw/lib","/usr/lib/gcc/x86\_64-redhat-linux/3.4.6/",@
-\newline \verb@"/usr/lib64/gcc/x86\_64-suse-linux/4.1.2/"]@
 
 \subsection{Final test and further documentation}
 
-In the {\tt Tests} directory, one can test the compilation worked:
+\subsubsection{C++ library only}
+
+The PTools library has a new C++ unit test system. To try it move into the Tests/ directory and
+type: 
+\begin{verbatim}
+ make testcpp
+\end{verbatim}
+
+You should get something like this:
+
+\begin{verbatim}
+running C++ tests
+python cxxtestgen.py --error-printer ptoolstest.h > runner.cpp
+g++ runner.cpp -I.. -I. -L.. -lptools -o ptoolstest.bin
+./ptoolstest.bin
+Running 15 tests...............OK!
+\end{verbatim}
+
+
+\subsubsection{Python module}
+In the {\tt Tests} directory, one can test that the compilation worked:
 \begin{verbatim}
 python unittest1.py
 \end{verbatim}

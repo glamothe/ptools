@@ -2,6 +2,24 @@ import os
 import os.path
 
 
+#compilation mode: please choose between debug and release
+compile_mode = "release"
+
+
+#users may overide these settings if SCons cannot automatically locate some library:
+
+#PATH to g77 or gfortran:
+user_path_fortrancompiler = ""
+
+#libg2c.a (or .so) or libgfortran.a PATH:
+user_path_libg2cgfortran = ""
+
+#boost libraries PATH:
+user_path_boost = ""
+
+
+
+
 #if you add a file in this list, please make sure that
 #this .cpp file begins with  " //$Id$"
 #and type: svn propset svn:keywords Id filename
@@ -78,10 +96,10 @@ if gpp is None:
 else:
    print "g++ found here: ", gpp
 
-g77 = FIND_FILE("g77", ["/usr/bin","/sw/bin/"], True)
+g77 = FIND_FILE("g77", [user_path_fortrancompiler,"/usr/bin","/sw/bin/"], True)
 if g77 is None:
    print "Cannot locate g77 fortran compiler, trying gfortran:"
-   gfortran=FIND_FILE("gfortran", ["/usr/bin"], True)
+   gfortran=FIND_FILE("gfortran", [user_path_fortrancompiler,"/usr/bin"], True)
    if gfortran is None:
       print "Error: no fortran compiler found, aborting"
       Exit(1)
@@ -89,7 +107,8 @@ if g77 is None:
       print "using fortran compiler: gfortran"
       FORTRANPROG="gfortran -O2 -g -fPIC"
       gfortranlib=FIND_HEADER(["libgfortran.a", "libgfortran.la",\
-      "libgfortran.so", "libgfortran.so.3"], ["/usr/lib","/usr/lib64","/sw/lib","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/","/usr/lib64/gcc/x86_64-suse-linux/4.1.2/"], True)
+          "libgfortran.so", "libgfortran.so.3"], [user_path_libg2cgfortran,"/usr/lib","/usr/lib64","/sw/lib",\
+          "/usr/lib/gcc/x86_64-redhat-linux/3.4.6/","/usr/lib64/gcc/x86_64-suse-linux/4.1.2/"], True)
       if gfortranlib is not None:
          print "libgfortran found here: ", gfortranlib
          LIB_PATH.append(gfortranlib)
@@ -101,8 +120,8 @@ if g77 is None:
 else: #g77 compiler
       print "using fortran compiler: g77"
       FORTRANPROG="g77 -O2 -g -fPIC"
-      g2clib = FIND_HEADER(["libg2c.a", "libg2c.so", "libg2c.la"], ["/usr/lib",
-      "/usr/local/lib/", "/sw/lib/","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/"],True)
+      g2clib = FIND_HEADER(["libg2c.a", "libg2c.so", "libg2c.la","libg2c.so.0"], [user_path_libg2cgfortran,"/usr/lib",\
+      "/usr/local/lib/", "/sw/lib/","/usr/lib/gcc/x86_64-redhat-linux/3.4.6/"], True)
       if g2clib is None:
          print "Warning: libg2c not found, may not compile..."
          COMMON_LIBS.append("g2c")
@@ -121,7 +140,7 @@ else: #g77 compiler
 
 
 
-boostdir=FIND_HEADER(["boost/shared_array.hpp"], ["/usr/include", \
+boostdir=FIND_HEADER(["boost/shared_array.hpp"], [user_path_boost,"/usr/include", \
 "/sw/include/boost-1_33_1"] )
 
 if boostdir is None:
@@ -150,9 +169,6 @@ if python24dir is None:
       PYTHON_LIBS=["python2.5"]
 
 
- 
-
-
 
 PYTHON_CPP=[]
 import fnmatch
@@ -166,20 +182,6 @@ for file in os.listdir("Pybindings"):
 os.system("gcc svnrev.c -o svnrev")
 svnrevfiles = [f for f in os.listdir('.') if fnmatch.fnmatch(f, "*.cpp") or fnmatch.fnmatch(f,"*.h") and not fnmatch.fnmatch(f,"svnrev.*") ]  #list every .h or .cpp
 os.system("./svnrev %s"%(" ".join(svnrevfiles)))
-
-
-
-#print PYTHON_CPP
-
-#determine architecture (unix only ?) to determine which 
-#static library to import for f95:
-
-#arch = os.uname()[-1]
-#if arch=="x86_64":
-#	f95="f95_g95_LINUX_64"
-#else:
-#	f95="f95_g95_LINUX_32"
-
 
 
 #ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG"
