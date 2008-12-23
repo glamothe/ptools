@@ -1,6 +1,13 @@
 Unit testing:
-Python programs here contains unit tests that are supposed to succeed. 
-For now, only a few tests were written. 
+
+*Cpp only:
+
+type "make testcpp"
+
+
+* Python module:
+
+Python programs here contains unit tests that are supposed to succeed.
 
 usage:
 python unittest1.py
