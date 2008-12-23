@@ -1,1 +1,0 @@
-Program("testmcop.exe", "testMulticopy.cpp", CPPPATH="../.."  , LIBS="ptools", LIBPATH="../..")
