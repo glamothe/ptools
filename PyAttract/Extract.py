@@ -42,6 +42,8 @@ class Extractor:
         compressed=base64.b64decode(f)
         file = bz2.decompress(compressed)
         return file
+    def getNbStructures(self):
+        return self.d["maxtrans"], self.d["maxrot"]
 
 
 
@@ -83,13 +85,17 @@ def readStructures(file):
         #dicstruct = {}
         begin=False
         lines = out_attach.readlines()
+        maxrot = -1
+        maxtrans = -1
         for l in lines:
             lspl = l.split()
             if len(lspl) >0 and lspl[0] == "==":
                 begin = True
                 struct = StructureI()
                 struct.trans = int(lspl[1])
+                maxtrans = max(maxtrans,struct.trans)
                 struct.rot = int(lspl[2])
+                maxrot = max(maxrot, struct.rot)
                 struct.ener = float(lspl[3])
                 struct.rmsd = lspl[4]
                 matrix=[]
@@ -106,7 +112,7 @@ def readStructures(file):
                         #structures.append(struct)
 
 
-    return structures,lststructures
+    return structures,lststructures, maxtrans, maxrot
 
 
 
@@ -143,7 +149,7 @@ def openDatabase(filename):
     #at this point there is no database or it has been removed
     #we must generate it
     sys.stderr.write("Reading outfile and creating database (%s)\n" %(databasefile))
-    structures,lststruct = readStructures(filename)
+    structures,lststruct,maxtrans,maxrot = readStructures(filename)
 
     d=store(lststruct, databasefile)
     
@@ -158,6 +164,8 @@ def openDatabase(filename):
             d[g[0]]=g[1]
 
     sys.stderr.write(" done !\n")
+    d["maxtrans"]=maxtrans
+    d["maxrot"]=maxrot
     return d
  
 

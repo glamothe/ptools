@@ -29,7 +29,10 @@
 
 #include <vector>
 #include <iostream>
+
+#include <sstream>
 // #include <iomanip>   //setw, setprecision
+
 #include <cassert>
 #include <cstdio>
 #include <boost/shared_array.hpp>
@@ -148,14 +151,18 @@ public:
         msa_data=boost::shared_array<mytype>(newdata);
     }
 
-    void Print()
+
+    std::string str()
     {
+        std::ostringstream oss;
         for (int r=0; r<m_rows; r++)
         {
             for (int c=0; c<m_columns; c++)
-                printf("%8.2f ",(*this)(r,c));
-            printf("\n");
+             oss << (*this)(r,c) << "  " ;
+             oss << "\n";
         }
+
+    return oss.str();
     }
 
     ///get size of the array
@@ -166,6 +173,12 @@ public:
        out.second = m_columns;
        return out;
     }
+
+    void Print()
+    {
+       std::cout << str();
+    }
+
 
 
     bool almostEqual(const Array2D<mytype> & tocompare, dbl difference)

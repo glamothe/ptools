@@ -43,7 +43,7 @@ public:
     void AddAtomIndex(uint i) {m_list.push_back(i);}; ///< adds an Atom index
     Rigidbody CreateRigid(); ///< makes a new rigidcopy (independant copy) from an AtomsSlection object.
 
-
+    AtomSelection non(const AtomSelection& atsel);
 
 
     //friends:

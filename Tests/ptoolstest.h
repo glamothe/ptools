@@ -178,7 +178,7 @@ public:
         coo2 = Coord3D(1.0, 2.0, 7.5);
         c.AddCoord(coo1);
         c.AddCoord(coo2);
-        c = c;
+        //c = c;
         tr = Coord3D(3.0, 4.5, -3.0);
     }
     void  testSize()

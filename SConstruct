@@ -184,9 +184,13 @@ svnrevfiles = [f for f in os.listdir('.') if fnmatch.fnmatch(f, "*.cpp") or fnma
 os.system("./svnrev %s"%(" ".join(svnrevfiles)))
 
 
-#ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG"
-ccflags = "-Wall -O2 -fPIC -g -Woverloaded-virtual"
-print "common cpp path:", COMMON_CPPPATH                
+if compile_mode == "release":
+    ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG"
+else:
+    ccflags = "-Wall -O2 -fPIC -g -Woverloaded-virtual"
+
+
+print "common cpp path:", COMMON_CPPPATH
 		
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, CCFLAGS=ccflags, LIBPATH=LIB_PATH, FORTRAN=FORTRANPROG,   FORTRANFLAGS="-g -fPIC" )
 

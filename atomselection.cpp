@@ -46,7 +46,10 @@ Rigidbody AtomSelection::CreateRigid()
     return newrigid;
 }
 
-
+AtomSelection AtomSelection::non(const AtomSelection& atsel)
+{
+return !atsel;
+}
 
 AtomSelection operator& (const AtomSelection& atsel1,const  AtomSelection& atsel2)
 {

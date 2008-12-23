@@ -23,7 +23,7 @@ class TestSuperpose(unittest.TestCase):
             self.r2.Translate(Coord3D(x,y,z))
             
             v = superpose_sippl(self.r1,self.r2)
-            v.Print()
+            print v.str()
             s = superpose(self.r1,self.r2)
             s.matrix.Print()
 
@@ -51,7 +51,7 @@ class TestSuperpose(unittest.TestCase):
             self.r3=Rigidbody(self.r2)
 
             v = superpose_sippl(self.r1,self.r2)
-            v.Print()
+            print v.str()
             s = superpose(self.r1, self.r3)
             s.matrix.Print()
             
@@ -82,7 +82,7 @@ class TestSuperpose(unittest.TestCase):
 
 
             v = superpose_sippl(r,r2)
-            v.Print()
+            print v.str()
             s = superpose(r, r2)
             s.matrix.Print()
             
