@@ -668,8 +668,10 @@ A standard simulation with ATTRACT requires:
 ATTRACT can be used with different options:
 \begin{itemize}
 \item {\tt -s}, performs one single serie of minimisations with the ligand in its initial position.
-\item \verb@--ref@, provides a ligand PDB file as a reference (reduced). After each docking, the RMSD is calculated between this reference structure and the simulated ligand.
+\item \verb@--ref@, (optional) provides a ligand PDB file as a reference (reduced). After each docking, the RMSD is calculated between this reference structure and the simulated ligand.
+\item \verb!--t transnb!, launch only translation \textit{transnb}. This is usefull for dispatching a simulation over a cluster of computers.
 \end{itemize}
+
 
 A single ATTRACT simulation (optimization) may thus be obtained by:
 \begin{verbatim}
@@ -1134,7 +1136,7 @@ to tell Pymol to refresh its view with the command {\tt rebuild}.
 Coarse grain van der Waals radii have now their real values and 
 reduced molecules their real volume, as shown in Fig.~\ref{real_vdw}.
 
-\begin{figure}[htbp]
+\begin{figure}[Htbp]
 \center
 {\textbf A}
 \includegraphics*[width=0.15\textwidth]{img/1K79_dna.png}
@@ -1149,6 +1151,7 @@ DNA (A) and protein (B).}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \section{Misc. tips and tricks}
 
 
