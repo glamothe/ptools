@@ -89,9 +89,13 @@ apt-get install scons libboost-dev libbost-python-dev gccxml
 \end{verbatim}
 %
 See \ref{pyplusplus} for installing necessary tools for building python bindings.
-\\%
-Note: some ubuntu systems have an old version of gccxml that doesn't work well for binding this
-library. If your version of gccxml is less than 0.9, you should consider installing gccxml manually (see \ref{gccxml})
+
+
+\textbf{Note}: some debian ubuntu systems have an old version of gccxml that doesn't work well for binding this
+library. If generation of bindings or unit tests fails, you should consider installing gccxml manually (see \ref{gccxml})
+
+gccxml versions $\le 0.6$ crashes during binding generation. gccxml v. $0.9$ from debian Lenny contains a bug that prevents all python unit tests to work (test 16 fails).
+
 
 \subsubsection{On Fedora systems}
 
@@ -137,7 +141,6 @@ make
 make install
 \end{verbatim}
 The \verb@-DC_MAKE_INSTALL_PREFIX@ option can be left off if you want to use \verb@/usr/local@ as the installation prefix.
-
 
 
 \subsubsection{Pyplusplus and Pygccxml: \label{pyplusplus}}
@@ -352,7 +355,7 @@ pdb = Rigidbody("1BTA.pdb")
 \end{verbatim}
 Make a copy
 \begin{verbatim}
-pdb2 = pdb
+pdb2 = Rigidbody(pdb)
 \end{verbatim}
 Create a translation vector
 \begin{verbatim}
