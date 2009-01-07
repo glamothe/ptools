@@ -7,6 +7,8 @@ NAME = tutorial
 
 pdf:	checkname $(NAME).tex	
 		pdflatex $(NAME).tex
+		pdflatex $(NAME).tex
+		pdflatex $(NAME).tex
 
 help:
 	@echo "Makefile for latex compilation"
