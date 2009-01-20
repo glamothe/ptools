@@ -63,9 +63,9 @@ void Surface::readsolvparam(std::string file)
      }
 }
 
-Rigidbody Surface::surfpoint(const Rigidbody & rigid, dbl srad)
+MyAttractType Surface::surfpoint(const MyAttractType & rigid, dbl srad)
 {
-    Rigidbody rigidsurf;
+    MyAttractType rigidsurf;
     int size_rigid = rigid.Size();
     std::vector<int> neigh;
     radius.clear();
@@ -77,7 +77,7 @@ Rigidbody Surface::surfpoint(const Rigidbody & rigid, dbl srad)
         m_sradshift = 0.0;
     }
     // read radius
-    AttractRigidbody rigid_tmp=AttractRigidbody(rigid);
+    AttractRigidbody<MyAttractType::modepolicy> rigid_tmp = AttractRigidbody<MyAttractType::modepolicy>(rigid);
     m_atomtypenumber.resize(size_rigid);
     for (uint i=0; i< rigid_tmp.Size(); i++)
     { m_atomtypenumber[i] = rigid_tmp.getAtomTypeNumber(i);}
@@ -173,11 +173,11 @@ Rigidbody Surface::surfpoint(const Rigidbody & rigid, dbl srad)
     return rigidsurf;
 }
 
-Rigidbody Surface::outergrid(const Rigidbody & rigid1, const Rigidbody & rigid2, dbl srad)
+MyAttractType Surface::outergrid(const MyAttractType & rigid1, const MyAttractType & rigid2, dbl srad)
 {
     int size1 = rigid1.Size();
     int size2 = rigid2.Size();
-    Rigidbody rigid3;
+    MyAttractType rigid3;
     for (int i=0; i<size1; i++)
     {
         Coord3D xyz1 = rigid1.GetCoords(i);
@@ -193,11 +193,11 @@ Rigidbody Surface::outergrid(const Rigidbody & rigid1, const Rigidbody & rigid2,
     return rigid3;
 }
 
-Rigidbody Surface::removeclosest(const Rigidbody & rigid, dbl srad)
+MyAttractType Surface::removeclosest(const MyAttractType & rigid, dbl srad)
 {
     std::vector<bool> list,list2;
     int size=rigid.Size();
-    Rigidbody rigid2;
+    MyAttractType rigid2;
     list.clear();
     srad=srad*srad;
     for (int i=0; i<size; i++) { list.push_back(true); }

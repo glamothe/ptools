@@ -21,7 +21,7 @@ class Region
 {
 private:
 
-std::vector<AttractRigidbody> _copies;
+std::vector<MyAttractType> _copies;
 
 public:
 /*
@@ -43,12 +43,12 @@ public:
    }*/
 
 
-   void addCopy(const AttractRigidbody& cop){_copies.push_back(cop);};
+   void addCopy(const MyAttractType& cop){_copies.push_back(cop);};
 
    size_t size() const {return _copies.size();};
 
 
-   AttractRigidbody& operator[](uint i){return _copies[i];};
+   MyAttractType& operator[](uint i){return _copies[i];};
 
 };
 
@@ -64,7 +64,7 @@ public:
 
     //using default copy operator
 
-    void setMain(AttractRigidbody& main) ;
+    void setMain(MyAttractType& main) ;
     void addEnsemble(const Region& reg){ _vregion.push_back(reg); std::vector<dbl> v; _weights.push_back(v);  };
 
 
@@ -78,7 +78,7 @@ public:
 
 private:
 
-    AttractRigidbody _main;
+    MyAttractType _main;
     std::vector< Region > _vregion ;
 
     bool _complete ;

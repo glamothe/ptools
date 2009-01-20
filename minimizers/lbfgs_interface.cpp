@@ -27,7 +27,7 @@ Lbfgs::Lbfgs( ForceField& toMinim)
     //(for example, create new pairlists...)
     m_opt = NULL;
     objToMinimize.initMinimization();
-};
+}
 
 
 Lbfgs::~Lbfgs()
@@ -37,7 +37,7 @@ Lbfgs::~Lbfgs()
 
 
 // vector<double> to vector<double> converter. used for genericity. should not impact performances too much.
-inline void tocplx(const std::vector<double> & vdblin, std::vector<double> & vdblout ){vdblout=vdblin;};
+inline void tocplx(const std::vector<double> & vdblin, std::vector<double> & vdblout ){vdblout=vdblin;}
 
 
 
@@ -54,7 +54,7 @@ inline void tocplx(const std::vector<double> & vdblin, std::vector<surreal> & vc
 
 #endif
 
-inline std::vector<double> todbl(std::vector<double> & vdbl) {return vdbl;};
+inline std::vector<double> todbl(std::vector<double> & vdbl) {return vdbl;}
 
 #ifdef AUTO_DIFF
 inline std::vector<double> todbl(std::vector<surreal> & vcplx)

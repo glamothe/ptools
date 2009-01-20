@@ -13,6 +13,8 @@
 namespace PTools
 {
 
+
+
 class Surface
 {
 
@@ -27,10 +29,10 @@ public:
         readsolvparam(file);
     };
 
-    Rigidbody surfpoint(const Rigidbody & rigid, dbl srad); /// generate a grid of point around the protein
+    MyAttractType surfpoint(const MyAttractType & rigid, dbl srad); /// generate a grid of point around the protein
     void surfpointParams(int max, dbl shift); /// initialize some parameters of the grid generation
-    Rigidbody outergrid(const Rigidbody & rigid1, const Rigidbody & rigid2, dbl srad); /// remove overlap between rigid1 and rigid2
-    Rigidbody removeclosest(const Rigidbody & rigid1, dbl srad); /// fix the density of the grid (remove points that are too close to eachother)
+    MyAttractType outergrid(const MyAttractType & rigid1, const MyAttractType & rigid2, dbl srad); /// remove overlap between rigid1 and rigid2
+    MyAttractType removeclosest(const MyAttractType & rigid1, dbl srad); /// fix the density of the grid (remove points that are too close to eachother)
     void readsolvparam(std::string file); /// read solvation parameters
     
 private:

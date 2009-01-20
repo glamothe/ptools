@@ -46,95 +46,7 @@ public:
 
 } ;
 
-/*
-class AttractForceField: public ForceField
-{
-
-public:
-
-    AttractForceField(const Rigidbody& recept,const Rigidbody& lig,dbl cutoff);
-    virtual ~AttractForceField(){};
-
-
-    //this is to satisfy the abstract class:
-    //virtual dbl Function() {return Energy();};
-    virtual dbl Function(const Vdouble& stateVars) {
-        //std::cout << "Function: stateVars size: " << stateVars.size() << std::endl;
-        return Energy(stateVars);
-    };
-    virtual void Derivatives(const Vdouble& stateVars, Vdouble& delta){
-        //std::cerr << "Derivatives: stateVars.size()"<<stateVars.size() << "\n" ;
-        //std::cerr << "Type de delta:" << (std::string) typeid(delta).name() << std::endl ;
-        return Gradient(stateVars, delta);
-    };
-    //virtual void NumDerivatives(const Vdouble& StateVars, Vdouble& delta);
-    virtual uint ProblemSize() {
-        return 6;
-    };
-
-
-    dbl Energy(); ///< return current energy without moving any object
-    dbl Energy(const Vdouble& stateVars); // stateVars: tx ty tz theta phi psi
-
-    dbl Electrostatic();
-    dbl LennardJones();
-
-    void Gradient(const Vdouble& stateVars, Vdouble& delta);
-
-    void ShowEnergyParams(); ///< for debug purposes...
-    void Trans() {
-        Vdouble delta(6) ;
-        Trans(delta,true);
-    };
-    void SetRestraint(dbl rstk) {
-        m_rstk = rstk;
-    };
-
-
-
-
-
-
-private:
-    //private methods:
-    void InitParams();
-
-    void Trans(Vdouble& delta, bool print=false); // translational derivatives
-    void Rota(dbl phi,dbl ssi, dbl rot, Vdouble& delta, bool print=false);
-    void ResetForces();
-
-    dbl Constraints(); ///< distance constraints between ligand and receptor
-
-    //private data
-    Rigidbody m_refreceptor, m_refligand;
-    Rigidbody m_receptor, m_ligand;
-    Rigidbody m_savligand;
-
-
-
-    std::vector<Coord3D> m_ligforces ; //forces
-
-    Coord3D m_ligcenter; //center of mass of the ligand
-    Coord3D m_reccenter; //center of mass of the receptor (used for the distance constraint)
-
-    Vuint m_rAtomCat; //receptor atom category (as seen in reduced pdb files)
-    Vuint m_lAtomCat; //ligand atom category
-
-    int m_ligRestraintIndex; //index of the ligand atom on which the retraint force should be applied
-
-    Vdouble m_rAtomCharge;
-    Vdouble m_lAtomCharge;
-
-
-
-    bool m_energycalled ;
-
-    PairList plist;
-    std::string _filesuffix;
-
-    static int _minimnb;
-    dbl m_rstk;
-} ;*/
+typedef AttractRigidbody<NoMode> MyAttractType;
 
 
 ///////////////////////////////////////////////////////////////
@@ -157,16 +69,16 @@ public:
     dbl Function(const Vdouble&);
 
     ///add a new ligand to the ligand list...
-    void AddLigand(AttractRigidbody & lig);
+    void AddLigand(AttractRigidbody<NoMode> & lig);
 
     ///after a minimization, get minimized ligand 'i'
-    AttractRigidbody GetLigand(uint i);
+    AttractRigidbody<NoMode> GetLigand(uint i);
 
     /// this function generates the pairlists before a minimization
     void MakePairLists();
 
     ///non-bonded interactions
-    virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, bool print=false)
+    virtual dbl nonbon8(MyAttractType& rec, MyAttractType & lig, AttractPairList<MyAttractType> & pairlist, bool print=false)
     {
         std::vector<Coord3D> forcesrec (rec.Size());
         std::vector<Coord3D> forceslig (lig.Size());
@@ -178,7 +90,7 @@ public:
     }
 
     ///non-bonded interactions, forces are returned separately
-    virtual dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false)=0;
+    virtual dbl nonbon8_forces(MyAttractType& rec, MyAttractType& lig, AttractPairList<MyAttractType> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false)=0;
 
     virtual ~BaseAttractForceField(){};
 
@@ -194,9 +106,9 @@ public:
 protected:
     //private variables
     Vuint m_rAtomCat; ///< receptor atom category (std vector)
-    std::vector<AttractPairList> m_pairlists ; ///< pair lists
-    std::vector<AttractRigidbody> m_centeredligand; ///< array of ligands with their centroid at O (required for Euler rotations)
-    std::vector<AttractRigidbody> m_movedligand;
+    std::vector<AttractPairList<MyAttractType> > m_pairlists ; ///< pair lists
+    std::vector<MyAttractType> m_centeredligand; ///< array of ligands with their centroid at O (required for Euler rotations)
+    std::vector<MyAttractType> m_movedligand;
     std::vector<Coord3D> m_ligcenter; ///< list of ligands centroids before centering.
     dbl m_cutoff; ///< cutoff for the pairlist generation
 
@@ -209,7 +121,7 @@ private:
 
 
     ///set list of ignored atom types (dummy atoms)
-    virtual void setDummyTypeList(AttractRigidbody& lig)=0;
+    virtual void setDummyTypeList(MyAttractType& lig)=0;
 
 
 };
@@ -221,7 +133,7 @@ class AttractForceField1: public BaseAttractForceField
 public:
     void InitParams(const std::string & paramsFileName);
     AttractForceField1(std::string paramsFileName, dbl cutoff);
-    dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
+    dbl nonbon8_forces(MyAttractType& rec, MyAttractType& lig, AttractPairList<MyAttractType> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
 
     virtual ~AttractForceField1(){};
 private:
@@ -239,7 +151,7 @@ private:
 
     dbl m_rstk;
 
-    void setDummyTypeList(AttractRigidbody& lig){std::vector<uint> dummytypes; lig.setDummyTypes(dummytypes);}; //forcefield1 has no dummy type
+    void setDummyTypeList(MyAttractType& lig){std::vector<uint> dummytypes; lig.setDummyTypes(dummytypes);}; //forcefield1 has no dummy type
 };
 
 
@@ -320,7 +232,7 @@ class AttractForceField2 : public BaseAttractForceField
 public:
 
     AttractForceField2(const std::string & paramsFileName, dbl cutoff);
-    dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
+    dbl nonbon8_forces(MyAttractType& rec, MyAttractType& lig, AttractPairList<MyAttractType> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
 
     ///allows to reload a file of parameters
     void reloadParams(const std::string & filename, dbl cutoff);
@@ -331,7 +243,7 @@ private:
     void resetParams();
     void loadParams(const std::string & filename, dbl cutoff);
 
-    virtual void setDummyTypeList(AttractRigidbody& lig);
+    virtual void setDummyTypeList(MyAttractType& lig);
     std::string m_filename;   ///< name of parameter file
 
 

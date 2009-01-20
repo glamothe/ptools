@@ -25,9 +25,23 @@ inline void mat44xVect(const dbl mat[ 4 ][ 4 ], const Coord3D& vect, Coord3D& ou
     out.z = vect.x * mat[ 2 ][ 0 ] + vect.y * mat[ 2 ][ 1 ] + vect.z * mat[ 2 ][ 2 ] + mat[ 2 ][ 3 ] ;
 }
 
+/*
+//cannot find implementation for this:
+template <class T>
+void mat44xrigid(const Rigidbody<T>& source, Rigidbody<T>& result, dbl mat[4][4]);*/
 
-void mat44xrigid(const Rigidbody& source, Rigidbody& result, dbl mat[4][4]);
-void ABrotate(Coord3D A, Coord3D B, Rigidbody& target, dbl theta);
+
+template <class Rigid_type>
+void freeABrotate(Coord3D A, Coord3D B, Rigid_type& target, dbl theta)
+{
+
+    dbl matrix[ 4 ][ 4 ];
+    MakeRotationMatrix( A, B, theta, matrix );
+    target.MatrixMultiply(matrix);
+}
+
+
+
 // void EulerZYZ(const Rigidbody & source, Rigidbody & cible, dbl theta, dbl phi, dbl psi);
 // void AttractEuler(const Rigidbody& source, Rigidbody& dest, dbl phi, dbl ssi, dbl rot);
 

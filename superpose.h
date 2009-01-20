@@ -32,19 +32,22 @@
 #include "rigidbody.h"
 
 
+
 namespace PTools
 {
+
+typedef Rigidbody<NoMode> MyRigidType;
 
 typedef double Mat33[3][3];
 typedef double Mat44[4][4];
 
 
-void Rotate(Rigidbody& rigid, Mat33 mat);
+void Rotate(MyRigidType& rigid, Mat33 mat);
 
 void Mat44toMat33trans(Mat44 mat44, Mat33 mat33, Coord3D& trans);
 Screw MatTrans2screw(const Matrix& mat); // transforme t(r(X)) en un vissage d'axe de rotation colineaire au vecteur translation.
 
-Superpose_t superpose(const Rigidbody& ref, const Rigidbody& mob, int verbosity=0);
+Superpose_t superpose(const MyRigidType & ref, const MyRigidType & mob, int verbosity=0);
 
 }
 

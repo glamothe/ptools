@@ -25,57 +25,6 @@
 
 namespace PTools{
 
-///////////// AttractRigidbody implementation:
-
-AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
-        : Rigidbody(rig)
-{
-    // extracts the "extra" field of Atoms to the m_atomTypeNumber array:
-    uint   atcategory  = 0;
-    dbl  atcharge   = 0.0;
-
-    for (uint i = 0; i < Size() ; ++i)
-    {
-        Atomproperty & at (mAtomProp[i]);
-        std::string extra = at.GetExtra();
-
-        std::istringstream iss( extra );
-        iss >> atcategory >> atcharge ;
-        m_atomTypeNumber.push_back(atcategory-1);  // -1 to directly use the atomTypeNumber into C-array
-        m_charge.push_back(atcharge);
-
-    }
-
-    setRotation(true);
-    setTranslation(true);
-
-    resetForces();
-}
-
-
-
-
-void AttractRigidbody::setDummyTypes(const std::vector<uint>& dummy)
-{
-    m_dummytypes = dummy;
-    this->updateActiveList();
-}
-
-
-
-void AttractRigidbody::updateActiveList()
-{
- std::vector<uint> newactivelist;
-
- for(uint i=0; i<this->Size(); i++)
- {
-   if( isAtomActive(i) ) newactivelist.push_back(i);
- }
-
-std::swap(m_activeAtoms, newactivelist);
-
-}
-
 
 
 } //namespace PTools

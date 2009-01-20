@@ -39,10 +39,42 @@ namespace PTools{
 *   which is required for Attract's forcefields and for
 *   some attract's specific pairlist
 */
-class AttractRigidbody: public Rigidbody
+template <class T>
+class AttractRigidbody: public Rigidbody<T>
 {
 public:
-    explicit AttractRigidbody(const Rigidbody & rig) ; ///< initilize a new object from a regular Rigidbody object
+
+
+    /// initilize a new object from a regular Rigidbody object
+    explicit AttractRigidbody<T>(const Rigidbody<T> & rig)
+	: Rigidbody<T>(rig)
+{
+    // extracts the "extra" field of Atoms to the m_atomTypeNumber array:
+    uint   atcategory  = 0;
+    dbl  atcharge   = 0.0;
+
+    for (uint i = 0; i < this->Size() ; ++i)
+    {
+        Atomproperty & at (this->mAtomProp[i]);
+        std::string extra = at.GetExtra();
+
+        std::istringstream iss( extra );
+        iss >> atcategory >> atcharge ;
+        m_atomTypeNumber.push_back(atcategory-1);  // -1 to directly use the atomTypeNumber into C-array
+        m_charge.push_back(atcharge);
+
+    }
+
+    setRotation(true);
+    setTranslation(true);
+
+    resetForces();
+}
+
+
+
+
+
     AttractRigidbody(){};
     virtual ~AttractRigidbody(){};
 
@@ -80,11 +112,31 @@ public:
     void setRotation(bool value) {hasrotation  = value;} ///< allow/disallow rotation
     void setTranslation(bool value) {hastranslation = value;} ///< allow/disallow translation
 
-    void setDummyTypes(const std::vector<uint>& dummy); ///< set a list of ignored atom types
+
+    /// set a list of ignored atom types
+    void setDummyTypes(const std::vector<uint>& dummy)
+{
+    m_dummytypes = dummy;
+    this->updateActiveList();
+}
+
 
     bool operator==(const AttractRigidbody& at) {return false;}; //don't use it, needed to expose vector<AttractRigidobdy> to python by boost::vector indexing suite. 
 
-    void updateActiveList();
+    void updateActiveList()
+{
+ std::vector<uint> newactivelist;
+
+ for(uint i=0; i<this->Size(); i++)
+ {
+   if( isAtomActive(i) ) newactivelist.push_back(i);
+ }
+
+std::swap(m_activeAtoms, newactivelist);
+
+}
+
+
 
 private:
     std::vector<uint> m_atomTypeNumber ;

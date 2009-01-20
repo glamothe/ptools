@@ -35,19 +35,23 @@
 #include "atom.h"
 #include "basetypes.h"
 #include "coordsarray.h"
+#include "pdbio.h"
+// #include "geometry.h"
 
 
 namespace PTools
 {
 
 
+bool isBackbone(const std::string &  atomtype);
 
-
+template <class T>
 class AtomSelection; // forward declaration
 
-class Rigidbody:private CoordsArray
+//T: it's a Policy class for using modes or not
+template<class T>
+class Rigidbody:public CoordsArray<T>
 {
-
 private:
 
     std::vector<Atom> mAtoms; ///< vector of Atoms
@@ -63,25 +67,66 @@ protected:
 
 
 public:
+
+    typedef T modepolicy;
+
     /// basic constructor
-	Rigidbody();
-	/// constructor that loads a PDB file
-    Rigidbody(std::string filename);
-	/// copy constructor
-    Rigidbody(const Rigidbody& model);
+    Rigidbody<T>()
+    {
+        CoordsArray<T>::ResetMatrix();
+    }
 
-    virtual ~Rigidbody(){};
+    /// constructor that loads a PDB file
+    Rigidbody<T>(std::string filename)
+    {
+        ReadPDB(filename,*this);
+        CoordsArray<T>::ResetMatrix();
+    }
 
-	/// return number of atoms in the rigidbody
-    uint Size() const {return CoordsArray::Size();};
 
-    
-    void PrintMatrix() const {std::cout << CoordsArray::PrintMatrix() << std::endl; }
+
+
+
+    /// copy constructor
+    Rigidbody<T>(const Rigidbody& model):
+            CoordsArray<T>(model)
+    {
+//this copy constructor is needed because dbl[4][4] is not
+// automatically copied with the default copy constructor
+//TODO: verifier si c'est toujours le cas ...
+
+
+//     this->mAtoms = model.mAtoms;
+        this->mForces = model.mForces;
+//     this->_coords = model._coords;
+        this->mAtomProp = model.mAtomProp;
+        this->mAtoms = model.mAtoms;
+        this-> _description = model._description;
+
+    }
+
+
+
+    virtual ~Rigidbody() {};
+
+// return number of atoms in the rigidbody
+//     uint Size() const {
+//         return CoordsArray<T>::Size();
+//     };
+
+
+    void PrintMatrix() const {
+        std::cout << CoordsArray<T>::PrintMatrix() << std::endl;
+    }
 
     /// make a deep copy of one atom (the atom extracted is then totally independent)
-    virtual Atom CopyAtom(uint i) const ;
+    virtual Atom CopyAtom(uint i) const
+    {
+        Atom at(mAtomProp[i],GetCoords(i));
+        return at;
+    }
 
-/*    /// const version of GetAtom*/
+    /*    /// const version of GetAtom*/
     /*Atom GetAtom(uint pos) const
     {
         Coord3D co;
@@ -95,121 +140,326 @@ public:
     {
         return mAtomProp[pos];
     }
-	
-	/// define atom properties
+
+    /// define atom properties
     void SetAtomProperty(uint pos, const Atomproperty& atprop)
     {
-       mAtomProp[pos] = atprop;
+        mAtomProp[pos] = atprop;
     }
 
-	/// define atom pos
-    void SetAtom(uint pos, const Atom& atom);
+    /// define atom pos
+    void SetAtom(uint pos, const Atom& atom)
+    {
+
+        if (pos<0  || pos >= this->Size())
+        {
+            std::string message = "SetAtom: position ";
+            message += pos;
+            message += " is out of range";
+            throw std::out_of_range(message);
+        }
+        Atomproperty atp(atom);
+        Coord3D co(atom.GetCoords());
+        SetAtomProperty(pos, atp);
+        SetCoords(pos,co);
+    }
+
+
+
 
     /// add an atom to the molecule (deep copy)
-    void AddAtom(const Atomproperty& at, Coord3D co);
+    void AddAtom(const Atomproperty& at, Coord3D co)
+    {
+        mAtomProp.push_back(at);
+        CoordsArray<T>::AddCoord(co);
+    }
+
+
+
+
 
     /// add an atom to the molecule
-    void AddAtom(const Atom& at);
+    void AddAtom(const Atom& at)
+    {
+        Atomproperty atp(at);
+        Coord3D co = at.GetCoords();
+        AddAtom(atp,co);
+    }
+
+
 
     //returns the coordinates of atom i
     Coord3D GetCoords(uint i) const
     {
-        assert(i<Size());
+        assert(i<this->Size());
         Coord3D c;
-        CoordsArray::GetCoords(i,c) ;  //get the coordinates after translation/rotation
+        CoordsArray<T>::GetCoords(i,c) ;  //get the coordinates after translation/rotation
 
         return c;  //finally returns the final coordinates
     }
 
 
     void unsafeGetCoords(uint i, Coord3D& co)
-      { CoordsArray::unsafeGetCoords(i,co); }
+    {
+        CoordsArray<T>::unsafeGetCoords(i,co);
+    }
 
     void syncCoords()
     {
-      GetCoords(0);
+        GetCoords(0);
     }
 
-	/// define coordinates of atom i
+    /// define coordinates of atom i
     void SetCoords(uint i, const Coord3D& co)
     {
-       assert(i<Size());
-       CoordsArray::SetCoords(i,co);
+        assert(i<this->Size());
+        CoordsArray<T>::SetCoords(i,co);
     }
 
     /// return geometric center of all atoms
-    Coord3D FindCenter() const;
+    Coord3D FindCenter() const
+    {
+        Coord3D center(0.0,0.0,0.0);
+        for (uint i=0; i< this->Size() ; i++)
+        {
+            center =  center + GetCoords(i);
+        }
+        return ( (1.0/(dbl)this->Size())*center);
+    }
+
 
     /// center the rigidbody to the Origin (0,0,0)
-    void CenterToOrigin();
-
+    void CenterToOrigin()
+    {
+        Coord3D c = FindCenter();
+        this->Translate(Coord3D()-c);
+    }
 
     /// translate the whole object
-    void Translate(const Coord3D& tr);
+//     void Translate(const Coord3D& tr);
 
     /// apply a 4x4 matrix
-    void ApplyMatrix(const Matrix & mat);
+    void ApplyMatrix(const Matrix & mat)
+    {
 
-   /// get the 4x4 matrix
-   Matrix GetMatrix()
-   {
-     return CoordsArray::GetMatrix();
-   }
+        dbl mat44[4][4];
+        for (uint i=0; i<4;i++)
+            for (uint j=0;j<4;j++)
+                mat44[i][j]=mat(i,j);
+        CoordsArray<T>::MatrixMultiply(mat44);
+    }
+
+
+
+    /// get the 4x4 matrix
+    Matrix GetMatrix()
+    {
+        return CoordsArray<T>::GetMatrix();
+    }
 
 
     /// returns radius of gyration
-    dbl RadiusGyration();
+    dbl RadiusGyration()
+    {
+        Coord3D c = this->FindCenter();
+        dbl r=0.0;
+        for (uint i=0; i< this->Size(); i++)
+        {
+            r += Norm2( c - this->GetCoords(i) );
+        }
+
+        dbl result = sqrt( r/ (double) this->Size() );
+        return result;
+    }
+
 
     /// returns the radius of a Rigidbody (max distance from center)
-    dbl Radius();
+    dbl Radius()
+    {
+        Coord3D center = this->FindCenter();
+        uint size = this->Size();
+        dbl radius = 0.0;
+        for (uint i=0; i < size; i++)
+        {
+            dbl rad=Norm(center - this->GetCoords(i));
+            if (radius < rad) {
+                radius=rad;
+            }
+        }
+        return radius;
+    }
+
+
 
     /// converts rigidbody to classical PDB-like string
-    std::string PrintPDB() const ;
+    std::string PrintPDB() const
+    {
+        uint size=this->Size();
+        std::string output;
+        for (uint i=0; i < size ; i++)
+        {
+            output = output + mAtoms[i].ToPdbString();
+        }
+        return(std::string) output;
+    }
+
+
+
+
 
     /// selection : complete
-    AtomSelection SelectAllAtoms() const;
+    AtomSelection<T> SelectAllAtoms() const
+    {
+        AtomSelection<T> newsel;
+        newsel.SetRigid(*this);
+        for (uint i=0; i < this->Size(); i++)
+        {
+            newsel.AddAtomIndex(i);
+        }
+
+
+        return newsel;
+
+    }
+
+
+
+
 
     /// selection : by atom type
-    AtomSelection SelectAtomType(std::string atomtype);
+    AtomSelection<T> SelectAtomType(std::string atomtype)
+    {
+        AtomSelection<T> newsel;
+        newsel.SetRigid(*this);
+
+        for (uint i=0; i<this->Size(); i++)
+        {
+            if ( mAtomProp[i].GetType()==atomtype)
+                newsel.AddAtomIndex(i);
+        }
+
+        return newsel;
+    }
+
 
     /// selection by residue type
-    AtomSelection SelectResidType(std::string residtype);
+    AtomSelection<T> SelectResidType(std::string residtype)
+    {
+        AtomSelection<T> newsel;
+        newsel.SetRigid(*this);
+
+        for (uint i=0; i<this->Size(); i++)
+        {
+            if (mAtomProp[i].GetResidType()==residtype)
+                newsel.AddAtomIndex(i);
+        }
+        return newsel;
+    }
 
     /// selection by chain ID
-    AtomSelection SelectChainId(std::string chainid);
+    AtomSelection<T> SelectChainId(std::string chainid)
+    {
+        AtomSelection<T> newsel;
+        newsel.SetRigid(*this);
+        for (uint i=0; i<this->Size(); i++)
+        {
+            if (mAtomProp[i].GetChainId()==chainid)
+                newsel.AddAtomIndex(i);
+        }
+        return newsel;
+    }
+
+
 
     /// selection by range of residue ID
-    AtomSelection SelectResRange(uint start, uint stop);
+    AtomSelection<T> SelectResRange(uint start, uint stop)
+    {
+        AtomSelection<T> newsel;
+        newsel.SetRigid(*this);
+
+        for (uint i=0; i < this->Size(); i++)
+        {
+            Atomproperty& atp ( mAtomProp[i] );
+            if (atp.GetResidId() >=start && atp.GetResidId() <= stop) newsel.AddAtomIndex(i);
+        }
+        return newsel;
+    }
+
+
 
     /// selection shortcut for C-alpha
-    AtomSelection CA();
+    AtomSelection<T> CA()
+    {
+        return SelectAtomType("CA");
+    }
+
 
     /// selection of backbone atoms:
-    AtomSelection Backbone();
+    AtomSelection<T> Backbone()
+    {
+        AtomSelection<T> newsel;
+        newsel.SetRigid(*this);
+
+        for (uint i=0; i<this->Size(); i++)
+        {
+            if (isBackbone(CopyAtom(i).GetType()) )
+            {
+                newsel.AddAtomIndex(i);
+            }
+
+        }
+        return newsel;
+    }
+
+
+
 
     /// operator + : merge two Rigdibody by extending the first coordinates with the second coordinates.
-    Rigidbody operator+ (const Rigidbody& rig);
+    Rigidbody<T> operator+ (const Rigidbody<T>& rig)
+    {
+        Rigidbody rigFinal(*this);
+        for (uint i=0; i< rig.Size() ; i++) {
+            rigFinal.AddCoord(rig.GetCoords(i));
+            rigFinal.mAtomProp.push_back(rig.mAtomProp[i]);
+        }
+        return rigFinal;
+    }
 
-    void ABrotate(const Coord3D& A, const Coord3D& B, dbl theta); ///< rotation around (AB) axis.
+
+
+    /// rotation around (AB) axis.
+    void ABrotate(const Coord3D& A, const Coord3D& B, dbl theta)
+    {
+        freeABrotate(A,B, *this, theta);
+    }
+
 
     /// in some cases atoms may be ignored
-    virtual bool isAtomActive(uint i) const {return true;};
+    virtual bool isAtomActive(uint i) const {
+        return true;
+    };
 
     /// set a description for the object (ex: "mutant A192G")
-    void setDescription(const std::string & descr) {_description = descr;};
+    void setDescription(const std::string & descr) {
+        _description = descr;
+    };
     /// return the object name/description
-    std::string getDescription(){return _description;};
+    std::string getDescription() {
+        return _description;
+    };
 
-    void AttractEulerRotate(dbl phi, dbl ssi, dbl rot);
+//     void AttractEulerRotate(dbl phi, dbl ssi, dbl rot);
 
     //friends
-    friend void ABrotate( Coord3D A, Coord3D B, Rigidbody& target, dbl theta );
-    friend void XRotation( const Rigidbody& source, Rigidbody& result, dbl alpha );
-    friend void EulerZYZ(const Rigidbody & source, Rigidbody & cible, dbl theta, dbl phi, dbl psi);
+//     friend void ABrotate( Coord3D A, Coord3D B, Rigidbody& target, dbl theta );
+//     friend void XRotation( const Rigidbody& source, Rigidbody& result, dbl alpha );
+//     friend void EulerZYZ(const Rigidbody & source, Rigidbody & cible, dbl theta, dbl phi, dbl psi);
 
-    friend class AtomSelection;
+    friend class AtomSelection<T>;
 
-    CoordsArray ToCoordsArray() const {return static_cast<CoordsArray> (*this);}
+    CoordsArray<T> ToCoordsArray() const {
+        return static_cast<CoordsArray<T> > (*this);
+    }
     // undocumented API
     // these functions are candidates for future official functions
     // Please don't use functions beginning by an undersocre '_'
@@ -221,6 +471,17 @@ public:
 
 }; // end class Rigidbody
 
+
+// now using public inheritance from CoordsArray
+// void Rigidbody::Translate(const Coord3D& tr)
+// {
+//     CoordsArray::Translate(tr);
+// }
+//
+// void Rigidbody::AttractEulerRotate(dbl phi, dbl ssi, dbl rot)
+// {
+//    CoordsArray::AttractEulerRotate(phi, ssi, rot);
+// }
 
 
 

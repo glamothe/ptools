@@ -3,71 +3,71 @@
 
 #include <cstdlib>
 
-
 #include <cxxtest/TestSuite.h>
 
+using namespace std;
 using namespace PTools;
 
-
+typedef Rigidbody<NoMode> MyRigid;
 class TestCoord3D : public CxxTest::TestSuite
 {
-Coord3D coo1, coo2, coo3;
+    Coord3D coo1, coo2, coo3;
 
 
 public:
-        void setUp() {
-                this->coo1 = Coord3D(3.0, 4.0, 5.0);
-                coo2 = Coord3D(1.0, 2.0, 7.5);
-        }
+    void setUp() {
+        this->coo1 = Coord3D(3.0, 4.0, 5.0);
+        coo2 = Coord3D(1.0, 2.0, 7.5);
+    }
 
-        void testPlusOperator()
-        {
-                coo3 = coo1 + coo2 ;
-                TS_ASSERT_EQUALS(coo3.x, 4.0);
-                TS_ASSERT_EQUALS(coo3.y, 6.0);
-                TS_ASSERT_EQUALS(coo3.z, 12.5);
+    void testPlusOperator()
+    {
+        coo3 = coo1 + coo2 ;
+        TS_ASSERT_EQUALS(coo3.x, 4.0);
+        TS_ASSERT_EQUALS(coo3.y, 6.0);
+        TS_ASSERT_EQUALS(coo3.z, 12.5);
 
-        }
+    }
 
 
-        void testMinusOperator(){
-                coo3 = coo1 - coo2;
-                TS_ASSERT_EQUALS(coo3.x, 2.0);
-                TS_ASSERT_EQUALS(coo3.y, 2.0);
-                TS_ASSERT_EQUALS(coo3.z, -2.5);
-        }
+    void testMinusOperator(){
+        coo3 = coo1 - coo2;
+        TS_ASSERT_EQUALS(coo3.x, 2.0);
+        TS_ASSERT_EQUALS(coo3.y, 2.0);
+        TS_ASSERT_EQUALS(coo3.z, -2.5);
+    }
 
-        void testPlusEqualOperator()
-        {
-                coo3 = Coord3D(coo1);
-                coo3 += coo2;
-                TS_ASSERT_EQUALS(coo3.x, 4.0);
-                TS_ASSERT_EQUALS(coo3.y, 6.0);
-                TS_ASSERT_EQUALS(coo3.z, 12.5);
-        }
+    void testPlusEqualOperator()
+    {
+        coo3 = Coord3D(coo1);
+        coo3 += coo2;
+        TS_ASSERT_EQUALS(coo3.x, 4.0);
+        TS_ASSERT_EQUALS(coo3.y, 6.0);
+        TS_ASSERT_EQUALS(coo3.z, 12.5);
+    }
 
 
 };
 
 
-class TestRigidbody: public CxxTest::TestSuite
+class TestMyRigid: public CxxTest::TestSuite
 {
 public:
 
-Rigidbody r,s, r2;
-Coord3D A, B;
+    MyRigid r,s, r2;
+    Coord3D A, B;
 
 
 
     void setUp()
     {
-        r =  Rigidbody("1FIN_r.pdb");
+        r =  MyRigid("1FIN_r.pdb");
     }
 
 
     void testCopy()
     {
-        s = Rigidbody(r);
+        s = MyRigid(r);
         TS_ASSERT_EQUALS(s.Size(), r.Size())
         TS_ASSERT_EQUALS(r.FindCenter(), s.FindCenter());
     }
@@ -94,7 +94,7 @@ Coord3D A, B;
 //         """in principle GetCoords(i,co) and unsafeGetCoords(i,co) should
 //         lead to the exact same coordinates if a sync has been done before
 //         calling the 'unsafe' version"""
-        r2 = Rigidbody("1FIN_r.pdb");
+        r2 = MyRigid("1FIN_r.pdb");
         A = Coord3D(4.23, 5.72, 99.02);
         B = Coord3D(1.23, 6.33, 1.234);
         r.ABrotate(A,B, 2.2345);
@@ -122,18 +122,18 @@ class TestBasicMoves: public CxxTest::TestSuite
 {
 public:
 
-Rigidbody rigid1, rigid2, rigid3;
+    MyRigid rigid1, rigid2, rigid3;
 
     void setUp()
     {
-        rigid1=Rigidbody("1FIN_r.pdb");
-        rigid2=Rigidbody(rigid1);
-        rigid3=Rigidbody(rigid2);
+        rigid1=MyRigid("1FIN_r.pdb");
+        rigid2=MyRigid(rigid1);
+        rigid3=MyRigid(rigid2);
     }
 
     void testBasicRmsd()
     {
-        Rigidbody rigtmp(rigid1);
+        MyRigid rigtmp(rigid1);
         TS_ASSERT_EQUALS(Rmsd(rigid1, rigid1), 0.0);
         rigid1.Translate(Coord3D(4,0,0));
         TS_ASSERT_EQUALS(Rmsd(rigtmp, rigid1), 4);
@@ -163,17 +163,17 @@ Rigidbody rigid1, rigid2, rigid3;
 };
 
 
-
-class TestCoordsArray: public CxxTest::TestSuite
+typedef CoordsArray<NoMode> MyCoordsArray;
+class TestMyCoordsArray: public CxxTest::TestSuite
 {
 
 public:
-    CoordsArray c;
+    MyCoordsArray c;
     Coord3D coo1, coo2, tr;
 
     void setUp()
     {
-        c = CoordsArray();
+        c = MyCoordsArray();
         coo1 = Coord3D(3.0, 4.0, 5.0);
         coo2 = Coord3D(1.0, 2.0, 7.5);
         c.AddCoord(coo1);
@@ -185,7 +185,7 @@ public:
     {
         TS_ASSERT(c.Size() == 2);
     }
-     
+
     void  testGetAtom()
     {
         Coord3D c1 ;
@@ -228,16 +228,16 @@ class Random
 
 
 public:
-void seed(int i)
-{
- srand(i);
-}
+    void seed(int i)
+    {
+        srand(i);
+    }
 
-double random()
-{
-double f =  ((double) rand()/(double)RAND_MAX);
-return f;
-}
+    double random()
+    {
+        double f =  ((double) rand()/(double)RAND_MAX);
+        return f;
+    }
 
 
 };
@@ -249,14 +249,14 @@ class TestSuperposition: public CxxTest::TestSuite
 {
 public:
 
-Random random;
-Rigidbody prot1;
+    Random random;
+    MyRigid prot1;
 
 
 
     void setUp()
     {
-        prot1 = Rigidbody("1FIN_r.pdb");
+        prot1 = MyRigid("1FIN_r.pdb");
         random.seed(123);
     }
 
@@ -264,7 +264,7 @@ Rigidbody prot1;
     {
         double x,y,z,a,b,c;
 
-        Rigidbody prot2(prot1);
+        MyRigid prot2(prot1);
 
 
         for (int i=0; i<20; i++)
@@ -286,7 +286,144 @@ Rigidbody prot1;
 
         }
 
-   }
+    }
 
 };
+
+
+
+
+
+double randfloat()
+{
+    return (double) rand() / (double) RAND_MAX ;
+}
+
+double rdrange(double a, double b)
+{
+    return randfloat()*(b-a)+a;
+}
+
+Coord3D rdCoord(double a, double b)
+{
+    double x = rdrange(a,b);
+    double y = rdrange(a,b);
+    double z = rdrange(a,b);
+    return Coord3D(x,y,z);
+}
+
+class TestRot: public CxxTest::TestSuite
+{
+
+
+public:
+    void testTransRot()
+    {
+
+        srand(time(NULL));
+
+        for (int nrepet = 0; nrepet<50; nrepet++)
+        {
+
+            MyRigid r1("1FIN_r.pdb");
+            MyRigid r2(r1);
+            double x = (randfloat()-0.5)*50.0;
+            double y = (randfloat()-0.5)*50.0;
+            double z = (randfloat()-0.5)*50.0;
+
+            r2.ABrotate(rdCoord(-20,20), rdCoord(-10,10), rdrange(-3.1415926,3.1415926) );
+
+            r2.Translate(Coord3D(x,y,z));
+
+            Superpose_t s = superpose(r1,r2);
+
+            r2.ApplyMatrix(s.matrix);
+            TS_ASSERT( Rmsd(r1,r2) < 1e-4 );
+
+
+        }
+
+    }
+    void testVissage()
+    {
+
+        for (int i=0; i<1000; i++)
+        {
+            MyRigid r1("1FIN_r.pdb");
+            MyRigid r2(r1);
+
+            double x = (randfloat()-0.5)*50.0;
+            double y = (randfloat()-0.5)*50.0;
+            double z = (randfloat()-0.5)*50.0;
+
+            r2.ABrotate(rdCoord(-20,20), rdCoord(-10,10), rdrange(-3.1415926,3.1415926) );
+
+            r2.Translate(Coord3D(x,y,z));
+
+            Superpose_t  s = superpose(r1,r2);
+
+            Screw v =  MatTrans2screw(s.matrix);
+//        v.Print();
+
+            MyRigid r3;
+            r3.ABrotate(v.point, v.point+v.unitVector, v.angle);
+            r3.Translate(v.normtranslation*v.unitVector);
+
+
+//        r3.GetMatrix().Print();
+
+//        s.matrix.Print();
+
+            if (!s.matrix.almostEqual(r3.GetMatrix(),1e-2))
+            {
+                cout << "(((((((((((((((((\n";
+                s.matrix.Print();
+                cout << "\n";
+                r3.GetMatrix().Print();
+                cout << v.angle << "\n";
+
+            }
+
+
+            TS_ASSERT(s.matrix.almostEqual(r3.GetMatrix(),1e-2));
+
+
+        }
+
+    }
+
+};
+
+
+class TestForceFields: public CxxTest::TestSuite
+{
+
+public:
+//  test if calculated energies are stable through library versions
+    void testFF2k()
+    {
+        MyRigid a ("pk6a.red");
+        MyRigid c ("pk6c.red");
+
+        MyAttractType aa (a);
+        MyAttractType cc (c);
+        aa.setRotation(false);
+        aa.setTranslation(false);
+        AttractForceField2 FF ("mbest1k.par", 20.0);
+        FF.AddLigand(aa);
+        FF.AddLigand(cc);
+        Vdouble x (6);
+        TS_ASSERT( (FF.Function(x)+32.9487770656) < 1e-6) //#energy from ptools 0.3
+
+    }
+
+
+
+
+};
+
+
+
+
+
 

@@ -241,16 +241,6 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
 
 
 
-void ABrotate( Coord3D A, Coord3D B, Rigidbody& target, dbl theta )
-{
-
-    dbl matrix[ 4 ][ 4 ];
-    MakeRotationMatrix( A, B, theta, matrix );
-    target.MatrixMultiply(matrix);
-//     mat44xrigid( source, result, matrix );
-}
-
-
 
 
 

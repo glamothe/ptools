@@ -25,6 +25,9 @@ Coord3D rdCoord(double a, double b)
     return Coord3D(x,y,z);
 }
 
+typedef Rigidbody<NoMode> MyRigidbody;
+
+
 class TestRot: public CxxTest::TestSuite
 {
 
@@ -38,8 +41,8 @@ public:
         for (int nrepet = 0; nrepet<50; nrepet++)
         {
 
-            Rigidbody r1("1FIN_r.pdb");
-            Rigidbody r2(r1);
+            MyRigidbody r1("1FIN_r.pdb");
+            MyRigidbody r2(r1);
             double x = (randfloat()-0.5)*50.0;
             double y = (randfloat()-0.5)*50.0;
             double z = (randfloat()-0.5)*50.0;
@@ -62,8 +65,8 @@ public:
 
         for(int i=0; i<1000; i++)
         {
-        Rigidbody r1("1FIN_r.pdb");
-        Rigidbody r2(r1);
+        MyRigidbody r1("1FIN_r.pdb");
+        MyRigidbody r2(r1);
 
         double x = (randfloat()-0.5)*50.0;
         double y = (randfloat()-0.5)*50.0;
@@ -78,7 +81,7 @@ public:
         Screw v =  MatTrans2screw(s.matrix);
 //        v.Print();
 
-        Rigidbody r3;
+        MyRigidbody r3;
         r3.ABrotate(v.point, v.point+v.unitVector, v.angle);
         r3.Translate(v.normtranslation*v.unitVector);
 
