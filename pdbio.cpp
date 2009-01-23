@@ -13,15 +13,6 @@ using namespace std;
 namespace PTools{
 
 
-Pdb::Pdb(const std::string& pdbname)
-{
-
-
-
-}
-
-
-
 std::string strip( std::string const& str, char const* sepSet ) {
     std::string::size_type const first = str.find_first_not_of(sepSet);
     return ( first==std::string::npos )
