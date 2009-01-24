@@ -185,7 +185,7 @@ os.system("./svnrev %s"%(" ".join(svnrevfiles)))
 
 
 if compile_mode == "release":
-    ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG"
+    ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG -ffunction-sections -Os -fvisibility=hidden"
 else:
     ccflags = "-Wall -O2 -fPIC -g -Woverloaded-virtual"
 
