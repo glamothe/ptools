@@ -6,9 +6,10 @@ NAME = tutorial
 #
 
 pdf:	checkname $(NAME).tex	
-		pdflatex $(NAME).tex
-		pdflatex $(NAME).tex
-		pdflatex $(NAME).tex
+		pdflatex $(NAME)
+		bibtex $(NAME)
+		pdflatex $(NAME)
+		pdflatex $(NAME)
 
 help:
 	@echo "Makefile for latex compilation"

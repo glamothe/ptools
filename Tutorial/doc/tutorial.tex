@@ -488,9 +488,9 @@ at.SetExtra()
 
 \section{Docking with PTools: ATTRACT}
 
-This part shows the PTools docking application called ATTRACT. It usage and 
+This part shows the PTools docking application called ATTRACT\cite{Zacharias2005}. It usage and 
 capabilities are illustrated by the docking of a protein--protein complex (1CGI) 
-and a protein--DNA complex (1K79). The first example (1CGI) is explained 
+and a protein--DNA complex\cite{Poulain2008} (1K79). The first example (1CGI) is explained 
 step by step and scripts usages are exhaustively detailled. The second example 
 (1K79) is much more straightforward.
 
@@ -591,7 +591,7 @@ both proteins in the 1CGI complex. Receptor (A) and ligand (B).}
 
 A systematic docking simulation uses starting points placed all around the
 receptor.  The Python script {\tt translate.py} employs a slightly modified
-Shrake and Rupley \cite{shrake1973} method to define starting positions
+Shrake and Rupley \cite{Shrake1973} method to define starting positions
 from the receptor surface.  The surface generation fonctions are implemented in
 the PTools library. The script first reads the coarse grain (reduced)
 receptor and ligand files, then generates a grid of points at a certain
@@ -898,6 +898,7 @@ docking simulation.
 
 \subsection{Protein--DNA complex: 1K79}
 
+
 The 1K79 complex \footnote{\tt http://www.rcsb.org/pdb/cgi/explore.cgi?pdbId=1K79} 
 has two partners,
 \begin{itemize}
@@ -1170,16 +1171,10 @@ error message. This happens with MacPorts or fink versions of Python.
 A solution is to use the Python provided with the system instead 
 (\verb@/usr/bin/python@).
 
+\bibliography{biblio}{}
+\bibliographystyle{plain}
 
 
-\begin{thebibliography}{99}
-
-\bibitem{shrake1973} A. Shrake, and J.A. Rupley, 
-{\it Environment and exposure to solvent of protein atoms. Lysozyme and
-isulin}, 
-Journal of Molecular Biology, {\bf 79}:351-364, 1973.
-
-\end{thebibliography}
 \end{document}
 
 
