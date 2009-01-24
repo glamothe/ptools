@@ -136,9 +136,6 @@ Matrix.alias = "Matrix"
 Matrix.operators("()", arg_types=["int","int"]).exclude()
 Matrix.member_function("id").exclude()
 
-mb.class_("Model").include()
-mb.class_("Pdb").include()
-
 Version = mb.class_("Version").include()
 
 
