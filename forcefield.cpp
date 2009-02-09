@@ -51,7 +51,7 @@ void PrintVec(const Vdouble& vec)
 *  Two arrays are populated then: atcategory which contains the atom type category
 * (AKA iaci variable in the fortran code) and the atom charge ('xlai' in the fortran code)
  */
-void extractExtra( MyAttractType& rig, std::vector<uint>& vCat, std::vector<dbl>& vCh)
+void extractExtra( AttractRigidbody& rig, std::vector<uint>& vCat, std::vector<dbl>& vCh)
 {
 
     uint   atcategory  = 0;
@@ -176,7 +176,7 @@ void AttractForceField1::InitParams(const std::string & paramsFileName )
 
 
 
-dbl AttractForceField1::nonbon8_forces(MyAttractType& rec, MyAttractType& lig, AttractPairList<MyAttractType> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print)
+dbl AttractForceField1::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList<AttractRigidbody> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print)
 {
 
     assert(forcerec.size() == rec.Size());
@@ -550,7 +550,7 @@ void BaseAttractForceField::Derivatives(const Vdouble& stateVars, Vdouble& delta
 *   translated from fortran file nonbon8.f
 *   TODO: add comments in the code, remove debug instructions
 */
-dbl AttractForceField2::nonbon8_forces(MyAttractType& rec, MyAttractType& lig, AttractPairList<MyAttractType> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print)
+dbl AttractForceField2::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList<AttractRigidbody> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print)
 {
 
     dbl enon = 0.0;
@@ -650,7 +650,7 @@ void BaseAttractForceField::Trans(uint molIndex, Vdouble & delta, uint shift,  b
 // translational forces
 
 
-    MyAttractType const & rig(m_movedligand[molIndex]);
+    AttractRigidbody const & rig(m_movedligand[molIndex]);
 //   In this subroutine the translational force components are calculated
     dbl flim = 1.0e18;
     dbl ftr1, ftr2, ftr3, fbetr;
@@ -730,8 +730,8 @@ void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdoubl
     // for the x, y and z coordinates, we need
     // the coordinates of the centered, non-translated molecule
 
-    MyAttractType * pLigCentered = & m_centeredligand[molIndex] ; // pointer to the centered ligand
-    MyAttractType * pLigMoved  = & m_movedligand[molIndex] ; // pointer to the rotated/translated ligand (for forces)
+    AttractRigidbody * pLigCentered = & m_centeredligand[molIndex] ; // pointer to the centered ligand
+    AttractRigidbody * pLigMoved  = & m_movedligand[molIndex] ; // pointer to the rotated/translated ligand (for forces)
 
     assert(shift+2 < delta.size());
     for (uint i=0; i< pLigCentered->m_activeAtoms.size(); i++)
@@ -772,12 +772,12 @@ void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdoubl
 
 
 
-void BaseAttractForceField::AddLigand(MyAttractType & lig)
+void BaseAttractForceField::AddLigand(AttractRigidbody & lig)
 {
 
     setDummyTypeList(lig); // sets the dummy atom type. (virtual function customized for each Attract forcefield)
 
-    MyAttractType centeredlig = lig ;
+    AttractRigidbody centeredlig = lig ;
     Coord3D com = lig.FindCenter();
     m_ligcenter.push_back(com);
 
@@ -799,17 +799,17 @@ void BaseAttractForceField::MakePairLists()
     for (uint i=0; i < m_movedligand.size(); i++)
         for (uint j=i+1; j<m_movedligand.size(); j++)
         {
-            AttractPairList<MyAttractType> plist(m_movedligand[i], m_movedligand[j], m_cutoff);
+            AttractPairList<AttractRigidbody> plist(m_movedligand[i], m_movedligand[j], m_cutoff);
             m_pairlists.push_back(plist);
         }
 
 }
 
 
-MyAttractType BaseAttractForceField::GetLigand(uint i) {return m_movedligand[i];}
+AttractRigidbody BaseAttractForceField::GetLigand(uint i) {return m_movedligand[i];}
 
 
-void AttractForceField2::setDummyTypeList(MyAttractType& lig)
+void AttractForceField2::setDummyTypeList(AttractRigidbody& lig)
 {
     lig.setDummyTypes(m_params->_dummytypes);
 }

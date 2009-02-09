@@ -50,7 +50,7 @@ class AtomSelection; // forward declaration
 
 //T: it's a Policy class for using modes or not
 template<class T>
-class Rigidbody:public CoordsArray<T>
+class Rigidbody_t:public CoordsArray<T>
 {
 private:
 
@@ -71,13 +71,13 @@ public:
     typedef T modepolicy;
 
     /// basic constructor
-    Rigidbody<T>()
+    Rigidbody_t<T>()
     {
         CoordsArray<T>::ResetMatrix();
     }
 
     /// constructor that loads a PDB file
-    Rigidbody<T>(std::string filename)
+    Rigidbody_t<T>(std::string filename)
     {
         ReadPDB(filename,*this);
         CoordsArray<T>::ResetMatrix();
@@ -85,10 +85,8 @@ public:
 
 
 
-
-
     /// copy constructor
-    Rigidbody<T>(const Rigidbody& model):
+    Rigidbody_t<T>(const Rigidbody_t& model):
             CoordsArray<T>(model)
     {
 //this copy constructor is needed because dbl[4][4] is not
@@ -107,7 +105,7 @@ public:
 
 
 
-    virtual ~Rigidbody() {};
+    virtual ~Rigidbody_t() {};
 
 // return number of atoms in the rigidbody
 //     uint Size() const {
@@ -415,9 +413,9 @@ public:
 
 
     /// operator + : merge two Rigdibody by extending the first coordinates with the second coordinates.
-    Rigidbody<T> operator+ (const Rigidbody<T>& rig)
+    Rigidbody_t<T> operator+ (const Rigidbody_t<T>& rig)
     {
-        Rigidbody rigFinal(*this);
+        Rigidbody_t<T> rigFinal(*this);
         for (uint i=0; i< rig.Size() ; i++) {
             rigFinal.AddCoord(rig.GetCoords(i));
             rigFinal.mAtomProp.push_back(rig.mAtomProp[i]);
@@ -471,6 +469,9 @@ public:
 
 }; // end class Rigidbody
 
+
+
+typedef Rigidbody_t<NoMode> Rigidbody;
 
 // now using public inheritance from CoordsArray
 // void Rigidbody::Translate(const Coord3D& tr)

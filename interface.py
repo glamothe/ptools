@@ -28,7 +28,7 @@ normalize = coord3D.member_function("Normalize")
 normalize.call_policies = module_builder.call_policies.return_internal_reference()
 
 
-coordsarray = mb.class_("CoordsArray")
+coordsarray = mb.class_("NoModeCoordsArray")
 coordsarray.include()
 #matrix44xVect = coordsarray.member_function
 
@@ -38,7 +38,7 @@ rigidbody = mb.class_("Rigidbody")
 #getatom.call_policies = module_builder.call_policies.return_internal_reference()
 rigidbody.include()
 
-attractrigidbody=mb.class_("AttractRigidbody")
+attractrigidbody=mb.class_("AttractRigidbody<NoMode>")
 attractrigidbody.include()
 
 

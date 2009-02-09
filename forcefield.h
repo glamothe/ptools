@@ -46,7 +46,7 @@ public:
 
 } ;
 
-typedef AttractRigidbody<NoMode> MyAttractType;
+
 
 
 ///////////////////////////////////////////////////////////////
@@ -69,16 +69,16 @@ public:
     dbl Function(const Vdouble&);
 
     ///add a new ligand to the ligand list...
-    void AddLigand(AttractRigidbody<NoMode> & lig);
+    void AddLigand(AttractRigidbody & lig);
 
     ///after a minimization, get minimized ligand 'i'
-    AttractRigidbody<NoMode> GetLigand(uint i);
+    AttractRigidbody GetLigand(uint i);
 
     /// this function generates the pairlists before a minimization
     void MakePairLists();
 
     ///non-bonded interactions
-    virtual dbl nonbon8(MyAttractType& rec, MyAttractType & lig, AttractPairList<MyAttractType> & pairlist, bool print=false)
+    virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody & lig, AttractPairList<AttractRigidbody> & pairlist, bool print=false)
     {
         std::vector<Coord3D> forcesrec (rec.Size());
         std::vector<Coord3D> forceslig (lig.Size());
@@ -90,7 +90,7 @@ public:
     }
 
     ///non-bonded interactions, forces are returned separately
-    virtual dbl nonbon8_forces(MyAttractType& rec, MyAttractType& lig, AttractPairList<MyAttractType> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false)=0;
+    virtual dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList<AttractRigidbody> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false)=0;
 
     virtual ~BaseAttractForceField(){};
 
@@ -106,9 +106,9 @@ public:
 protected:
     //private variables
     Vuint m_rAtomCat; ///< receptor atom category (std vector)
-    std::vector<AttractPairList<MyAttractType> > m_pairlists ; ///< pair lists
-    std::vector<MyAttractType> m_centeredligand; ///< array of ligands with their centroid at O (required for Euler rotations)
-    std::vector<MyAttractType> m_movedligand;
+    std::vector<AttractPairList<AttractRigidbody> > m_pairlists ; ///< pair lists
+    std::vector<AttractRigidbody> m_centeredligand; ///< array of ligands with their centroid at O (required for Euler rotations)
+    std::vector<AttractRigidbody> m_movedligand;
     std::vector<Coord3D> m_ligcenter; ///< list of ligands centroids before centering.
     dbl m_cutoff; ///< cutoff for the pairlist generation
 
@@ -121,7 +121,7 @@ private:
 
 
     ///set list of ignored atom types (dummy atoms)
-    virtual void setDummyTypeList(MyAttractType& lig)=0;
+    virtual void setDummyTypeList(AttractRigidbody& lig)=0;
 
 
 };
@@ -133,7 +133,7 @@ class AttractForceField1: public BaseAttractForceField
 public:
     void InitParams(const std::string & paramsFileName);
     AttractForceField1(std::string paramsFileName, dbl cutoff);
-    dbl nonbon8_forces(MyAttractType& rec, MyAttractType& lig, AttractPairList<MyAttractType> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
+    dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList<AttractRigidbody> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
 
     virtual ~AttractForceField1(){};
 private:
@@ -151,7 +151,7 @@ private:
 
     dbl m_rstk;
 
-    void setDummyTypeList(MyAttractType& lig){std::vector<uint> dummytypes; lig.setDummyTypes(dummytypes);}; //forcefield1 has no dummy type
+    void setDummyTypeList(AttractRigidbody& lig){std::vector<uint> dummytypes; lig.setDummyTypes(dummytypes);}; //forcefield1 has no dummy type
 };
 
 
@@ -232,7 +232,7 @@ class AttractForceField2 : public BaseAttractForceField
 public:
 
     AttractForceField2(const std::string & paramsFileName, dbl cutoff);
-    dbl nonbon8_forces(MyAttractType& rec, MyAttractType& lig, AttractPairList<MyAttractType> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
+    dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList<AttractRigidbody> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
 
     ///allows to reload a file of parameters
     void reloadParams(const std::string & filename, dbl cutoff);
@@ -243,7 +243,7 @@ private:
     void resetParams();
     void loadParams(const std::string & filename, dbl cutoff);
 
-    virtual void setDummyTypeList(MyAttractType& lig);
+    virtual void setDummyTypeList(AttractRigidbody& lig);
     std::string m_filename;   ///< name of parameter file
 
 

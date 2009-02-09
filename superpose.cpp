@@ -127,7 +127,7 @@ static void ZRotMatrix(double theta, Mat33 out)
 
 
 
-void Rotate(MyRigidType& rigid, Mat33 mat)
+void Rotate(Rigidbody& rigid, Mat33 mat)
 {
     double x,y,z;
     double X,Y,Z;
@@ -166,7 +166,7 @@ static void Mat33xcoord3D(Mat33 mat, Coord3D& in, Coord3D& out)
 
 
 
-static void rigidToMatrix(const MyRigidType & rig, double output[][3])
+static void rigidToMatrix(const Rigidbody & rig, double output[][3])
 {
     for (uint atom=0; atom<rig.Size();atom++)
     {
@@ -184,7 +184,7 @@ static void rigidToMatrix(const MyRigidType & rig, double output[][3])
 /**
 Calculates the tensor, as described by Sippl.
  */
-static void MakeTensor( MyRigidType & ref, MyRigidType & mob, Mat33 out)
+static void MakeTensor( Rigidbody & ref, Rigidbody & mob, Mat33 out)
 {
 
     if (ref.Size()!=mob.Size())
@@ -390,11 +390,11 @@ Calculates a 4x4 transformation Matrix that should be applied on 'mob' in order 
 RMSD between mob and ref.
 Algorithm taken from Sippl et Stegbuchner. Computers Chem. Vol 15, No. 1, p 73-78, 1991.
 */
-Superpose_t superpose(const MyRigidType& ref, const MyRigidType& mob, int verbosity)
+Superpose_t superpose(const Rigidbody& ref, const Rigidbody& mob, int verbosity)
 {
 
-    MyRigidType reference(ref); //copie de ref pour pouvoir centrer
-    MyRigidType mobile(mob); // copie de mobile
+    Rigidbody reference(ref); //copie de ref pour pouvoir centrer
+    Rigidbody mobile(mob); // copie de mobile
 
     if (ref.Size()!=mob.Size()) {std::cout << "Error in superpose.cpp: \
                                        the two AtomSelection objects must have\
@@ -489,7 +489,7 @@ Superpose_t superpose(const MyRigidType& ref, const MyRigidType& mob, int verbos
     Superpose_t sup;
     sup.matrix = output;
 
-    MyRigidType probe(mob);
+    Rigidbody probe(mob);
     probe.ApplyMatrix(output);
 
     sup.rmsd = Rmsd(ref,probe);
@@ -508,8 +508,8 @@ Superpose_t superpose(const MyRigidType& ref, const MyRigidType& mob, int verbos
     {
 
 
-        MyRigidType newmob(mob);
-        MyRigidType newref(ref);
+        Rigidbody newmob(mob);
+        Rigidbody newref(ref);
         selref.setRigid(newref);
         selmob.setRigid(newmob);
         newmob.transform(screw);

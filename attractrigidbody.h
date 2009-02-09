@@ -40,14 +40,14 @@ namespace PTools{
 *   some attract's specific pairlist
 */
 template <class T>
-class AttractRigidbody: public Rigidbody<T>
+class AttractRigidbody_t: public Rigidbody_t<T>
 {
 public:
 
 
     /// initilize a new object from a regular Rigidbody object
-    explicit AttractRigidbody<T>(const Rigidbody<T> & rig)
-	: Rigidbody<T>(rig)
+    explicit AttractRigidbody_t<T>(const Rigidbody_t<T> & rig)
+	: Rigidbody_t<T>(rig)
 {
     // extracts the "extra" field of Atoms to the m_atomTypeNumber array:
     uint   atcategory  = 0;
@@ -75,8 +75,8 @@ public:
 
 
 
-    AttractRigidbody(){};
-    virtual ~AttractRigidbody(){};
+    AttractRigidbody_t(){};
+    virtual ~AttractRigidbody_t(){};
 
     uint getAtomTypeNumber(uint i) const
     {
@@ -121,7 +121,7 @@ public:
 }
 
 
-    bool operator==(const AttractRigidbody& at) {return false;}; //don't use it, needed to expose vector<AttractRigidobdy> to python by boost::vector indexing suite. 
+    bool operator==(const AttractRigidbody_t& at) {return false;}; //don't use it, needed to expose vector<AttractRigidobdy> to python by boost::vector indexing suite. 
 
     void updateActiveList()
 {
@@ -156,6 +156,8 @@ private:
 
 
 };  //end class AttractRigid
+
+typedef AttractRigidbody_t<NoMode> AttractRigidbody;
 
 
 } //end namespace PTools

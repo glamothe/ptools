@@ -29,10 +29,10 @@ public:
         readsolvparam(file);
     };
 
-    MyAttractType surfpoint(const MyAttractType & rigid, dbl srad); /// generate a grid of point around the protein
+    AttractRigidbody surfpoint(const AttractRigidbody & rigid, dbl srad); /// generate a grid of point around the protein
     void surfpointParams(int max, dbl shift); /// initialize some parameters of the grid generation
-    MyAttractType outergrid(const MyAttractType & rigid1, const MyAttractType & rigid2, dbl srad); /// remove overlap between rigid1 and rigid2
-    MyAttractType removeclosest(const MyAttractType & rigid1, dbl srad); /// fix the density of the grid (remove points that are too close to eachother)
+    AttractRigidbody outergrid(const AttractRigidbody & rigid1, const AttractRigidbody & rigid2, dbl srad); /// remove overlap between rigid1 and rigid2
+    AttractRigidbody removeclosest(const AttractRigidbody & rigid1, dbl srad); /// fix the density of the grid (remove points that are too close to eachother)
     void readsolvparam(std::string file); /// read solvation parameters
     
 private:

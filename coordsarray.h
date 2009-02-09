@@ -385,6 +385,11 @@ public:
 
 
 
+typedef CoordsArray<NoMode> NoModeCoordsArray;
+
+
+
+
 } //namespace PTools
 
 

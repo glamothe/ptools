@@ -16,7 +16,7 @@ Mcoprigid::Mcoprigid()
 
 
 
-void Mcoprigid::setMain(MyAttractType& main) {
+void Mcoprigid::setMain(AttractRigidbody& main) {
     _main=main;
     _center = _main.FindCenter();
 
@@ -95,7 +95,7 @@ void McopForceField::calculate_weights(Mcoprigid& lig, bool print)
 
         for (uint copy = 0; copy < _receptor._vregion[loopregion].size(); copy++)
         {
-            AttractPairList<MyAttractType> cpl ( lig._main, _receptor._vregion[loopregion][copy], _cutoff );
+            AttractPairList<AttractRigidbody> cpl ( lig._main, _receptor._vregion[loopregion][copy], _cutoff );
             dbl e = _ff.nonbon8( lig._main, _receptor._vregion[loopregion][copy] , cpl );
             Eik.push_back(e);
         }
@@ -166,7 +166,7 @@ dbl McopForceField::Function(const Vdouble & v)
 
     //2.1) main ligand body with main receptor
 
-    AttractPairList<MyAttractType>  pl(_receptor._main,   lig._main, _cutoff );
+    AttractPairList<AttractRigidbody>  pl(_receptor._main,   lig._main, _cutoff );
     ener += _ff.nonbon8(_receptor._main, lig._main, pl );
 
 
@@ -189,9 +189,9 @@ dbl McopForceField::Function(const Vdouble & v)
         {
 
             dbl& weight = ref_weights[copynb];
-            MyAttractType& copy = ref_ensemble[copynb];
+            AttractRigidbody& copy = ref_ensemble[copynb];
 
-            AttractPairList<MyAttractType> cpl ( lig._main, copy, _cutoff );
+            AttractPairList<AttractRigidbody> cpl ( lig._main, copy, _cutoff );
             std::vector<Coord3D> copyforce(copy.Size());
             std::vector<Coord3D> mainforce(lig._main.Size());
 
@@ -251,7 +251,7 @@ for (uint i=0; i <_receptor._vregion.size(); i++)
 
    for(uint j=0; j<ens.size(); j++)
    {
-     MyAttractType& copy = ens[j];
+     AttractRigidbody& copy = ens[j];
        for (uint atomnb=0; atomnb < copy.Size(); ++atomnb)
        {
             receptortransForces += weights[j] * copy.m_forces[atomnb];

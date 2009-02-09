@@ -3,12 +3,18 @@
 #include "ptools.h"
 #include "coord3d.h"
 #include "attractrigidbody.h"
+#include "rigidbody.h"
 #include "basetypes.h"
+#include "coordsarray.h"
 
 #include <vector>
 
+using namespace PTools;
+
 namespace pyplusplus{ namespace aliases{
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
 
 #ifdef AUTO_DIFF
 typedef std::vector< surreal > Vsurreal;
@@ -17,8 +23,11 @@ typedef std::vector< double > Vdouble ;
 typedef std::vector< uint > Vuint ;
 typedef std::vector< int > Vint ;
 typedef std::vector< PTools::Coord3D> VCoord3D;
-typedef std::vector< PTools::AttractRigidbody > VAttractRigidbody;
-typedef Array2D<dbl > Matrix;
+typedef std::vector< PTools::AttractRigidbody> VAttractRigidbody;
+typedef Array2D<dbl> Matrix;
+typedef CoordsArray<NoMode> NoModeCoordsArray;
+// typedef CoordsArray<NoMode> MyCoordsArray;
+
 
 //  typedef PTools::T_PairList<PTools::AttractRigidbody> Attract2PairList;
 
@@ -30,8 +39,10 @@ typedef Array2D<dbl > Matrix;
 
 namespace  py_details{
    inline void instantiate(){
-       using namespace PTools;
        sizeof( Matrix );
+       sizeof(NoModeCoordsArray) ;
+//        sizeof(Rigidbody<NoMode> >);
+//        sizeof( AttractRigidbody<NoMode> > );
    }
 }
 
