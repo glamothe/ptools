@@ -70,6 +70,8 @@ public:
 
     typedef T modepolicy;
 
+    typedef AtomSelection<T> selection;
+
     /// basic constructor
     Rigidbody_t<T>()
     {

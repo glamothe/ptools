@@ -212,7 +212,7 @@ if not has_boost:
 common = conf.Finish()
 
 
-common =  Environment(ENV = os.environ, CXX = 'icc -Wall')
+#common =  Environment(ENV = os.environ, CXX = 'icc -Wall')
 
 
 python=common.Copy()

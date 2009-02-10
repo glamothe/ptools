@@ -25,10 +25,10 @@ struct AtomPair
 *
 */
 template <class MoleculeType>
-class AttractPairList
+class AttractPairList_t
 {
 public:
-    AttractPairList(const MoleculeType & receptor, const MoleculeType & ligand, dbl cutoff )
+    AttractPairList_t(const MoleculeType & receptor, const MoleculeType & ligand, dbl cutoff )
 {
     mp_ligand = &ligand;
     mp_receptor = &receptor;
@@ -39,7 +39,7 @@ public:
 
 
 
-    AttractPairList(const MoleculeType & receptor,const MoleculeType &  ligand) ///< constructor with infinite cutoff 
+    AttractPairList_t(const MoleculeType & receptor,const MoleculeType &  ligand) ///< constructor with infinite cutoff 
 {
 
     mp_ligand = &ligand;
@@ -58,9 +58,9 @@ public:
 
 
 
-    AttractPairList(){}; //null constructor for use with std::vector
+    AttractPairList_t(){}; //null constructor for use with std::vector
 
-    ~AttractPairList(){};
+    ~AttractPairList_t(){};
 
     ///update pairlist
     void update()
@@ -173,6 +173,8 @@ private:
 
 };
 
+
+typedef AttractPairList_t<AttractRigidbody> AttractPairList;
 
 
 

@@ -1,5 +1,7 @@
 import os
 from pyplusplus import module_builder
+from pygccxml import declarations
+
 
 import fnmatch
 
@@ -13,6 +15,8 @@ mb = module_builder.module_builder_t( [os.path.abspath('./ptools.h'), os.path.ab
                                       , gccxml_path=r"" 
                                       , define_symbols=[] )
 
+
+global_ns = mb.global_ns # global namespace for wraping typedefs
 
 
 
@@ -28,18 +32,31 @@ normalize = coord3D.member_function("Normalize")
 normalize.call_policies = module_builder.call_policies.return_internal_reference()
 
 
-coordsarray = mb.class_("NoModeCoordsArray")
+#print dir(mb)
+coordsarray = mb.class_("CoordsArray<PTools::NoMode>")
 coordsarray.include()
+
 #matrix44xVect = coordsarray.member_function
 
 
-rigidbody = mb.class_("Rigidbody")
+#rigidbody = mb.class_("Rigidbody_t<PTools::NoMode>")
 #getatom = rigidbody.member_function("GetAtomReference")
 #getatom.call_policies = module_builder.call_policies.return_internal_reference()
+#rigidbody.include()
+
+rigidbody_typedef = global_ns.typedef( 'Rigidbody' )
+rigidbody = declarations.class_traits.get_declaration( rigidbody_typedef )
 rigidbody.include()
 
-attractrigidbody=mb.class_("AttractRigidbody<NoMode>")
+
+
+#attractrigidbody=mb.class_("AttractRigidbody_t<PTools::NoMode>")
+#attractrigidbody.include()
+
+attractrigidbody_typedef = global_ns.typedef( 'AttractRigidbody' )
+attractrigidbody = declarations.class_traits.get_declaration( rigidbody_typedef )
 attractrigidbody.include()
+
 
 
 Region = mb.class_("Region")
@@ -85,15 +102,19 @@ AtomPair.include()
 
 #att2pairlist=mb.class_("T_PairList<PTools::AttractRigidbody>") #the new Attract 2 pairlist (works with AttractRigidbody)
 
-attpairlist=mb.class_("AttractPairList")
+attractpairlist_typedef = global_ns.typedef( 'AttractPairList' )
+print type(attractpairlist_typedef)
+attpairlist = declarations.class_traits.get_declaration( attractpairlist_typedef )
 attpairlist.include()
-#mb.namespace( 'py_details' ).exclude()  #exclude the py_details ugly namespace
+
+
+mb.namespace( 'py_details' ).exclude()  #exclude the py_details ugly namespace
 
 
 lbfgs = mb.class_("Lbfgs")
 lbfgs.include()
 
-rmsd = mb.free_function("Rmsd")
+rmsd = mb.free_function("Rmsd<Rigidbody::selection>")
 rmsd.include()
 
 Norm = mb.free_function("Norm")

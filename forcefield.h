@@ -78,7 +78,7 @@ public:
     void MakePairLists();
 
     ///non-bonded interactions
-    virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody & lig, AttractPairList<AttractRigidbody> & pairlist, bool print=false)
+    virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody & lig, AttractPairList & pairlist, bool print=false)
     {
         std::vector<Coord3D> forcesrec (rec.Size());
         std::vector<Coord3D> forceslig (lig.Size());
@@ -90,7 +90,7 @@ public:
     }
 
     ///non-bonded interactions, forces are returned separately
-    virtual dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList<AttractRigidbody> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false)=0;
+    virtual dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false)=0;
 
     virtual ~BaseAttractForceField(){};
 
@@ -106,7 +106,7 @@ public:
 protected:
     //private variables
     Vuint m_rAtomCat; ///< receptor atom category (std vector)
-    std::vector<AttractPairList<AttractRigidbody> > m_pairlists ; ///< pair lists
+    std::vector<AttractPairList > m_pairlists ; ///< pair lists
     std::vector<AttractRigidbody> m_centeredligand; ///< array of ligands with their centroid at O (required for Euler rotations)
     std::vector<AttractRigidbody> m_movedligand;
     std::vector<Coord3D> m_ligcenter; ///< list of ligands centroids before centering.
@@ -133,7 +133,7 @@ class AttractForceField1: public BaseAttractForceField
 public:
     void InitParams(const std::string & paramsFileName);
     AttractForceField1(std::string paramsFileName, dbl cutoff);
-    dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList<AttractRigidbody> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
+    dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
 
     virtual ~AttractForceField1(){};
 private:
@@ -232,7 +232,7 @@ class AttractForceField2 : public BaseAttractForceField
 public:
 
     AttractForceField2(const std::string & paramsFileName, dbl cutoff);
-    dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList<AttractRigidbody> & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
+    dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
 
     ///allows to reload a file of parameters
     void reloadParams(const std::string & filename, dbl cutoff);
