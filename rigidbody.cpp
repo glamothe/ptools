@@ -26,7 +26,6 @@
 #include "rigidbody.h"
 #include "atomselection.h"
 #include "geometry.h"
-#include "pdbio.h"
 
 
 namespace PTools{

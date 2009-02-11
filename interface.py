@@ -46,6 +46,7 @@ coordsarray.include()
 
 rigidbody_typedef = global_ns.typedef( 'Rigidbody' )
 rigidbody = declarations.class_traits.get_declaration( rigidbody_typedef )
+rigidbody.rename("Rigidbody")
 rigidbody.include()
 
 
@@ -54,7 +55,8 @@ rigidbody.include()
 #attractrigidbody.include()
 
 attractrigidbody_typedef = global_ns.typedef( 'AttractRigidbody' )
-attractrigidbody = declarations.class_traits.get_declaration( rigidbody_typedef )
+attractrigidbody = declarations.class_traits.get_declaration( attractrigidbody_typedef )
+attractrigidbody.rename("AttractRigidbody")
 attractrigidbody.include()
 
 
@@ -114,7 +116,7 @@ mb.namespace( 'py_details' ).exclude()  #exclude the py_details ugly namespace
 lbfgs = mb.class_("Lbfgs")
 lbfgs.include()
 
-rmsd = mb.free_function("Rmsd<Rigidbody::selection>")
+rmsd = mb.free_functions("Rmsd")
 rmsd.include()
 
 Norm = mb.free_function("Norm")
@@ -134,8 +136,12 @@ WritePDB=mb.free_function("WritePDB")
 WritePDB.include()
 
 
-atomselection = mb.class_("AtomSelection")
+atomselection_typedef = global_ns.typedef( 'AtomSelection' )
+print type(atomselection_typedef)
+atomselection = declarations.class_traits.get_declaration( atomselection_typedef )
 atomselection.include()
+
+
 
 screw =mb.class_("Screw")
 printscrew = screw.member_function("print")
@@ -157,8 +163,8 @@ Matrix.alias = "Matrix"
 Matrix.operators("()", arg_types=["int","int"]).exclude()
 Matrix.member_function("id").exclude()
 
-mb.class_("Model").include()
-mb.class_("Pdb").include()
+#mb.class_("Model").include()
+#mb.class_("Pdb").include()
 
 Version = mb.class_("Version").include()
 

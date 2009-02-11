@@ -15,9 +15,10 @@
 namespace PTools
 {
 
+
 /// root mean square deviation without superposition
 template <class AtomSelection_type>
-dbl Rmsd(const AtomSelection_type& atsel1, const AtomSelection_type& atsel2)
+dbl Rmsd_t(const AtomSelection_type& atsel1, const AtomSelection_type& atsel2)
 {
     if (atsel1.Size() != atsel2.Size())
     {
@@ -41,6 +42,15 @@ dbl Rmsd(const AtomSelection_type& atsel1, const AtomSelection_type& atsel2)
 
 }
 
+inline dbl Rmsd(const AtomSelection & atsel1, const AtomSelection& atsel2)
+{
+  return Rmsd_t(atsel1, atsel2);
+}
+
+inline dbl Rmsd(const Rigidbody& r1, const Rigidbody& r2)
+{
+return Rmsd_t(AtomSelection(r1), AtomSelection(r2));
+}
 
 }
 

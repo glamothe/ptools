@@ -14,7 +14,7 @@
 namespace PTools {
 
 template <class RigidType>
-class AtomSelection{
+class AtomSelection_t{
 
 private:
     //private data
@@ -26,15 +26,15 @@ private:
 
 
 public:
-    AtomSelection(){};
-    AtomSelection(const AtomSelection& oldsel)
+    AtomSelection_t(){};
+    AtomSelection_t(const AtomSelection_t& oldsel)
 {
     this->m_rigid = oldsel.m_rigid;
     this->m_list = oldsel.m_list;
 }
 
-    /// translate a Rigidbody object into an AtomSelection
-    AtomSelection(const RigidType& rigid)
+    /// translate a Rigidbody object into an AtomSelection_t
+    AtomSelection_t(const RigidType& rigid)
 	{
 	m_rigid=&rigid;
 	for (uint i=0; i < rigid.Size(); i++)
@@ -45,14 +45,14 @@ public:
 
 
 
-    ~AtomSelection(){};
+    ~AtomSelection_t(){};
 
     uint Size() const {return m_list.size();}; ///< returns the size of the selection
     void SetRigid(const RigidType& rig) {m_rigid=&rig;};
 
     /// return the i-th atom of the list
     Atom operator[] (uint i) const {
-          if (i>=this->Size()) throw std::range_error("AtomSelection: array out of bounds");
+          if (i>=this->Size()) throw std::range_error("AtomSelection_t: array out of bounds");
           return m_rigid->CopyAtom(m_list[i]);}; 
 
     Atom CopyAtom(uint i) const {return m_rigid->CopyAtom(m_list[i]);}
@@ -73,17 +73,16 @@ public:
 
 
 
-    AtomSelection non(const AtomSelection& atsel)
+    AtomSelection_t non(const AtomSelection_t& atsel)
 {
 return !atsel;
 }
 
 
     //friends:
-    template <class T>
-    friend AtomSelection<T> operator& (const AtomSelection<T>& atsel1, const AtomSelection<T>& atsel2)
+    friend AtomSelection_t<RigidType> operator& (const AtomSelection_t<RigidType>& atsel1, const AtomSelection_t<RigidType>& atsel2)
 {
-    AtomSelection<T> selout;
+    AtomSelection_t<RigidType> selout;
     if (atsel1.m_rigid != atsel2.m_rigid)
     {
         selout.m_rigid=0;
@@ -103,12 +102,12 @@ return !atsel;
 
 
 
-    template <class T>
-    friend AtomSelection<T> operator| (const AtomSelection<T>& atsel1, const AtomSelection<T>& atsel2)
+
+    friend AtomSelection_t<RigidType> operator| (const AtomSelection_t<RigidType>& atsel1, const AtomSelection_t<RigidType>& atsel2)
 {
-    AtomSelection<T> selout;
-    AtomSelection<T> cpatsel1(atsel1); //makes a copy of atsel1
-    AtomSelection<T> cpatsel2(atsel2); // makes a copy of atsel2
+    AtomSelection_t<RigidType> selout;
+    AtomSelection_t<RigidType> cpatsel1(atsel1); //makes a copy of atsel1
+    AtomSelection_t<RigidType> cpatsel2(atsel2); // makes a copy of atsel2
 
     if (atsel1.m_rigid != atsel2.m_rigid)
     {
@@ -137,15 +136,12 @@ return !atsel;
 
 
 
-
-
-    template <class T>
-    friend AtomSelection<T> operator! (const AtomSelection<T>& seltoinverse)
+    friend AtomSelection_t<RigidType> operator! (const AtomSelection_t<RigidType>& seltoinverse)
     {
 
-      AtomSelection<T>selout;
+      AtomSelection_t<RigidType>selout;
       selout.SetRigid(*seltoinverse.m_rigid);
-      AtomSelection<T> all = seltoinverse.m_rigid->SelectAllAtoms();
+      AtomSelection_t<RigidType> all = seltoinverse.m_rigid->SelectAllAtoms();
       set_difference(all.m_list.begin(), all.m_list.end(),
                      seltoinverse.m_list.begin(), seltoinverse.m_list.end(),
                      back_inserter(selout.m_list));
@@ -154,28 +150,21 @@ return !atsel;
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
 };
 
 
+typedef AtomSelection_t<Rigidbody> AtomSelection;
+
+
+
 //     template <class T>
-//     AtomSelection<T> operator& (const AtomSelection<T>& atsel1, const AtomSelection<T>& atsel2);
+//     AtomSelection_t<T> operator& (const AtomSelection_t<T>& atsel1, const AtomSelection_t<T>& atsel2);
 // 
 //     template <class T>
-//     AtomSelection<T> operator| (const AtomSelection<T>& atsel1, const AtomSelection<T>& atsel2);
+//     AtomSelection_t<T> operator| (const AtomSelection_t<T>& atsel1, const AtomSelection_t<T>& atsel2);
 // 
 //     template <class T>
-//     AtomSelection<T> operator! (const AtomSelection<T>& seltoinverse);
+//     AtomSelection_t<T> operator! (const AtomSelection_t<T>& seltoinverse);
 
 
 

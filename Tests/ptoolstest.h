@@ -8,7 +8,8 @@
 using namespace std;
 using namespace PTools;
 
-typedef Rigidbody<NoMode> MyRigid;
+typedef Rigidbody MyRigid;
+typedef AttractRigidbody MyAttractType;
 class TestCoord3D : public CxxTest::TestSuite
 {
     Coord3D coo1, coo2, coo3;
@@ -50,7 +51,7 @@ public:
 };
 
 
-class TestMyRigid: public CxxTest::TestSuite
+class TestRigidbody: public CxxTest::TestSuite
 {
 public:
 
@@ -62,6 +63,12 @@ public:
     void setUp()
     {
         r =  MyRigid("1FIN_r.pdb");
+    }
+
+    void testCalpha()
+    {
+      AtomSelection at =r.CA();
+      TS_ASSERT_EQUALS(at.Size(), 294);
     }
 
 
@@ -421,7 +428,6 @@ public:
 
 
 };
-
 
 
 

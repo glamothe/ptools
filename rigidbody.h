@@ -35,7 +35,7 @@
 #include "atom.h"
 #include "basetypes.h"
 #include "coordsarray.h"
-#include "pdbio.h"
+
 // #include "geometry.h"
 
 
@@ -46,7 +46,7 @@ namespace PTools
 bool isBackbone(const std::string &  atomtype);
 
 template <class T>
-class AtomSelection; // forward declaration
+class AtomSelection_t; // forward declaration
 
 //T: it's a Policy class for using modes or not
 template<class T>
@@ -70,7 +70,7 @@ public:
 
     typedef T modepolicy;
 
-    typedef AtomSelection<T> selection;
+    typedef AtomSelection_t<Rigidbody_t<T> > selection;
 
     /// basic constructor
     Rigidbody_t<T>()
@@ -308,9 +308,9 @@ public:
 
 
     /// selection : complete
-    AtomSelection<T> SelectAllAtoms() const
+    selection SelectAllAtoms() const
     {
-        AtomSelection<T> newsel;
+        selection newsel;
         newsel.SetRigid(*this);
         for (uint i=0; i < this->Size(); i++)
         {
@@ -327,9 +327,9 @@ public:
 
 
     /// selection : by atom type
-    AtomSelection<T> SelectAtomType(std::string atomtype)
+    selection SelectAtomType(std::string atomtype)
     {
-        AtomSelection<T> newsel;
+        selection newsel;
         newsel.SetRigid(*this);
 
         for (uint i=0; i<this->Size(); i++)
@@ -343,9 +343,9 @@ public:
 
 
     /// selection by residue type
-    AtomSelection<T> SelectResidType(std::string residtype)
+    selection SelectResidType(std::string residtype)
     {
-        AtomSelection<T> newsel;
+        selection newsel;
         newsel.SetRigid(*this);
 
         for (uint i=0; i<this->Size(); i++)
@@ -357,9 +357,9 @@ public:
     }
 
     /// selection by chain ID
-    AtomSelection<T> SelectChainId(std::string chainid)
+    selection SelectChainId(std::string chainid)
     {
-        AtomSelection<T> newsel;
+        selection newsel;
         newsel.SetRigid(*this);
         for (uint i=0; i<this->Size(); i++)
         {
@@ -372,9 +372,9 @@ public:
 
 
     /// selection by range of residue ID
-    AtomSelection<T> SelectResRange(uint start, uint stop)
+    selection SelectResRange(uint start, uint stop)
     {
-        AtomSelection<T> newsel;
+        selection newsel;
         newsel.SetRigid(*this);
 
         for (uint i=0; i < this->Size(); i++)
@@ -388,16 +388,16 @@ public:
 
 
     /// selection shortcut for C-alpha
-    AtomSelection<T> CA()
+    selection CA()
     {
         return SelectAtomType("CA");
     }
 
 
     /// selection of backbone atoms:
-    AtomSelection<T> Backbone()
+    selection Backbone()
     {
-        AtomSelection<T> newsel;
+        selection newsel;
         newsel.SetRigid(*this);
 
         for (uint i=0; i<this->Size(); i++)
@@ -455,7 +455,7 @@ public:
 //     friend void XRotation( const Rigidbody& source, Rigidbody& result, dbl alpha );
 //     friend void EulerZYZ(const Rigidbody & source, Rigidbody & cible, dbl theta, dbl phi, dbl psi);
 
-    friend class AtomSelection<T>;
+    friend class AtomSelection_t<T>;
 
     CoordsArray<T> ToCoordsArray() const {
         return static_cast<CoordsArray<T> > (*this);

@@ -26,6 +26,7 @@ typedef std::vector< PTools::Coord3D> VCoord3D;
 typedef std::vector< PTools::AttractRigidbody> VAttractRigidbody;
 typedef Array2D<dbl> Matrix;
 typedef CoordsArray<NoMode> NoModeCoordsArray;
+
 // typedef CoordsArray<NoMode> MyCoordsArray;
 
 
@@ -41,6 +42,8 @@ namespace  py_details{
    inline void instantiate(){
        sizeof( Matrix );
        sizeof(NoModeCoordsArray) ;
+       sizeof(AtomSelection);
+       sizeof(Rigidbody);
 //        sizeof(Rigidbody<NoMode> >);
 //        sizeof( AttractRigidbody<NoMode> > );
    }

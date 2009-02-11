@@ -94,9 +94,9 @@ class TestBasicMoves(unittest.TestCase):
         self.rigid2.Translate(Coord3D() - 2*vec1)  #should be a global null translation + round error
         self.assertTrue(Rmsd(self.rigid2, self.rigid3) < 1e-6)
 
-class TestCoordsArray(unittest.TestCase):
+class TestNoModeCoordsArray(unittest.TestCase):
     def setUp(self):
-        c = CoordsArray()
+        c = NoModeCoordsArray()
         coo1 = Coord3D(3.0, 4.0, 5.0)
         coo2 = Coord3D(1.0, 2.0, 7.5)
         

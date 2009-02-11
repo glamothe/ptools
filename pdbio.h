@@ -90,7 +90,7 @@ std::string readresidtype(const std::string &ligne);
 
 /// read a PDB file from a file pointer and load datas in Rigidbody
 template<class Rigid_type>
-void ReadPDB(std::ifstream& fichier,Rigid_type & protein )
+void ReadPDB_t(std::ifstream& fichier,Rigid_type & protein )
 {
 
     std::string ligne ;
@@ -137,13 +137,17 @@ void ReadPDB(std::ifstream& fichier,Rigid_type & protein )
 
 
 
+inline void ReadPDB(std::ifstream& fichier, Rigidbody & protein )
+{
+  ReadPDB_t(fichier, protein);
+}
 
 
 
 
 /// read a PDB file from a filename and load datas in Rigidbody
 template<class Rigid_type>
-void ReadPDB(const std::string name,Rigid_type & protein )
+void ReadPDB_t(const std::string name,Rigid_type & protein )
 {
     std::string nomfich=name ;
 	// pointer toward the filename given in the constructor argument
@@ -162,14 +166,17 @@ void ReadPDB(const std::string name,Rigid_type & protein )
 }
 
 
-
+inline void ReadPDB(const std::string name,Rigidbody & protein)
+{
+  ReadPDB_t(name, protein);
+}
 
 
 
 
 /// write a PDB file given a Rigidbody and a filename
 template<class Rigid_type>
-void WritePDB(const Rigid_type& rigid, std::string filename)
+void WritePDB_t(const Rigid_type& rigid, std::string filename)
 {
 
     FILE* file= fopen(filename.c_str(),"w") ;
@@ -201,9 +208,10 @@ void WritePDB(const Rigid_type& rigid, std::string filename)
     fclose(file);
 }
 
-
-
-
+inline void WritePDB(const Rigidbody& rigid, std::string filename)
+{
+  WritePDB_t(rigid, filename);
+}
 
 
 
