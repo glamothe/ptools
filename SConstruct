@@ -3,7 +3,7 @@ import os.path
 
 
 #compilation mode: please choose between debug and release
-compile_mode = "release"
+compile_mode = "debug"
 
 
 #users may overide these settings if SCons cannot automatically locate some library:
@@ -193,7 +193,6 @@ else:
 print "common cpp path:", COMMON_CPPPATH
 		
 common=Environment(LIBS=COMMON_LIBS,CPPPATH=COMMON_CPPPATH, CCFLAGS=ccflags, LIBPATH=LIB_PATH, FORTRAN=FORTRANPROG,   FORTRANFLAGS="-g -fPIC" )
-
 
 #common.Append(CCFLAGS='-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG')                  #fastest(?) release
 #common.Append(CCFLAGS='-Wall -O2 -g -fPIC -D_GLIBCXX_DEBUG')    #debuging high (use with care !)

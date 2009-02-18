@@ -105,8 +105,8 @@ lbfgsb_t* lbfgsb_create(int n, int m, double* l, double* u, int* nbd) {
     opt->l_ = 0;
     opt->u_ = 0;
     opt->nbd_ = 0;
-    opt->factr  = 1.0E+7;
-    opt->pgtol  = 1.0E-5;
+    opt->factr  = 1.0E+9;
+    opt->pgtol  = 1.0E-4;
     opt->iprint = 0;
     opt->fun_min = DBL_MAX;
 

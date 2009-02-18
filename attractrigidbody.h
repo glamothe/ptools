@@ -152,6 +152,7 @@ private:
     friend class BaseAttractForceField;
     friend class AttractForceField2;
     friend class AttractForceField1;
+
     friend class McopForceField;
 
 

@@ -75,7 +75,7 @@ static void Mat33xMat33(Mat33 left, Mat33 right, Mat33 out) //matrix multiplicat
 }
 
 
-static void XRotMatrix(double theta, Mat33 out)
+static void XRotMatrix(dbl theta, Mat33 out)
 {
     out[0][0]=1;
     out[0][1]=0;
@@ -92,7 +92,7 @@ static void XRotMatrix(double theta, Mat33 out)
 }
 
 
-static void YRotMatrix(double theta, Mat33 out)
+static void YRotMatrix(dbl theta, Mat33 out)
 {
     out[0][0]=cos(theta);
     out[0][1]=0;
@@ -110,7 +110,7 @@ static void YRotMatrix(double theta, Mat33 out)
 
 
 
-static void ZRotMatrix(double theta, Mat33 out)
+static void ZRotMatrix(dbl theta, Mat33 out)
 {
     out[0][0]=cos(theta);
     out[0][1]=-sin(theta);
@@ -129,8 +129,8 @@ static void ZRotMatrix(double theta, Mat33 out)
 
 void Rotate(Rigidbody& rigid, Mat33 mat)
 {
-    double x,y,z;
-    double X,Y,Z;
+    dbl x,y,z;
+    dbl X,Y,Z;
     for (uint i=0; i<rigid.Size(); i++)
     {
         Coord3D c;
@@ -166,7 +166,7 @@ static void Mat33xcoord3D(Mat33 mat, Coord3D& in, Coord3D& out)
 
 
 
-static void rigidToMatrix(const Rigidbody & rig, double output[][3])
+static void rigidToMatrix(const Rigidbody & rig, dbl output[][3])
 {
     for (uint atom=0; atom<rig.Size();atom++)
     {
@@ -195,8 +195,8 @@ static void MakeTensor( Rigidbody & ref, Rigidbody & mob, Mat33 out)
     }
 
     //get coordinates into an array
-    double cref[ref.Size()][3];
-    double cmob[mob.Size()][3];
+    dbl cref[ref.Size()][3];
+    dbl cmob[mob.Size()][3];
     rigidToMatrix(ref,cref);
     rigidToMatrix(mob,cmob);
 
@@ -287,9 +287,9 @@ Screw MatTrans2screw(const Matrix& mat)
     Coord3D pt ; //un point de l'axe de rotation
 
 
-    double a = rotmatrix[0][0] ; // Xx
-    double b = rotmatrix[1][1] ; // Yy
-    double c = rotmatrix[2][2] ; // Zz
+    dbl a = rotmatrix[0][0] ; // Xx
+    dbl b = rotmatrix[1][1] ; // Yy
+    dbl c = rotmatrix[2][2] ; // Zz
 
     if (fabs(1+a-b-c) > EPSILON)
     {
@@ -341,7 +341,7 @@ Screw MatTrans2screw(const Matrix& mat)
     else     // angle=0
       { 
             screw.point = Coord3D(0,0,0);
-            if(Norm(trans)!=0)
+            if(real(Norm(trans))!=0)
             {
             screw.unitVector=trans /Norm(trans);
             }
@@ -364,17 +364,17 @@ Screw MatTrans2screw(const Matrix& mat)
     Coord3D uprime;
     Mat33xcoord3D(rotmatrix,u,uprime);
 
-    double cost = ScalProd(u,uprime);
+    dbl cost = ScalProd(u,uprime);
 
     Coord3D usec;
     VectProd(screw.unitVector,u,usec);
-    double sint = ScalProd(usec,uprime);
+    dbl sint = ScalProd(usec,uprime);
 
     
-    if (cost < -1 ) cost=-1;
-    if (cost >1 ) cost= 1 ; 
+    if (real(cost) < -1 ) cost=-1;
+    if (real(cost) >1 ) cost= 1 ; 
     screw.angle = acos(cost);
-    if (sint < 0) screw.angle = -screw.angle ;
+    if (real(sint) < 0) screw.angle = -screw.angle ;
 
     screw.angle *= -1;
     return screw ;
@@ -424,11 +424,11 @@ Superpose_t superpose(const Rigidbody& ref, const Rigidbody& mob, int verbosity)
     for(uint i=0; i<35; i++)
     {
 
-        double arg1,arg2;
+        dbl arg1,arg2;
 
         arg1 = U[2][1] - U[1][2] ;
         arg2 = U[1][1] + U[2][2];
-        double alpha = atan2(arg1 , arg2 );
+        dbl alpha = atan2(arg1 , arg2 );
 
         XRotMatrix(-alpha, rot);
         Mat33xMat33(rot,ident,ident);
@@ -441,7 +441,7 @@ Superpose_t superpose(const Rigidbody& ref, const Rigidbody& mob, int verbosity)
         arg1 = U[2][0]-U[0][2];
         arg2 = U[0][0]+U[2][2];
 
-        double beta = atan2(arg1,arg2);
+        dbl beta = atan2(arg1,arg2);
         YRotMatrix(beta,rot);
         Mat33xMat33(rot,ident,ident);
 
@@ -452,7 +452,7 @@ Superpose_t superpose(const Rigidbody& ref, const Rigidbody& mob, int verbosity)
 
         arg1 = U[1][0] - U[0][1];
         arg2 = U[0][0] + U[1][1];
-        double gamma = atan2(arg1,arg2);
+        dbl gamma = atan2(arg1,arg2);
 
         ZRotMatrix(-gamma,rot);
         Mat33xMat33(rot,ident,ident);

@@ -37,7 +37,7 @@
 #include "coordsarray.h"
 
 // #include "geometry.h"
-
+#include "pdbio.h"
 
 namespace PTools
 {
@@ -81,7 +81,7 @@ public:
     /// constructor that loads a PDB file
     Rigidbody_t<T>(std::string filename)
     {
-        ReadPDB(filename,*this);
+        ReadPDB_fromstring(filename,*this);
         CoordsArray<T>::ResetMatrix();
     }
 
@@ -474,6 +474,28 @@ public:
 
 
 typedef Rigidbody_t<NoMode> Rigidbody;
+
+
+inline void ReadPDB(const std::string name,Rigidbody & protein)
+{
+  ReadPDB_fromstring(name, protein);
+}
+
+inline void ReadPDB(std::ifstream& fichier, Rigidbody & protein )
+{
+  ReadPDB_fromstream(fichier, protein);
+}
+
+
+
+
+
+inline void WritePDB(const Rigidbody& rigid, std::string filename)
+{
+  WritePDB_t(rigid, filename);
+}
+
+
 
 // now using public inheritance from CoordsArray
 // void Rigidbody::Translate(const Coord3D& tr)

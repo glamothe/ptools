@@ -37,8 +37,8 @@ namespace PTools
 {
 
 
-typedef double Mat33[3][3];
-typedef double Mat44[4][4];
+typedef dbl Mat33[3][3];
+typedef dbl Mat44[4][4];
 
 
 void Rotate(Rigidbody& rigid, Mat33 mat);

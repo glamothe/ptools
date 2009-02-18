@@ -101,7 +101,11 @@ public:
     ///rotational derivatives
     void Rota(uint molIndex, dbl phi, dbl ssi, dbl rot, Vdouble& delta, uint shift, bool print=false);
 
-
+  
+    AttractRigidbody dbgGetMovedLigand(uint i)
+    {
+       return m_movedligand[i];
+    }
 
 protected:
     //private variables

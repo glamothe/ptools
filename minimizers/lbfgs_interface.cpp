@@ -37,7 +37,9 @@ Lbfgs::~Lbfgs()
 
 
 // vector<double> to vector<double> converter. used for genericity. should not impact performances too much.
-inline void tocplx(const std::vector<double> & vdblin, std::vector<double> & vdblout ){vdblout=vdblin;}
+inline void tocplx(const std::vector<double> & vdblin, std::vector<double> & vdblout ) {
+    vdblout=vdblin;
+}
 
 
 
@@ -54,10 +56,12 @@ inline void tocplx(const std::vector<double> & vdblin, std::vector<surreal> & vc
 
 #endif
 
-inline std::vector<double> todbl(std::vector<double> & vdbl) {return vdbl;}
+inline std::vector<double> todouble(std::vector<double> & vdbl) {
+    return vdbl;
+}
 
 #ifdef AUTO_DIFF
-inline std::vector<double> todbl(std::vector<surreal> & vcplx)
+inline std::vector<double> todouble(std::vector<surreal> & vcplx)
 {
     std::vector<double> vdbl;
     for (uint i=0; i<vcplx.size(); i++)
@@ -69,10 +73,11 @@ inline std::vector<double> todbl(std::vector<surreal> & vcplx)
 
 #endif
 
-void Lbfgs::minimize(int maxiter)
+void Lbfgs::minimize(int maxiter,std::vector<dbl>& xuser )
 {
 
-    int n = objToMinimize.ProblemSize();
+    uint n = objToMinimize.ProblemSize();
+
     std::cout  << "number of free variables for the minimizer: " << n << std::endl;
 
 
@@ -80,15 +85,19 @@ void Lbfgs::minimize(int maxiter)
     std::vector<double> u(n);
     Vint nbd(n);
 
-    x.resize(n);
+    if (xuser.size() != n)
+    {
+        throw std::range_error("the vector you gave has the wrong size");
+    }
+
+    x = todouble(xuser);
     g.resize(n);
 
-    for (int i=0;i<n; i++)
+    for (uint i=0;i<n; i++)
     {
         l[i]=0;
         u[i]=0;
         nbd[i]=0;
-        x[i] = 0.0;
         g[i] = 0.0;
     }  //unconstrained problem
 
@@ -116,7 +125,7 @@ void Lbfgs::minimize(int maxiter)
         if (rc == 0) {
             break;
         } else if (rc < 0) {
-            printf("lbfgsb stop with an error");
+            std::cout << "lbfgsb stop with an error ";
             break;
         } else if (rc == 1) {
 
@@ -124,16 +133,16 @@ void Lbfgs::minimize(int maxiter)
 
 /*
 //check analytical derivatives with surreal:
-{
-            std::vector<dbl> vdblx;
-            tocplx(x,vdblx);
-            std::vector<dbl> vdblg;
-            tocplx(g,vdblg);
+            {
+                std::vector<dbl> vdblx;
+                tocplx(x,vdblx);
+                std::vector<dbl> vdblg;
+                tocplx(g,vdblg);
 
-            f = objToMinimize.Function(vdblx);
-            objToMinimize.Derivatives(vdblx,vdblg);
+                f = objToMinimize.Function(vdblx);
+                objToMinimize.Derivatives(vdblx,vdblg);
 
-            g=todbl(vdblg);
+                g=todouble(vdblg);
 
 
             for (uint i=0; i<x.size(); i++)
@@ -170,7 +179,7 @@ void Lbfgs::minimize(int maxiter)
             f = objToMinimize.Function(vdblx);
             objToMinimize.Derivatives(vdblx,vdblg);
 
-            g=todbl(vdblg);
+            g=todouble(vdblg);
 
 //                 std::cout << "analytical derivatives: \n";
 //                 for(uint i=0; i<g.size(); i++)
@@ -190,6 +199,9 @@ void Lbfgs::minimize(int maxiter)
 
 
     std::cout << m_opt->task  << " |  " << m_opt->niter << " iterations\n";
+
+    tocplx(x,xuser);
+
 }
 
 
@@ -197,16 +209,16 @@ void Lbfgs::minimize(int maxiter)
 
 std::vector<double>Lbfgs::GetMinimizedVarsAtIter(uint iter)
 {
-if (iter>=m_vars_over_time.size())
-  {
-   std::string msg = "";
-   msg+= iter;
-   msg += " is out of range (max: ";
-   msg += m_vars_over_time.size()-1 ;
-   msg += " )\n"; 
-   throw std::out_of_range(msg);
-  }
-return m_vars_over_time[iter];
+    if (iter>=m_vars_over_time.size())
+    {
+        std::string msg = "";
+        msg+= iter;
+        msg += " is out of range (max: ";
+        msg += m_vars_over_time.size()-1 ;
+        msg += " )\n";
+        throw std::out_of_range(msg);
+    }
+    return m_vars_over_time[iter];
 }
 
 

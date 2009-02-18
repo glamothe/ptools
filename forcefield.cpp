@@ -338,7 +338,6 @@ void AttractForceField2::loadParams(const std::string & filename, dbl cutoff)
                     {
                        uint type;
                        iss >> type;
-                       std::cerr << "ignoring atom type: " << type << "\n";
                        dummyatomtypes.push_back(type-1); //types counting begins at 0
                     }
                  std::swap(dummyatomtypes, m_params->_dummytypes);
@@ -417,6 +416,7 @@ void AttractForceField2::loadParams(const std::string & filename, dbl cutoff)
 dbl BaseAttractForceField::Function(const Vdouble& stateVars )
 {
 
+
     assert(m_centeredligand.size() >=1);
     assert(m_movedligand.size() >=1);
 
@@ -439,8 +439,7 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
         m_movedligand[i] = m_centeredligand[i];
         m_movedligand[i].resetForces(); //just to be sure that the forces are set to zero. Maybe not needed.
 
-
-
+        
         if (m_movedligand[i].hasrotation)
         {
             assert(svptr+2 < stateVars.size());
@@ -474,10 +473,6 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
             assert(plistnumber < m_pairlists.size() );
             enernon += nonbon8(m_movedligand[i], m_movedligand[j],  m_pairlists[plistnumber++] );   //calculates energy contribution for every pair. Forces are stored for each ligand
         }
-
-
-
-
 
 
     return enernon;
@@ -769,7 +764,6 @@ void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdoubl
 
     return;
 }
-
 
 
 void BaseAttractForceField::AddLigand(AttractRigidbody & lig)

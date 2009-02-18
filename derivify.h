@@ -43,7 +43,10 @@
 // using namespace std;
 
 
-// #define AUTO_DIFF   //uncomment this line to use automatic differenciation
+#define AUTO_DIFF   //uncomment this line to use automatic differenciation
+
+using std::istream;
+using std::ostream;
 
 #ifndef HDRcomplexify
 inline const double & real(const double& r) {
@@ -592,7 +595,7 @@ inline istream& operator>>(istream& is, surreal& x)
     if (c == '(') {
         is >> re >> c;
         if (c == ',') is >> im >> c;
-        if (c != ')') is.clear(ios::badbit);
+        if (c != ')') is.clear(std::ios::badbit);
     }
     else {
         is.putback(c);

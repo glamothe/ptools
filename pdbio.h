@@ -16,7 +16,7 @@
 
 #include "atom.h"
 #include "stdio.h"
-#include "rigidbody.h"
+// #include "rigidbody.h"
 
 namespace PTools
 {
@@ -80,6 +80,7 @@ namespace PTools
 // };
 
 
+
 std::string strip( std::string const& str, char const* sepSet );
 bool isAtom(const std::string & line );
 bool isHeteroAtom(const std::string& line);
@@ -90,7 +91,7 @@ std::string readresidtype(const std::string &ligne);
 
 /// read a PDB file from a file pointer and load datas in Rigidbody
 template<class Rigid_type>
-void ReadPDB_t(std::ifstream& fichier,Rigid_type & protein )
+void ReadPDB_fromstream(std::ifstream& fichier,Rigid_type & protein )
 {
 
     std::string ligne ;
@@ -137,17 +138,12 @@ void ReadPDB_t(std::ifstream& fichier,Rigid_type & protein )
 
 
 
-inline void ReadPDB(std::ifstream& fichier, Rigidbody & protein )
-{
-  ReadPDB_t(fichier, protein);
-}
-
 
 
 
 /// read a PDB file from a filename and load datas in Rigidbody
 template<class Rigid_type>
-void ReadPDB_t(const std::string name,Rigid_type & protein )
+void ReadPDB_fromstring(const std::string name,Rigid_type & protein )
 {
     std::string nomfich=name ;
 	// pointer toward the filename given in the constructor argument
@@ -163,12 +159,6 @@ void ReadPDB_t(const std::string name,Rigid_type & protein )
     fichier.close();
     return;
 
-}
-
-
-inline void ReadPDB(const std::string name,Rigidbody & protein)
-{
-  ReadPDB_t(name, protein);
 }
 
 
@@ -208,10 +198,6 @@ void WritePDB_t(const Rigid_type& rigid, std::string filename)
     fclose(file);
 }
 
-inline void WritePDB(const Rigidbody& rigid, std::string filename)
-{
-  WritePDB_t(rigid, filename);
-}
 
 
 
