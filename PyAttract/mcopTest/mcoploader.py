@@ -10,12 +10,13 @@ def mcopload(filename):
     f=open(filename,'r')
     mcobj= Mcoprigid()
     for l in f.readlines():
-        if l[0]=="#": break
+        if l[0]=="#": continue
         lspl = l.split()
         if lspl[0]=="main":
             main = arbload(lspl[1])
             mcobj.setMain(main)
         if lspl[0]=="copy":
+            print "adding new Ensemble"
             reg = Region()
             filelist = lspl[1:]
             for f in filelist:
