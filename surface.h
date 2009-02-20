@@ -3,9 +3,8 @@
 #include <fstream>
 #include <string>
 
-#include "ptools.h"
 #include "rigidbody.h"
-
+#include "attractrigidbody.h"
 #ifndef SURFACE_H
 #define SURFACE_H
 

@@ -89,6 +89,11 @@ attractForceField1.include()
 attractForceField2 = mb.class_("AttractForceField2")
 attractForceField2.include()
 
+ff1creator=mb.free_function("attractforceField1Creator")
+ff1creator.call_policies = module_builder.call_policies.return_value_policy(module_builder.call_policies.manage_new_object)
+ff1creator.include()
+
+
 McopForceField = mb.class_("McopForceField")
 McopForceField.include()
 

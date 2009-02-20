@@ -117,7 +117,10 @@ BaseAttractForceField* attractforceFieldCreator(const std::string& paramsfile, d
    return new T(paramsfile, cutoff);  //very simple function isn't it ? 
 }
 
-
+inline BaseAttractForceField* attractforceField1Creator(const std::string& paramsfile, dbl cutoff)
+{
+return attractforceFieldCreator<AttractForceField1>(paramsfile, cutoff);
+}
 
 
 typedef BaseAttractForceField* (*FFcreator) (const std::string&, dbl); //FFcreator is a function pointer to a function 

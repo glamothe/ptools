@@ -43,7 +43,7 @@
 // using namespace std;
 
 
-#define AUTO_DIFF   //uncomment this line to use automatic differenciation
+//#define AUTO_DIFF   //uncomment this line to use automatic differenciation
 
 using std::istream;
 using std::ostream;
