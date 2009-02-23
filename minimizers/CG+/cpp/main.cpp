@@ -1,4 +1,6 @@
 #include "driver.h"
+#include <stdio.h>
+#include <iostream>
 
 
 
@@ -30,7 +32,17 @@
 } /* fcn_ */
 
 
+template <class T>
+void printvector(const std::vector<T>& v  )
+{
 
+for (int i=0; i<v.size(); i++)
+{
+   std::cout << v[i] << "  " ;
+}
+
+std::cout << std::endl;
+}
 
 
 
@@ -38,5 +50,12 @@
 int main()
 {
 CGstruct params(rosen, 2);
+params.maxiter = 100;
 cgminimize(params);
+
+
+printf("from main   :  niter = %i\n", params.niter);
+
+printvector(params.timemachine[params.timemachine.size()-2].x);
+printvector(params.timemachine[params.timemachine.size()-1].x);
 }

@@ -3,14 +3,13 @@ removed libf2c dependency
 don't blame me for the goto !
 */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
+
+#include "driver.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include "f2c.h"
 
+
+extern "C" {
 
 
 /* Table of constant values */
@@ -35,13 +34,13 @@ static integer c__1 = 1;
 /*       October 1998 */
 /*       -------------------------------------------------------------------- */
 
-#include "driver.h"
+
 
 /* Main program */ int cgminimize(CGstruct& params)
 {
     /* Initialized data */
 
-    static real one = (float)1.;
+    static freal one = (float)1.;
 
 
     /* System generated locals */
@@ -126,7 +125,7 @@ L20:
 
 /* Rosenbrock test function */
     func(&n, x, &f, g);
-    ncall++;
+    params.neval++;
 L30:
 
 /* Call the main optimization code */
@@ -151,8 +150,20 @@ L30:
 
 /* Termination Test.  The user may replace it by some other test. However, */
 /* the parameter 'FINISH' must be set to 'TRUE' when the test is satisfied. */
-        niter++;
-        if (niter > params.maxiter)
+        params.niter++;
+
+        //store X, G and f
+        FuncState fs;
+        for (int i=0; i<params.n; ++i)
+         {
+            fs.x.push_back(x[i]);
+            fs.g.push_back(g[i]);
+         }
+        fs.f = f;
+        params.timemachine.push_back(fs);
+
+
+        if (params.niter > params.maxiter)
         {
             finish = TRUE_;
         }
@@ -165,7 +176,7 @@ L40:
 	    finish = TRUE_;
 	    goto L30;
 	}
-	if ((d__1 = g[i__ - 1], abs(d__1)) > tlev) {
+	if ((d__1 = g[i__ - 1], fabs(d__1)) > tlev) {
 	    goto L30;
 	} else {
 	    goto L40;
@@ -179,7 +190,21 @@ L50:
     if (iprint[0] >= 0 && iflag >= 0) {
     printf(" f(x) =  %.10e \n",f);
     }
-    exit(0);
+
+        //store X, G and f
+        FuncState fs;
+        for (int i=0; i<params.n; ++i)
+         {
+            fs.x.push_back(x[i]);
+            fs.g.push_back(g[i]);
+         }
+        fs.f = f;
+        params.timemachine.push_back(fs);
+
+
+
+
+
 
 /* Formatting */
 
@@ -188,6 +213,5 @@ L50:
 } /* MAIN__ */
 
 // /* Main program alias */ int driver_ () { main(); return 0; }
-#ifdef __cplusplus
 	}
-#endif
+
