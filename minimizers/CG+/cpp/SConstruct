@@ -1,0 +1,5 @@
+files=Split("driver.cpp blas.c cgfam.c  cgsearch.c   timer.c")
+StaticLibrary("cg", files,  CFLAGS="-Wall")
+Program("main", "main.cpp", LIBS="cg", LIBPATH=".", CCFLAGS="-Wall")
+
+

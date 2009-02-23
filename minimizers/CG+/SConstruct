@@ -1,0 +1,3 @@
+files=Split("blas.f  cgfam.f  cgsearch.f  fcn.f  main.f timer.f")
+Program("cgtest", files)
+Program("driverCG", "driverCG.cpp")
