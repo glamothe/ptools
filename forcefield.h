@@ -7,12 +7,15 @@
 #include "rigidbody.h"
 #include "attractrigidbody.h"
 #include "pairlist.h"
+#include "constraint.h"
 
 namespace PTools
 {
 
 
 void PrintVec(const Vdouble& vec);
+
+
 
 
 //! Generic forcefield (abstract class)
@@ -78,16 +81,8 @@ public:
     void MakePairLists();
 
     ///non-bonded interactions
-    virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody & lig, AttractPairList & pairlist, bool print=false)
-    {
-        std::vector<Coord3D> forcesrec (rec.Size());
-        std::vector<Coord3D> forceslig (lig.Size());
+    virtual dbl nonbon8(AttractRigidbody& rec, AttractRigidbody & lig, AttractPairList & pairlist, bool print=false);
 
-        dbl ener = nonbon8_forces(rec, lig, pairlist, forcesrec, forceslig, print);
-        rec.addForces(forcesrec);
-        lig.addForces(forceslig);
-        return ener;
-    }
 
     ///non-bonded interactions, forces are returned separately
     virtual dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false)=0;
@@ -106,6 +101,9 @@ public:
     {
        return m_movedligand[i];
     }
+
+
+    void AddConstraint(const Constraint& constraint);
 
 protected:
     //private variables
@@ -127,7 +125,10 @@ private:
     ///set list of ignored atom types (dummy atoms)
     virtual void setDummyTypeList(AttractRigidbody& lig)=0;
 
+    std::vector<Constraint> m_vecConstraints;
+    static const double m_rstk = 0.00050;
 
+    std::vector<Coord3D> m_centers_constraint_forces;
 };
 
 

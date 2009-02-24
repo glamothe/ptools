@@ -112,7 +112,7 @@ void McopForceField::init()
     {
         if (m_verbose)
         {
-            std::cout << "Creating forcefields for Region: " << loopregion << "\n";
+            std::cout << "Creating forcefields for Ensemble: " << loopregion << "\n";
         }
 
 
@@ -169,7 +169,7 @@ void McopForceField::calculate_weights(bool print)
     {
         if (print)
         {
-            std::cout << " Region: " << loopregion << "\n";
+            std::cout << " Ensemble: " << loopregion << "\n";
         }
 
         //calculates interaction energy between receptor copies and ligand body:
@@ -376,7 +376,7 @@ receptortransForces+= m_receptor.m_main.m_forces[i];
 
 for (uint i=0; i < m_receptor.m_vregion.size(); i++)
  {
-   Region& ens = m_receptor.m_vregion[i];
+   Ensemble& ens = m_receptor.m_vregion[i];
    std::vector<dbl> & weights =  m_receptor.m_weights[i];
 
    for(uint j=0; j<ens.size(); j++)

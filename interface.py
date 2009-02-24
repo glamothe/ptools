@@ -61,8 +61,8 @@ attractrigidbody.include()
 
 
 
-Region = mb.class_("Region")
-Region.include()
+Ensemble = mb.class_("Ensemble")
+Ensemble.include()
 
 Mcoprigid=mb.class_("Mcoprigid")
 Mcoprigid.include()
@@ -99,6 +99,9 @@ factorycreator.include()
 
 factoryholer = mb.class_("FactoryHolder")
 factoryholer.include()
+
+constraint = mb.class_("Constraint")
+constraint.include()
 
 
 McopForceField = mb.class_("McopForceField")

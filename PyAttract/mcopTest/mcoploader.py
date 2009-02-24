@@ -15,19 +15,15 @@ def mcopload(filename):
         if lspl[0]=="main":
             main = arbload(lspl[1])
             mcobj.setMain(main)
-        if lspl[0]=="copy":
+        if lspl[0]=="ensemble":
             print "adding new Ensemble"
-            reg = Region()
+            reg = Ensemble()
             filelist = lspl[1:]
             for f in filelist:
                 c = arbload(f)
                 reg.addCopy(c)
             mcobj.addEnsemble(reg)
     return mcobj
-
-
-
-
 
 
 

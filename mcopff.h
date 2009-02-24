@@ -18,37 +18,16 @@ namespace PTools{
 // typedef std::vector<AttractRigidbody> ensemble ;
 
 
-class Region
+class Ensemble
 {
 private:
 
 std::vector<AttractRigidbody> m_copies;
 
 public:
-/*
-   void AttractEulerRotate(const dbl& phi, const dbl& ssi, const dbl& rot)
-   {
-      for (uint i=0; i<_copies.size(); i++)
-      {
-          m_copies[i].AttractEulerRotate(phi, ssi, rot);
-      }
-
-   };
-
-   void Translate(const Coord3D& co)
-   {
-       for(uint i =0; i< m_copies.size(); ++i)
-       {
-          m_copies[i].Translate(co);
-       }
-   }*/
-
 
    void addCopy(const AttractRigidbody& cop){ m_copies.push_back(cop); };
-
    size_t size() const {return m_copies.size();};
-
-
    AttractRigidbody& operator[](uint i){return m_copies[i];};
 
 };
@@ -66,7 +45,9 @@ public:
     //using default copy operator
 
     void setMain(AttractRigidbody& main) ;
-    void addEnsemble(const Region& reg){ m_vregion.push_back(reg); std::vector<dbl> v(reg.size()) ; m_weights.push_back(v);  };
+    const AttractRigidbody& getMain() const {return m_main;} 
+
+    void addEnsemble(const Ensemble& reg){ m_vregion.push_back(reg); std::vector<dbl> v(reg.size()) ; m_weights.push_back(v);  };
 
 
     void AttractEulerRotate(const dbl& phi, const dbl& ssi, const dbl& rot);
@@ -80,7 +61,7 @@ public:
 private:
 
     AttractRigidbody m_main;
-    std::vector< Region > m_vregion ;
+    std::vector< Ensemble > m_vregion ;
 
     bool m_complete ;
     Coord3D m_center ; ///<center of mass of the main region

@@ -43,6 +43,7 @@ COMMON_CPP = Split ("""atom.cpp
                        coordsarray.cpp
                        superpose.cpp
                        version.cpp
+                       constraint.cpp
                     """)
 
 

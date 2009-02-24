@@ -416,6 +416,8 @@ void AttractForceField2::loadParams(const std::string & filename, dbl cutoff)
 dbl BaseAttractForceField::Function(const Vdouble& stateVars )
 {
 
+    m_centers_constraint_forces = std::vector<Coord3D> (m_centeredligand.size()); //reset constraint forces
+
 
     assert(m_centeredligand.size() >=1);
     assert(m_movedligand.size() >=1);
@@ -473,6 +475,35 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
             assert(plistnumber < m_pairlists.size() );
             enernon += nonbon8(m_movedligand[i], m_movedligand[j],  m_pairlists[plistnumber++] );   //calculates energy contribution for every pair. Forces are stored for each ligand
         }
+
+
+    //add restraint forces:
+    for (uint i=0; i<m_vecConstraints.size(); i++)
+    {
+
+            const Constraint& constraint = m_vecConstraints[i];
+            const uint lig1 = constraint.lig1; //receptor (force applied to its center of mass)
+            const uint lig2 = constraint.lig2; //ligand (force applied to a given atom)
+            const uint atom = constraint.at2; //atom index for the ligand
+            assert(atom < m_centeredligand[lig2].Size());
+
+            //calculates the distance between the receptor center and the ligand surface:
+            const Coord3D &ligRestraintCoords = m_movedligand[lig2].GetCoords(atom) ;
+            Coord3D vecLig2Rec = m_movedligand[lig1].FindCenter() - ligRestraintCoords ;
+
+            double ett = Norm2(vecLig2Rec) ;
+
+            //rstk: user-defined constant
+            Coord3D springforce = 4 * m_rstk * ett * vecLig2Rec ;
+            //adds force to the correct ligand atom:
+            m_movedligand[lig2].m_forces[atom] += springforce;
+
+            m_centers_constraint_forces[lig1] += Coord3D() - springforce;
+
+            double restrener =  m_rstk * ett * ett ;
+            //dbg:
+            std::cout << "Constraint energy: " << restrener << std::endl;
+    }
 
 
     return enernon;
@@ -538,6 +569,18 @@ void BaseAttractForceField::Derivatives(const Vdouble& stateVars, Vdouble& delta
 
 
 
+
+
+ dbl BaseAttractForceField::nonbon8(AttractRigidbody& rec, AttractRigidbody & lig, AttractPairList & pairlist, bool print)
+    {
+        std::vector<Coord3D> forcesrec (rec.Size());
+        std::vector<Coord3D> forceslig (lig.Size());
+
+        dbl ener = nonbon8_forces(rec, lig, pairlist, forcesrec, forceslig, print);
+        rec.addForces(forcesrec);
+        lig.addForces(forceslig);
+        return ener;
+    }
 
 
 /*! \brief Non bonded energy
@@ -673,9 +716,9 @@ void BaseAttractForceField::Trans(uint molIndex, Vdouble & delta, uint shift,  b
     }
 
     assert(shift+2 < delta.size());
-    delta[0+shift]=ftr1;
-    delta[1+shift]=ftr2;
-    delta[2+shift]=ftr3;
+    delta[0+shift]=ftr1 + m_centers_constraint_forces[molIndex].x;
+    delta[1+shift]=ftr2 + m_centers_constraint_forces[molIndex].y ;
+    delta[2+shift]=ftr3 + m_centers_constraint_forces[molIndex].z ;
 
     //debug:
     if (print) std::cout <<  "translational forces: " << ftr1 <<"  "<< ftr2 <<"  " << ftr3 << std::endl;
@@ -764,6 +807,12 @@ void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdoubl
 
     return;
 }
+
+void BaseAttractForceField::AddConstraint(const Constraint& constraint)
+{
+m_vecConstraints.push_back(constraint);
+}
+
 
 
 void BaseAttractForceField::AddLigand(AttractRigidbody & lig)
