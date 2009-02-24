@@ -299,6 +299,11 @@ for trans in translations:
         ligand.Translate(Coord3D()-center) #set ligand center of mass to 0,0,0
         ligand.AttractEulerRotate(surreal(rot[0]),surreal(rot[1]),surreal(rot[2]))
         ligand.Translate(trans[1])
+        
+        X=Vdouble()
+        for i in range(6):
+           X.append(surreal(0))
+        
 
         for minim in minimlist:
             minimcounter+=1
@@ -308,29 +313,16 @@ for trans in translations:
 
 
             #performs single minimization on receptor and ligand, given maxiter=niter and restraint constant rstk
-            forcefield=AttractForceField1("aminon.par",surreal(cutoff))
-            rec.setTranslation(False)
-            rec.setRotation(False)
-            
-            forcefield.AddLigand(rec)
-            forcefield.AddLigand(ligand)
-            rstk=minim['rstk']  #restraint force
-            #if rstk>0.0:
-                #forcefield.SetRestraint(rstk)
+            forcefield = McopForceField(factoryCreator1(), "aminon.par", surreal(cutoff), rec, ligand )
+            forcefield.Function(X)
+            forcefield.calculate_weights(True);
+
+
+
             lbfgs_minimizer=Lbfgs(forcefield)
-            lbfgs_minimizer.minimize(niter)
-            X=lbfgs_minimizer.GetMinimizedVars()  #optimized freedom variables after minimization
+            lbfgs_minimizer.minimize(niter, X) # X is now updated by the minimizer
 
 
-            #TODO: test and use CenterToOrigin() !
-            output=AttractRigidbody(ligand)
-            center=output.FindCenter()
-            output.Translate(Coord3D()-center)
-            output.AttractEulerRotate(surreal(X[0]), surreal(X[1]), surreal(X[2]))
-            output.Translate(Coord3D(surreal(X[3]),surreal(X[4]),surreal(X[5])))
-            output.Translate(center)
-
-            ligand=AttractRigidbody(output)
             if (options.single):
                 ntraj=lbfgs_minimizer.GetNumberIter()
                 for iteration in range(ntraj):
@@ -350,11 +342,25 @@ for trans in translations:
 
         #calculates true energy, and rmsd if possible
         #with the new ligand position
-        forcefield=AttractForceField1("aminon.par", surreal(500))
+        #forcefield = McopForceField(factoryCreator1(), "aminon.par", surreal(cutoff), rec, ligand )
+        forcefield.Function(X)
+        forcefield.calculate_weights(True)
+
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
-        pl = AttractPairList(rec, ligand,surreal(500))
-        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
-        output.PrintMatrix()
+        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.Function(X)  , str(rms))
+        
+        for i in range(1):
+            weights = forcefield.getCopyWeights(i)
+            for w in weights:
+                print w,
+            print ""
+        theligand = forcefield.getLigand()
+        theligand.PrintMatrix()
+
+if (options.single):
+    print type(forcefield)
+    ligand = forcefield.getLigand()
+    WritePDB(ligand, "o.pdb")
 
 
 #output compressed ligand and receptor:

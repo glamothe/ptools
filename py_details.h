@@ -26,6 +26,7 @@ typedef std::vector< PTools::Coord3D> VCoord3D;
 typedef std::vector< PTools::AttractRigidbody> VAttractRigidbody;
 typedef Array2D<dbl> Matrix;
 typedef CoordsArray<NoMode> NoModeCoordsArray;
+typedef std::vector<std::vector<double> > VVdouble;
 
 // typedef CoordsArray<NoMode> MyCoordsArray;
 

@@ -96,7 +96,7 @@ dbl e=ff->Function(v);
 std::cerr << "PlayWithFF: e = " << e;
 std::cerr << "\nPlayWithFF: atom1 position=\n";
 
-AttractRigidbody movedlig = ff->dbgGetMovedLigand(1);
+AttractRigidbody movedlig = ff->getMovedLigand(1);
 Coord3D co = movedlig.GetCoords(0);
 
 std::cerr << co.toString();
@@ -183,7 +183,7 @@ void McopForceField::calculate_weights(bool print)
 
 
 
-        const dbl RT = 0.592 * 298.0 ;
+        const dbl RT = 0.592;
 
         //calculate weights
         dbl sumweights = 0.0;

@@ -1,2 +1,2 @@
-Program("testmcop.exe", "testMulticopy.cpp", CPPPATH="../.."  , LIBS=["ptools","gfortran"], LIBPATH="../..", CCFLAGS="-g")
-Program("test1FIN", "test1FIN.cpp", CPPPATH="../.."  , LIBS=["ptools","gfortran"], LIBPATH="../..", CCFLAGS="-g")
+Program("testmcop.exe", "testMulticopy.cpp", CPPPATH="../.."  , LIBS=["ptools","g2c"], LIBPATH="../..", CCFLAGS="-g")
+Program("test1FIN", "test1FIN.cpp", CPPPATH="../.."  , LIBS=["ptools","g2c"], LIBPATH="../..", CCFLAGS="-g")

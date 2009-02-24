@@ -94,6 +94,13 @@ ff1creator.call_policies = module_builder.call_policies.return_value_policy(modu
 ff1creator.include()
 
 
+factorycreator = mb.free_function("factoryCreator1")
+factorycreator.include()
+
+factoryholer = mb.class_("FactoryHolder")
+factoryholer.include()
+
+
 McopForceField = mb.class_("McopForceField")
 McopForceField.include()
 

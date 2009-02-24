@@ -127,6 +127,21 @@ typedef BaseAttractForceField* (*FFcreator) (const std::string&, dbl); //FFcreat
     //taking a const string& and a double and returning a BaseAttractForceField*
 
 
+struct FactoryHolder
+{
+FFcreator creator;
+};
+
+
+inline FactoryHolder factoryCreator1()
+{
+FactoryHolder fh;
+fh.creator = &attractforceField1Creator;
+return fh;
+}
+
+
+
 /** \brief ForceField with multicopy
 needs an attract forcefield (either 1 or 2) in constructor
 
@@ -138,9 +153,9 @@ class McopForceField: public ForceField
 public:
     //TODO: this class leaks when creating BaseAttractForceFields without deleting pointers in a destructor
 
-    McopForceField(FFcreator creator, const std::string paramsfile , dbl cutoff
+    McopForceField(FactoryHolder holder, const std::string paramsfile , dbl cutoff
                    ,const Mcoprigid& rec, const AttractRigidbody& lig )
-        :m_creator(creator), 
+        :m_creator(holder.creator), 
          m_receptor(rec),
          m_ligand(lig),
          m_paramsfile(paramsfile),
@@ -164,6 +179,13 @@ public:
 
     void dbgPlayWithFF();
     std::vector<BaseAttractForceField*> dbgGetFF(){return m_forcefields;}
+
+    std::vector<dbl> getCopyWeights(int i){return m_receptor.getWeights()[i];}
+
+    AttractRigidbody getLigand()
+    {
+       return m_forcefields[0]->getMovedLigand(1);
+    }
 
 
 private:

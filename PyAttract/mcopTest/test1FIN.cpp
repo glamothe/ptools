@@ -71,9 +71,9 @@ mclig.setMain(alig);
 FFcreator fcreator =  (attractforceFieldCreator<AttractForceField1>);
 
 
-McopForceField FF ( attractforceFieldCreator<AttractForceField1>  , "aminon.par", 12., mcrec, alig);
+McopForceField FF (factoryCreator1() , "aminon.par", 12., mcrec, alig);
 
-
+/*
 
 
  vector<dbl> v(6);
@@ -120,8 +120,13 @@ std::cout << FF.Function(v) << std::endl;
 // 
 
 
+
+
 std::cout << FF.Function(v) << std::endl;
 cout << "**************\n";
+
+
+
 
 std::vector<dbl> autoderiv;
 
@@ -160,8 +165,7 @@ for (int i=0; i<6; i++)
 cout <<"\n";
 
  }
-
-
+*/
 
 return 0;
 }
