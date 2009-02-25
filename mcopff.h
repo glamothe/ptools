@@ -108,6 +108,8 @@ typedef BaseAttractForceField* (*FFcreator) (const std::string&, dbl); //FFcreat
     //taking a const string& and a double and returning a BaseAttractForceField*
 
 
+//this class exists only because Boost Python cannot manipulate function pointers easily
+//its only purpose is to encapsulate a C function pointer
 struct FactoryHolder
 {
 FFcreator creator;
@@ -144,7 +146,7 @@ public:
          { 
             init();
             Constraint constr = CreateDefaultConstraint(rec.m_main,lig,0,1);
-            m_forcefields.back()->AddConstraint(constr);
+//             m_forcefields.back()->AddConstraint(constr);
          };
 
     ~McopForceField();
@@ -152,10 +154,6 @@ public:
 
     dbl Function(const Vdouble&);
     void Derivatives(const Vdouble& v, Vdouble & g );
-
-
-//     void setReceptor(const Mcoprigid& rec) { m_receptor = rec;};
-//     void setLigand(const Mcoprigid& lig) { m_centered_ligand = lig;  };
 
     void calculate_weights(bool print=false);
     std::vector<dbl> getCopyWeights(int i){return m_receptor.getWeights()[i];}

@@ -292,8 +292,8 @@ dbl McopForceField::Function(const Vdouble & v)
     //main ligand vs main receptor:
 
     BaseAttractForceField* ffmain = m_forcefields[countff];
+    assert(ffmain->ProblemSize()==6);    
     ener = ffmain->Function(v);
-    assert(ffmain->ProblemSize()==6);
 
 
     Vdouble mainderiv(6);

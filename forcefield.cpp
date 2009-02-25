@@ -461,7 +461,7 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
     m_centers_constraint_forces = std::vector<Coord3D> (m_centeredligand.size()); //reset constraint forces
 
 
-    assert(m_centeredligand.size() >=1);
+    assert(m_centeredligand.size() >=1); //a size of 1 can be useful for testing modes energy with only 1 molecule
     assert(m_movedligand.size() >=1);
 
     const uint nlig = m_movedligand.size();
@@ -490,6 +490,7 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
         }
 
 
+    double restrener = 0.0;
     //add restraint forces:
     for (uint i=0; i<m_vecConstraints.size(); i++)
     {
@@ -498,6 +499,9 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
             const uint lig1 = constraint.lig1; //receptor (force applied to its center of mass)
             const uint lig2 = constraint.lig2; //ligand (force applied to a given atom)
             const uint atom = constraint.at2; //atom index for the ligand
+            
+            assert(lig2 < m_centeredligand.size());
+            assert(lig1 < m_centeredligand.size());
             assert(atom < m_centeredligand[lig2].Size());
 
             //calculates the distance between the receptor center and the ligand surface:
@@ -513,13 +517,13 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
 
             m_centers_constraint_forces[lig1] += Coord3D() - springforce;
 
-            double restrener =  m_rstk * ett * ett ;
+            restrener =  m_rstk * ett * ett ;
             //dbg:
             std::cout << "Constraint energy: " << restrener << std::endl;
     }
 
 
-    return enernon;
+    return enernon + restrener;
 
 }
 

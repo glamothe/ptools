@@ -44,7 +44,7 @@ AttractRigidbody ac1(c1);
 AttractRigidbody ac2 (c2);
 
 
-Region reg ;
+Ensemble reg ;
 reg.addCopy(ac1);
 reg.addCopy(ac2);
 
@@ -73,10 +73,15 @@ FFcreator fcreator =  (attractforceFieldCreator<AttractForceField1>);
 
 McopForceField FF (factoryCreator1() , "aminon.par", 12., mcrec, alig);
 
+vector<dbl> v(6);
+FF.Function(v);
+FF.calculate_weights(true);
+std::cout << FF.Function(v) << std::endl;
+
 /*
 
 
- vector<dbl> v(6);
+
  vector<dbl> d(6);
 
  for (uint i=0; i<6; i++)
@@ -85,10 +90,10 @@ v[i]=0.0; d[i]=0.0;
 }
 
 
-FF.Function(v);
-FF.calculate_weights(true);
 
-std::cout << FF.Function(v) << std::endl;
+
+
+
 
 
 
