@@ -469,8 +469,9 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
     //don't let the user call this function without a coherent pairlist
     //(the pairlist may be outdated (user choice), but we MUST have the correct number of pairlists!)
     if (m_pairlists.size() != (nlig*(nlig-1))/2)
+      {
         MakePairLists();
-
+      }
     assert(m_pairlists.size() == (nlig*(nlig-1))/2);
 
 
@@ -490,7 +491,7 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
         }
 
 
-    double restrener = 0.0;
+    dbl restrener = 0.0;
     //add restraint forces:
     for (uint i=0; i<m_vecConstraints.size(); i++)
     {
@@ -499,7 +500,7 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
             const uint lig1 = constraint.lig1; //receptor (force applied to its center of mass)
             const uint lig2 = constraint.lig2; //ligand (force applied to a given atom)
             const uint atom = constraint.at2; //atom index for the ligand
-            
+
             assert(lig2 < m_centeredligand.size());
             assert(lig1 < m_centeredligand.size());
             assert(atom < m_centeredligand[lig2].Size());
@@ -508,18 +509,16 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
             const Coord3D &ligRestraintCoords = m_movedligand[lig2].GetCoords(atom) ;
             Coord3D vecLig2Rec = m_movedligand[lig1].FindCenter() - ligRestraintCoords ;
 
-            double ett = Norm2(vecLig2Rec) ;
+            dbl ett = Norm2(vecLig2Rec) ;
 
             //rstk: user-defined constant
             Coord3D springforce = 4 * m_rstk * ett * vecLig2Rec ;
             //adds force to the correct ligand atom:
-            m_movedligand[lig2].m_forces[atom] += springforce;
+            m_movedligand[lig2].m_forces[atom] += Coord3D() - springforce;
 
             m_centers_constraint_forces[lig1] += Coord3D() - springforce;
 
             restrener =  m_rstk * ett * ett ;
-            //dbg:
-            std::cout << "Constraint energy: " << restrener << std::endl;
     }
 
 
@@ -854,6 +853,7 @@ void BaseAttractForceField::MakePairLists()
 //at this point we expect that m_movedligand still contains original coordinates of all ligands
 //(ie not centered) because we will generate the pairlist from this vector (list)
 
+m_pairlists = std::vector<AttractPairList>()  ; //reset the pairlists vector
 
 //creates the pairlist: loop over all pairs of ligands
     for (uint i=0; i < m_movedligand.size(); i++)

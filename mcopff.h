@@ -146,7 +146,7 @@ public:
          { 
             init();
             Constraint constr = CreateDefaultConstraint(rec.m_main,lig,0,1);
-//             m_forcefields.back()->AddConstraint(constr);
+            m_forcefields.back()->AddConstraint(constr);
          };
 
     ~McopForceField();

@@ -78,6 +78,12 @@ FF.Function(v);
 FF.calculate_weights(true);
 std::cout << FF.Function(v) << std::endl;
 
+
+Lbfgs minim(FF);
+minim.minimize(200,v);
+
+
+
 /*
 
 

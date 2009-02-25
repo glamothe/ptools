@@ -31,5 +31,16 @@ std::cout << ff1.Function(X)<< std::endl;
 ff1.AddConstraint(constr);
 std::cout << ff1.Function(X)<< std::endl;
 
+
+
+Lbfgs minim(ff1);
+minim.minimize(200,X);
+
+
+
+
+
+
+
 }
 

@@ -131,7 +131,7 @@ void Lbfgs::minimize(int maxiter,std::vector<dbl>& xuser )
 
 
 
-/*
+#ifdef AUTO_DIFF
 //check analytical derivatives with surreal:
             {
                 std::vector<dbl> vdblx;
@@ -145,18 +145,31 @@ void Lbfgs::minimize(int maxiter,std::vector<dbl>& xuser )
                 g=todouble(vdblg);
 
 
+            std::vector<double> autog;
             for (uint i=0; i<x.size(); i++)
             {
                 std::vector<surreal> svdblx = vdblx ;
                 svdblx[i]+=surreal(0,1);
-                std::cout <<"check: " << svdblx[i] << std::endl;
-
-                std::cout << g[i] << "==" << imag(objToMinimize.Function(svdblx)) << "  " ;
+                autog.push_back( imag(objToMinimize.Function(svdblx)) );
             }
+
+            std::cout << "analytical derivatives:\n";
+            for (uint i=0; i<x.size(); i++)
+            {
+                std::cout << g[i] <<  "  " ;
+            }
+
+            std::cout <<"auto derivatives: \n";
+            for (uint i=0; i<x.size(); i++)
+            {
+                std::cout << autog[i] <<  "  " ;
+            }
+
+
             std::cout << std::endl;
 }
 //end check derivatives
-*/
+#endif
 
 
 
