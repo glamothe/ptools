@@ -96,7 +96,10 @@ public:
     ///rotational derivatives
     void Rota(uint molIndex, dbl phi, dbl ssi, dbl rot, Vdouble& delta, uint shift, bool print=false);
 
-  
+    ///place the ligands accorgingly to the variables in the vector X
+    void moveLigands(const Vdouble & x);
+
+
     AttractRigidbody getMovedLigand(uint i)
     {
        return m_movedligand[i];

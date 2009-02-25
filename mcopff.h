@@ -141,7 +141,11 @@ public:
          m_ligand(lig),
          m_paramsfile(paramsfile),
          m_cutoff(cutoff)
-         { init(); };
+         { 
+            init();
+            Constraint constr = CreateDefaultConstraint(rec.m_main,lig,0,1);
+            m_forcefields.back()->AddConstraint(constr);
+         };
 
     ~McopForceField();
 
@@ -154,6 +158,7 @@ public:
 //     void setLigand(const Mcoprigid& lig) { m_centered_ligand = lig;  };
 
     void calculate_weights(bool print=false);
+    std::vector<dbl> getCopyWeights(int i){return m_receptor.getWeights()[i];}
 
     uint ProblemSize() {return 6;};
     void initMinimization(){};
@@ -161,7 +166,6 @@ public:
     void dbgPlayWithFF();
     std::vector<BaseAttractForceField*> dbgGetFF(){return m_forcefields;}
 
-    std::vector<dbl> getCopyWeights(int i){return m_receptor.getWeights()[i];}
 
     AttractRigidbody getLigand()
     {

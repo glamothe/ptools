@@ -4,7 +4,7 @@
 
 
 
-/* Subroutine */ int rosen(integer *n, doublereal *x, doublereal *f, doublereal *g)
+/* Subroutine */ int rosen(integer *n, const doublereal *x, doublereal *f, doublereal *g)
 {
     /* System generated locals */
     doublereal d__1, d__2, d__3;
@@ -45,17 +45,42 @@ std::cout << std::endl;
 }
 
 
+class Rosen: public PTools::ForceField
+{
+public:
+uint ProblemSize() {return 2;}
+
+
+dbl Function(const Vdouble& x) { int n=2; dbl f; rosen(&n,&x[0],&f,&g[0]); return f;}
+
+void Derivatives(const Vdouble& x, Vdouble& d) {d=g;}
+std::vector<dbl> g;
+
+Rosen() 
+{g = Vdouble (2);}
+
+void initMinimization() {};
+
+
+};
+
+
 
 
 int main()
 {
-CGstruct params(rosen, 2);
+Rosen r;
+
+CGstruct params(&r);
 params.maxiter = 100;
 cgminimize(params);
 
 
 printf("from main   :  niter = %i\n", params.niter);
 
-printvector(params.timemachine[params.timemachine.size()-2].x);
-printvector(params.timemachine[params.timemachine.size()-1].x);
+for (int i=0; i<params.timemachine.size(); ++i)
+   printvector(params.timemachine[i].x);
+
+
+std::cout << params.timemachine.size() << "   " << params.niter << std::endl;
 }

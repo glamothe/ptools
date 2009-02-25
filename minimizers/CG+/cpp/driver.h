@@ -6,13 +6,14 @@
 #include "f2c_lite.h"
 #include "../../../basetypes.h"
 
+#include "../../../forcefield.h"
 
 typedef double dbl;
 
 
 typedef int (*fcn)(integer *n, doublereal *x, doublereal *f, doublereal *g);
 
-
+using PTools::ForceField;
 
 /** \brief store a state of a function evaluation
 This class represents a step of the minimization path
@@ -27,11 +28,16 @@ dbl f;
 
 struct CGstruct
 {
-   doublereal d__[10000], f, g[10000];
-   doublereal w[10000], x[10000], gold[10000];
+   doublereal d__[10000], f;
+   doublereal w[10000], gold[10000];
+   std::vector<dbl> x;
+   std::vector<dbl> g;
+
    integer method, iprint[2];
    integer irest;
-   fcn func;
+
+   ForceField* p_forcefield;
+
    int n;
    int maxiter;
    int niter ; //effective number of iterations
@@ -39,9 +45,11 @@ struct CGstruct
 
    std::vector<FuncState> timemachine;
 
-   CGstruct(fcn function, int nn )
-      : func(function), n(nn)
+   CGstruct(ForceField* p_ff)
+      : p_forcefield(p_ff)
    {
+
+     n = p_forcefield->ProblemSize();
      method = 2;
      iprint[0]=1;
      iprint[1]=0;
@@ -49,7 +57,14 @@ struct CGstruct
      maxiter = 100;
      niter = 0;
      neval = 0;
+     for (int i=0; i<10000; i++) x[i]=0.0;
+
+     x = std::vector<doublereal> (n);
+     g = std::vector<doublereal> (n);
    }
+
+
+
 
 };
 

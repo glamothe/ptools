@@ -413,6 +413,48 @@ void AttractForceField2::loadParams(const std::string & filename, dbl cutoff)
 }
 
 
+
+void BaseAttractForceField::moveLigands(const Vdouble& x)
+{
+uint svptr = 0; //state variable 'pointer'
+    const uint nlig = m_movedligand.size();
+
+
+    //put the ligands to the correct positions defined by stateVars
+    for (uint i=0; i< nlig; i++)
+    {
+        m_movedligand[i] = m_centeredligand[i];
+        m_movedligand[i].resetForces(); //just to be sure that the forces are set to zero. Maybe not needed.
+
+
+        if (m_movedligand[i].hasrotation)
+        {
+            assert(svptr+2 < x.size());
+            m_movedligand[i].AttractEulerRotate(x[svptr], x[svptr+1], x[svptr+2]);
+            svptr+=3;
+        }
+
+
+        m_movedligand[i].Translate(m_ligcenter[i]);
+
+        if (m_movedligand[i].hastranslation)
+        {
+            assert(svptr+2 < x.size());
+            m_movedligand[i].Translate(Coord3D(x[svptr],x[svptr+1],x[svptr+2]));
+            svptr+=3;
+        }
+
+
+    }
+
+}
+
+
+
+
+
+
+
 dbl BaseAttractForceField::Function(const Vdouble& stateVars )
 {
 
@@ -422,10 +464,7 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
     assert(m_centeredligand.size() >=1);
     assert(m_movedligand.size() >=1);
 
-
-    uint svptr = 0; //state variable 'pointer'
     const uint nlig = m_movedligand.size();
-
 
     //don't let the user call this function without a coherent pairlist
     //(the pairlist may be outdated (user choice), but we MUST have the correct number of pairlists!)
@@ -435,42 +474,16 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
     assert(m_pairlists.size() == (nlig*(nlig-1))/2);
 
 
-    //put the ligands to the correct positions defined by stateVars
-    for (uint i=0; i<m_movedligand.size(); i++)
-    {
-        m_movedligand[i] = m_centeredligand[i];
-        m_movedligand[i].resetForces(); //just to be sure that the forces are set to zero. Maybe not needed.
-
-        
-        if (m_movedligand[i].hasrotation)
-        {
-            assert(svptr+2 < stateVars.size());
-            m_movedligand[i].AttractEulerRotate(stateVars[svptr], stateVars[svptr+1], stateVars[svptr+2]);
-            svptr+=3;
-        }
-
-
-        m_movedligand[i].Translate(m_ligcenter[i]);
-
-        if (m_movedligand[i].hastranslation)
-        {
-            assert(svptr+2 < stateVars.size());
-            m_movedligand[i].Translate(Coord3D(stateVars[svptr],stateVars[svptr+1],stateVars[svptr+2]));
-            svptr+=3;
-        }
-
-
-    }
-
-
+    //place the ligands correctly:
+    moveLigands(stateVars);
 
 
     dbl enernon = 0.0 ;
 
     uint plistnumber = 0; //index of pairlist used for a given pair of ligands
     //iteration over all ligand pairs:
-    for (uint i=0; i<m_movedligand.size(); i++)
-        for (uint j=i+1; j<m_movedligand.size(); j++)
+    for (uint i=0; i< nlig; i++)
+        for (uint j=i+1; j< nlig; j++)
         {
             assert(plistnumber < m_pairlists.size() );
             enernon += nonbon8(m_movedligand[i], m_movedligand[j],  m_pairlists[plistnumber++] );   //calculates energy contribution for every pair. Forces are stored for each ligand

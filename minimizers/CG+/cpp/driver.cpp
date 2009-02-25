@@ -71,13 +71,13 @@ static integer c__1 = 1;
     finish = FALSE_;
 
     int n = params.n;
-    doublereal *x = params.x;
+    doublereal *x = &params.x[0];
     integer *iprint = params.iprint;
     integer method = params.method;
     doublereal& f = params.f ;
-    doublereal* g = params.g;
+    doublereal* g = &params.g[0];
 
-    fcn func = params.func;
+    
 
 
 
@@ -96,12 +96,6 @@ static integer c__1 = 1;
 	goto L50;
     }
 
-/* Get the initial vector x */
-
-    i__1 = n;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-	x[i__ - 1] = -2.;
-    }
 
 /* Print parameters */
 
@@ -124,7 +118,13 @@ L20:
 /* Calculate the function and gradient values here */
 
 /* Rosenbrock test function */
-    func(&n, x, &f, g);
+//     func(&n, x, &f, g);
+
+    f = params.p_forcefield->Function(params.x);
+    params.p_forcefield->Derivatives(params.x, params.g);
+
+
+
     params.neval++;
 L30:
 
@@ -191,27 +191,10 @@ L50:
     printf(" f(x) =  %.10e \n",f);
     }
 
-        //store X, G and f
-        FuncState fs;
-        for (int i=0; i<params.n; ++i)
-         {
-            fs.x.push_back(x[i]);
-            fs.g.push_back(g[i]);
-         }
-        fs.f = f;
-        params.timemachine.push_back(fs);
 
-
-
-
-
-
-/* Formatting */
-
-/* L800: */
     return 0;
 } /* MAIN__ */
 
-// /* Main program alias */ int driver_ () { main(); return 0; }
+
 	}
 
