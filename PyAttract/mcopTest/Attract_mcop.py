@@ -316,6 +316,8 @@ for trans in translations:
             forcefield = McopForceField(factoryCreator1(), "aminon.par", surreal(cutoff), rec, ligand )
             forcefield.Function(X)
             forcefield.calculate_weights(True);
+            if minim['rstk']>0:
+                forcefield.SetConstraint(float(minim['rstk']))
 
 
 

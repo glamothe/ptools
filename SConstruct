@@ -3,8 +3,8 @@ import os.path
 
 
 #compilation mode: please choose between debug and release
-compile_mode = "debug"
-#compile_mode = "release"
+#compile_mode = "debug"
+compile_mode = "release"
 
 
 #users may overide these settings if SCons cannot automatically locate some library:

@@ -145,8 +145,6 @@ public:
          m_cutoff(cutoff)
          { 
             init();
-            Constraint constr = CreateDefaultConstraint(rec.m_main,lig,0,1);
-            m_forcefields.back()->AddConstraint(constr);
          };
 
     ~McopForceField();
@@ -168,6 +166,12 @@ public:
     AttractRigidbody getLigand()
     {
        return m_forcefields[0]->getMovedLigand(1);
+    }
+
+    void SetConstraint(double k)
+    {
+            Constraint constr = CreateDefaultConstraint(m_receptor.m_main,m_ligand,0,1);
+            m_forcefields.back()->AddConstraint(constr);
     }
 
 
