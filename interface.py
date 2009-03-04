@@ -103,6 +103,8 @@ factoryholer.include()
 constraint = mb.class_("Constraint")
 constraint.include()
 
+mb.free_function("CreateDefaultConstraint").include()
+
 
 McopForceField = mb.class_("McopForceField")
 McopForceField.include()

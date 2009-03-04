@@ -310,11 +310,19 @@ for trans in translations:
             forcefield.AddLigand(rec)
             forcefield.AddLigand(ligand)
             rstk=minim['rstk']  #restraint force
-            #if rstk>0.0:
-                #forcefield.SetRestraint(rstk)
+            if rstk>0.0:
+                constraint = CreateDefaultConstraint(rec, ligand, 0, 1)
+                forcefield.AddConstraint(constraint)
+            X=Vdouble()
+            for i in range(6):
+                X.append(surreal(0))
+
+
             lbfgs_minimizer=Lbfgs(forcefield)
-            lbfgs_minimizer.minimize(niter)
-            X=lbfgs_minimizer.GetMinimizedVars()  #optimized freedom variables after minimization
+            lbfgs_minimizer.minimize(niter,X)
+            
+            
+            #X=lbfgs_minimizer.GetMinimizedVars()  #optimized freedom variables after minimization
 
 
             #TODO: test and use CenterToOrigin() !
@@ -346,9 +354,13 @@ for trans in translations:
         #calculates true energy, and rmsd if possible
         #with the new ligand position
         forcefield=AttractForceField1("aminon.par", surreal(500))
+        forcefield.AddLigand(rec)
+        forcefield.AddLigand(ligand)
+        X = Vdouble()
+        for i in range(12):
+            X.append(0)
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
-        pl = AttractPairList(rec, ligand,surreal(500))
-        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
+        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.Function(X), str(rms))
         output.PrintMatrix()
 
 
