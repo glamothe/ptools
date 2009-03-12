@@ -338,7 +338,6 @@ void AttractForceField2::loadParams(const std::string & filename, dbl cutoff)
                     {
                        uint type;
                        iss >> type;
-                       std::cerr << "ignoring atom type: " << type << "\n";
                        dummyatomtypes.push_back(type-1); //types counting begins at 0
                     }
                  std::swap(dummyatomtypes, m_params->_dummytypes);
