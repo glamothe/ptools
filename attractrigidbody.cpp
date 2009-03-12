@@ -30,6 +30,18 @@ namespace PTools{
 AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
         : Rigidbody(rig)
 {
+this->init_();
+}
+
+
+AttractRigidbody::AttractRigidbody(const std::string& filename)
+ : Rigidbody(filename)
+{
+this->init_();
+}
+
+void AttractRigidbody::init_()
+{
     // extracts the "extra" field of Atoms to the m_atomTypeNumber array:
     uint   atcategory  = 0;
     dbl  atcharge   = 0.0;
@@ -51,8 +63,6 @@ AttractRigidbody::AttractRigidbody(const Rigidbody & rig)
 
     resetForces();
 }
-
-
 
 
 void AttractRigidbody::setDummyTypes(const std::vector<uint>& dummy)

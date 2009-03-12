@@ -44,6 +44,8 @@ class AttractRigidbody: public Rigidbody
 public:
     explicit AttractRigidbody(const Rigidbody & rig) ; ///< initilize a new object from a regular Rigidbody object
     AttractRigidbody(){};
+    AttractRigidbody(const std::string& filename);
+
     virtual ~AttractRigidbody(){};
 
     uint getAtomTypeNumber(uint i) const
@@ -87,6 +89,9 @@ public:
     void updateActiveList();
 
 private:
+
+    void init_();
+
     std::vector<uint> m_atomTypeNumber ;
     std::vector<dbl> m_charge ;
     std::vector<Coord3D> m_forces ;
