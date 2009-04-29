@@ -31,16 +31,15 @@ from ptools import *
 from calculateonce import NoRecalc
 
 
-limit_rmsd = 1.0 
-limit_ener = 1.0e30
-
+#limit_rmsd = 1.0 
 
 
 class Clusterize(NoRecalc):
     def generate(self, db, dep, args):
-        retval = cluster(args[0],args[1],args[2],args[3])
+        retval = cluster(args[0],args[1],args[2],args[3],args[4])
         d = shelve.open(db)
         d['data']=retval
+        d['args']=args[2:5]
         d.close()
         return retval
 
@@ -48,6 +47,9 @@ class Clusterize(NoRecalc):
         d = shelve.open(db)
         return d['data']
 
+    def checkArgs(self, dbf, args):
+        d = shelve.open(dbf)
+        return d['args']== args[2:5]
 
 
 
@@ -77,22 +79,23 @@ class StructureI:
 
 
 
-def cluster(lig,structures, nstruct, cluster_memory):
+def cluster(lig,structures, nstruct, cluster_memory, limit_rmsd):
     cluster_memory_= cluster_memory+1
     thecluster = []
 
     structures.sort(key=lambda i: i.ener)
+    nstruct = min(nstruct, len(structures))
 
-    for s in structures[:nstruct]:
+    for i,s in enumerate(structures[:nstruct]):
         if s.ener>0:
             break
         new=True
         sc = Extract.rigidXMat44(lig,s.matrix)
 
         for c in reversed(thecluster[-cluster_memory:]):
-            if ( ( c.ext.ener-s.ener < limit_ener ) and ( Rmsd(sc,c.structure) < limit_rmsd ) ):
-            #if Rmsd(sc,c.structure)< limit_rmsd:
+            if Rmsd(sc,c.structure) < limit_rmsd:
                 c.count += 1
+                c.members.append(i)
                 new=False
                 #print "stuct added to a cluster"
                 break
@@ -101,6 +104,7 @@ def cluster(lig,structures, nstruct, cluster_memory):
             c.structure = sc
             c.ext = s
             c.count = 1
+            c.members = [i]
             thecluster.append(c)
             if len(thecluster) > cluster_memory:
                 del thecluster[-cluster_memory_].structure
@@ -116,7 +120,6 @@ def cluster(lig,structures, nstruct, cluster_memory):
 if (__name__=="__main__"):
     parser = OptionParser()
     parser.usage = 'cluster.py <out_file> <lig_file> [options]'
-    parser.add_option("-e", "--energy_cutoff", action="store", type="float", dest="energy_cutoff", help="Energy cutoff value (default=1000.0)")
     parser.add_option("-r", "--rmsd_cutoff", action="store", type="float", dest="rmsd_cutoff", help="Rmsd cutoff value (default=1.0)")
     parser.add_option("-n", "--nstruct", action="store", type="int", dest="nstruct", help="number of structures to cluster, an increase of this value will increase significantly the time processing (default = 2000)")
     parser.add_option("-m", "--memory", action="store", type="int", dest="cluster_memory",default=50, help="only the latest m clusters are compared during the clustering process, an increase of this value will increase significantly the time processing  (default=50)")
@@ -127,9 +130,7 @@ if (__name__=="__main__"):
 
     nstruct=2000
     #cluster_memory=50
-    
-    if (options.energy_cutoff):
-        limit_ener=options.energy_cutoff
+
     if (options.rmsd_cutoff):
         limit_rmsd=options.rmsd_cutoff
     if (options.nstruct):
@@ -157,17 +158,16 @@ if (__name__=="__main__"):
 
 
     dependencies=[outputfile]
-    args = [lig,structures, nstruct, cluster_memory]
+    args = [lig,structures, nstruct, cluster_memory, limit_rmsd]
 
 
 
-    print "clustering, new way"
     thecluster=Clusterize("%s.cluster.db"%outputfile,dependencies,args,info_output=sys.stderr.write, error_output=sys.stderr.write).db
 
 
     print "%-4s %6s %6s %13s %13s %6s %8s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref","Rank", "Weight")
     for i in range(len(thecluster)):
-            print "%-4s %6s %6s %13.7f %13.7f %6i %8s" %("==", str(thecluster[i].ext.trans), str(thecluster[i].ext.rot), float(thecluster[i].ext.ener), float(thecluster[i].ext.rmsd), i+1, str(thecluster[i].count))
+            print "%-4s %6s %6s %13.7f %s %6i %8s" %("==", str(thecluster[i].ext.trans), str(thecluster[i].ext.rot), float(thecluster[i].ext.ener), thecluster[i].ext.rmsd, i+1, str(thecluster[i].count)), thecluster[i].members
 
 
 
