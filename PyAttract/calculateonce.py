@@ -51,6 +51,11 @@ class NoRecalc(object):
                     uptodateflag = False
                     info_output("%s is more recent than database, going to regenerate database\n"%dep)
 
+            #check if current arguments are compatible with stored database:
+            if not self.checkArgs(databasefile, args):
+                print "new arguments invalidate database"
+                uptodateflag = False
+
             if uptodateflag ==True:
                 #we can use the database here :-)
                 self.db = self.load(databasefile)
@@ -78,6 +83,13 @@ class NoRecalc(object):
          "generate database result file, must return data extracted from database (like load)"
          #TO BE IMPLEMENTED BY USER OF THE CLASS !
          raise NotImplementedError()
+
+    def checkArgs(self,databasefile,args):
+        """check if the database must be depreciated because input parameters invalidate the previous simulation
+           return True if the database is OK
+           return False if the database need to be rebuilt"""
+        info_output("Warning: database validity with respect to your arguments was not checked\n")
+        return True
 
     def load(self,databasefile):
          #TO BE IMPLEMENTED BY USER OF THE CLASS !

@@ -41,6 +41,7 @@ class Clusterize(NoRecalc):
         retval = cluster(args[0],args[1],args[2],args[3])
         d = shelve.open(db)
         d['data']=retval
+        d['args']=args[2:4]
         d.close()
         return retval
 
@@ -48,6 +49,9 @@ class Clusterize(NoRecalc):
         d = shelve.open(db)
         return d['data']
 
+    def checkArgs(self, dbf, args):
+        d = shelve.open(dbf)
+        return d['args']== args[2:4]
 
 
 
@@ -161,13 +165,12 @@ if (__name__=="__main__"):
 
 
 
-    print "clustering, new way"
     thecluster=Clusterize("%s.cluster.db"%outputfile,dependencies,args,info_output=sys.stderr.write, error_output=sys.stderr.write).db
 
 
     print "%-4s %6s %6s %13s %13s %6s %8s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref","Rank", "Weight")
     for i in range(len(thecluster)):
-            print "%-4s %6s %6s %13.7f %13.7f %6i %8s" %("==", str(thecluster[i].ext.trans), str(thecluster[i].ext.rot), float(thecluster[i].ext.ener), float(thecluster[i].ext.rmsd), i+1, str(thecluster[i].count))
+             print "%-4s %6s %6s %13.7f %s %6i %8s" %("==", str(thecluster[i].ext.trans), str(thecluster[i].ext.rot), float(thecluster[i].ext.ener), thecluster[i].ext.rmsd, i+1, str(thecluster[i].count))
 
 
 
