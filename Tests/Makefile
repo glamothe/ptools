@@ -7,6 +7,6 @@ testpython:
 testcpp:
 	echo "running C++ tests"
 	python cxxtestgen.py --error-printer ptoolstest.h > runner.cpp
-	g++ runner.cpp -I.. -I. -L.. -lptools -o ptoolstest.bin
+	g++ -O2 runner.cpp -I.. -I. -L.. -lptools -o ptoolstest.bin
 	./ptoolstest.bin
 
