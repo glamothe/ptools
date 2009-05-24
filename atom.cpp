@@ -41,7 +41,7 @@ std::string Atom::ToPdbString() const
     snprintf(output,80,"ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f%s\n",atomnumber,atomname,residName,chainID,residnumber,x,y,z,GetExtra().c_str());
     output[79]='\n';
     output[80]='\0';
-    return (std::string) output;
+    return std::string(output);
 }
 
 //! translate an atom with a Coord3D vector

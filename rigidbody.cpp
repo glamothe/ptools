@@ -53,14 +53,9 @@ Rigidbody::Rigidbody(const Rigidbody& model)
 // automatically copied with the default copy constructor
 //TODO: verifier si c'est toujours le cas ...
 
-
-//     this->mAtoms = model.mAtoms;
     this->mForces = model.mForces;
-//     this->_coords = model._coords;
     this->mAtomProp = model.mAtomProp;
-    this->mAtoms = model.mAtoms;
     this-> _description = model._description;
-
 
 }
 
@@ -288,12 +283,14 @@ void Rigidbody::ABrotate(const Coord3D& A, const Coord3D& B, dbl theta)
 std::string Rigidbody::PrintPDB() const
 {
     uint size=this->Size();
+
     std::string output;
     for (uint i=0; i < size ; i++)
     {
-        output = output + mAtoms[i].ToPdbString();
+         Atom at(mAtomProp[i], this->GetCoords(i));
+         output = output + at.ToPdbString();
     }
-    return(std::string) output;
+    return output;
 }
 
 

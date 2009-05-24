@@ -50,11 +50,8 @@ class Rigidbody:private CoordsArray
 
 private:
 
-    std::vector<Atom> mAtoms; ///< vector of Atoms
     std::vector<Coord3D> mForces; ///< forces for each atom
-
     std::string _description; ///< some string to describe the molecule
-
 
 //    bool isBackbone(const std::string &  atomtype); ///<return true if a given atomtype string matches a backbone atom name
 
