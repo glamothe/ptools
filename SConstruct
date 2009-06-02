@@ -4,7 +4,7 @@ import os.path
 
 #compilation mode: please choose between debug and release
 compile_mode = "release"
-
+#compile_mode = "debug"
 
 #users may overide these settings if SCons cannot automatically locate some library:
 
@@ -164,6 +164,13 @@ if python24dir is None:
    "/sw/include/python2.5/"])
    if python25dir is None:
       print "cannot locate Python2.5, the library may not compile..."
+      print "trying to locate Python 2.6:"
+      python26dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.6/",
+   "/sw/include/python2.6/"])
+      if python26dir is not None:
+	  print "Python 2.6 found!"
+	  PYTHON_CPPPATH=[python26dir]
+	  PYTHON_LIBS=["python2.6"]
    else:
       PYTHON_CPPPATH=[python25dir]
       PYTHON_LIBS=["python2.5"]
