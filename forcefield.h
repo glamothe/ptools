@@ -189,6 +189,12 @@ public:
     ///rotational derivatives
     void Rota(uint molIndex, dbl phi, dbl ssi, dbl rot, Vdouble& delta, uint shift, bool print=false);
 
+    ///return van der waals energy
+    dbl getVdw(){return m_vdw;}
+
+    ///coulomb (electrostatic) energy
+    dbl getCoulomb(){return m_elec;}
+
 
 
 protected:
@@ -199,6 +205,9 @@ protected:
     std::vector<AttractRigidbody> m_movedligand;
     std::vector<Coord3D> m_ligcenter; ///< list of ligands centroids before centering.
     dbl m_cutoff; ///< cutoff for the pairlist generation
+
+    dbl m_vdw; ///< van der waals energy
+    dbl m_elec; ///< electrostatic energy
 
 
     

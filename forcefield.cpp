@@ -252,6 +252,8 @@ dbl AttractForceField1::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
         }
     }
 
+    m_vdw = sumLJ;
+    m_elec = sumElectrostatic;
 
     return sumLJ + sumElectrostatic;
 }
@@ -638,6 +640,8 @@ dbl AttractForceField2::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
     }
 
     if (print) std::cout << "vlj  coulomb: " << enon << "  " << epote << "\n";
+    m_elec = epote;
+    m_vdw = enon;
     return enon+epote;
 }
 
