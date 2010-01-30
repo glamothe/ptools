@@ -1,0 +1,8 @@
+Pybindings/*
+*.os
+Tests/runner.cpp
+.sconf*
+config.log
+svnrev
+.sconsign*
+Tests/ptoolstest.bin
