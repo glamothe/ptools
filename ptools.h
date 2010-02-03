@@ -15,7 +15,7 @@
 #include "pdbio.h"
 #include "forcefield.h"
 #include "pairlist.h"
-#include "minimizers/lbfgs_interface.h"
+#include "lbfgs_interface.h"
 #include "rmsd.h"
 #include "atomselection.h"
 #include "screw.h"
