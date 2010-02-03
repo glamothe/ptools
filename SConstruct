@@ -3,8 +3,8 @@ import os.path
 
 
 #compilation mode: please choose between debug and release
-compile_mode = "release"
-#compile_mode = "debug"
+#compile_mode = "release"
+compile_mode = "debug"
 
 #users may overide these settings if SCons cannot automatically locate some library:
 
@@ -34,9 +34,8 @@ COMMON_CPP = Split ("""atom.cpp
                        rmsd.cpp
                        forcefield.cpp
                        pairlist.cpp
-                       minimizers/lbfgs_interface.cpp
-                       minimizers/routines.f
-                       minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp
+
+                       lbfgs_interface.cpp
                        mcopff.cpp
                        surface.cpp
                        coordsarray.cpp
@@ -175,6 +174,9 @@ if python24dir is None:
       PYTHON_CPPPATH=[python25dir]
       PYTHON_LIBS=["python2.5"]
 
+COMMON_LIBS.append("lbfgs")
+LIB_PATH.append("liblbfgs-1.9")
+
 
 
 PYTHON_CPP=[]
@@ -257,6 +259,3 @@ Alias('cpp',[lib2] )
 print "BUILD_TARGETS is", map(str, BUILD_TARGETS)
 
 
-#### old commands. Not needed but kept here for some time #####
-
-#Alias('cpp',[lib2,tst])
