@@ -1,6 +1,5 @@
-//test du nouveau minimiseur
-// fonction a minimiser: (x-4)^2  au moins il existe un minimum et il existe...
-
+//test program for the new minimizer
+//rosenbrock function
 
 #include "forcefield.h"
 #include "lbfgs_interface.h"
