@@ -159,7 +159,7 @@ void Lbfgs::minimize(int maxiter)
     
 //     std::cout << "params: ftol gtol xtol: " << param.ftol << "  " << param.gtol << "  " << param.xtol << std::endl;
     param.epsilon = 1e-3 ;
-    
+    param.max_iterations = maxiter ;    
     
     lbfgsfloatval_t fx;
    
