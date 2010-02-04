@@ -41,6 +41,7 @@ COMMON_CPP = Split ("""atom.cpp
                        coordsarray.cpp
                        superpose.cpp
                        version.cpp
+                       attractforcefield.cpp
                     """)
 
 

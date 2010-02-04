@@ -8,7 +8,7 @@
 #ifndef _MCOPFF_H_
 #define _MCOPFF_H_
 
-#include "forcefield.h"
+#include "attractforcefield.h"
 #include "rigidbody.h"
 
 namespace PTools{
