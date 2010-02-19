@@ -2,6 +2,7 @@
 #define ATTRACTFORCEFIELD_H
 
 #include "forcefield.h"
+#include "constraint.h"
 
 
 namespace PTools{
@@ -65,7 +66,7 @@ public:
     ///coulomb (electrostatic) energy
     dbl getCoulomb(){return m_elec;}
 
-
+    void addConstraint(const Constraint& constraint);
 
 protected:
     //private variables
@@ -89,8 +90,16 @@ private:
 
     ///set list of ignored atom types (dummy atoms)
     virtual void setDummyTypeList(AttractRigidbody& lig)=0;
+    
+    ///Array of contraint forces between center of first ligand, and a given atom of second ligand
+    std::vector<Constraint> m_vecConstraints;
+    
+    ///Constraint force applied to the center of mass of each ligand
+    std::vector<Coord3D> m_centers_constraint_forces;
 
 
+    static const double m_rstk = 0.00050;
+    
 };
 
 

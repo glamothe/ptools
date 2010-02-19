@@ -392,10 +392,38 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
 
 
 
+    dbl restrener = 0.0;
+    //add restraint forces:
+    for (uint i=0; i<m_vecConstraints.size(); i++)
+    {
+
+            const Constraint& constraint = m_vecConstraints[i];
+            const uint lig1 = constraint.lig1; //receptor (force applied to its center of mass)
+            const uint lig2 = constraint.lig2; //ligand (force applied to a given atom)
+            const uint atom = constraint.at2; //atom index for the ligand
+
+            assert(lig2 < m_centeredligand.size());
+            assert(lig1 < m_centeredligand.size());
+            assert(atom < m_centeredligand[lig2].Size());
+
+            //calculates the distance between the receptor center and the ligand surface:
+            const Coord3D &ligRestraintCoords = m_movedligand[lig2].GetCoords(atom) ;
+            Coord3D vecLig2Rec = m_movedligand[lig1].FindCenter() - ligRestraintCoords ;
+
+            dbl ett = Norm2(vecLig2Rec) ;
+
+            //rstk: user-defined constant
+            Coord3D springforce = 4 * m_rstk * ett * vecLig2Rec ;
+            //adds force to the correct ligand atom:
+            m_movedligand[lig2].m_forces[atom] += Coord3D() - springforce;
+
+            m_centers_constraint_forces[lig1] += Coord3D() - springforce;
+
+            restrener =  m_rstk * ett * ett ;
+    }
 
 
-
-    return enernon;
+    return enernon + restrener;
 
 }
 
@@ -595,9 +623,9 @@ void BaseAttractForceField::Trans(uint molIndex, Vdouble & delta, uint shift,  b
     }
 
     assert(shift+2 < delta.size());
-    delta[0+shift]=ftr1;
-    delta[1+shift]=ftr2;
-    delta[2+shift]=ftr3;
+    delta[0+shift]=ftr1 + m_centers_constraint_forces[molIndex].x;
+    delta[1+shift]=ftr2 + m_centers_constraint_forces[molIndex].y ;
+    delta[2+shift]=ftr3 + m_centers_constraint_forces[molIndex].z ;
 
     //debug:
     if (print) std::cout <<  "translational forces: " << ftr1 <<"  "<< ftr2 <<"  " << ftr3 << std::endl;
@@ -687,6 +715,11 @@ void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdoubl
     return;
 }
 
+void BaseAttractForceField::addConstraint(const Constraint& constraint)
+{
+m_vecConstraints.push_back(constraint);
+}
+
 
 
 void BaseAttractForceField::AddLigand(AttractRigidbody & lig)
@@ -711,6 +744,7 @@ void BaseAttractForceField::MakePairLists()
 //at this point we expect that m_movedligand still contains original coordinates of all ligands
 //(ie not centered) because we will generate the pairlist from this vector (list)
 
+m_pairlists = std::vector<AttractPairList>()  ; //reset the pairlists vector
 
 //creates the pairlist: loop over all pairs of ligands
     for (uint i=0; i < m_movedligand.size(); i++)
