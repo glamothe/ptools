@@ -7,6 +7,11 @@
 # histidine from Amber output
 HIE      HIS
 
+# DNA base names
+DA       A
+DT       T
+DC       C
+DG       G
 
 # 3 columns format: %-10s%-10s%-10s
 #residue_or_base  atom_name_found  atom_name_known
