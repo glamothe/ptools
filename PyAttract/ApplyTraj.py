@@ -30,6 +30,6 @@ for l in lines:
         output.AttractEulerRotate(surreal(X[0]), surreal(X[1]), surreal(X[2]))
         output.Translate(Coord3D(surreal(X[3]),surreal(X[4]),surreal(X[5])))
         output.Translate(center)
-        outname = "lig_%i.pdb"%counter
+        outname = "lig_%05i.pdb"%counter
         print "writing file", outname
         WritePDB(output, outname)
