@@ -43,6 +43,9 @@ COMMON_CPP = Split ("""atom.cpp
                        superpose.cpp
                        version.cpp
                        attractforcefield.cpp
+		       BasePair.cpp
+		       Movement.cpp
+		       DNA.cpp
                     """)
 
 
