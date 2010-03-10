@@ -44,7 +44,6 @@ namespace PTools
     
     Matrix getLocalMatrix(int pos);
     
-    Rigidbody createRigid();
   };
   
 }//end namespace
