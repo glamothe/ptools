@@ -1,5 +1,8 @@
 
-#include <ptools.h>
+#include <rigidbody.h>
+#include <pdbio.h>
+#include <superpose.h>
+#include <atomselection.h>
 #include <iostream>
 #include <DNA.h>
 #include <Movement.h>
