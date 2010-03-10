@@ -24,6 +24,9 @@
 #include "mcopff.h"
 #include "superpose.h"
 #include "version.h"
+#include "BasePair.h"
+#include "DNA.h"
+#include "Movement.h"
 
 
 #endif // PTOOLS_H
