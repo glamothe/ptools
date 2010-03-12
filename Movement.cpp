@@ -17,9 +17,9 @@ Movement::Movement()
 }
 
 
-Movement::Movement(Matrix m)
+Movement::Movement(const Matrix& matrix)
 {
-  this->m=m;
+  this->m=matrix;
 }
 
 
@@ -38,7 +38,7 @@ void Movement::apply(Rigidbody& rigbody)
 }
 
 
-Matrix Movement::getMatrix()
+const Matrix& Movement::getMatrix() const
 {
   return m;
 }
@@ -51,7 +51,7 @@ Movement Movement::operator+ (Movement mov)
 }
 
 
-void Movement::print()
+void Movement::print() const
 {
   m.Print();
 }
