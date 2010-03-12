@@ -3,7 +3,6 @@
 #include <fstream>
 #include <string>
 
-#include "ptools.h"
 #include "rigidbody.h"
 
 #ifndef SURFACE_H
