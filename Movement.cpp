@@ -5,9 +5,9 @@
 #include <Movement.h>
 
 using namespace std;
-using namespace PTools;
 
 
+namespace PTools {
 
 
 //base class movement--------------------------------------------------------
@@ -44,7 +44,7 @@ const Matrix& Movement::getMatrix() const
 }
 
 
-Movement Movement::operator+ (Movement mov)
+Movement Movement::operator+ (const Movement& mov) const
 {
   Matrix mat = mov.getMatrix();
   return Movement(matrixMultiply(m,mat)); 
@@ -58,7 +58,7 @@ void Movement::Print() const
 
 
 //functions for matrix (to displace to ptools)--------------------------------------------------------
-Matrix PTools::matrixMultiply( Matrix m1, Matrix m2 )
+Matrix matrixMultiply(const Matrix& m1, const Matrix& m2)
 {
   double mat1[4][4];
   double mat2[4][4];
@@ -90,7 +90,7 @@ Matrix PTools::matrixMultiply( Matrix m1, Matrix m2 )
 }
 
 
-Matrix PTools::inverseTranformationMatrix(Matrix m)
+Matrix inverseTranformationMatrix(const Matrix & m)
 {
   //1 the inverse of a translation matrix is the translation matrice with the oposite signs on each of the translation components.
   //2 the inverse of a rotation matrix is the rotation matrix's transpose.
@@ -117,7 +117,7 @@ Matrix PTools::inverseTranformationMatrix(Matrix m)
 }
 
 
-Matrix PTools::inverseTranformationMatrixPlusPlus(Matrix m)
+Matrix inverseTranformationMatrixPlusPlus(const Matrix& m)
 {
   //1 the inverse of a translation matrix is the translation matrice with the oposite signs on each of the translation components.
   //2 the inverse of a rotation matrix is the rotation matrix's transpose.
@@ -136,7 +136,7 @@ Matrix PTools::inverseTranformationMatrixPlusPlus(Matrix m)
 }
 
 
-Matrix PTools::inverseMatrix44 (Matrix a)
+Matrix inverseMatrix44 (const Matrix&  a)
 { 
   Matrix inv = Matrix(4,4);
   
@@ -241,7 +241,8 @@ Matrix PTools::inverseMatrix44 (Matrix a)
 
 //child class--------------------------------------------------------
 const double RADIAN = 0.0175;
-Shift::Shift(double alpha): Movement()
+Shift::Shift(double alpha)
+ :Movement()
 {
    m(0,0)=1;    m(0,1)=0;          m(0,2)=0;           m(0,3)=alpha;
    m(1,0)=0;    m(1,1)=1;          m(1,2)=0;           m(1,3)=0;
@@ -250,7 +251,8 @@ Shift::Shift(double alpha): Movement()
 }
 
 
-Slide::Slide(double alpha): Movement()
+Slide::Slide(double alpha)
+ :Movement()
 {
    m(0,0)=1;    m(0,1)=0;          m(0,2)=0;           m(0,3)=0;
    m(1,0)=0;    m(1,1)=1;          m(1,2)=0;           m(1,3)=alpha;
@@ -259,7 +261,8 @@ Slide::Slide(double alpha): Movement()
 }
 
 
-Rise::Rise(double alpha): Movement()
+Rise::Rise(double alpha)
+ :Movement()
 {
    m(0,0)=1;    m(0,1)=0;          m(0,2)=0;           m(0,3)=0;
    m(1,0)=0;    m(1,1)=1;          m(1,2)=0;           m(1,3)=0;
@@ -268,7 +271,8 @@ Rise::Rise(double alpha): Movement()
 }
 
 
-Twist::Twist(double alpha): Movement()
+Twist::Twist(double alpha)
+ :Movement()
 {
   alpha = (alpha * RADIAN);//conversion in radian
   
@@ -280,7 +284,8 @@ Twist::Twist(double alpha): Movement()
 }
 
 
-Roll::Roll(double alpha): Movement()
+Roll::Roll(double alpha) 
+ :Movement()
 {
   alpha = (alpha * RADIAN);//conversion in radian
   
@@ -292,7 +297,8 @@ Roll::Roll(double alpha): Movement()
 }
 
 
-Tilt::Tilt(double alpha): Movement()
+Tilt::Tilt(double alpha)
+ :Movement()
 {
   alpha = (alpha * RADIAN);//conversion in radian
   
@@ -306,7 +312,8 @@ Tilt::Tilt(double alpha): Movement()
 // Movement for building "classic" DNA
 // reference for parameter:
 // S.Arnott, R.Chandrasekaran, D.L.Birdsall, A.G.W.Leslie and R.L.Ratliff, Nature 283, 743-746 (1980) 
-BDNA::BDNA():Movement()
+BDNA::BDNA()
+ :Movement()
 {
   m=(Twist(35.99)+Roll(0.91)+Rise(3.38)+Slide(0.08)).getMatrix();
 }
@@ -315,3 +322,9 @@ ADNA::ADNA():Movement()
 {
   m=(Twist(30.69)+Roll(11.44)+Rise(3.44)+Slide(-1.92)).getMatrix();
 }
+
+
+
+
+} //namespace PTools
+

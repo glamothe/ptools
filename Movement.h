@@ -20,7 +20,7 @@ namespace PTools
     ~Movement();
     
     ///operator + : merge two Movements by multiplying the Matrix
-    Movement operator+ (Movement);
+    Movement operator+ (const Movement&) const;
 
     /// apply the Matrix to a Rigidbody
     void apply(Rigidbody& rigbody);
@@ -36,16 +36,16 @@ namespace PTools
   
   //fonction pour les matrices, a relocaliser dans la partie ptools adapter
   ///Multiply two Matrix
-  Matrix matrixMultiply(Matrix,Matrix);
+  Matrix matrixMultiply(const Matrix& m1, const Matrix& m2);
 
   ///inverse a Matrix of dimension 4 by 4
-  Matrix inverseMatrix44 (Matrix);
+  Matrix inverseMatrix44 (const Matrix& );
 
   ///inverse a Matrix representing a rotation and a translation 
-  Matrix inverseTranformationMatrix(Matrix);
+  Matrix inverseTranformationMatrix(Matrix& );
 
   ///inverse a Matrix representing a rotation and a translation 
-  Matrix inverseTranformationMatrixPlusPlus(Matrix);
+  Matrix inverseTranformationMatrixPlusPlus(Matrix &);
 
 //child class-------------------------------------------------------- 
   /*! \brief translation on x (short axis)
