@@ -152,7 +152,7 @@ public:
     }
 
 
-    std::string str()
+    std::string str() const
     {
         std::ostringstream oss;
         for (int r=0; r<m_rows; r++)
@@ -174,7 +174,7 @@ public:
        return out;
     }
 
-    void Print()
+    void Print() const
     {
        std::cout << str();
     }
