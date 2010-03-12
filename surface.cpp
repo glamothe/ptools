@@ -1,6 +1,7 @@
 // $Id$
 
 #include "surface.h"
+#include "attractrigidbody.h"
 
 #include <cassert>
 
@@ -34,7 +35,7 @@ void Surface::surfpointParams(int max, dbl shift)
     m_init=true;
 }
 
-void Surface::readsolvparam(std::string file)
+void Surface::readsolvparam(const std::string& file)
 {
     std::string line ;
     //int count = 0;
@@ -77,7 +78,7 @@ Rigidbody Surface::surfpoint(const Rigidbody & rigid, dbl srad)
         m_sradshift = 0.0;
     }
     // read radius
-    AttractRigidbody rigid_tmp=AttractRigidbody(rigid);
+    AttractRigidbody rigid_tmp(rigid);
     m_atomtypenumber.resize(size_rigid);
     for (uint i=0; i< rigid_tmp.Size(); i++)
     { m_atomtypenumber[i] = rigid_tmp.getAtomTypeNumber(i);}
