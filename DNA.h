@@ -11,26 +11,6 @@ namespace PTools
   
   class DNA 
   {
-    //atribut
-    std::vector<BasePair> strand;
-    
-    //method
-    ///return a string with the seq of all the diferent chain ID of a Rigidbody.
-    std::string getChainIDs(Rigidbody);
-    ///construct the strand from the sequence, the  chain Ids and a corresponding vector of Rigidbody
-    void buildStrand(std::string,std::string,std::vector<Rigidbody>);
-    /// apply an initial Movement during the initialisation of the DNA
-    void applyInitialMov(Movement);
-    ///rebuild the DNA from a specified position. useful for taking into account a change in a base.
-    Matrix reconstruct(int pos,Matrix);
-    ///give the BasePair a correct number according to they rank in the strand
-    void makeResIDs();
-    ///apply a Movement to a specified BasePair.
-    void applylocalMov(Movement,int pos);
-    ///apply a Movement to all the BasePairs
-    void applyglobalMov(Movement);
-    ///reposition the DNA according to the anchor
-    void relocate(BasePair anchor,int posAnchor);
     
     public:
     ///initialize a new object with a sequence and a database of pdb to pick from. an initial movement for the construction of the dna can be precised. 
@@ -62,6 +42,32 @@ namespace PTools
     ///return the local Matrix of the specified BasePair (for the position i the Matrix to go from i-1 to i)
     Matrix getLocalMatrix(int pos);
     
+
+    private:
+
+    //attribut
+    std::vector<BasePair> strand;
+    
+    //methods
+    ///return a string with the seq of all the diferent chain ID of a Rigidbody.
+    std::string getChainIDs(Rigidbody);
+    ///construct the strand from the sequence, the  chain Ids and a corresponding vector of Rigidbody
+    void buildStrand(std::string,std::string,std::vector<Rigidbody>);
+    /// apply an initial Movement during the initialisation of the DNA
+    void applyInitialMov(Movement);
+    ///rebuild the DNA from a specified position. useful for taking into account a change in a base.
+    Matrix reconstruct(int pos,Matrix);
+    ///give the BasePair a correct number according to they rank in the strand
+    void makeResIDs();
+    ///apply a Movement to a specified BasePair.
+    void applylocalMov(Movement,int pos);
+    ///apply a Movement to all the BasePairs
+    void applyglobalMov(Movement);
+    ///reposition the DNA according to the anchor
+    void relocate(BasePair anchor,int posAnchor);
+
+  
+  
   };
   
 }//end namespace
