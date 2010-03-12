@@ -51,7 +51,7 @@ Movement Movement::operator+ (Movement mov)
 }
 
 
-void Movement::print() const
+void Movement::Print() const
 {
   m.Print();
 }

@@ -29,7 +29,7 @@ namespace PTools
     const Matrix& getMatrix() const;
     
     ///print the Matrix
-    void print() const;
+    void Print() const;
     
     
   };
