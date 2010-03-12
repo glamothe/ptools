@@ -35,7 +35,7 @@ void Surface::surfpointParams(int max, dbl shift)
     m_init=true;
 }
 
-void Surface::readsolvparam(std::string file)
+void Surface::readsolvparam(const std::string& file)
 {
     std::string line ;
     //int count = 0;

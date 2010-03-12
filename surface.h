@@ -30,7 +30,7 @@ public:
     void surfpointParams(int max, dbl shift); /// initialize some parameters of the grid generation
     Rigidbody outergrid(const Rigidbody & rigid1, const Rigidbody & rigid2, dbl srad); /// remove overlap between rigid1 and rigid2
     Rigidbody removeclosest(const Rigidbody & rigid1, dbl srad); /// fix the density of the grid (remove points that are too close to eachother)
-    void readsolvparam(std::string file); /// read solvation parameters
+    void readsolvparam(const std::string& file); /// read solvation parameters
     
 private:
 
