@@ -5,6 +5,9 @@
 namespace PTools
 {
 //base class movement--------------------------------------------------------  
+/*! \brief an Object for describing movement to a BasePair
+*the external mouvements are described by a Matrix
+*/
   class Movement 
   {
     //atribut
@@ -16,39 +19,52 @@ namespace PTools
     Movement(Matrix);
     ~Movement();
     
+    ///operator + : merge two Movements by multiplying the Matrix
     Movement operator+ (Movement);
-    
+    /// apply the Matrix to a Rigidbody
     void apply(Rigidbody& rigbody);
     
+    ///return the Matrix
     Matrix getMatrix();
     
+    ///print the Matrix
     void print();
     
     
   };
   
   //fonction pour les matrices, a relocaliser dans la partie ptools adapter
+  ///Multiply two Matrix
   Matrix matrixMultiply(Matrix,Matrix);
+  ///inverse a Matrix of dimension 4 by 4
   Matrix inverseMatrix44 (Matrix);
+  ///inverse a Matrix representing a rotation and a translation 
   Matrix inverseTranformationMatrix(Matrix);
+  ///inverse a Matrix representing a rotation and a translation 
   Matrix inverseTranformationMatrixPlusPlus(Matrix);
 
-//child class--------------------------------------------------------
-  class Shift: public Movement //translation on x (short axis)
+//child class-------------------------------------------------------- 
+  /*! \brief translation on x (short axis)
+  */
+  class Shift: public Movement 
   {
     public:
     Shift(double);
     
   };
-  
-  class Slide: public Movement //translation on y (long axis)
+
+  /*! \brief translation on y (long axis)
+  */
+  class Slide: public Movement 
   {
     public:
     Slide(double);
     
   };
   
-  class Rise: public Movement //translation on z (perpendicular axis)
+  /*! \brief translation on z (perpendicular axis)
+  */
+  class Rise: public Movement 
   {
     public:
     Rise(double);
@@ -56,30 +72,42 @@ namespace PTools
   };
 // rotation around Z, Y and then X -> order to respect
 
-  class Twist: public Movement //rotation around z (perpendicular axis)
+  /*! \brief rotation around z (perpendicular axis)
+  */
+  class Twist: public Movement 
   {
     public:
     Twist(double);
   };
 
-  class Roll: public Movement //rotation around y (long axis)
+  /*! \brief rotation around y (long axis)
+  */
+  class Roll: public Movement
   {
     public:
     Roll(double);
   };
 
-  class Tilt: public Movement //rotation around x (short axis)
+  /*! \brief rotation around x (short axis)
+  */
+  class Tilt: public Movement 
   {
     public:
     Tilt(double);
   };
   
+  /*! \brief a mouvement describing the local parameter of a B dna
+  *reference : S.Arnott, R.Chandrasekaran, D.L.Birdsall, A.G.W.Leslie and R.L.Ratliff, Nature 283, 743-746 (1980)
+  */
   class BDNA: public Movement 
   {
     public:
     BDNA();
   };
 
+  /*! \brief a mouvement describing the local parameter of a A dna
+  *reference : S.Arnott, R.Chandrasekaran, D.L.Birdsall, A.G.W.Leslie and R.L.Ratliff, Nature 283, 743-746 (1980)
+  */
   class ADNA: public Movement 
   {
     public:
