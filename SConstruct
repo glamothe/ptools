@@ -221,11 +221,6 @@ for file in os.listdir("Pybindings"):
         PYTHON_CPP.append("Pybindings/%s"%file)
 
 
-#generate svnrev.h (revision number of the library)
-os.system("gcc svnrev.c -o svnrev")
-svnrevfiles = [f for f in os.listdir('.') if fnmatch.fnmatch(f, "*.cpp") or fnmatch.fnmatch(f,"*.h") and not fnmatch.fnmatch(f,"svnrev.*") ]  #list every .h or .cpp
-os.system("./svnrev %s"%(" ".join(svnrevfiles)))
-
 
 if compile_mode == "release":
     ccflags = "-Wall -O2 -fPIC -Woverloaded-virtual -DNDEBUG -ffunction-sections -fvisibility=hidden"
