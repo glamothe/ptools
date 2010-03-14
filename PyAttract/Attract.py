@@ -193,9 +193,9 @@ print """
 **                ATTRACT  (Python edition)                         **
 **                version: 0.3                                      **
 **********************************************************************
-Attract.py: $Id$
-using PTools: %s
-"""%(Version().revstr)
+Attract.py
+using PTools rev.:%s, from branch: %s, unique id: %s
+"""%(Version().revstr, Version().branchnick, Version().revid)
 
 
 
