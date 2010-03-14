@@ -3,10 +3,11 @@
 
 Version::Version()
 {
-revnb = BZR_REV;
-revstr = BZR_REVSTR;
-revdate = BZR_REVDATE;
-revid = BZR_REVID;
+this->revnb = BZR_REV;
+this->revstr = BZR_REVSTR;
+this->revdate = BZR_REVDATE;
+this->revid = BZR_REVID;
+this->branchnick = BZR_BRANCHNICK;
 }
 
 
