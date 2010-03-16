@@ -191,10 +191,11 @@ ligand_name=args[1]
 print """
 **********************************************************************
 **                ATTRACT  (Python edition)                         **
-**                version: 0.3                                      **
+**                version: this is a development version,           **
+**                         see below for details                    **
 **********************************************************************
 Attract.py
-using PTools rev.:%s, from branch: %s, unique id: %s
+using PTools revision %s, from branch %s, unique id %s
 """%(Version().revstr, Version().branchnick, Version().revid)
 
 
