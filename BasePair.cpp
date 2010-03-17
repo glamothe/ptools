@@ -70,7 +70,8 @@ Rigidbody BasePair::getRigidBody()const
   
 void BasePair::setResID(int resID)
 {
-  for(unsigned int i =0; i< rigbody.Size(); i++)
+  unsigned int rigSize=rigbody.Size();
+  for(unsigned int i =0; i< rigSize ; i++)
   {
     Atomproperty ap=rigbody.GetAtomProperty(i);
     ap.SetResidId(resID); 

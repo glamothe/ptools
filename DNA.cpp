@@ -20,7 +20,8 @@ DNA::DNA(string filename, string seq, const Movement& mov)
   
   //"map" for the rigidbody, an iD corespond to its rigidbody
   vector<Rigidbody> vbase;
-  for (unsigned int i = 0; i < chainIDs.size() ; i++)
+  unsigned int chainIDsSize = chainIDs.size();
+  for (unsigned int i = 0; i < chainIDsSize ; i++)
   {
     vbase.push_back(all.SelectChainId(chainIDs.substr(i,1)).CreateRigid());
   }
@@ -46,7 +47,8 @@ string DNA::getChainIDs(const Rigidbody& rb)const
   string chainIDs;
   AtomSelection selection = rb.SelectAllAtoms ();
   string tmp = "";
-  for (unsigned int i=0; i < selection.Size() ;i++)
+  unsigned int selectionSize = selection.Size();
+  for (unsigned int i=0; i < selectionSize ;i++)
   {
     string id = selection[i].GetChainId();
     if(id !=tmp)
@@ -61,9 +63,12 @@ string DNA::getChainIDs(const Rigidbody& rb)const
 
 void DNA::buildStrand(std::string seq, std::string chainIDs, const std::vector<Rigidbody>& vbase)
 {
-  for (unsigned int i =0; i < seq.size(); i++ )
+  unsigned int seqSize = seq.size();
+  unsigned int chainIDsSize = chainIDs.size();
+
+  for (unsigned int i =0; i < seqSize; i++ )
   {
-    for (unsigned int j =0; j < chainIDs.size(); j++ )
+    for (unsigned int j =0; j < chainIDsSize; j++ )
     {     
       if (seq[i] == chainIDs[j])
       {
@@ -76,7 +81,8 @@ void DNA::buildStrand(std::string seq, std::string chainIDs, const std::vector<R
 
 void DNA::makeResIDs()
 {
-  for (unsigned int i =0; i < strand.size(); i++ )
+  unsigned int strandSize  = strand.size();
+  for (unsigned int i =0; i < strandSize; i++ )
   {
     strand[i].setResID(i);
   }
@@ -85,7 +91,8 @@ void DNA::makeResIDs()
 
 void DNA::applyInitialMov(const Movement& mov)
 {
-  for (unsigned int i=1; i <strand.size(); i++)
+  unsigned int strandSize  = strand.size();
+  for (unsigned int i=1; i <strandSize; i++)
   {
     strand[i].apply(strand[i-1].getMovement());
     strand[i].apply(mov);
@@ -102,7 +109,8 @@ unsigned int DNA::size()const
 string DNA::printPDB()const
 {
   string out;
-  for ( unsigned int i =0; i < strand.size(); i++ )
+  unsigned int strandSize  = strand.size();
+  for ( unsigned int i =0; i < strandSize ; i++ )
   {
     out += strand[i].printPDB();
   }
@@ -126,15 +134,19 @@ void DNA::changeRepresentation(std::string filename)
   
   //"map" for the rigidbody, an iD corespond to its rigidbody
   vector<Rigidbody> vbase;
-  for (unsigned int i = 0; i < chainIDs.size() ; i++)
+  
+  unsigned int chainIDsSize = chainIDs.size();
+  for (unsigned int i = 0; i < chainIDsSize ; i++)
   {
     vbase.push_back(all.SelectChainId(chainIDs.substr(i,1)).CreateRigid());
   }
   
-  for (unsigned int i = 0; i < strand.size() ; i++)
+  unsigned int strandSize  = strand.size();
+  for (unsigned int i = 0; i < strandSize ; i++)
   {
     Movement mov = Movement(strand[i].getMatrix());
-    for (unsigned int j =0; j < chainIDs.size(); j++ )
+
+    for (unsigned int j =0; j < chainIDsSize; j++ )
     {     
       if ( strand[i].getChainID()[0] == chainIDs[j])
       {
@@ -164,7 +176,9 @@ void DNA::applylocalMov(const Movement& mov,int pos)
 {
   Matrix nextlocal = getLocalMatrix(pos+1);
   strand[pos].apply(mov);
-  for (unsigned int i=pos+1; i <strand.size(); i++)
+
+  unsigned int strandSize  = strand.size();
+  for (unsigned int i=pos+1; i <strandSize; i++)
   {
     nextlocal = reconstruct(i,nextlocal);
   }
@@ -178,8 +192,9 @@ void DNA::applyglobalMov(const Movement& mov)
     nextlocal = getLocalMatrix(1);
   }
   strand[0].apply(mov);
-  
-  for (unsigned int i=1; i <strand.size(); i++)
+
+  unsigned int strandSize  = strand.size();
+  for (unsigned int i=1; i <strandSize; i++)
   {
     nextlocal = reconstruct(i,nextlocal);
     strand[i].apply(mov);
@@ -218,8 +233,9 @@ void DNA::applyGlobal(const Matrix& m ,int posAnchor){
 void DNA::relocate(const BasePair& anchor,int posAnchor)
 {
   Movement callback = Movement(superpose(anchor.getRigidBody(),strand[posAnchor].getRigidBody(),0).matrix);
-  
-  for (unsigned int i=0; i <strand.size(); i++)
+
+  unsigned int strandSize  = strand.size();
+  for (unsigned int i=0; i <strandSize; i++)
   {
     Rigidbody rb = strand[i].getRigidBody();
     rb.ApplyMatrix(callback.getMatrix());
