@@ -106,7 +106,7 @@ string DNA::printPDB()const
   {
     out += strand[i].printPDB();
   }
-  return out;
+  return out.substr(0,out.size()-1);
 }
 
 
