@@ -29,7 +29,7 @@ Movement::~Movement()
 }
 
 
-void Movement::apply(Rigidbody& rigbody)
+void Movement::apply(Rigidbody& rigbody)const
 {
   Matrix oldmouvement = rigbody.GetMatrix ();
   //rigbody.ApplyMatrix(inverseTranformationMatrixPlusPlus(oldmouvement));

@@ -23,7 +23,7 @@ namespace PTools
     Movement operator+ (const Movement&) const;
 
     /// apply the Matrix to a Rigidbody
-    void apply(Rigidbody& rigbody);
+    void apply(Rigidbody& rigbody)const;
     
     ///return the Matrix
     const Matrix& getMatrix() const;
