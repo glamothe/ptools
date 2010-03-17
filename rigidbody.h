@@ -148,7 +148,7 @@ public:
     void ApplyMatrix(const Matrix & mat);
 
    /// get the 4x4 matrix
-   Matrix GetMatrix()
+   Matrix GetMatrix() const
    {
      return CoordsArray::GetMatrix();
    }

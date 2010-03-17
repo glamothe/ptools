@@ -13,7 +13,7 @@ using namespace PTools;
 
 
 //constructor/destructor
-DNA::DNA(string filename, string seq, Movement mov)
+DNA::DNA(string filename, string seq, const Movement& mov)
 {
   Rigidbody all = Rigidbody(filename);
   string chainIDs = getChainIDs(all);
@@ -41,7 +41,7 @@ DNA::~DNA()
 }
 
 
-string DNA::getChainIDs(Rigidbody rb)
+string DNA::getChainIDs(const Rigidbody& rb)const
 {
   string chainIDs;
   AtomSelection selection = rb.SelectAllAtoms ();
@@ -59,7 +59,7 @@ string DNA::getChainIDs(Rigidbody rb)
 }
 
 
-void DNA::buildStrand(std::string seq, std::string chainIDs, std::vector<Rigidbody> vbase)
+void DNA::buildStrand(std::string seq, std::string chainIDs, const std::vector<Rigidbody>& vbase)
 {
   for (unsigned int i =0; i < seq.size(); i++ )
   {
@@ -83,7 +83,7 @@ void DNA::makeResIDs()
 }
 
 
-void DNA::applyInitialMov(Movement mov)
+void DNA::applyInitialMov(const Movement& mov)
 {
   for (unsigned int i=1; i <strand.size(); i++)
   {
@@ -93,13 +93,13 @@ void DNA::applyInitialMov(Movement mov)
 }
 
 
-int DNA::size()
+unsigned int DNA::size()const
 {
   return strand.size();
 }
 
 
-string DNA::printPDB()
+string DNA::printPDB()const
 {
   string out;
   for ( unsigned int i =0; i < strand.size(); i++ )
@@ -110,7 +110,7 @@ string DNA::printPDB()
 }
 
 
-void DNA::writePDB(std::string fileName)
+void DNA::writePDB(std::string fileName)const
 {
   ofstream myfile;
   myfile.open(fileName.c_str());
@@ -148,7 +148,7 @@ void DNA::changeRepresentation(std::string filename)
 }
 
 
-Matrix DNA::getLocalMatrix(int pos)
+Matrix DNA::getLocalMatrix(int pos)const
 {
    if (pos == 0) return strand[0].getMatrix();
   
@@ -160,7 +160,7 @@ Matrix DNA::getLocalMatrix(int pos)
 }
 
 
-void DNA::applylocalMov(Movement mov,int pos)
+void DNA::applylocalMov(const Movement& mov,int pos)
 {
   Matrix nextlocal = getLocalMatrix(pos+1);
   strand[pos].apply(mov);
@@ -171,7 +171,7 @@ void DNA::applylocalMov(Movement mov,int pos)
 }
 
 
-void DNA::applyglobalMov(Movement mov)
+void DNA::applyglobalMov(const Movement& mov)
 {
   Matrix nextlocal;
   if (strand.size()>1){
@@ -188,7 +188,7 @@ void DNA::applyglobalMov(Movement mov)
 }
 
 
-void DNA::applyLocal(Movement mov,int posMov, int posAnchor)
+void DNA::applyLocal(const Movement& mov,int posMov, int posAnchor)
 {
   BasePair anchor = strand[posAnchor];
   applylocalMov(mov,posMov);
@@ -196,13 +196,13 @@ void DNA::applyLocal(Movement mov,int posMov, int posAnchor)
 }
 
 
-void DNA::applyLocal(Matrix m,int posMov, int posAnchor)
+void DNA::applyLocal(const Matrix&  m,int posMov, int posAnchor)
 {
   applyLocal ( Movement(m), posMov, posAnchor);
 }
 
 
-void DNA::applyGlobal(Movement mov ,int posAnchor)
+void DNA::applyGlobal(const Movement& mov ,int posAnchor)
 {
   BasePair anchor = strand[posAnchor];
   applyglobalMov(mov);
@@ -210,12 +210,12 @@ void DNA::applyGlobal(Movement mov ,int posAnchor)
 }
 
 
-void DNA::applyGlobal(Matrix m ,int posAnchor){
+void DNA::applyGlobal(const Matrix& m ,int posAnchor){
   applyLocal ( Movement(m), posAnchor);
 }
 
 
-void DNA::relocate(BasePair anchor,int posAnchor)
+void DNA::relocate(const BasePair& anchor,int posAnchor)
 {
   Movement callback = Movement(superpose(anchor.getRigidBody(),strand[posAnchor].getRigidBody(),0).matrix);
   
@@ -228,7 +228,7 @@ void DNA::relocate(BasePair anchor,int posAnchor)
 }
 
 
-Matrix DNA::reconstruct(int pos, Matrix local)
+Matrix DNA::reconstruct(int pos, const Matrix& local)
 {
   Matrix nextlocal;
   if ((unsigned int)pos<strand.size()) nextlocal = getLocalMatrix(pos+1);

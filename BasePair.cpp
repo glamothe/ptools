@@ -14,7 +14,7 @@ BasePair::BasePair(std::string filename)
 }
 
 
-BasePair::BasePair(Rigidbody rigbody)
+BasePair::BasePair(const Rigidbody& rigbody)
 {
   this->rigbody=rigbody;
 }
@@ -26,43 +26,43 @@ BasePair::~BasePair()
 }
 
 
-string BasePair::printPDB()
+string BasePair::printPDB()const
 {
   return rigbody.PrintPDB ();
 }
 
 
-void BasePair::apply(Movement m)
+void BasePair::apply( const Movement& m)
 {
   m.apply(rigbody);
 }
 
 
-void BasePair::apply(Matrix m)
+void BasePair::apply(const Matrix& m)
 {
   apply(Movement (m));
 }
 
 
-Matrix BasePair::getMatrix()
+Matrix BasePair::getMatrix() const
 {
   return rigbody.GetMatrix();
 }
 
 
-Movement BasePair::getMovement()
+Movement BasePair::getMovement()const
 {
   return Movement(getMatrix());
 }
 
 
-string BasePair::getChainID()
+string BasePair::getChainID()const
 {
   return rigbody.GetAtomProperty(0).GetChainId();
 }
 
 
-Rigidbody BasePair::getRigidBody()
+Rigidbody BasePair::getRigidBody()const
 {
   return rigbody;
 }
@@ -79,14 +79,14 @@ void BasePair::setResID(int resID)
 }
 
 
-uint BasePair::getResID()
+uint BasePair::getResID()const
 {
   Atomproperty ap = rigbody.GetAtomProperty(0);
   return ap.GetResidId();
 }
 
 
-void  BasePair::setRigidBody(Rigidbody rigbody)
+void  BasePair::setRigidBody(const Rigidbody& rigbody)
 {
   this->rigbody=rigbody;
 }
