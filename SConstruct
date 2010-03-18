@@ -18,9 +18,6 @@ user_path_libg2cgfortran = ""
 user_path_boost = ""
 
 
-#if you add a file in this list, please make sure that
-#this .cpp file begins with  " //$Id$"
-#and type: svn propset svn:keywords Id filename
 COMMON_CPP = Split ("""atom.cpp
                        basetypes.cpp
                        rigidbody.cpp

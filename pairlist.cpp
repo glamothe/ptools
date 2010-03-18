@@ -1,4 +1,3 @@
-// $Id$
 #include "pairlist.h"
 
 namespace PTools

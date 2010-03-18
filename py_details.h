@@ -1,4 +1,3 @@
-// $Id$
 #include "pairlist.h"
 #include "ptools.h"
 #include "coord3d.h"

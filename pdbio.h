@@ -1,4 +1,3 @@
-// $Id$
 #ifndef PDBIO_H
 #define PDBIO_H
 
