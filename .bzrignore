@@ -6,3 +6,5 @@ config.log
 svnrev
 .sconsign*
 Tests/ptoolstest.bin
+version.py
+bzrrev.h

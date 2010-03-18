@@ -18,11 +18,6 @@ user_path_libg2cgfortran = ""
 user_path_boost = ""
 
 
-
-
-#if you add a file in this list, please make sure that
-#this .cpp file begins with  " //$Id$"
-#and type: svn propset svn:keywords Id filename
 COMMON_CPP = Split ("""atom.cpp
                        basetypes.cpp
                        rigidbody.cpp
@@ -53,6 +48,8 @@ COMMON_LIBS=[""]
 COMMON_CPPPATH=['.']
 FFLAGS="-g"
 
+#generates bzrrev.h:
+import bzrrev
 
 
 def FIND_FILE(name,path, useEnvPath=False):
@@ -185,11 +182,6 @@ for file in os.listdir("Pybindings"):
     if fnmatch.fnmatch(file, "*.cpp"):
         PYTHON_CPP.append("Pybindings/%s"%file)
 
-
-#generate svnrev.h (revision number of the library)
-os.system("gcc svnrev.c -o svnrev")
-svnrevfiles = [f for f in os.listdir('.') if fnmatch.fnmatch(f, "*.cpp") or fnmatch.fnmatch(f,"*.h") and not fnmatch.fnmatch(f,"svnrev.*") ]  #list every .h or .cpp
-os.system("./svnrev %s"%(" ".join(svnrevfiles)))
 
 
 if compile_mode == "release":

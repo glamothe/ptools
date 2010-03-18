@@ -1,4 +1,3 @@
-// $Id$
 
 #include "surface.h"
 #include "attractrigidbody.h"
