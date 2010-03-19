@@ -6,6 +6,8 @@
 #include <BasePair.h>
 #include <Movement.h>
 
+#include "rigidbody.h"
+
 namespace PTools
 {
   
@@ -14,9 +16,11 @@ namespace PTools
     
     public:
     ///initialize a new object with a sequence and a database of pdb to pick from. an initial movement for the construction of the dna can be precised. 
-    DNA(std::string,std::string,const Movement & mov = BDNA());
-    ~DNA();
+    DNA( std::string , std::string , const Movement & mov = BDNA());
     
+    ~DNA();
+
+
     ///return the number of BasePair
     unsigned int size() const;
     
@@ -41,6 +45,7 @@ namespace PTools
     
     ///return the local Matrix of the specified BasePair (for the position i the Matrix to go from i-1 to i)
     Matrix getLocalMatrix(int pos)const;
+
     
 
     private:
@@ -65,9 +70,16 @@ namespace PTools
     void applyglobalMov(const Movement& );
     ///reposition the DNA according to the anchor
     void relocate(const BasePair& anchor,int posAnchor);
+    /// return a selection of one atom per base
+    AtomSelection getBasesGuideline(Rigidbody model ) const;
+    /// add a new base pair at the same position that its model.
+    void addNewBasePair (std::string database,const AtomSelection& modelOfBasePair );
 
-  
-  
+    ///initialize a new object from a PDB file
+    void buildDNAfromPDB ( std::string database, std::string pdbfile);
+    bool isPdbFile (std::string)const;
+    std::string getSeq (AtomSelection basesGuideLine, Rigidbody model)const;
+    std::vector<Rigidbody> buildVbase(std::string chainIDs,const Rigidbody& dataBase)const;
   };
   
 }//end namespace

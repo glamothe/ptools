@@ -13,17 +13,19 @@ using namespace PTools;
 
 
 //constructor/destructor
-DNA::DNA(string filename, string seq, const Movement& mov)
+DNA::DNA(string dataBaseFile, string seq, const Movement& mov)
 {
-  Rigidbody all = Rigidbody(filename);
-  string chainIDs = getChainIDs(all);
+  //if we want to build the dna from a model
+  if(isPdbFile (seq)) { buildDNAfromPDB ( dataBaseFile, seq ); }
+  Rigidbody dataBase = Rigidbody(dataBaseFile);
+  string chainIDs = getChainIDs(dataBase);
   
   //"map" for the rigidbody, an iD corespond to its rigidbody
   vector<Rigidbody> vbase;
   unsigned int chainIDsSize = chainIDs.size();
   for (unsigned int i = 0; i < chainIDsSize ; i++)
   {
-    vbase.push_back(all.SelectChainId(chainIDs.substr(i,1)).CreateRigid());
+    vbase.push_back(dataBase.SelectChainId(chainIDs.substr(i,1)).CreateRigid());
   }
   
   //build the strand from the seq
@@ -31,14 +33,68 @@ DNA::DNA(string filename, string seq, const Movement& mov)
   
   //make sure that every BasePaire have a different id
   makeResIDs();
-  
+
+
+
   applyInitialMov(mov);
 }
 
+void DNA::buildDNAfromPDB (string database, string pdbFile )
+{
+    
+    Rigidbody model = Rigidbody(pdbFile);
+    AtomSelection basesGuideline= getBasesGuideline(model);
+    string seq =getSeq( basesGuideline, model);
+
+
+//    for ( unsigned int i=0 ; i< nbBasePair ; i++ )
+//    {
+//        AtomSelection modelOfBasePair = model.SelectResRange( i, i );
+//        addNewBasePair (database, modelOfBasePair );
+//    }
+}
 
 DNA::~DNA()
 {
-  
+
+}
+
+AtomSelection DNA::getBasesGuideline(Rigidbody model) const
+{
+    return model.SelectAtomType("C1'");
+}
+
+string DNA::getSeq ( AtomSelection basesGuideLine, Rigidbody model)const
+{
+    string seq;
+    unsigned int strandSize = basesGuideLine.Size()/2;
+    for ( unsigned int i=0 ; i< strandSize ; i++ )
+    {
+         int resID = basesGuideLine[i].GetResidId();
+         string type = model.SelectResRange( resID, resID )[0].GetResidType();
+         
+         if      ( type.find ('A') != string::npos || type.find ('a') != string::npos ) seq+='A';
+         else if ( type.find ('T') != string::npos || type.find ('t') != string::npos) seq+='T';
+         else if ( type.find ('G') != string::npos || type.find ('g') != string::npos) seq+='G';
+         else if ( type.find ('C') != string::npos || type.find ('c') != string::npos) seq+='C';
+    }
+    return seq;
+}
+
+void DNA::addNewBasePair (string database, const AtomSelection& modelOfBasePair )
+{
+    
+}
+
+vector<Rigidbody> buildVbase(string chainIDs,const Rigidbody& dataBase)const
+{
+  vector<Rigidbody> vbase;
+  unsigned int chainIDsSize = chainIDs.size();
+  for (unsigned int i = 0; i < chainIDsSize ; i++)
+  {
+    vbase.push_back(dataBase.SelectChainId(chainIDs.substr(i,1)).CreateRigid());
+  }
+  return vbase;
 }
 
 
@@ -60,6 +116,10 @@ string DNA::getChainIDs(const Rigidbody& rb)const
   return chainIDs;
 }
 
+bool DNA::isPdbFile (std::string seq) const
+{
+    return ( (seq.size() >=3) && (seq.substr(seq.size()-3,seq.size())=="pdb") );
+}
 
 void DNA::buildStrand(std::string seq, std::string chainIDs, const std::vector<Rigidbody>& vbase)
 {
