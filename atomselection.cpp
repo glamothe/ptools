@@ -34,7 +34,7 @@ AtomSelection::AtomSelection(const AtomSelection& oldsel)
 
 
 
-Rigidbody AtomSelection::CreateRigid()
+Rigidbody AtomSelection::CreateRigid() const
 {
     Rigidbody newrigid;
     for (uint i=0; i<this->Size(); i++)

@@ -176,7 +176,7 @@ public:
     AtomSelection SelectChainId(std::string chainid);
 
     /// selection by range of residue ID
-    AtomSelection SelectResRange(uint start, uint stop);
+    AtomSelection SelectResRange(uint start, uint stop)const;
 
     /// selection shortcut for C-alpha
     AtomSelection CA();

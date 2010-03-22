@@ -16,42 +16,26 @@ using namespace PTools;
 DNA::DNA(string dataBaseFile, string seq, const Movement& mov)
 {
   //if we want to build the dna from a model
-  if(isPdbFile (seq)) { buildDNAfromPDB ( dataBaseFile, seq ); }
-  Rigidbody dataBase = Rigidbody(dataBaseFile);
-  string chainIDs = getChainIDs(dataBase);
-  
-  //"map" for the rigidbody, an iD corespond to its rigidbody
-  vector<Rigidbody> vbase;
-  unsigned int chainIDsSize = chainIDs.size();
-  for (unsigned int i = 0; i < chainIDsSize ; i++)
+  if(isPdbFile (seq))
   {
-    vbase.push_back(dataBase.SelectChainId(chainIDs.substr(i,1)).CreateRigid());
+      buildDNAfromPDB ( dataBaseFile, seq );
   }
-  
-  //build the strand from the seq
-  buildStrand(seq, chainIDs, vbase);
-  
-  //make sure that every BasePaire have a different id
-  makeResIDs();
-
-
-
-  applyInitialMov(mov);
+  else
+  {
+      assembleSeq (dataBaseFile,seq);
+      applyInitialMov(mov);
+  }
 }
 
-void DNA::buildDNAfromPDB (string database, string pdbFile )
+void DNA::buildDNAfromPDB (string dataBaseFile, string pdbFile )
 {
     
     Rigidbody model = Rigidbody(pdbFile);
     AtomSelection basesGuideline= getBasesGuideline(model);
     string seq =getSeq( basesGuideline, model);
+    assembleSeq (dataBaseFile,seq);
 
-
-//    for ( unsigned int i=0 ; i< nbBasePair ; i++ )
-//    {
-//        AtomSelection modelOfBasePair = model.SelectResRange( i, i );
-//        addNewBasePair (database, modelOfBasePair );
-//    }
+    placeBasePairs(model);
 }
 
 DNA::~DNA()
@@ -59,9 +43,48 @@ DNA::~DNA()
 
 }
 
+void DNA::placeBasePairs(const Rigidbody& model)
+{
+    unsigned int strandSize  = strand.size();
+
+    //MeasureParameters(Rigidbody& oxyz1, Rigidbody& oxyz2);
+//    for ( unsigned int i =0; i < strandSize ; i++ )
+//    {
+//        AtomSelection modelOfBasePair = model.SelectResRange( i, i );
+//
+//        if (i!=0)
+//        {
+//          //apply preceding base movement
+//        }
+//        //apply it
+//    }
+}
+
+Movement DNA::getMovementFromModel(const Rigidbody& modelOfBasePair, int posPairBase)const
+{
+    
+}
+
+
+
 AtomSelection DNA::getBasesGuideline(Rigidbody model) const
 {
     return model.SelectAtomType("C1'");
+}
+
+void DNA::assembleSeq (std::string dataBaseFile, std::string seq)
+{
+      Rigidbody dataBase = Rigidbody(dataBaseFile);
+      string chainIDs = getChainIDs(dataBase);
+
+      //"map" for the rigidbody, an iD corespond to its rigidbody
+      vector<Rigidbody> vbase = buildVbase(chainIDs,dataBase);
+
+      //build the strand from the seq
+      buildStrand(seq, chainIDs, vbase);
+
+      //make sure that every BasePaire have a different id
+      makeResIDs();
 }
 
 string DNA::getSeq ( AtomSelection basesGuideLine, Rigidbody model)const
@@ -81,17 +104,14 @@ string DNA::getSeq ( AtomSelection basesGuideLine, Rigidbody model)const
     return seq;
 }
 
-void DNA::addNewBasePair (string database, const AtomSelection& modelOfBasePair )
-{
-    
-}
 
-vector<Rigidbody> buildVbase(string chainIDs,const Rigidbody& dataBase)const
+vector<Rigidbody> DNA::buildVbase(string chainIDs, Rigidbody& dataBase)const
 {
   vector<Rigidbody> vbase;
   unsigned int chainIDsSize = chainIDs.size();
   for (unsigned int i = 0; i < chainIDsSize ; i++)
   {
+
     vbase.push_back(dataBase.SelectChainId(chainIDs.substr(i,1)).CreateRigid());
   }
   return vbase;

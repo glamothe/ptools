@@ -72,14 +72,18 @@ namespace PTools
     void relocate(const BasePair& anchor,int posAnchor);
     /// return a selection of one atom per base
     AtomSelection getBasesGuideline(Rigidbody model ) const;
-    /// add a new base pair at the same position that its model.
-    void addNewBasePair (std::string database,const AtomSelection& modelOfBasePair );
 
     ///initialize a new object from a PDB file
     void buildDNAfromPDB ( std::string database, std::string pdbfile);
     bool isPdbFile (std::string)const;
     std::string getSeq (AtomSelection basesGuideLine, Rigidbody model)const;
-    std::vector<Rigidbody> buildVbase(std::string chainIDs,const Rigidbody& dataBase)const;
+    std::vector<Rigidbody> buildVbase(std::string chainIDs, Rigidbody& dataBase)const;
+    ///create the different base in strand following the seq order.
+    void assembleSeq (std::string dataBaseFile, std::string seq);
+    ///place the base in the same position as the model
+    void placeBasePairs(const Rigidbody& model);
+    
+    Movement getMovementFromModel(const Rigidbody& modelOfBasePair, int posPairBase )const;
   };
   
 }//end namespace

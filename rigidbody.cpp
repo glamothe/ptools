@@ -212,15 +212,15 @@ AtomSelection Rigidbody::SelectChainId(std::string chainId) {
     return newsel;
 }
 
-AtomSelection Rigidbody::SelectResRange(uint start, uint stop)
+AtomSelection Rigidbody::SelectResRange(uint start, uint stop) const
 {
     AtomSelection newsel;
     newsel.SetRigid(*this);
 
     for (uint i=0; i < Size(); i++)
     {
-        Atomproperty& atp ( mAtomProp[i] );
-        if (atp.GetResidId() >=start && atp.GetResidId() <= stop) newsel.AddAtomIndex(i);
+        uint residId = mAtomProp[i].GetResidId() ;
+        if (residId >=start && residId <= stop) newsel.AddAtomIndex(i);
     }
     return newsel;
 }
