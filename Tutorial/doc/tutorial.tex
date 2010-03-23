@@ -499,10 +499,11 @@ and a protein--DNA complex\cite{Poulain2008} (1K79). The first example (1CGI) is
 step by step and scripts usages are exhaustively detailled. The second example 
 (1K79) is much more straightforward.
 
-To get system-wide access to all ATTRACT tools, update your PATH accordingly in your \verb@$HOME/.bashrc@:
+To get system-wide access to all ATTRACT tools, update your PATH and PYTHONPATH accordingly in your \verb@$HOME/.bashrc@ file:
 \begin{verbatim}
-ATTRACTPATH="$HOME/soft/ptools-XX/"
+ATTRACTPATH="$HOME/soft/ptools-XX/PyAttract"
 export PATH="$PATH:$ATTRACTPATH"
+export PYTHONPATH="$PYTHONPATH:$ATTRACTPATH"
 \end{verbatim}
 
 
