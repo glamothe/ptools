@@ -156,6 +156,8 @@ Tilt = mb.class_("Tilt").include()
 BDNA = mb.class_("BDNA").include()
 ADNA = mb.class_("ADNA").include()
 
+Parameter = mb.class_("Parameter").include()
+
 try:
     surreal = mb.class_("surreal")
     surreal.include()

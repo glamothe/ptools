@@ -5,7 +5,8 @@
 #include <rigidbody.h>
 #include <iostream>
 #include <Movement.h>
-
+#include <BasePair.h>
+#include <Parameter.h>
 using namespace std;
 
 
@@ -13,6 +14,12 @@ namespace PTools {
 
 Parameter::Parameter()
 {
+    shift = 0.0;
+    slide = 0.0;
+    rise = 0.0;
+    tilt = 0.0;
+    roll = 0.0;
+    twist = 0.0;
 
 }
 
@@ -29,7 +36,7 @@ Parameter::~Parameter()
 
 }
 
-}
+
 ////code "steal" from deformDna.cpp (author: Pierre Poulain)
 //std::vector<double> DNA::MeasureParameters(Rigidbody& oxyz1, Rigidbody& oxyz2) const{
 //	Coord3D X = oxyz1.GetCoords(1) - oxyz1.GetCoords(0);
@@ -65,5 +72,6 @@ Parameter::~Parameter()
 //	param[3] = tilt;
 //	param[4] = roll;
 //	param[5] = twist;
-//	return param;
+//return param;
 //}
+}

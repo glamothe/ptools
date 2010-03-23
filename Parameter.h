@@ -18,18 +18,18 @@ namespace PTools
   {
     public:
         Parameter();
-        Parameter(const BasePair& bp1,const BasePair& bp2);
+        Parameter(const BasePair& bp1, const BasePair& bp2);
         ~Parameter();
 
 
     private:
     //atribut
-        double x_delta = 0.0 ;
-	double y_delta = 0.0 ;
-	double z_delta = 0.0 ;
-	double tilt = 0.0 ;
-	double roll = 0.0 ;
-	double twist = 0.0 ;
+        double shift;
+	double slide;
+	double rise;
+	double tilt;
+	double roll;
+	double twist;
     //method
 
   };

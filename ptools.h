@@ -27,6 +27,6 @@
 #include "BasePair.h"
 #include "DNA.h"
 #include "Movement.h"
-
+#include "Parameter.h"
 
 #endif // PTOOLS_H
