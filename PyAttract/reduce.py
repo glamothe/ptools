@@ -37,17 +37,20 @@ parser.add_option("--warnonly", action="store_true", dest="warning",default=Fals
 #==========================================================
 # check options
 #==========================================================
+
+# define reduce data files subdirectory
+data_dir="reduce_data/"
+
 if ( (options.molProt or options.molDna) and ( len(args) > 0) ):
         atomicName = args[0]
         completePath=sys.argv[0]
         scriptdir,scriptname = os.path.split(completePath)
         if options.molProt:
-                redName = os.path.join(scriptdir,"at2cg.prot.dat")
+                redName = os.path.join(scriptdir,data_dir+"at2cg.prot.dat")
         if options.molDna:
-                redName = os.path.join(scriptdir,"at2cg.dna.dat")
-        ffName = os.path.join(scriptdir,"ff_param.dat")
-        convName = os.path.join(scriptdir,"type_conversion.dat")  
-
+                redName = os.path.join(scriptdir,data_dir+"at2cg.dna.dat")
+        ffName = os.path.join(scriptdir,data_dir+"ff_param.dat")
+        convName = os.path.join(scriptdir,data_dir+"type_conversion.dat")  
 else:
         parser.error("please specify molecule type (--prot or --dna) and atomic file")
 
