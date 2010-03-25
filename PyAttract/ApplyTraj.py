@@ -2,11 +2,15 @@
 
 # reads a pdf file and a .trj (output from attract only) file and
 # creates pdb file from trajectory
-# note: trj file are created by Attract_ff2_u.py (version ff2_u only for the moment)
-# if option -s is used (for single minimization only)
+
 
 import sys
 from ptools import *
+
+if len(sys.argv) < 3:
+    print "Usage: applyTraj.py trajectory_file ligand"
+    sys.exit(0)
+
 
 trjfile = open(sys.argv[1])
 ligand = Rigidbody(sys.argv[2])
