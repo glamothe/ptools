@@ -1139,6 +1139,22 @@ The first lines of the output cluster file are:
 The large weight of the best solution shows the very good convergence of the
 docking simulation.
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Misc. tips and tricks}
+
+
+\subsection{Troubleshooting}
+
+\subsubsection{Bus error}
+
+On Mac OS, the command \verb@import ptools@ can lead to a "bus error" 
+error message. This happens with MacPorts or fink versions of Python. 
+A solution is to use the Python provided with the system instead 
+(\verb@/usr/bin/python@).
+
 \subsection{Accurate bead representation}
 
 Adjustment of van der Waals radii is recommended for a more accurate 
@@ -1170,19 +1186,37 @@ DNA (A) and protein (B).}
 \label{real_vdw}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\section{Misc. tips and tricks}
+\subsection{Minimization movie}
 
+Here is the procedure to visualize all conformations taken by the ligand during minimizations.
 
-\subsection{Troubleshooting}
+\begin{enumerate}
+\item Place the ligand at the wanted translation and rotation.
+\begin{verbatim}
+startligand.py ligand.red translation_number rotation_number
+\end{verbatim}
+This will generate the file \verb=ligand_X_Y.red= where \verb=X= and \verb=Y= are the translation and rotation numbers, respectively.
+\item Launch a docking simulation in single mode
+\begin{verbatim}
+attract.py receptor.red ligand_X_Y.red --ref=ligand.red -s > single.att
+\end{verbatim}
+The file \verb=minimization.trj= is created and contains the 6 variables of translation and rotation for all steps of all minimizations.
+\item Convert translation/rotation variables into ligand conformations
+\begin{verbatim}
+applytraj.py minimization.trj ligand_X_Y.red > ligand_moves.red
+\end{verbatim}
+The file \verb=ligand_moves.red= is a multi-pdb files containing all conformations of the ligand at each step of the minimizations.
+\item Visualize \verb=ligand_moves.red= with PyMoL or VMD. For instance,
+\begin{verbatim}
+pymol ligand_moves.red
+\end{verbatim}
+You could also represent the receptor:
+\begin{verbatim}
+pymol receptor.red ligand_moves.red
+\end{verbatim}
+\end{enumerate}
 
-\subsubsection{Bus error}
-
-On Mac OS, the command \verb@import ptools@ can lead to a "bus error" 
-error message. This happens with MacPorts or fink versions of Python. 
-A solution is to use the Python provided with the system instead 
-(\verb@/usr/bin/python@).
+ 
 
 \bibliography{biblio}{}
 \bibliographystyle{plain}
