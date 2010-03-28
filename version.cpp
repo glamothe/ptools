@@ -1,13 +1,13 @@
-//$Id$
-#include "version.h"
 
+#include "version.h"
 
 Version::Version()
 {
-
-revnb = SVN_REV;
-revstr = std::string(SVN_REVSTR);
-revdate = SVN_REVDATE;
+this->revnb = BZR_REV;
+this->revstr = BZR_REVSTR;
+this->revdate = BZR_REVDATE;
+this->revid = BZR_REVID;
+this->branchnick = BZR_BRANCHNICK;
 }
 
 
