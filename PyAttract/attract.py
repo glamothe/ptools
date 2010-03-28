@@ -238,7 +238,7 @@ if (options.single and options.transnb):
 
 
 if (options.single):
-    ftraj = open("minimtraj.trj", "w")
+    ftraj = open("minimization.trj", "w")
 
 if (options.reffile):
     print "using reference file: %s"%options.reffile
@@ -362,6 +362,9 @@ if ( not options.single and printFiles==True):
     print compress_file("rotation.dat")
     print compress_file("attract.inp")
 
+# close trajectory file for single minimization 
+if (options.single):
+    ftraj.close()
 
 
 now = datetime.datetime.now()
