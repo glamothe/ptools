@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 #
-#  This script takes a translation file, a rotation file and a ligand and generates 
-#  the ligand initial placement prior to the minimization step.
-
+#  This script takes a translation file, a rotation file and a ligand file
+# and generates the ligand initial placement prior to the minimization step.
 
 
 from ptools import *
@@ -30,7 +29,7 @@ class Rotation:
         self.theta=[]
         self.nphi=[]
         # read theta,phi,rot data
-        rotdat=open('rotation.dat','r')
+        rotdat=open( rotfile ,'r')
         line=rotdat.readline().split()
         self.ntheta=int(line[0])
         self.nrot=int(line[1])
@@ -75,22 +74,27 @@ parser.add_option("-t", "--translationfile", action="store", type="string", dest
 parser.add_option("-r", "--rotationfile", action="store", type="string", dest="rotfile", help="rotation file")
 (options, args) = parser.parse_args()
 
+if len(args) == 3:
+    ligand_name=args[0]
+    transnb = int(args[1])
+    argrotnb = int(args[2])
+else:
+    sys.exit("""ERROR: missing argument
+Usage: startligand.py ligand_file translation_number rotation_number """)
 
-ligand_name=args[0]
-transnb = int(args[1])
-argrotnb = int(args[2])
+if (not options.transfile):
+    transfile = "translation.dat"
+if (not options.rotfile):
+    rotfile = "rotation.dat"
 
-
-
+print "Translation file:", transfile
+print "Rotation file:", rotfile
 
 lig=Rigidbody(ligand_name)
-
-print "Ligand (mobile) %s  has %d particules" %(ligand_name,lig.Size())
-
+print "Ligand (mobile partner) %s  has %d particules" %(ligand_name,lig.Size())
 
 
-
-trans=Rigidbody("translation.dat")
+trans=Rigidbody( transfile )
 co=trans.GetCoords(transnb)
 translations=[[transnb+1,co]]
 rotations = Rotation()
@@ -109,6 +113,6 @@ for trans in translations:
             ligand.Translate(Coord3D()-center) #set ligand center of mass to 0,0,0
             ligand.AttractEulerRotate(surreal(rot[0]),surreal(rot[1]),surreal(rot[2]))
             ligand.Translate(trans[1])
-            WritePDB(ligand, "start_%i_%i.pdb"%(transnb,argrotnb))
+            WritePDB(ligand, "ligand_%i_%i.red"%(transnb,argrotnb))
 
 
