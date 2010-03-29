@@ -172,7 +172,7 @@ AtomSelection Rigidbody::SelectAllAtoms() const
 }
 
 
-AtomSelection Rigidbody::SelectAtomType(std::string atomtype)
+AtomSelection Rigidbody::SelectAtomType(std::string atomtype)const
 {
     AtomSelection newsel;
     newsel.SetRigid(*this);

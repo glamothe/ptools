@@ -167,7 +167,7 @@ public:
     AtomSelection SelectAllAtoms() const;
 
     /// selection : by atom type
-    AtomSelection SelectAtomType(std::string atomtype);
+    AtomSelection SelectAtomType(std::string atomtype)const;
 
     /// selection by residue type
     AtomSelection SelectResidType(std::string residtype);
