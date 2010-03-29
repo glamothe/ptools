@@ -236,9 +236,10 @@ print "Ligand (mobile) %s  has %d particules" %(ligand_name,lig.Size())
 if (options.single and options.transnb):
     parser.error("options -s and -t are mutually exclusive")
 
-
+# save all minimization variables in trajectory file
+trjname = "minimization.trj"
 if (options.single):
-    ftraj = open("minimization.trj", "w")
+    ftraj = open(trjname, "w")
 
 if (options.reffile):
     print "using reference file: %s"%options.reffile
@@ -365,6 +366,7 @@ if ( not options.single and printFiles==True):
 # close trajectory file for single minimization 
 if (options.single):
     ftraj.close()
+    print "Saved all minimization variables (translations/rotations) in %s" %(trjname)
 
 
 now = datetime.datetime.now()
