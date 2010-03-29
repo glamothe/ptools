@@ -39,3 +39,4 @@ for l in lines:
         trjpdb += "MODEL %d \n" %(counter)
         trjpdb += output.PrintPDB()
         trjpdb += "ENDMDL \n"
+print trjpdb
