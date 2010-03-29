@@ -76,8 +76,8 @@ parser.add_option("-r", "--rotationfile", action="store", type="string", dest="r
 
 if len(args) == 3:
     ligand_name=args[0]
-    transnb = int(args[1])
-    argrotnb = int(args[2])
+    target_trans_nb = int(args[1])
+    target_rot_nb = int(args[2])
 else:
     sys.exit("""ERROR: missing argument
 Usage: startligand.py ligand_file translation_number rotation_number """)
@@ -91,28 +91,33 @@ print "Translation file:", transfile
 print "Rotation file:", rotfile
 
 lig=Rigidbody(ligand_name)
-print "Ligand (mobile partner) %s  has %d particules" %(ligand_name,lig.Size())
+print "Ligand (mobile partner) %s has %d particules" %(ligand_name,lig.Size())
 
 
+print "Target translation number: %i" %( target_trans_nb )
+print "Target rotation number: %i" %( target_rot_nb )
+
+# read all translations
 trans=Rigidbody( transfile )
-co=trans.GetCoords(transnb)
-translations=[[transnb+1,co]]
+# extract target translation variables
+target_trans_val=trans.GetCoords(target_trans_nb)
+
+# read all rotations
 rotations = Rotation()
+# extract target rotation variables
+rot_tmp = [rot_val for rot_idx, rot_val in enumerate(rotations) if rot_idx == (target_rot_nb-1)]
+target_rot_val = rot_tmp[0]
 
-for trans in translations:
-    #transnb+=1
-    print "@@@@@@@ Translation nb %i @@@@@@@" %(transnb)
-    for rotnb,rot in enumerate(rotations):
-        rotnb+=1
-        if rotnb == argrotnb:
-            print "----- Rotation nb %i -----"%rotnb
-            minimcounter=0
-            ligand=AttractRigidbody(lig)
+# translate/rotate ligand
+ligand=AttractRigidbody(lig)
+center=ligand.FindCenter()
+ligand.Translate(Coord3D()-center) # set ligand center of mass to 0,0,0
+ligand.AttractEulerRotate(surreal(target_rot_val[0]),surreal(target_rot_val[1]),surreal(target_rot_val[2]))
+ligand.Translate( target_trans_val )
 
-            center=ligand.FindCenter()
-            ligand.Translate(Coord3D()-center) #set ligand center of mass to 0,0,0
-            ligand.AttractEulerRotate(surreal(rot[0]),surreal(rot[1]),surreal(rot[2]))
-            ligand.Translate(trans[1])
-            WritePDB(ligand, "ligand_%i_%i.red"%(transnb,argrotnb))
+# write to disk translated/rotated ligand
+outputname = "ligand_%i_%i.red" %(target_trans_nb, target_rot_nb)
+WritePDB(ligand, outputname)
+print "wrote %s" %(outputname)
 
 
