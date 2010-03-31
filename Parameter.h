@@ -8,6 +8,9 @@
 #ifndef _PARAMETER_H
 #define	_PARAMETER_H
 
+#include "Movement.h"
+
+
 /*! \brief
 * a class to compute and hold the parameter between two base pairs
 */
@@ -20,8 +23,11 @@ namespace PTools
         Parameter();
         Parameter(const BasePair& bp1, const BasePair& bp2);
         ~Parameter();
-        Rigidbody buildAxisGeometricCenter(const Rigidbody& bp)const;
+        Rigidbody buildAxisCGGeometricCenter(const Rigidbody& bp)const;
+        Rigidbody buildAxisAAGeometricCenter(const Rigidbody& bp)const;
         void MeasureParameters(const Rigidbody& oxyz1, const Rigidbody& oxyz2);
+
+        Movement getMov() const;
 
         double getRise() const ;
         void setRise(double rise) ;

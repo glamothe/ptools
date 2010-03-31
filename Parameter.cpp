@@ -26,7 +26,7 @@ Parameter::Parameter()
 
 Parameter::Parameter(const BasePair& bp1,const BasePair& bp2)
 {
-
+ 
 }
 
 
@@ -41,7 +41,7 @@ double dotProduct( const Coord3D& u, const Coord3D& v) {
 
 
 ////code "steal" from deformDna.cpp (author: Pierre Poulain), modified to use the geometric center
-Rigidbody Parameter::buildAxisGeometricCenter(const Rigidbody& bp)const
+Rigidbody Parameter::buildAxisCGGeometricCenter(const Rigidbody& bp)const
 {
     AtomSelection selSugar = bp.SelectAtomType("GS2");
     assert(selSugar.Size() == 2);
@@ -67,24 +67,66 @@ Rigidbody Parameter::buildAxisGeometricCenter(const Rigidbody& bp)const
     VectProd(axeY, axeZ, axeX);
     axeX = axeX.Normalize();
     // origin
-    Coord3D origin;
-    origin = center + ScalProd(pointX - center, axeX) * axeX;
+    Coord3D origin=bp.FindCenter();
     // save base3D
     Atomproperty atp;
+
     atp.SetType("OO");
-    base3D.AddAtom(atp, bp.FindCenter());
+    base3D.AddAtom(atp,origin );
     atp.SetType("OX");
-    base3D.AddAtom(atp, bp.FindCenter() + axeX);
+    base3D.AddAtom(atp, origin + axeX);
     atp.SetType("OY");
-    base3D.AddAtom(atp, bp.FindCenter() + axeY);
+    base3D.AddAtom(atp, origin + axeY);
     atp.SetType("OZ");
-    base3D.AddAtom(atp, bp.FindCenter() + axeZ);
-    //centre geometrique //HACK!
+    base3D.AddAtom(atp, origin + axeZ);
     return base3D;
 
 }
 
+////code "steal" from deformDna.cpp (author: Pierre Poulain), modified to use the geometric center
+///the definition of an axis for basis is following the standard stated in
+///Definitions and Nomenclature of Nucleic Acid Structure Parameters, R. E. Dickerson et alJ. Mol. Biol. (1995) 251, 648–664.
+Rigidbody Parameter::buildAxisAAGeometricCenter(const Rigidbody& bp)const
+{
+    AtomSelection selSugar = bp.SelectAtomType("C1'");
+    if (selSugar.Size() != 2)selSugar = bp.SelectAtomType("C1*");
+    // build base3D
+    Rigidbody base3D;
+    // define atoms for base3D construction
+    Coord3D center = selSugar.CreateRigid().FindCenter(); // middle of GS2
+    Coord3D pointY = selSugar[0].GetCoords(); // point toward Y (first GS2)
+    AtomSelection grain = bp.SelectAtomType("C5"); // GG1 or GA1
+    if (grain.Size() == 0) {
+            grain = bp.SelectAtomType("GA1");
+    }
+    assert(grain.Size() == 1);
+    Coord3D pointX = grain[0].GetCoords();
+    // Y
+    Coord3D axeY =  (pointY - center).Normalize();
+    // Z
+    Coord3D axeZ;
+    VectProd(pointX - center, axeY, axeZ);
+    axeZ = axeZ.Normalize();
+    // X
+    Coord3D axeX;
+    VectProd(axeY, axeZ, axeX);
+    axeX = axeX.Normalize();
+    // origin
+    Coord3D origin=bp.FindCenter();
+    // save base3D
+    Atomproperty atp;
 
+    atp.SetType("OO");
+    base3D.AddAtom(atp,origin );
+    atp.SetType("OX");
+    base3D.AddAtom(atp, origin + axeX);
+    atp.SetType("OY");
+    base3D.AddAtom(atp, origin + axeY);
+    atp.SetType("OZ");
+    base3D.AddAtom(atp, origin + axeZ);
+    return base3D;
+
+}
 ///
 void Parameter::MeasureParameters(const Rigidbody& oxyz1, const Rigidbody& oxyz2)
 {
@@ -111,6 +153,10 @@ void Parameter::MeasureParameters(const Rigidbody& oxyz1, const Rigidbody& oxyz2
     twist = asin(e1.y / cos(a));
     roll = -a;
     tilt = asin(e2.z /cos(a));
+
+//    twist = acos(ScalProd(X,I));
+//    roll   = acos(ScalProd(Y,J));
+//    tilt    = acos(ScalProd(Z,K));
     //the vector between the two origins
     Coord3D OO = oxyz2.GetCoords(0) - oxyz1.GetCoords(0);
     //the projection of the vector between the two origins on each axis.
@@ -118,6 +164,11 @@ void Parameter::MeasureParameters(const Rigidbody& oxyz1, const Rigidbody& oxyz2
     slide = dotProduct(OO,J);
     rise = dotProduct(OO,K);
 
+}
+
+Movement Parameter::getMov() const
+{
+    return Twist(twist)+Roll(roll)+Tilt(tilt)+Rise(rise)+Slide(slide)+Shift(shift);
 }
 
 

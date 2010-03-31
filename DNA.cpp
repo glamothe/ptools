@@ -7,6 +7,9 @@
 #include <DNA.h>
 #include <Movement.h>
 #include <fstream>
+#include <limits>
+#include <limits.h>
+#include "Parameter.h"
 
 using namespace std;
 using namespace PTools;
@@ -27,74 +30,126 @@ DNA::DNA(string dataBaseFile, string seq, const Movement& mov)
   }
 }
 
+
 void DNA::buildDNAfromPDB (string dataBaseFile, string pdbFile )
 {
     
     Rigidbody model = Rigidbody(pdbFile);
-    AtomSelection basesGuideline= getBasesGuideline(model);
-    string seq =getSeq( basesGuideline, model);
+    renumberModel ( model);
+    string seq =getSeq(model);
     assembleSeq (dataBaseFile,seq);
 
     placeBasePairs(model);
 }
+
 
 DNA::~DNA()
 {
 
 }
 
+
 void DNA::placeBasePairs(const Rigidbody& model)
 {
+    if (strand[0].getRigidBody().SelectAtomType("GS2").Size()> 0)
+    {
+        placeBasePairs_CG(model);
+    }
+    else
+    {
+        placeBasePairs_AA(model);
+    }
+
+}
+
+
+void DNA::placeBasePairs_CG(const Rigidbody& model)
+{
+    unsigned int DNASize  = (strand.size()*2)-1;
+    unsigned int strandSize  = strand.size();
+    
+    for ( unsigned int i = 0; i < strandSize ; i++ )
+    {
+        Rigidbody modelOfBasePair = getModelOfBasePair( model, i, DNASize-i);
+
+        strand[i].apply(getMatCG2AA ( modelOfBasePair,i ));
+    }
+}
+
+
+void DNA::placeBasePairs_AA(const Rigidbody& model)
+{
+    unsigned int DNASize  = (strand.size()*2)-1;
     unsigned int strandSize  = strand.size();
 
-    //MeasureParameters(Rigidbody& oxyz1, Rigidbody& oxyz2);
-//    for ( unsigned int i =0; i < strandSize ; i++ )
-//    {
-//        AtomSelection modelOfBasePair = model.SelectResRange( i, i );
-//
-//        if (i!=0)
-//        {
-//          //apply preceding base movement
-//        }
-//        //apply it
-//    }
+    for ( unsigned int i = 0; i < strandSize ; i++ )
+    {
+        Rigidbody modelOfBasePair = getModelOfBasePair( model, i, DNASize-i );
+        strand[i].apply(getMatAA2AA ( modelOfBasePair,i ));
+    }
 }
 
-Movement DNA::getMovementFromModel(const Rigidbody& modelOfBasePair, int posPairBase)const
+
+Matrix DNA::getMatAA2AA( const Rigidbody& modelOfBasePair,int pos)const{
+    Parameter param =Parameter();
+    return superpose (param.buildAxisAAGeometricCenter(modelOfBasePair),param.buildAxisAAGeometricCenter(strand[pos].getRigidBody())).matrix;
+}
+
+
+Matrix DNA::getMatCG2AA( const Rigidbody& modelOfBasePair,int pos)const{
+    Parameter param =Parameter();
+    return superpose (param.buildAxisAAGeometricCenter(modelOfBasePair),param.buildAxisCGGeometricCenter(strand[pos].getRigidBody())).matrix;
+}
+
+
+void DNA::renumberModel (Rigidbody& model)const
 {
-    
+
+  unsigned int tempId=  model.GetAtomProperty(0).GetResidId();;
+  unsigned int modelSize=model.Size();
+  unsigned int nbRes=0;
+  for (unsigned int i =0; i < modelSize; i++ )
+  {
+    unsigned int Id =  model.GetAtomProperty(i).GetResidId();
+    if ( tempId != Id )
+    {
+        tempId =Id;
+        nbRes++;        
+    }
+    Atomproperty ap=model.GetAtomProperty(i);
+    ap.SetResidId(nbRes);
+    model.SetAtomProperty(i,ap);
+  }
 }
 
-
-
-AtomSelection DNA::getBasesGuideline(Rigidbody model) const
+Rigidbody DNA::getModelOfBasePair(const Rigidbody& model,int posA,int posB)const
 {
-    return model.SelectAtomType("C1'");
+        return (model.SelectResRange(posA, posA)|model.SelectResRange(posB, posB)).CreateRigid();
+
+
 }
+
 
 void DNA::assembleSeq (std::string dataBaseFile, std::string seq)
 {
-      Rigidbody dataBase = Rigidbody(dataBaseFile);
+      Rigidbody dataBase = Rigidbody(dataBaseFile);      
       string chainIDs = getChainIDs(dataBase);
 
       //"map" for the rigidbody, an iD corespond to its rigidbody
       vector<Rigidbody> vbase = buildVbase(chainIDs,dataBase);
-
       //build the strand from the seq
       buildStrand(seq, chainIDs, vbase);
-
       //make sure that every BasePaire have a different id
       makeResIDs();
 }
 
-string DNA::getSeq ( AtomSelection basesGuideLine, Rigidbody model)const
+string DNA::getSeq ( const Rigidbody& model)const
 {
     string seq;
-    unsigned int strandSize = basesGuideLine.Size()/2;
+    unsigned int strandSize = model.SelectAtomType("C1'").Size()/2;
     for ( unsigned int i=0 ; i< strandSize ; i++ )
     {
-         int resID = basesGuideLine[i].GetResidId();
-         string type = model.SelectResRange( resID, resID )[0].GetResidType();
+         string type = model.SelectResRange( i, i)[0].GetResidType();
          
          if      ( type.find ('A') != string::npos || type.find ('a') != string::npos ) seq+='A';
          else if ( type.find ('T') != string::npos || type.find ('t') != string::npos) seq+='T';
@@ -124,13 +179,14 @@ string DNA::getChainIDs(const Rigidbody& rb)const
   AtomSelection selection = rb.SelectAllAtoms ();
   string tmp = "";
   unsigned int selectionSize = selection.Size();
+
   for (unsigned int i=0; i < selectionSize ;i++)
   {
     string id = selection[i].GetChainId();
     if(id !=tmp)
     {
       tmp=id;
-      chainIDs += id;      
+      chainIDs += id;
     }
   }
   return chainIDs;

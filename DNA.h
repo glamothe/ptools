@@ -5,7 +5,7 @@
 #include <vector>  
 #include <BasePair.h>
 #include <Movement.h>
-
+#include <Parameter.h>
 #include "rigidbody.h"
 
 namespace PTools
@@ -70,20 +70,37 @@ namespace PTools
     void applyglobalMov(const Movement& );
     ///reposition the DNA according to the anchor
     void relocate(const BasePair& anchor,int posAnchor);
-    /// return a selection of one atom per base
-    AtomSelection getBasesGuideline(Rigidbody model ) const;
 
     ///initialize a new object from a PDB file
     void buildDNAfromPDB ( std::string database, std::string pdbfile);
+    ///check if a file have a pdb extension
     bool isPdbFile (std::string)const;
-    std::string getSeq (AtomSelection basesGuideLine, Rigidbody model)const;
+    ///return the sequence of a DNA model
+    std::string getSeq (const Rigidbody& model)const;
+    ///return a vector with an example of each base
     std::vector<Rigidbody> buildVbase(std::string chainIDs, Rigidbody& dataBase)const;
     ///create the different base in strand following the seq order.
     void assembleSeq (std::string dataBaseFile, std::string seq);
+
+    ///change the numerotation of the base in the model to conform to the following order
+    ///A 1 2 3
+    ///B 6 5 4
+    void renumberModel (Rigidbody& model)const;
+
     ///place the base in the same position as the model
     void placeBasePairs(const Rigidbody& model);
-    
-    Movement getMovementFromModel(const Rigidbody& modelOfBasePair, int posPairBase )const;
+
+    ///place the base pair in coarse grain in the same position as the model
+    void placeBasePairs_CG(const Rigidbody& model);
+    ///place the base pair in all atom in the same position as the model
+    void placeBasePairs_AA(const Rigidbody& model);
+
+    ///return the base pair composed of the base on posA in the strand A of model and the base on posB in the strand B of model
+    Rigidbody getModelOfBasePair(const Rigidbody& model,int posA,int posB)const;
+    ///return the matrix betwen a model base pair and the basepair (in all atom) on pos in strand
+    Matrix getMatAA2AA(const Rigidbody& modelOfBasePair,int pos)const;
+    ///return the matrix betwen a model base pair and the basepair (in coarse grain) on pos in strand
+    Matrix getMatCG2AA(const Rigidbody& modelOfBasePair,int pos)const;
   };
   
 }//end namespace
