@@ -23,12 +23,18 @@ namespace PTools
         Parameter();
         Parameter(const BasePair& bp1, const BasePair& bp2);
         ~Parameter();
+        Rigidbody buildAxisCentered(const Rigidbody& bp)const;
         Rigidbody buildAxisCGGeometricCenter(const Rigidbody& bp)const;
         Rigidbody buildAxisAAGeometricCenter(const Rigidbody& bp)const;
         void MeasureParameters(const Rigidbody& oxyz1, const Rigidbody& oxyz2);
 
         Movement getMov() const;
 
+        //return the parameter in the following order, twist roll tilt rise slide shift. beware, the angle are in radian
+        std::string toString ()const;
+        //return the parameter in the following order, twist roll tilt rise slide shift in readable arrangement
+        std::string toFormatedString ()const;
+        
         double getRise() const ;
         void setRise(double rise) ;
 
@@ -62,7 +68,6 @@ namespace PTools
         
   };
   
-double dotProduct( const Coord3D& u, const Coord3D& v);
 }//end namespace
 
 #endif	/* _PARAMETER_H */

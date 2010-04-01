@@ -35,10 +35,19 @@ Parameter::~Parameter()
 
 }
 
-double dotProduct( const Coord3D& u, const Coord3D& v) {
-   return (u.x * v.x) + (u.y * v.y) + (u.z * v.z);
-}
 
+Rigidbody Parameter::buildAxisCentered(const Rigidbody& bp)const
+{
+    //if it's a coarse grain model
+    if (bp.SelectAtomType("GS2").Size()> 0)
+    {
+        return buildAxisCGGeometricCenter(bp);
+    }
+    else
+    {
+        return buildAxisAAGeometricCenter(bp);
+    }
+}
 
 ////code "steal" from deformDna.cpp (author: Pierre Poulain), modified to use the geometric center
 Rigidbody Parameter::buildAxisCGGeometricCenter(const Rigidbody& bp)const
@@ -160,9 +169,9 @@ void Parameter::MeasureParameters(const Rigidbody& oxyz1, const Rigidbody& oxyz2
     //the vector between the two origins
     Coord3D OO = oxyz2.GetCoords(0) - oxyz1.GetCoords(0);
     //the projection of the vector between the two origins on each axis.
-    shift = dotProduct(OO,I);
-    slide = dotProduct(OO,J);
-    rise = dotProduct(OO,K);
+    shift = ScalProd(OO,I);
+    slide = ScalProd(OO,J);
+    rise = ScalProd(OO,K);
 
 }
 
@@ -171,7 +180,20 @@ Movement Parameter::getMov() const
     return Twist(twist)+Roll(roll)+Tilt(tilt)+Rise(rise)+Slide(slide)+Shift(shift);
 }
 
+string Parameter::toString ()const
+{
+    stringstream ss;
+    ss << getTwist() <<" "<< getRoll()<<" "<< getTilt() <<" "<< getRise()<<" "<< getSlide() <<" "<< getShift();
+    return ss.str();
+}
 
+string Parameter::toFormatedString ()const
+{
+    const float degree=57.2958;
+    stringstream ss;
+    ss <<"twist : "<< getTwist()*degree<<" Roll : "<< getRoll()*degree<<" Tilt : "<< getTilt()*degree <<" Rise : "<< getRise()<<" Slide : "<< getSlide() <<" Shift : "<< getShift();
+    return ss.str();
+}
 double Parameter::getRise() const {
     return rise;
 }

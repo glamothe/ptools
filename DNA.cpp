@@ -51,20 +51,6 @@ DNA::~DNA()
 
 void DNA::placeBasePairs(const Rigidbody& model)
 {
-    if (strand[0].getRigidBody().SelectAtomType("GS2").Size()> 0)
-    {
-        placeBasePairs_CG(model);
-    }
-    else
-    {
-        placeBasePairs_AA(model);
-    }
-
-}
-
-
-void DNA::placeBasePairs_CG(const Rigidbody& model)
-{
     unsigned int DNASize  = (strand.size()*2)-1;
     unsigned int strandSize  = strand.size();
     
@@ -72,33 +58,14 @@ void DNA::placeBasePairs_CG(const Rigidbody& model)
     {
         Rigidbody modelOfBasePair = getModelOfBasePair( model, i, DNASize-i);
 
-        strand[i].apply(getMatCG2AA ( modelOfBasePair,i ));
+        strand[i].apply(getMatBetwenBasePair ( modelOfBasePair,i ));
     }
 }
 
 
-void DNA::placeBasePairs_AA(const Rigidbody& model)
-{
-    unsigned int DNASize  = (strand.size()*2)-1;
-    unsigned int strandSize  = strand.size();
-
-    for ( unsigned int i = 0; i < strandSize ; i++ )
-    {
-        Rigidbody modelOfBasePair = getModelOfBasePair( model, i, DNASize-i );
-        strand[i].apply(getMatAA2AA ( modelOfBasePair,i ));
-    }
-}
-
-
-Matrix DNA::getMatAA2AA( const Rigidbody& modelOfBasePair,int pos)const{
+Matrix DNA::getMatBetwenBasePair( const Rigidbody& modelOfBasePair,int pos)const{
     Parameter param =Parameter();
-    return superpose (param.buildAxisAAGeometricCenter(modelOfBasePair),param.buildAxisAAGeometricCenter(strand[pos].getRigidBody())).matrix;
-}
-
-
-Matrix DNA::getMatCG2AA( const Rigidbody& modelOfBasePair,int pos)const{
-    Parameter param =Parameter();
-    return superpose (param.buildAxisAAGeometricCenter(modelOfBasePair),param.buildAxisCGGeometricCenter(strand[pos].getRigidBody())).matrix;
+    return superpose (param.buildAxisCentered(modelOfBasePair),param.buildAxisCentered(strand[pos].getRigidBody())).matrix;
 }
 
 
@@ -253,7 +220,16 @@ string DNA::printPDB()const
   return out.substr(0,out.size()-1);
 }
 
-
+string DNA::printParam() const
+{
+  stringstream ss;
+  unsigned int strandSize  = strand.size();
+  for ( unsigned int i =1; i < strandSize ; i++ )
+  {
+    ss << "base "<< i << " : "<<getLocalParameter(i).toFormatedString()+"\n";
+  }
+  return ss.str().substr(0,ss.str().size()-1);
+}
 void DNA::writePDB(std::string fileName)const
 {
   ofstream myfile;
@@ -307,6 +283,13 @@ Matrix DNA::getLocalMatrix(int pos)const
    
 }
 
+Parameter DNA::getLocalParameter(int pos)const
+{
+  Parameter param =Parameter();
+  param.MeasureParameters(param.buildAxisCentered(strand[pos-1].getRigidBody()),param.buildAxisCentered(strand[pos].getRigidBody()));
+  return param;
+
+}
 
 void DNA::applylocalMov(const Movement& mov,int pos)
 {

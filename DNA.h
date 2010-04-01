@@ -26,7 +26,10 @@ namespace PTools
     
     ///return a string containing the atoms data following the PDB format 
     std::string printPDB() const;
-    
+
+    ///return a string containing all the local parameter formated
+    std::string printParam() const;
+
     ///write in a file the atoms data following the PDB format
     void writePDB(std::string)const;
     
@@ -45,6 +48,8 @@ namespace PTools
     
     ///return the local Matrix of the specified BasePair (for the position i the Matrix to go from i-1 to i)
     Matrix getLocalMatrix(int pos)const;
+    ///return the local Parameter of the specified BasePair (for the position i the Matrix to go from i-1 to i)
+    Parameter getLocalParameter(int pos)const;
 
     
 
@@ -90,17 +95,11 @@ namespace PTools
     ///place the base in the same position as the model
     void placeBasePairs(const Rigidbody& model);
 
-    ///place the base pair in coarse grain in the same position as the model
-    void placeBasePairs_CG(const Rigidbody& model);
-    ///place the base pair in all atom in the same position as the model
-    void placeBasePairs_AA(const Rigidbody& model);
-
     ///return the base pair composed of the base on posA in the strand A of model and the base on posB in the strand B of model
     Rigidbody getModelOfBasePair(const Rigidbody& model,int posA,int posB)const;
-    ///return the matrix betwen a model base pair and the basepair (in all atom) on pos in strand
-    Matrix getMatAA2AA(const Rigidbody& modelOfBasePair,int pos)const;
-    ///return the matrix betwen a model base pair and the basepair (in coarse grain) on pos in strand
-    Matrix getMatCG2AA(const Rigidbody& modelOfBasePair,int pos)const;
+
+    ///return the matrix betwen a model base pair and the basepair on pos in strand
+    Matrix getMatBetwenBasePair(const Rigidbody& modelOfBasePair,int pos)const;
   };
   
 }//end namespace
