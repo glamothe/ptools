@@ -184,14 +184,16 @@ void DNA::buildStrand(std::string seq, std::string chainIDs, const std::vector<R
 
 void DNA::changeFormat()
 {
+  unsigned int nbAtom = 0;
   unsigned int strandSize  = strand.size();
   for (unsigned int i =0; i < strandSize; i++ )
   {
     //corect ID chain
     strand[i].setChainID();
     //numerotation atom
+    
     //numerotation residu
-
+    strand[i].setResID(i,(strandSize-1)+i);
     //strand[i].setResID(i);
   }
 }

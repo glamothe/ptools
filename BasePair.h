@@ -45,10 +45,13 @@ namespace PTools
     /// define the Rigidbody of the BasePair
     void setRigidBody(const Rigidbody&);
     
-    /// return the Residue ID of the BasePair (it's rank in the DNA strand) 
-    uint getResID()const;
-    /// define the Residue ID of the BasePair (it's rank in the DNA strand)
-    void setResID(int);
+    /// return the Residue ID of the specified base (by chain)
+    uint getResIDofBase(std::string chain)const;
+    /// change the ID of res to idA for base on strand A and idB for the one on strand B
+    void setResID(int idA,int idB);
+    /// change the atoms numbers of the specified base (by chain) starting at startnum and returning the last atom number
+    //uint setAtomNumberOfBase(std::string chain,int);
+
     
     std::string getType() const;
 

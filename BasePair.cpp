@@ -87,21 +87,29 @@ Rigidbody BasePair::getRigidBody()const
 }
 
   
-void BasePair::setResID(int resID)
+void BasePair::setResID(int idA,int idB)
 {
-  unsigned int rigSize=rigbody.Size();
-  for(unsigned int i =0; i< rigSize ; i++)
+  unsigned int baseSize=rigbody.Size();
+  for(unsigned int i =0; i< baseSize ; i++)
   {
     Atomproperty ap=rigbody.GetAtomProperty(i);
-    ap.SetResidId(resID); 
+    if (ap.GetChainId()=="A")
+    {
+        ap.SetResidId(idA);
+    }
+    else
+    {
+        ap.SetResidId(idB);
+    }
+     
     rigbody.SetAtomProperty(i,ap);
   }
 }
 
 
-uint BasePair::getResID()const
+uint BasePair::getResIDofBase(std::string chain)const
 {
-  Atomproperty ap = rigbody.GetAtomProperty(0);
+  Atomproperty ap = rigbody.SelectChainId(chain).CreateRigid().GetAtomProperty(0);
   return ap.GetResidId();
 }
 
