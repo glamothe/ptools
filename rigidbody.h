@@ -173,7 +173,7 @@ public:
     AtomSelection SelectResidType(std::string residtype);
 
     /// selection by chain ID
-    AtomSelection SelectChainId(std::string chainid);
+    AtomSelection SelectChainId(std::string chainid)const;
 
     /// selection by range of residue ID
     AtomSelection SelectResRange(uint start, uint stop)const;

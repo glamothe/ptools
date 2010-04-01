@@ -107,7 +107,7 @@ void DNA::assembleSeq (std::string dataBaseFile, std::string seq)
       //build the strand from the seq
       buildStrand(seq, chainIDs, vbase);
       //make sure that every BasePaire have a different id
-      makeResIDs();
+      changeFormat();
 }
 
 string DNA::getSeq ( const Rigidbody& model)const
@@ -182,12 +182,17 @@ void DNA::buildStrand(std::string seq, std::string chainIDs, const std::vector<R
 }
 
 
-void DNA::makeResIDs()
+void DNA::changeFormat()
 {
   unsigned int strandSize  = strand.size();
   for (unsigned int i =0; i < strandSize; i++ )
   {
-    strand[i].setResID(i);
+    //corect ID chain
+    strand[i].setChainID();
+    //numerotation atom
+    //numerotation residu
+
+    //strand[i].setResID(i);
   }
 }
 
@@ -211,11 +216,24 @@ unsigned int DNA::size()const
 
 string DNA::printPDB()const
 {
+  string strandA, strandB;
+  unsigned int strandSize  = strand.size();
+  for ( unsigned int i =0; i < strandSize ; i++ )
+  {
+    strandA += strand[i].printPDBofBase("A");
+    strandB += strand[i].printPDBofBase("B");
+  }
+  string out= strandA + strandB;
+  return out.substr(0,out.size()-1);
+}
+
+std::string DNA::printPDBofStrand( std::string chain ) const
+{
   string out;
   unsigned int strandSize  = strand.size();
   for ( unsigned int i =0; i < strandSize ; i++ )
   {
-    out += strand[i].printPDB();
+    out += strand[i].printPDBofBase( chain );
   }
   return out.substr(0,out.size()-1);
 }
@@ -239,20 +257,16 @@ void DNA::writePDB(std::string fileName)const
 }
 
 
-void DNA::changeRepresentation(std::string filename)
+void DNA::changeRepresentation(std::string dataBaseFile)
 {
-  Rigidbody all = Rigidbody(filename);
-  string chainIDs = getChainIDs(all);
+  Rigidbody dataBase = Rigidbody(dataBaseFile);
+  string chainIDs = getChainIDs(dataBase);
   
   //"map" for the rigidbody, an iD corespond to its rigidbody
-  vector<Rigidbody> vbase;
-  
-  unsigned int chainIDsSize = chainIDs.size();
-  for (unsigned int i = 0; i < chainIDsSize ; i++)
-  {
-    vbase.push_back(all.SelectChainId(chainIDs.substr(i,1)).CreateRigid());
-  }
-  
+  vector<Rigidbody> vbase = buildVbase(chainIDs,dataBase);
+
+    unsigned int chainIDsSize = chainIDs.size();
+
   unsigned int strandSize  = strand.size();
   for (unsigned int i = 0; i < strandSize ; i++)
   {
@@ -260,7 +274,7 @@ void DNA::changeRepresentation(std::string filename)
 
     for (unsigned int j =0; j < chainIDsSize; j++ )
     {     
-      if ( strand[i].getChainID()[0] == chainIDs[j])
+      if ( strand[i].getType()[0] == chainIDs[j])
       {
 	strand[i]=BasePair(vbase[j]);
 	strand[i].apply(mov);
@@ -268,7 +282,7 @@ void DNA::changeRepresentation(std::string filename)
     }
   }
   
-  makeResIDs();
+  changeFormat();
 }
 
 

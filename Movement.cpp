@@ -323,8 +323,11 @@ ADNA::ADNA():Movement()
   m=(Twist(30.69)+Roll(11.44)+Rise(3.44)+Slide(-1.92)).getMatrix();
 }
 
-
-
+ADNBrigitte::ADNBrigitte():Movement()
+{
+  m=(Twist(36.0001)+Roll(1.9344 )+Tilt(-5.9748)+Rise(3.3800)+Slide(-0.6995)+Shift(0.0145)).getMatrix();
+}
+            
 
 } //namespace PTools
 

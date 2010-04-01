@@ -4,6 +4,8 @@
 #include <BasePair.h>
 #include <Movement.h>
 
+#include "atomselection.h"
+
 using namespace std;
 using namespace PTools;
 
@@ -11,12 +13,14 @@ using namespace PTools;
 BasePair::BasePair(std::string filename)
 {
   ReadPDB(filename,rigbody);
+  type = rigbody.GetAtomProperty(0).GetResidType();
 }
 
 
 BasePair::BasePair(const Rigidbody& rigbody)
 {
   this->rigbody=rigbody;
+  type = rigbody.GetAtomProperty(0).GetResidType();
 }
 
 
@@ -31,6 +35,27 @@ string BasePair::printPDB()const
   return rigbody.PrintPDB ();
 }
 
+std::string BasePair::printPDBofBase(std::string chain) const
+{
+    return rigbody.SelectChainId(chain).CreateRigid().PrintPDB();
+}
+
+void BasePair::setChainID(){
+  unsigned int rigSize=rigbody.Size();
+  for(unsigned int i =0; i< rigSize ; i++)
+  {
+    Atomproperty ap=rigbody.GetAtomProperty(i);
+    if (ap.GetResidType()==type)
+    {
+        ap.SetChainId("A");
+    }
+    else
+    {
+        ap.SetChainId("B");
+    }
+    rigbody.SetAtomProperty(i,ap);
+  }
+}
 
 void BasePair::apply( const Movement& m)
 {
@@ -53,12 +78,6 @@ Matrix BasePair::getMatrix() const
 Movement BasePair::getMovement()const
 {
   return Movement(getMatrix());
-}
-
-
-string BasePair::getChainID()const
-{
-  return rigbody.GetAtomProperty(0).GetChainId();
 }
 
 
@@ -91,3 +110,12 @@ void  BasePair::setRigidBody(const Rigidbody& rigbody)
 {
   this->rigbody=rigbody;
 }
+
+string BasePair::getType() const {
+    return type;
+}
+
+void BasePair::setType(string type) {
+    this->type = type;
+}
+//end namespace

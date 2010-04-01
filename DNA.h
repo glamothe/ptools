@@ -27,6 +27,9 @@ namespace PTools
     ///return a string containing the atoms data following the PDB format 
     std::string printPDB() const;
 
+    ///return a string containing the atoms data following the PDB format
+    std::string printPDBofStrand( std::string chain ) const;
+
     ///return a string containing all the local parameter formated
     std::string printParam() const;
 
@@ -68,7 +71,7 @@ namespace PTools
     ///rebuild the DNA from a specified position. useful for taking into account a change in a base.
     Matrix reconstruct(int pos,const Matrix&);
     ///give the BasePair a correct number according to they rank in the strand
-    void makeResIDs();
+    void changeFormat();
     ///apply a Movement to a specified BasePair.
     void applylocalMov(const Movement&,int pos);
     ///apply a Movement to all the BasePairs

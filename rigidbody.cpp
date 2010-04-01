@@ -201,7 +201,7 @@ AtomSelection Rigidbody::SelectResidType(std::string residtype)
 }
 
 
-AtomSelection Rigidbody::SelectChainId(std::string chainId) {
+AtomSelection Rigidbody::SelectChainId(std::string chainId)const {
     AtomSelection newsel;
     newsel.SetRigid(*this);
     for (uint i=0; i<Size(); i++)

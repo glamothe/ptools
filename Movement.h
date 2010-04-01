@@ -117,7 +117,13 @@ namespace PTools
     public:
     ADNA();
   };
-  
+
+  class ADNBrigitte: public Movement
+  {
+    public:
+    ADNBrigitte();
+
+  };
 }//end namespace
 
 

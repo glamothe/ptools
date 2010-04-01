@@ -22,7 +22,13 @@ namespace PTools
     
     ///return a string containing the atoms data following the PDB format 
     std::string printPDB() const;
-    
+
+    ///return a string containing the atoms data of a base (identified by its chain) following the PDB format
+    std::string printPDBofBase(std::string chain) const;
+
+    ///change the chainID of the internal bases to 'A' for the first base (coresponding to the type) and 'B' for the second one
+    void setChainID();
+
     /// apply a Movement to the BasePair 
     void apply(const Movement& );
     /// apply a Matrix to the BasePair
@@ -34,9 +40,6 @@ namespace PTools
     /// return the Movemeny of the BasePair
     Movement getMovement()const;
     
-    /// return the ID of the chain of the BasePair (A for a AT, T for a TA, ...)
-    std::string getChainID()const;
-    
     /// return the Rigidbody of the BasePair
     Rigidbody getRigidBody()const;
     /// define the Rigidbody of the BasePair
@@ -46,13 +49,20 @@ namespace PTools
     uint getResID()const;
     /// define the Residue ID of the BasePair (it's rank in the DNA strand)
     void setResID(int);
+    
+    std::string getType() const;
 
+    void setType(std::string type);
+    
     private:
     //atribut
     Rigidbody rigbody;
+    std::string type;
     
   };
   
-}//end namespace
+}
+
+
 
 #endif // BASE_PAIR_H 
