@@ -54,7 +54,8 @@ namespace PTools
     ///return the local Parameter of the specified BasePair (for the position i the Matrix to go from i-1 to i)
     Parameter getLocalParameter(int pos)const;
 
-    
+    ///return a Rigidbody of the DNA()
+    Rigidbody createRigid()const;
 
     private:
 

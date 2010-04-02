@@ -289,6 +289,8 @@ string DNA::printParam() const
   }
   return ss.str().substr(0,ss.str().size()-1);
 }
+
+
 void DNA::writePDB(std::string fileName)const
 {
   ofstream myfile;
@@ -297,6 +299,22 @@ void DNA::writePDB(std::string fileName)const
   myfile.close();
 }
 
+Rigidbody DNA::createRigid()const
+{
+  Rigidbody dna;
+  unsigned int strandSize  = strand.size();
+  for ( unsigned int i =0; i < strandSize ; i++ )
+  {
+      Rigidbody basePair = strand[i].getRigidBody();
+      unsigned int basePairSize  = basePair.Size();
+      for (unsigned int j=0; j <basePairSize ; j++)
+      {
+          Atom a =basePair.CopyAtom(j);
+          dna.AddAtom(a);
+      }
+  }
+  return dna;
+}
 
 void DNA::changeRepresentation(std::string dataBaseFile)
 {
