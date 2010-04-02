@@ -118,10 +118,17 @@ namespace PTools
     ADNA();
   };
 
-  class ADNBrigitte: public Movement
+  class BrigitteDNA: public Movement
   {
     public:
-    ADNBrigitte();
+    BrigitteDNA();
+
+  };
+
+  class BDNAjumna: public Movement
+  {
+    public:
+    BDNAjumna();
 
   };
 }//end namespace

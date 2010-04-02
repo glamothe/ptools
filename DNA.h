@@ -95,6 +95,11 @@ namespace PTools
     ///B 6 5 4
     void renumberModel (Rigidbody& model)const;
 
+    // test if the model follow the jumna convention
+    //A 1 2 3
+    //B 4 5 6
+    bool isJumna (const Rigidbody& model)const;
+
     ///place the base in the same position as the model
     void placeBasePairs(const Rigidbody& model);
 
@@ -103,6 +108,7 @@ namespace PTools
 
     ///return the matrix betwen a model base pair and the basepair on pos in strand
     Matrix getMatBetwenBasePair(const Rigidbody& modelOfBasePair,int pos)const;
+
   };
   
 }//end namespace

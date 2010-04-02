@@ -53,11 +53,10 @@ void DNA::placeBasePairs(const Rigidbody& model)
 {
     unsigned int DNASize  = (strand.size()*2)-1;
     unsigned int strandSize  = strand.size();
-    
-    for ( unsigned int i = 0; i < strandSize ; i++ )
+    Parameter param =Parameter();
+    for ( unsigned int i = 0; i < strandSize; i++ )// strandSize
     {
         Rigidbody modelOfBasePair = getModelOfBasePair( model, i, DNASize-i);
-
         strand[i].apply(getMatBetwenBasePair ( modelOfBasePair,i ));
     }
 }
@@ -65,28 +64,62 @@ void DNA::placeBasePairs(const Rigidbody& model)
 
 Matrix DNA::getMatBetwenBasePair( const Rigidbody& modelOfBasePair,int pos)const{
     Parameter param =Parameter();
-    return superpose (param.buildAxisCentered(modelOfBasePair),param.buildAxisCentered(strand[pos].getRigidBody())).matrix;
+    Superpose_t sup =superpose (param.buildAxisCentered(modelOfBasePair),param.buildAxisCentered(strand[pos].getRigidBody()));
+    return sup.matrix;
 }
 
 
 void DNA::renumberModel (Rigidbody& model)const
 {
 
-  unsigned int tempId=  model.GetAtomProperty(0).GetResidId();;
-  unsigned int modelSize=model.Size();
+  unsigned int tempId=  model.GetAtomProperty(0).GetResidId();
+  string tempChain=model.GetAtomProperty(0).GetChainId();
   unsigned int nbRes=0;
+  unsigned int second = 0;
+
+
+  bool isjumna = isJumna(model);
+  
+  unsigned int modelSize=model.Size();
   for (unsigned int i =0; i < modelSize; i++ )
   {
-    unsigned int Id =  model.GetAtomProperty(i).GetResidId();
+    Atomproperty ap=model.GetAtomProperty(i);
+    unsigned int Id = ap.GetResidId();
     if ( tempId != Id )
     {
-        tempId =Id;
-        nbRes++;        
+        if (isjumna && tempChain!= ap.GetChainId())
+        {
+            if (second == 0)
+            {
+                second=nbRes*2 +1;
+            }
+            nbRes= second--;
+            tempId =Id;
+        }
+        else
+        {
+            tempId =Id;
+            nbRes++;
+        }
     }
-    Atomproperty ap=model.GetAtomProperty(i);
     ap.SetResidId(nbRes);
     model.SetAtomProperty(i,ap);
   }
+}
+
+bool DNA::isJumna (const Rigidbody& model)const
+{
+   //jumna have an inversed numerotation so on a 10 base dna (strand A: 0,1,2,3,4 and strand B:5,6,7,8,9)
+   //the base 0 is associated with 5 instead of 9.
+   //to check wich convention is followed, I'm gonna test the distance between 0-5 and 0-9, the shorter being the correct coupling
+    AtomSelection sel = model.SelectAtomType("C1'");
+    if (sel.Size() == 0) sel = model.SelectAtomType("C1*");
+
+
+    double d1 = Dist(sel[0],sel[sel.Size()-1]);
+    double d2 = Dist(sel[0],sel[sel.Size()/2]);
+
+    return (d1>d2);
 }
 
 Rigidbody DNA::getModelOfBasePair(const Rigidbody& model,int posA,int posB)const
