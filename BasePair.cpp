@@ -100,12 +100,26 @@ void BasePair::setResID(int idA,int idB)
     else
     {
         ap.SetResidId(idB);
-    }
-     
+    }     
     rigbody.SetAtomProperty(i,ap);
   }
 }
 
+uint BasePair::setAtomNumberOfBase(std::string chain,int num)
+{
+  unsigned int baseSize=rigbody.Size();
+  for(unsigned int i =0; i< baseSize ; i++)
+  {
+    Atomproperty ap=rigbody.GetAtomProperty(i);
+    if (ap.GetChainId()==chain)
+    {
+        ap.SetAtomId(num);
+        num++;
+        rigbody.SetAtomProperty(i,ap);
+    }
+  }
+  return num;
+}
 
 uint BasePair::getResIDofBase(std::string chain)const
 {

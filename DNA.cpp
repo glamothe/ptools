@@ -190,11 +190,17 @@ void DNA::changeFormat()
   {
     //corect ID chain
     strand[i].setChainID();
-    //numerotation atom
-    
     //numerotation residu
-    strand[i].setResID(i,(strandSize-1)+i);
-    //strand[i].setResID(i);
+    strand[i].setResID(i,(strandSize)+i);
+    //numerotation atom (first part)
+    nbAtom = strand[i].setAtomNumberOfBase("A",nbAtom);
+
+  }
+  for (unsigned int i =0; i < strandSize; i++ )
+  {
+    //numerotation atom (second part)
+    nbAtom = strand[i].setAtomNumberOfBase("B",nbAtom);
+
   }
 }
 

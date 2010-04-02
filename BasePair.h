@@ -50,7 +50,7 @@ namespace PTools
     /// change the ID of res to idA for base on strand A and idB for the one on strand B
     void setResID(int idA,int idB);
     /// change the atoms numbers of the specified base (by chain) starting at startnum and returning the last atom number
-    //uint setAtomNumberOfBase(std::string chain,int);
+    uint setAtomNumberOfBase(std::string chain,int);
 
     
     std::string getType() const;
