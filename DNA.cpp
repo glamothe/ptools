@@ -285,7 +285,7 @@ string DNA::printParam() const
   unsigned int strandSize  = strand.size();
   for ( unsigned int i =1; i < strandSize ; i++ )
   {
-    ss << "base "<< i << " : "<<getLocalParameter(i).toFormatedString()+"\n";
+    ss << "BasePair "<< i-1 <<"->"<<i<< " : "<<getLocalParameter(i).toFormatedString()+"\n";
   }
   return ss.str().substr(0,ss.str().size()-1);
 }
