@@ -57,6 +57,11 @@ namespace PTools
     ///return a Rigidbody of the DNA()
     Rigidbody createRigid()const;
 
+    /// return the i-th BasePair of the strand
+    BasePair operator[] (uint i) const {
+          if (i>=this->size()) throw std::range_error("DNA: array out of bounds");
+          return strand[i];};
+
     private:
 
     //attribut
