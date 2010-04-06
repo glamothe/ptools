@@ -302,19 +302,17 @@ void DNA::writePDB(std::string fileName)const
 
 Rigidbody DNA::createRigid()const
 {
-  Rigidbody dna;
-  unsigned int strandSize  = strand.size();
-  for ( unsigned int i =0; i < strandSize ; i++ )
+  //we use the method createRigidOfStrand() to make sure that the rigidbody returned follow the established format
+  Rigidbody chainA = createRigidOfStrand("A");
+  Rigidbody chainB = createRigidOfStrand("B");
+
+  //we add the atoms of the chain B to the chainA
+  unsigned int chainBsize  = chainB.Size();
+  for ( unsigned int i =0; i < chainBsize ; i++ )
   {
-      Rigidbody basePair = strand[i].getRigidBody();
-      unsigned int basePairSize  = basePair.Size();
-      for (unsigned int j=0; j <basePairSize ; j++)
-      {
-          Atom a =basePair.CopyAtom(j);
-          dna.AddAtom(a);
-      }
+      chainA.AddAtom(chainB.CopyAtom(i));
   }
-  return dna;
+  return chainA;
 }
 
 Rigidbody DNA::createRigidOfStrand(std::string chain)const
