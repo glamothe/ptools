@@ -224,17 +224,18 @@ void DNA::changeFormat()
     //corect ID chain
     strand[i].setChainID();
     //numerotation residu
-    strand[i].setResID(i,(strandSize)+i);
+    strand[i].setResID(i,(strandSize + strandSize-1)-i);
     //numerotation atom (first part)
     nbAtom = strand[i].setAtomNumberOfBase("A",nbAtom);
 
   }
-  for (unsigned int i =0; i < strandSize; i++ )
+  for (unsigned int i = strandSize-1; i > 0 ; i-- )
   {
     //numerotation atom (second part)
     nbAtom = strand[i].setAtomNumberOfBase("B",nbAtom);
-
   }
+  //last part of atom numerotation (because of error with decreasing unsigned int)
+  strand[0].setAtomNumberOfBase("B",nbAtom);
 }
 
 
@@ -262,7 +263,7 @@ string DNA::printPDB()const
   for ( unsigned int i =0; i < strandSize ; i++ )
   {
     strandA += strand[i].printPDBofBase("A");
-    strandB += strand[i].printPDBofBase("B");
+    strandB += strand[strandSize-1-i].printPDBofBase("B");
   }
   string out= strandA + strandB;
   return out.substr(0,out.size()-1);
