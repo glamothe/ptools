@@ -35,10 +35,12 @@ void DNA::buildDNAfromPDB (string dataBaseFile, string pdbFile )
 {
     
     Rigidbody model = Rigidbody(pdbFile);
+
     renumberModel ( model);
     string seq =getSeq(model);
-    assembleSeq (dataBaseFile,seq);
 
+    assembleSeq (dataBaseFile,seq);
+    
     placeBasePairs(model);
 }
 
@@ -77,9 +79,8 @@ void DNA::renumberModel (Rigidbody& model)const
   unsigned int nbRes=0;
   unsigned int second = 0;
 
-
   bool isjumna = isJumna(model);
-  
+
   unsigned int modelSize=model.Size();
   for (unsigned int i =0; i < modelSize; i++ )
   {
@@ -114,6 +115,7 @@ bool DNA::isJumna (const Rigidbody& model)const
    //to check wich convention is followed, I'm gonna test the distance between 0-5 and 0-9, the shorter being the correct coupling
     AtomSelection sel = model.SelectAtomType("C1'");
     if (sel.Size() == 0) sel = model.SelectAtomType("C1*");
+    if (sel.Size() == 0) sel = model.SelectAtomType("GS1");
 
 
     double d1 = Dist(sel[0],sel[sel.Size()-1]);
@@ -146,12 +148,22 @@ void DNA::assembleSeq (std::string dataBaseFile, std::string seq)
 string DNA::getSeq ( const Rigidbody& model)const
 {
     string seq;
-    unsigned int strandSize = model.SelectAtomType("C1'").Size()/2;
+    unsigned int strandSize;
+    if ((model.SelectAtomType("C1'").Size()/2) >0)
+    {
+        strandSize = model.SelectAtomType("C1'").Size()/2;
+    }else if ((model.SelectAtomType("C1*").Size()/2) >0)
+    {
+        strandSize = model.SelectAtomType("C1*").Size()/2;
+    }else if ((model.SelectAtomType("GS1").Size()/2) >0)
+    {
+        strandSize = model.SelectAtomType("GS1").Size()/2;
+    }else {return "";}
     for ( unsigned int i=0 ; i< strandSize ; i++ )
     {
          string type = model.SelectResRange( i, i)[0].GetResidType();
          
-         if      ( type.find ('A') != string::npos || type.find ('a') != string::npos ) seq+='A';
+         if      ( type.find ('A') != string::npos || type.find ('a') != string::npos) seq+='A';
          else if ( type.find ('T') != string::npos || type.find ('t') != string::npos) seq+='T';
          else if ( type.find ('G') != string::npos || type.find ('g') != string::npos) seq+='G';
          else if ( type.find ('C') != string::npos || type.find ('c') != string::npos) seq+='C';
