@@ -86,7 +86,13 @@ Rigidbody BasePair::getRigidBody()const
   return rigbody;
 }
 
-  
+
+Rigidbody BasePair::getRigidBodyOfBase(std::string chain)const
+{
+  return rigbody.SelectChainId(chain).CreateRigid();
+}
+
+
 void BasePair::setResID(int idA,int idB)
 {
   unsigned int baseSize=rigbody.Size();

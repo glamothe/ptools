@@ -42,6 +42,8 @@ namespace PTools
     
     /// return the Rigidbody of the BasePair
     Rigidbody getRigidBody()const;
+    /// return the Rigidbody of the specified base (by chain)
+    Rigidbody getRigidBodyOfBase(std::string chain)const;
     /// define the Rigidbody of the BasePair
     void setRigidBody(const Rigidbody&);
     

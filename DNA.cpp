@@ -317,6 +317,33 @@ Rigidbody DNA::createRigid()const
   return dna;
 }
 
+Rigidbody DNA::createRigidOfStrand(std::string chain)const
+{
+      Rigidbody dna;
+  unsigned int strandSize  = strand.size();
+
+
+  for ( unsigned int i =0; i < strandSize ; i++ )
+  {
+      Rigidbody basePair;
+      if (chain == "B" || chain == "b")
+      {
+          basePair = strand[strandSize-1-i].getRigidBodyOfBase(chain);
+      }
+      else
+      {
+          basePair = strand[i].getRigidBodyOfBase(chain);
+      }
+      unsigned int basePairSize  = basePair.Size();
+      for (unsigned int j=0; j <basePairSize ; j++)
+      {
+          Atom a =basePair.CopyAtom(j);
+          dna.AddAtom(a);
+      }
+  }
+  return dna;
+}
+
 void DNA::changeRepresentation(std::string dataBaseFile)
 {
   Rigidbody dataBase = Rigidbody(dataBaseFile);

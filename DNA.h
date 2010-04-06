@@ -56,6 +56,8 @@ namespace PTools
 
     ///return a Rigidbody of the DNA()
     Rigidbody createRigid()const;
+    ///return a Rigidbody of the strand
+    Rigidbody createRigidOfStrand(std::string chain)const;
 
     /// return the i-th BasePair of the strand
     BasePair operator[] (uint i) const {
