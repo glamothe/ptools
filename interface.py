@@ -9,7 +9,7 @@ import bzrrev
 
 #Creating an instance of class that will help you to expose your declarations
 mb = module_builder.module_builder_t( [os.path.abspath('./ptools.h'), os.path.abspath('./py_details.h')]
-                                      , gccxml_path=r"/home/cumin/poulain/soft/gccxml/bin/gccxml" 
+                                      , gccxml_path=r"" 
                                       , define_symbols=[] )
 
 
