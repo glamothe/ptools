@@ -17,7 +17,8 @@ namespace PTools
     public:
     ///initialize a new object with a sequence and a database of pdb to pick from. an initial movement for the construction of the dna can be precised. 
     DNA( std::string , std::string , const Movement & mov = BDNA());
-    
+    ///initialize a dna from another dna.
+    DNA( const DNA& model );
     ~DNA();
 
 

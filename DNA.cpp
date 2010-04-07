@@ -30,6 +30,15 @@ DNA::DNA(string dataBaseFile, string seq, const Movement& mov)
   }
 }
 
+DNA::DNA( const DNA& model )
+{
+    unsigned int modelSize  = model.size();
+    for (uint i =0; i< modelSize; i++)
+    {
+        strand.push_back(model[i]);
+    }
+    
+}
 
 void DNA::buildDNAfromPDB (string dataBaseFile, string pdbFile )
 {
