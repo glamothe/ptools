@@ -215,7 +215,7 @@ string DNA::getChainIDs(const Rigidbody& rb)const
 
 bool DNA::isPdbFile (std::string seq) const
 {
-    return ( (seq.size() >=3) && (seq.substr(seq.size()-3,seq.size())=="pdb") );
+    return ( (seq.size() >=3) && ((seq.substr(seq.size()-3,seq.size())=="pdb") ||(seq.substr(seq.size()-3,seq.size())=="red")) );
 }
 
 void DNA::buildStrand(std::string seq, std::string chainIDs, const std::vector<Rigidbody>& vbase)
