@@ -19,10 +19,7 @@ typedef DtFloat         DtPoint4[4];
 typedef DtFloat         DtMatrix3x3[3][3];
 typedef DtFloat         DtMatrix4x4[4][4];
 
-// extern "C"
-// {
-dbl zuker_superpose(DtPoint3 *c1, DtPoint3 *c2, int len, DtMatrix4x4 M);
-// }
+
 
 
 namespace PTools{
