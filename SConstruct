@@ -9,7 +9,7 @@ compile_mode = "release"
 #users may overide these settings if SCons cannot automatically locate some library:
 
 #PATH to g77 or gfortran:
-user_path_fortrancompiler = ""
+user_path_fortrancompiler = "/opt/local/bin/"
 
 #libg2c.a (or .so) or libgfortran.a PATH:
 user_path_libg2cgfortran = ""
@@ -106,7 +106,7 @@ if g77 is None:
       FORTRANPROG="gfortran -O2 -g -fPIC"
       gfortranlib=FIND_HEADER(["libgfortran.a", "libgfortran.la",\
           "libgfortran.so", "libgfortran.so.3"], [user_path_libg2cgfortran,"/usr/lib","/usr/lib64","/sw/lib",\
-          "/usr/lib/gcc/x86_64-redhat-linux/3.4.6/","/usr/lib64/gcc/x86_64-suse-linux/4.1.2/"], True)
+          "/usr/lib/gcc/x86_64-redhat-linux/3.4.6/","/usr/lib64/gcc/x86_64-suse-linux/4.1.2/","/opt/local/lib/gcc43/"], True)
       if gfortranlib is not None:
          print "libgfortran found here: ", gfortranlib
          LIB_PATH.append(gfortranlib)
@@ -139,7 +139,7 @@ else: #g77 compiler
 
 
 boostdir=FIND_HEADER(["boost/shared_array.hpp"], [user_path_boost,"/usr/include", \
-"/sw/include/boost-1_33_1"] )
+"/sw/include/boost-1_33_1", "/opt/local/include"] )
 
 if boostdir is None:
    print "cannot locate Boost hearders directory, still trying to compile..."
@@ -147,40 +147,50 @@ else:
    print "boost directory found here: ", boostdir 
    COMMON_CPPPATH.append(boostdir)
 
-python24dir=FIND_HEADER(["Python.h"], ["/usr/include/python2.4", \
-"/sw/include/python2.4"])
-
-if python24dir is not None:
-   print "python2.4 found, configuring path and libs"
-   PYTHON_CPPPATH=[python24dir]
-   PYTHON_LIBS=["python2.4"]
-
-
-if python24dir is None:
-   print "cannot locate python2.4, tying with python2.5:"
-   python25dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.5/",
-   "/sw/include/python2.5/"])
-   if python25dir is None:
-      print "cannot locate Python2.5, the library may not compile..."
-      print "trying to locate Python 2.6:"
-      python26dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.6/",
-   "/sw/include/python2.6/"])
-      if python26dir is not None:
-	  print "Python 2.6 found!"
-	  PYTHON_CPPPATH=[python26dir]
-	  PYTHON_LIBS=["python2.6"]
-   else:
-      PYTHON_CPPPATH=[python25dir]
-      PYTHON_LIBS=["python2.5"]
-
-
-
+PYTHON_CPPPATH = ""
+PYTHON_LIBS = ""
 PYTHON_CPP=[]
-import fnmatch
-import os
-for file in os.listdir("Pybindings"):
-    if fnmatch.fnmatch(file, "*.cpp"):
-        PYTHON_CPP.append("Pybindings/%s"%file)
+
+if 'python' in COMMAND_LINE_TARGETS or len(COMMAND_LINE_TARGETS)==0:
+    python_target = True
+else:
+    python_target = False
+
+if python_target:
+   python24dir=FIND_HEADER(["Python.h"], ["/usr/include/python2.4", \
+      "/sw/include/python2.4"])
+
+   if python24dir is not None:
+      print "python2.4 found, configuring path and libs"
+      PYTHON_CPPPATH=[python24dir]
+      PYTHON_LIBS=["python2.4"]
+
+
+   if python24dir is None:
+      print "cannot locate python2.4, tying with python2.5:"
+      python25dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.5/",
+      "/sw/include/python2.5/"])
+      if python25dir is None:
+         print "cannot locate Python2.5, the library may not compile..."
+         print "trying to locate Python 2.6:"
+         python26dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.6/",
+      "/sw/include/python2.6/"])
+         if python26dir is not None:
+	     print "Python 2.6 found!"
+	     PYTHON_CPPPATH=[python26dir]
+	     PYTHON_LIBS=["python2.6"]
+      else:
+         PYTHON_CPPPATH=[python25dir]
+         PYTHON_LIBS=["python2.5"]
+
+
+
+   PYTHON_CPP=[]
+   import fnmatch
+   import os
+   for file in os.listdir("Pybindings"):
+       if fnmatch.fnmatch(file, "*.cpp"):
+           PYTHON_CPP.append("Pybindings/%s"%file)
 
 
 
@@ -228,12 +238,13 @@ python.Append(LIBS=['boost_python'])
 
 
 #check python header file:
-conf = Configure(python)
-if not conf.CheckCHeader('Python.h'):
-        print "you must install either python2.4-dev or python2.5-dev"
-        Exit(1)
+if python_target:
+   conf = Configure(python)
+   if not conf.CheckCHeader('Python.h'):
+           print "you must install either python2.4-dev or python2.5-dev"
+           Exit(1)
 
-env = conf.Finish()
+   env = conf.Finish()
 
 
 print "using CPPPATH =", python['CPPPATH']
