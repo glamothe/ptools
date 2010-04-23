@@ -44,11 +44,15 @@ namespace PTools
     void applyLocal(const Movement&,int posMov, int posAnchor = 0);
     ///apply a Movement to all the BasePairs and reposition the DNA according to the anchor
     void applyGlobal(const Movement&,int posAnchor);
+    ///apply a Movement to the DNA as a rigidbody
+    void apply(const Movement&);
 
     ///apply a Matrix to a specified BasePair. you can specify an anchor 
     void applyLocal(const Matrix&,int posMov, int posAnchor = 0);
     ///apply a Matrix to all the BasePairs and reposition the DNA according to the anchor
     void applyGlobal(const Matrix&,int posAnchor);
+    ///apply a Matrix to the DNA as a rigidbody
+    void apply(const Matrix&);
     
     ///return the local Matrix of the specified BasePair (for the position i the Matrix to go from i-1 to i)
     Matrix getLocalMatrix(int pos)const;

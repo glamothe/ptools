@@ -464,11 +464,26 @@ void DNA::applyGlobal(const Movement& mov ,int posAnchor)
 }
 
 
-void DNA::applyGlobal(const Matrix& m ,int posAnchor){
+void DNA::applyGlobal(const Matrix& m ,int posAnchor)
+{
   applyLocal ( Movement(m), posAnchor);
 }
 
+void DNA::apply(const Movement& mov)
+{
+    DNA::apply(mov.getMatrix());
+}
 
+void DNA::apply(const Matrix& m)
+{
+  unsigned int strandSize  = strand.size();
+  for (unsigned int i=0; i <strandSize; i++)
+  {
+    Rigidbody rb = strand[i].getRigidBody();
+    rb.ApplyMatrix(m);
+    strand[i].setRigidBody(rb);
+  }
+}
 void DNA::relocate(const BasePair& anchor,int posAnchor)
 {
   Movement callback = Movement(superpose(anchor.getRigidBody(),strand[posAnchor].getRigidBody(),0).matrix);
