@@ -9,7 +9,7 @@ compile_mode = "release"
 #users may overide these settings if SCons cannot automatically locate some library:
 
 #PATH to g77 or gfortran:
-user_path_fortrancompiler = "/opt/local/bin/"
+user_path_fortrancompiler = ""
 
 #libg2c.a (or .so) or libgfortran.a PATH:
 user_path_libg2cgfortran = ""
