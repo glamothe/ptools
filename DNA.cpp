@@ -488,19 +488,44 @@ void DNA::apply(const Matrix& m)
 }
 
 
+double DNA::Rmsd(const DNA& model)const
+{
 
-def rmsd(model, dna):
-	rigmodel = model.createRigid()
-	rigdna = dna.createRigid()
-	total = 0.0
-	for i in xrange(0, rigmodel.Size()):
-		atom1=rigmodel.CopyAtom(i)
-		atom2=rigdna.CopyAtom(i);
+    Rigidbody rigmodel = model.createRigid();
+    Rigidbody rigdna = this->createRigid();
+
+    uint dnaSize = rigdna.Size();
+    if (rigmodel.Size() != dnaSize)
+    {
+        std::cerr << "Error: trying to superpose two DNA of different sizes" << std::endl ;
+        throw std::invalid_argument("RmsdSizesDiffers");
+    }
+
+
+    double total = 0.0;
+
+    for (uint i = 0; i<dnaSize;i++){
+                Atom atom1=rigmodel.CopyAtom(i);
+		Atom atom2=rigdna.CopyAtom(i);
 
 		total+=Dist2(atom1,atom2);
+    }
 
+    return sqrt(total/(dbl) dnaSize) ;
 
-	return sqrt(total/(float(rigmodel.Size()))) ;
+}
+//def rmsd(model, dna):
+//	rigmodel = model.createRigid()
+//	rigdna = dna.createRigid()
+//	total = 0.0
+//	for i in xrange(0, rigmodel.Size()):
+//		atom1=rigmodel.CopyAtom(i)
+//		atom2=rigdna.CopyAtom(i);
+//
+//		total+=Dist2(atom1,atom2);
+//
+//
+//	return sqrt(total/(float(rigmodel.Size()))) ;
 
 
 
