@@ -427,12 +427,12 @@ void DNA::applylocalMov(const Movement& mov,int pos)
 void DNA::applyglobalMov(const Movement& mov)
 {
   Matrix nextlocal;
-  if (strand.size()>1){
+  unsigned int strandSize  = strand.size();
+  if (strandSize>1){
     nextlocal = getLocalMatrix(1);
   }
   strand[0].apply(mov);
 
-  unsigned int strandSize  = strand.size();
   for (unsigned int i=1; i <strandSize; i++)
   {
     nextlocal = reconstruct(i,nextlocal);
@@ -469,10 +469,12 @@ void DNA::applyGlobal(const Matrix& m ,int posAnchor)
   applyLocal ( Movement(m), posAnchor);
 }
 
+
 void DNA::apply(const Movement& mov)
 {
     DNA::apply(mov.getMatrix());
 }
+
 
 void DNA::apply(const Matrix& m)
 {
@@ -484,17 +486,27 @@ void DNA::apply(const Matrix& m)
     strand[i].setRigidBody(rb);
   }
 }
+
+
+
+def rmsd(model, dna):
+	rigmodel = model.createRigid()
+	rigdna = dna.createRigid()
+	total = 0.0
+	for i in xrange(0, rigmodel.Size()):
+		atom1=rigmodel.CopyAtom(i)
+		atom2=rigdna.CopyAtom(i);
+
+		total+=Dist2(atom1,atom2);
+
+
+	return sqrt(total/(float(rigmodel.Size()))) ;
+
+
+
 void DNA::relocate(const BasePair& anchor,int posAnchor)
 {
-  Movement callback = Movement(superpose(anchor.getRigidBody(),strand[posAnchor].getRigidBody(),0).matrix);
-
-  unsigned int strandSize  = strand.size();
-  for (unsigned int i=0; i <strandSize; i++)
-  {
-    Rigidbody rb = strand[i].getRigidBody();
-    rb.ApplyMatrix(callback.getMatrix());
-    strand[i].setRigidBody(rb);
-  }
+  apply(superpose(anchor.getRigidBody(),strand[posAnchor].getRigidBody(),0).matrix);
 }
 
 

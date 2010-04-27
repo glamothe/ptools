@@ -69,6 +69,9 @@ namespace PTools
           if (i>=this->size()) throw std::range_error("DNA: array out of bounds");
           return strand[i];};
 
+    /// return the RMSD between two DNA (not aligning them and assuming they are comparable)
+    double Rmsd(const DNA&)const;
+
     private:
 
     //attribut
