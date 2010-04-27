@@ -5,6 +5,8 @@
 #include <vector>  
 #include <Movement.h>
 
+#include "rigidbody.h"
+
 /*! \brief Rigidbody use by the DNA object
 *
 */
@@ -64,9 +66,9 @@ namespace PTools
     unsigned int size() const;
 
     /// return the i-th Atom of the basePair
-    BasePair operator[] (uint i) const {
+    Atom operator[] (uint i) const {
           if (i>=this->size()) throw std::range_error("DNA: array out of bounds");
-          return rigbody[i];};
+          return rigbody.CopyAtom(i);};
 
     private:
     //atribut

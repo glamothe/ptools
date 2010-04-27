@@ -25,7 +25,10 @@ namespace PTools
     ///return the number of BasePair
     unsigned int size() const;
     
-    ///return a string containing the atoms data following the PDB format 
+    ///return the number of Atom
+    unsigned int atomSize() const;
+
+    ///return a string containing the atoms data following the PDB format
     std::string printPDB() const;
 
     ///return a string containing the atoms data following the PDB format

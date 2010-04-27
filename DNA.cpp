@@ -276,6 +276,17 @@ unsigned int DNA::size()const
   return strand.size();
 }
 
+unsigned int DNA::atomSize() const
+{
+    uint tot=0;
+    uint strandSize= this->size();
+    for (uint i=0; i<strandSize;i++)
+    {
+        tot+=strand[i].size();
+    }
+    return tot;
+}
+
 
 string DNA::printPDB()const
 {
@@ -491,27 +502,50 @@ void DNA::apply(const Matrix& m)
 double DNA::Rmsd(const DNA& model)const
 {
 
-    Rigidbody rigmodel = model.createRigid();
-    Rigidbody rigdna = this->createRigid();
+//    Rigidbody rigmodel = model.createRigid();
+//    Rigidbody rigdna = this->createRigid();
+//
+//    uint dnaSize = rigdna.Size();
+//    if (rigmodel.Size() != dnaSize)
+//    {
+//        std::cerr << "Error: trying to superpose two DNA of different sizes" << std::endl ;
+//        throw std::invalid_argument("RmsdSizesDiffers");
+//    }
+//
+//
+//    double total = 0.0;
+//
+//    for (uint i = 0; i<dnaSize;i++){
+//                Atom atom1=rigmodel.CopyAtom(i);
+//		Atom atom2=rigdna.CopyAtom(i);
+//
+//		total+=Dist2(atom1,atom2);
+//    }
+//
+//    return sqrt(total/(dbl) dnaSize) ;
 
-    uint dnaSize = rigdna.Size();
-    if (rigmodel.Size() != dnaSize)
+
+
+    double aSize=atomSize();
+    if (model.atomSize() != aSize)
     {
         std::cerr << "Error: trying to superpose two DNA of different sizes" << std::endl ;
         throw std::invalid_argument("RmsdSizesDiffers");
     }
 
-
     double total = 0.0;
-
-    for (uint i = 0; i<dnaSize;i++){
-                Atom atom1=rigmodel.CopyAtom(i);
-		Atom atom2=rigdna.CopyAtom(i);
+    uint strandSize = size();
+    for (uint i = 0; i<strandSize;i++){
+        uint pbSize= strand[i].size();
+        for (uint j =0; j<pbSize;j++)
+        {
+                Atom atom1=model[i][j];
+		Atom atom2=strand[i][j];
 
 		total+=Dist2(atom1,atom2);
+        }
     }
-
-    return sqrt(total/(dbl) dnaSize) ;
+    return sqrt(total/(dbl) aSize) ;
 
 }
 //def rmsd(model, dna):
