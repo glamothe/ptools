@@ -59,6 +59,15 @@ namespace PTools
 
     void setType(std::string type);
     
+    
+    ///return the number of Atom
+    unsigned int size() const;
+
+    /// return the i-th Atom of the basePair
+    BasePair operator[] (uint i) const {
+          if (i>=this->size()) throw std::range_error("DNA: array out of bounds");
+          return rigbody[i];};
+
     private:
     //atribut
     Rigidbody rigbody;

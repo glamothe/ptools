@@ -68,6 +68,9 @@ void BasePair::apply(const Matrix& m)
   apply(Movement (m));
 }
 
+unsigned int BasePair::size() const{
+    return rigbody.Size();
+}
 
 Matrix BasePair::getMatrix() const
 {
