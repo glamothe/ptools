@@ -26,6 +26,7 @@ namespace PTools
         Rigidbody buildAxisCentered(const Rigidbody& bp)const;
         Rigidbody buildAxisCGGeometricCenter(const Rigidbody& bp)const;
         Rigidbody buildAxisAAGeometricCenter(const Rigidbody& bp)const;
+
         void MeasureParameters(const Rigidbody& oxyz1, const Rigidbody& oxyz2);
 
         Movement getMov() const;
