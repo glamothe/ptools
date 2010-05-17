@@ -20,7 +20,7 @@ private:
 
 
     //private methods
-
+    Rigidbody axisPyrimidines(const Rigidbody& pyr, const Coord3D& centerBase1, const Coord3D& centerBase2)const;
     
 
 public:
