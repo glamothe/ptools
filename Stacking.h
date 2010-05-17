@@ -21,11 +21,12 @@ private:
 
     //private methods
 
-
+    
 
 public:
     Stacking();
     ~Stacking();
+    Rigidbody axis(const Rigidbody& bp1, const Rigidbody& bp2)const;
 };
 
 }
