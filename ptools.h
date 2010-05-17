@@ -28,5 +28,6 @@
 #include "DNA.h"
 #include "Movement.h"
 #include "Parameter.h"
+#include "Stacking.h"
 
 #endif // PTOOLS_H

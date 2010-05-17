@@ -159,6 +159,7 @@ ADNBrigitte = mb.class_("BrigitteDNA").include()
 BDNAjumna = mb.class_("BDNAjumna").include()
 Parameter = mb.class_("Parameter").include()
 
+Stacking = mb.class_("Stacking").include()
 try:
     surreal = mb.class_("surreal")
     surreal.include()

@@ -47,6 +47,7 @@ COMMON_CPP = Split ("""atom.cpp
 		       Movement.cpp
 		       DNA.cpp
                        Parameter.cpp
+                       Stacking.cpp
                     """)
 
 
