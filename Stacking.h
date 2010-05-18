@@ -20,8 +20,8 @@ private:
 
 
     //private methods
-    Rigidbody axisPyrimidines(const Rigidbody& pyr, const Coord3D& centerBase1, const Coord3D& centerBase2)const;
-    
+    Rigidbody axisPyrimidine(const Rigidbody& pyr, const Coord3D& centerBase1, const Coord3D& centerBase2)const;
+    Rigidbody axisPurine(const Rigidbody& pur, const Coord3D& center )const;
 
 public:
     Stacking();
