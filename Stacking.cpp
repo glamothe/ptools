@@ -90,7 +90,7 @@ Rigidbody Stacking::axis(const Rigidbody& bp1, const Rigidbody& bp2)const
        axis = axisPyrimidine( pyrBp1, pyrBp1center, purBp2center );
     }
 
-     axis = axis + axisPurine(purBp1,purBp1center);
+    axis = axis + axisPurine(purBp1,purBp1center);
 
    return axis;
 
@@ -107,12 +107,15 @@ Rigidbody Stacking::axisPyrimidine(const Rigidbody& pyr, const Coord3D& centerBa
     double proj=ScalProd(vectorBp1Bp2,vectorBp1pyr2);
 
     //2 project the center of the second base to the correct place.
-    Coord3D topOfAxis = centerBase2 + vectorBp1pyr2 * proj;
+    Coord3D N = centerBase2 + vectorBp1pyr2 * proj;
 
-    //3 build the Axis for Pyrimidines
+    //3 normalise
+    Coord3D topOfAxis = (N - centerBase1).Normalize();
+    
+    //4 build the Axis for Pyrimidines
     Rigidbody pyrAxis;
     pyrAxis.AddAtom(Atomproperty(),centerBase1);
-    pyrAxis.AddAtom(Atomproperty(),topOfAxis);
+    pyrAxis.AddAtom(Atomproperty(),centerBase1+topOfAxis);
 
 
     return pyrAxis;
@@ -143,6 +146,18 @@ Rigidbody Stacking::axisPurine(const Rigidbody& pur, const Coord3D& center)const
     purAxis.AddAtom(Atomproperty(),center+topOfAxis);
 
     return purAxis;
+}
+
+bool Stacking::isStacked(const Rigidbody& axe1, const Rigidbody& axe2,double angleThreshold,double overlapThreshold)const
+{
+    Coord3D vector1 =axe1.GetCoords(1)-axe1.GetCoords(0);
+    Coord3D vector2 =axe2.GetCoords(1)-axe2.GetCoords(0);
+    Coord3D vectorD =(axe2.GetCoords(0)-axe1.GetCoords(0)).Normalize();
+    cout <<acos(ScalProd(vector1,vector2)) <<endl;
+    cout <<acos(ScalProd(vector1,vector2)) <<endl;
+
+    return ((acos(ScalProd(vector1,vector2))<angleThreshold) && (acos(ScalProd(vector1,vectorD)) < overlapThreshold));
+
 }
 
 }

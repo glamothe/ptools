@@ -27,6 +27,7 @@ public:
     Stacking();
     ~Stacking();
     Rigidbody axis(const Rigidbody& bp1, const Rigidbody& bp2)const;
+    bool isStacked(const Rigidbody& axe1, const Rigidbody& axe2,double angleThreshold,double overlapThreshold)const;
 };
 
 }
