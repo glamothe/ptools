@@ -16,10 +16,16 @@
 
 
 
-namespace PTools{
+namespace PTools {
 
 dbl Rmsd(const AtomSelection& atsel1, const AtomSelection& atsel2)
 {
+    if (atsel1.Size() == 0  ||  atsel2.Size() == 0)
+    {
+        std::cerr << "Error: Rmsd calculation with empty rigidbody " << std::endl ;
+        throw std::invalid_argument("EmptyRigidbody");
+    }
+
     if (atsel1.Size() != atsel2.Size())
     {
         std::cerr << "Error: trying to superpose two rigidbody of different sizes" << std::endl ;
