@@ -3,7 +3,7 @@
 from ptools import *
 import sys
 import os
-import time
+#import time
 import datetime
 import math
 import string
@@ -168,70 +168,80 @@ def rigidXstd_vector(rigid, mat_std):
 
 # check if a required file is found
 def checkFile(name, comment):
-	flag = os.path.exists(name)
-	if  not flag :
-		print "ERROR: file %s is missing" %(name)
-		print "ERROR: %s" %(comment)
-		exit(2)	
+    flag = os.path.exists(name)
+    if not flag :
+        msg =  "ERROR: file %s not found\n" %(name)
+        if comment != "":
+            msg += "ERROR: %s" %(comment)
+        sys.exit(msg)	
 
 
 ###########################
 ##  MAIN ATTRACT PROGRAM  #
 ###########################
 from optparse import OptionParser
-parser = OptionParser()
-parser.add_option("-s", "--single", action="store_true", dest="single",default=False,help="single minimization mode")
+parser = OptionParser(usage="%prog -r receptor_file -l ligand_file [-h] [-s] [-t] [--ref]")
+parser.add_option("-r", "--receptor", action="store", type="string", dest="receptor_name", help="name of the receptor file")
+parser.add_option("-l", "--ligand", action="store", type="string", dest="ligand_name", help="name of the ligand file")
+parser.add_option("-s", "--single", action="store_true", dest="single", default=False, help="single minimization mode")
 parser.add_option("--ref", action="store", type="string", dest="reffile", help="reference ligand for rmsd" )
 parser.add_option("-t", "--translation", action="store", type="int", dest="transnb", help="translation number (distributed mode) starting from 0 for the first one!")
 (options, args) = parser.parse_args()
 
-receptor_name=args[0]
-ligand_name=args[1]
+
+#receptor_name=args[0]
+#ligand_name=args[1]
 
 print """
 **********************************************************************
+**                                                                  **
 **                ATTRACT  (Python edition)                         **
-**                version: this is a development version,           **
-**                         see below for details                    **
+**                based on the PTools library                       **
+**                                                                  **
 **********************************************************************
-Attract.py
-using PTools revision %s, from branch %s, unique id %s
+PTools revision %s
+from branch %s
+unique id %s
 """%(Version().revstr, Version().branchnick, Version().revid)
 
-
-
 import locale
-import datetime
-
 
 #locale.setlocale(locale.LC_ALL, 'fr_FR')
-now = datetime.datetime.now()
-print now,"(",now.strftime("%A %B %d %Y, %H:%M"),")"
+time_start = datetime.datetime.now()
+#print now,"(",now.strftime("%A %B %d %Y, %H:%M"),")"
+print "Start time:", time_start
 
 #==========================
 # check required files
 #==========================
 # receptor
-checkFile(receptor_name, "A receptor file is needed.")
+if not options.receptor_name:
+    parser.print_help()
+    parser.error("option -r is mandatory")
+checkFile(options.receptor_name, "")
 # ligand
-checkFile(ligand_name, "A ligand file is needed.")
+if not options.ligand_name:
+    parser.print_help()
+    parser.error("option -l is mandatory")
+checkFile(options.ligand_name, "")
 # attract.inp
-checkFile("attract.inp", "A parameters file is needed.")
+checkFile("attract.inp", "parameters file is required.")
 # aminon.par
-checkFile("aminon.par", "A forcefield file is needed.")
+checkFile("aminon.par", "forcefield file is required.")
 
 #==========================
 # read parameter file
 #==========================
 
+print "Reading parameters file: attract.inp"
 (nbminim,lignames,minimlist,rstk) = readParams("attract.inp")
 print "rstk = ",rstk
-rec=Rigidbody(receptor_name)
-lig=Rigidbody(ligand_name)
+rec=Rigidbody(options.receptor_name)
+lig=Rigidbody(options.ligand_name)
 rec=AttractRigidbody(rec)
 lig=AttractRigidbody(lig)
-print "Receptor (fixed) %s  has %d particules" %(receptor_name,rec.Size())
-print "Ligand (mobile) %s  has %d particules" %(ligand_name,lig.Size())
+print "Reading receptor (fixed): %s with %d particules" %( options.receptor_name, rec.Size() )
+print "Reading  ligand (mobile): %s with %d particules" %( options.ligand_name,   lig.Size() )
 
 if (options.single and options.transnb):
     parser.error("options -s and -t are mutually exclusive")
@@ -242,28 +252,28 @@ if (options.single):
     ftraj = open(trjname, "w")
 
 if (options.reffile):
-    print "using reference file: %s"%options.reffile
+    checkFile(options.reffile, "")
     ref=Rigidbody(options.reffile)
+    print "Reading reference file: %s with %d particules" %( options.reffile, ref.Size() )
     refca = ref.CA()
     if refca.Size() == 0:  #No C alpha atom, ligand is probably a dna
         Rmsd_alias = Rmsd
-        print "No Calpha atom found for ligand (dna ?), I will calculate rmsd on all grains"
+        print "No Calpha atom found for ligand (DNA?). RMSD will be calculated on all grains"
     else:
         Rmsd_alias = rmsdca
-
 
 if (not options.single):
     #systematic docking with default translations and rotations
     # check for rotation.dat and translation.dat
-    checkFile("rotation.dat", "A rotation file is needed.")
-    checkFile("translation.dat", "A translation file is needed.\nFormer users may rename translat.dat into translation.dat.")
+    checkFile("rotation.dat", "rotation file is required.")
+    checkFile("translation.dat", "translation file is required.\nFormer users can rename translat.dat into translation.dat.")
     translations=Translation()
     rotations=Rotation()
 else: #(single mode)
     #creates dummy translation and rotation
     translations=[[1,lig.FindCenter()]]
     rotations=[(0,0,0)]
-    print "Single mode"
+    print "Single mode simulation"
 
 
 
@@ -272,8 +282,8 @@ printFiles=True
 transnb=0
 if (options.transnb!=None):
     # check for rotation.dat and translation.dat
-    checkFile("rotation.dat", "A rotation file is needed.")
-    checkFile("translation.dat", "A translation file is needed.\nFormer users may rename translat.dat into translation.dat.")
+    checkFile("rotation.dat", "rotation file is required.")
+    checkFile("translation.dat", "translation file is required.\nFormer users may rename translat.dat into translation.dat.")
     trans=Rigidbody("translation.dat")
     co=trans.GetCoords(options.transnb)
     translations=[[options.transnb+1,co]]
@@ -356,8 +366,8 @@ for trans in translations:
 
 #output compressed ligand and receptor:
 if ( not options.single and printFiles==True): 
-    print compress_file(receptor_name)
-    print compress_file(ligand_name)
+    print compress_file(options.receptor_name)
+    print compress_file(options.ligand_name)
     print compress_file("aminon.par")
     print compress_file("translation.dat")
     print compress_file("rotation.dat")
@@ -368,8 +378,9 @@ if (options.single):
     ftraj.close()
     print "Saved all minimization variables (translations/rotations) in %s" %(trjname)
 
-
-now = datetime.datetime.now()
-print "Finished at: ",now.strftime("%A %B %d %Y, %H:%M")
-
+# print end and elapsed time
+time_end = datetime.datetime.now()
+#print "Finished at: ",now.strftime("%A %B %d %Y, %H:%M")
+print "End time:", time_end
+print "Elapsed time:", time_end - time_start
 
