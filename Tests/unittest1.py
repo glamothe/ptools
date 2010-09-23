@@ -77,6 +77,12 @@ class TestBasicMoves(unittest.TestCase):
         self.assertEqual(Rmsd(self.rigid1, self.rigid1), 0.0)
         self.rigid1.Translate(Coord3D(4,0,0))
         self.assertEqual(Rmsd(rigtmp, self.rigid1), 4)
+        
+    def testErrorsRmsd(self):
+	rigid1 = Rigidbody()
+	rigid2 = Rigidbody()
+	#Rmsd(rigid1, rigid2)
+	self.assertRaises(ValueError, Rmsd, rigid1, rigid2)
 
     def testTranslation1(self):
         CoM1 = self.rigid1.FindCenter()
