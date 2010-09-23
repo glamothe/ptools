@@ -6,6 +6,10 @@
 \usepackage{graphicx} % figures
 \usepackage{lineno}
 
+\usepackage{hyperref}
+\newcommand{\simplelink}[1]{\htmladdnormallink{#1}{#1}}
+
+
 \begin{document}
 
 \setlength{\parindent}{0pt}
@@ -99,7 +103,8 @@ See \ref{pyplusplus} for installing necessary tools for building python bindings
 \textbf{Note}: some Debian Ubuntu systems have an old version of gccxml that doesn't work well for binding this
 library. If bindings generation or unit tests fail, you should consider installing gccxml manually (see \ref{gccxml})
 
-gccxml versions $\le 0.6$ crash during bindings generation. gccxml v. $0.9$ from Debian Lenny contains a bug that prevents all Python unit tests to work (test 16 fails).
+gccxml version $\le 0.6$ crash during bindings generation. gccxml v. $0.9$ from Debian Lenny contains a bug that prevents some Python unit tests to work (test 16 fails).
+gccxml package on Debian squeeze (future stable) looks fine (at least for version 0.9.0+cvs20100501-2).
 
 
 \subsubsection{On Fedora systems}
@@ -149,21 +154,20 @@ The \verb@-DC_MAKE_INSTALL_PREFIX@ option can be left off if you want to use \ve
 
 
 \subsubsection{Pyplusplus and Pygccxml: \label{pyplusplus}}
-The homepage of {\tt pyplusplus} and {\tt pygccxml} projects is 
-{\tt http://www.language-binding.net/pyplusplus/pyplusplus.html}. From the
-download section \footnote{\tt https://sourceforge.net/project/showfiles.php?group\_id=118209}, 
-get the files {\tt pygccxml-0.9.5.zip} and {\tt Py++-0.9.5.zip}.
+The homepage of {\tt pyplusplus} and {\tt pygccxml} projects is\\ \simplelink{http://www.language-binding.net/pygccxml/download.html}. From the
+download section  \simplelink{http://sourceforge.net/projects/pygccxml/files/},
+get the files {\tt pygccxml-1.0.zip} and {\tt pyplusplus-1.0.0.zip}.
 
 \begin{verbatim}
-unzip pygccxml-0.9.5.zip
-cd pygccxml-0.9.5/
+unzip pygccxml-1.0.zip
+cd pygccxml-1.0/
 python setup.py build
 python setup.py install --prefix=$HOME/soft
 \end{verbatim}
 
 \begin{verbatim}
-unzip Py++-0.9.5.zip 
-cd Py++-0.9.5/
+unzip pyplusplus-1.0.0.zip
+cd Py++-1.0/
 python setup.py build
 python setup.py install --prefix=$HOME/soft
 \end{verbatim}
