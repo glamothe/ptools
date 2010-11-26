@@ -82,8 +82,8 @@ namespace PTools
           if (i>=this->size()) throw std::range_error("DNA: array out of bounds");
           return strand[i];};
 
-    /// add the basePairs of a DNA to the strand of this DNA
-    
+    /// add the basePairs of a DNA to the strand of this DNA. the specified movement do the liason betwen the two strand
+    void add(const DNA & d, const Movement & mov = BDNAjumna());
     /// add a basepair at the end of the strand of this DNA
     void add(BasePair bp, const Movement & mov = BDNAjumna());
 
