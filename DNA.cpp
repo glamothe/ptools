@@ -525,7 +525,10 @@ double DNA::Rmsd(const DNA& model)const
 
 }
 
-
+void DNA::changeBasePair(const BasePair& bp, int pos)
+{
+    strand[pos]=bp;
+}
 
 void DNA::relocate(const BasePair& anchor,int posAnchor)
 {

@@ -71,6 +71,10 @@ namespace PTools
     BasePair operator[] (uint i) const {
           if (i>=this->size()) throw std::range_error("DNA: array out of bounds");
           return strand[i];};
+    
+    //replace the base pair at the indicated position by the new base pair
+    void changeBasePair(const BasePair& bp, int pos);
+
 
     /// return the RMSD between two DNA (not aligning them and assuming they are comparable)
     double Rmsd(const DNA&)const;

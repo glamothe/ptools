@@ -159,6 +159,8 @@ ADNBrigitte = mb.class_("BrigitteDNA").include()
 BDNAjumna = mb.class_("BDNAjumna").include()
 Parameter = mb.class_("Parameter").include()
 
+inverseMatrix44 = mb.free_function("inverseMatrix44").include()
+
 Stacking = mb.class_("Stacking").include()
 try:
     surreal = mb.class_("surreal")

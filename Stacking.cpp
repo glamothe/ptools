@@ -91,8 +91,55 @@ Rigidbody Stacking::axis(const Rigidbody& bp1, const Rigidbody& bp2)const
     }
 
     axis = axis + axisPurine(purBp1,purBp1center);
+ 
 
-   return axis;
+
+    return axis;
+
+}
+
+Rigidbody Stacking::axis(const Rigidbody& basePair)const
+{
+    //1 determine if the considered basePair is a G-C or a A-T
+    bool basePairIsGC = basePair.SelectAtomType("GG1").Size()>0;
+
+    //2 build rigidbody for pyrimidine
+
+    Rigidbody pyrBp;
+    if (basePairIsGC)
+    {
+        pyrBp = basePair.SelectAtomType("GC1").CreateRigid() + basePair.SelectAtomType("GC2").CreateRigid();
+    }
+    else
+    {
+        pyrBp = basePair.SelectAtomType("GT1").CreateRigid() + basePair.SelectAtomType("GT2").CreateRigid();
+    }
+
+    //3 build rigidbody for purine
+    Rigidbody purBp;
+     if (basePairIsGC)
+    {
+        purBp = basePair.SelectAtomType("GG1").CreateRigid() + basePair.SelectAtomType("GG2").CreateRigid() + basePair.SelectAtomType("GG3").CreateRigid();
+    }
+    else
+    {
+        purBp = basePair.SelectAtomType("GA1").CreateRigid() + basePair.SelectAtomType("GA2").CreateRigid() + basePair.SelectAtomType("GA3").CreateRigid();
+    }
+
+
+
+    //4 compute center
+    Coord3D pyrBp1center = pyrBp.FindCenter() ;
+    Coord3D purBp1center = purBp.FindCenter() ;
+
+    Rigidbody axis;
+
+
+    axis = axis + axisPurine(purBp,purBp1center);
+    axis = axis + axisPyrimidineCopyPurine(pyrBp1center, axis);
+
+
+    return axis;
 
 }
 
@@ -121,6 +168,16 @@ Rigidbody Stacking::axisPyrimidine(const Rigidbody& pyr, const Coord3D& centerBa
     return pyrAxis;
 }
 
+Rigidbody Stacking::axisPyrimidineCopyPurine( const Coord3D& centerBase1, const Rigidbody& axisPurine )const
+{
+    Coord3D vectorPlanPur = axisPurine.GetCoords(1)-axisPurine.GetCoords(0);
+    
+    Rigidbody pyrAxis;
+    pyrAxis.AddAtom(Atomproperty(),centerBase1);
+    pyrAxis.AddAtom(Atomproperty(),centerBase1+vectorPlanPur);
+    return pyrAxis;
+}
+
 Rigidbody Stacking::axisPurine(const Rigidbody& pur, const Coord3D& center)const
 {
     //1 define two vector of the plan (check the chain to assure a clockwise order)
@@ -139,7 +196,7 @@ Rigidbody Stacking::axisPurine(const Rigidbody& pur, const Coord3D& center)const
     //2 find orthogonal vector to defined plan
     Coord3D topOfAxis;
     VectProd(vectorPlan1.Normalize(), vectorPlan2.Normalize(), topOfAxis);
-
+    topOfAxis = topOfAxis.Normalize();
     //3 build the Axis for Purine
     Rigidbody purAxis;
     purAxis.AddAtom(Atomproperty(),center);
@@ -153,11 +210,13 @@ bool Stacking::isStacked(const Rigidbody& axe1, const Rigidbody& axe2,double ang
     Coord3D vector1 =axe1.GetCoords(1)-axe1.GetCoords(0);
     Coord3D vector2 =axe2.GetCoords(1)-axe2.GetCoords(0);
     Coord3D vectorD =(axe2.GetCoords(0)-axe1.GetCoords(0)).Normalize();
-    cout <<acos(ScalProd(vector1,vector2)) <<endl;
-    cout <<acos(ScalProd(vector1,vector2)) <<endl;
+//    cerr <<acos(ScalProd(vector1,vector2)) <<endl;
+//    cerr <<acos(ScalProd(vector1,vectorD)) <<endl;
 
     return ((acos(ScalProd(vector1,vector2))<angleThreshold) && (acos(ScalProd(vector1,vectorD)) < overlapThreshold));
 
 }
+
+
 
 }
