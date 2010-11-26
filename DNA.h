@@ -16,7 +16,7 @@ namespace PTools
     
     public:
     ///initialize a new object with a sequence and a database of pdb to pick from. an initial movement for the construction of the dna can be precised. 
-    DNA( std::string , std::string , const Movement & mov = BDNA());
+    DNA( std::string , std::string , const Movement & mov = BDNAjumna());
     ///initialize a dna from another dna.
     DNA( const DNA& model );
     ~DNA();
@@ -67,10 +67,6 @@ namespace PTools
     ///return a Rigidbody of the strand
     Rigidbody createRigidOfStrand(std::string chain)const;
 
-    /// return the i-th BasePair of the strand
-    BasePair operator[] (uint i) const {
-          if (i>=this->size()) throw std::range_error("DNA: array out of bounds");
-          return strand[i];};
     
     //replace the base pair at the indicated position by the new base pair
     void changeBasePair(const BasePair& bp, int pos);
@@ -79,6 +75,21 @@ namespace PTools
     /// return the RMSD between two DNA (not aligning them and assuming they are comparable)
     double Rmsd(const DNA&)const;
 
+    ///------edition functions------
+
+    /// return the i-th BasePair of the strand
+    BasePair operator[] (uint i) const {
+          if (i>=this->size()) throw std::range_error("DNA: array out of bounds");
+          return strand[i];};
+
+    /// add the basePairs of a DNA to the strand of this DNA
+    
+    /// add a basepair at the end of the strand of this DNA
+    void add(BasePair bp, const Movement & mov = BDNAjumna());
+
+    ///return the specified subDNA
+//    DNA subDNA(int start,int end)const;
+    
     private:
 
     //attribut
@@ -131,6 +142,7 @@ namespace PTools
 
     ///return the matrix betwen a model base pair and the basepair on pos in strand
     Matrix getMatBetwenBasePair(const Rigidbody& modelOfBasePair,int pos)const;
+
 
   };
   

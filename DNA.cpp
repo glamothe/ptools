@@ -551,3 +551,17 @@ Matrix DNA::reconstruct(int pos, const Matrix& local)
   return nextlocal;
 }
 
+//DNA DNA::subDNA(int start,int end)const
+//{
+//    a
+//}
+
+/// add a basepair at the end of the strand of this DNA
+void DNA::add(BasePair bp, const Movement & mov){
+    Matrix oldmouvement = bp.getMatrix ();
+    bp.apply(inverseMatrix44 (oldmouvement));
+    bp.apply(matrixMultiply(strand[strand.size()-1].getMatrix(),mov.getMatrix()));
+
+    strand.push_back(bp);
+    this->changeFormat();
+}
