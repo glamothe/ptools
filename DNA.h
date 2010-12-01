@@ -19,6 +19,8 @@ namespace PTools
     DNA( std::string , std::string , const Movement & mov = BDNAjumna());
     ///initialize a dna from another dna.
     DNA( const DNA& model );
+    ///initialize a hollow dna (no BasePair in the strand)
+    DNA();
     ~DNA();
 
 
@@ -88,7 +90,7 @@ namespace PTools
     void add(BasePair bp, const Movement & mov = BDNAjumna());
 
     ///return the specified subDNA
-//    DNA subDNA(int start,int end)const;
+    DNA subDNA(int start,int end)const;
     
     private:
 

@@ -39,7 +39,10 @@ DNA::DNA( const DNA& model )
     }
     
 }
-
+DNA::DNA()
+{
+    
+}
 void DNA::buildDNAfromPDB (string dataBaseFile, string pdbFile )
 {
     
@@ -555,7 +558,7 @@ Matrix DNA::reconstruct(int pos, const Matrix& local)
 void DNA::add(const DNA & d, const Movement & mov)
 {
     this->add(d[0], mov);
-    for(int i =1; i< d.size();i++)
+    for(uint i =1; i< d.size();i++)
     {
         this->add(d[i],Movement(d.getLocalMatrix(i)));
     }
@@ -566,8 +569,21 @@ void DNA::add(BasePair bp, const Movement & mov)
 {
     Matrix oldmouvement = bp.getMatrix ();
     bp.apply(inverseMatrix44 (oldmouvement));
-    bp.apply(matrixMultiply(strand[strand.size()-1].getMatrix(),mov.getMatrix()));
-
+    if (strand.size()>0)
+    {
+        bp.apply(matrixMultiply(strand[strand.size()-1].getMatrix(),mov.getMatrix()));
+    }
+    else bp.apply(mov.getMatrix());
     strand.push_back(bp);
     this->changeFormat();
+}
+
+DNA DNA::subDNA(int start,int end)const
+{
+    DNA newdna = DNA();
+    for (int i=start;i<end;i++)
+    {
+        newdna.add(strand[i]);
+    }
+    return newdna;
 }
