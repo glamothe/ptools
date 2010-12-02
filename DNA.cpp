@@ -581,9 +581,27 @@ void DNA::add(BasePair bp, const Movement & mov)
 DNA DNA::subDNA(int start,int end)const
 {
     DNA newdna = DNA();
-    for (int i=start;i<end;i++)
+
+    newdna.add(strand[start],Movement(strand[start].getMatrix()));
+    for (int i=start+1;i<end;i++)
     {
-        newdna.add(strand[i]);
+        newdna.add(strand[i],Movement(this->getLocalMatrix(i)));
     }
     return newdna;
+}
+
+void DNA::replace(const DNA & d,int start)
+{
+    DNA preDNA = this->subDNA(0,start);
+    DNA postDNA =this->subDNA(start+d.size(),this->size());
+
+
+    strand.clear();
+
+
+    this->add(preDNA);
+    this->add(d);
+    this->add(postDNA);
+
+
 }

@@ -91,7 +91,9 @@ namespace PTools
 
     ///return the specified subDNA
     DNA subDNA(int start,int end)const;
-    
+
+    ///replace the basePair of this DNA by the basePair of a given DNA starting from a given position to the end of one of the DNAs
+    void replace(const DNA & d,int start);
     private:
 
     //attribut
