@@ -50,7 +50,6 @@ void DNA::buildDNAfromPDB (string dataBaseFile, string pdbFile )
 
     renumberModel ( model);
     string seq =getSeq(model);
-
     assembleSeq (dataBaseFile,seq);
     
     placeBasePairs(model);
@@ -87,27 +86,45 @@ void DNA::renumberModel (Rigidbody& model)const
 {
 
   unsigned int tempId=  model.GetAtomProperty(0).GetResidId();
-  string tempChain=model.GetAtomProperty(0).GetChainId();
+  string chain;
   unsigned int nbRes=0;
   unsigned int second = 0;
 
-  bool isjumna = isJumna(model);
+    unsigned int strandSize = 0;
+    if ((model.SelectAtomType("C1'").Size() / 2) > 0) {
+        strandSize = model.SelectAtomType("C1'").Size() / 2;
+    } else if ((model.SelectAtomType("C1*").Size() / 2) > 0) {
+        strandSize = model.SelectAtomType("C1*").Size() / 2;
+    } else if((model.SelectAtomType("GS1").Size() / 2) > 0) {
+        strandSize = model.SelectAtomType("GS1").Size() / 2;
+    }
 
+  bool isjumna = isJumna(model);
   unsigned int modelSize=model.Size();
+  chain = "A";
   for (unsigned int i =0; i < modelSize; i++ )
   {
     Atomproperty ap=model.GetAtomProperty(i);
     unsigned int Id = ap.GetResidId();
     if ( tempId != Id )
     {
-        if (isjumna && tempChain!= ap.GetChainId())
-        {
-            if (second == 0)
+        
+        if (nbRes >= strandSize -1){
+            chain = "B";
+            if (isjumna)
             {
-                second=nbRes*2 +1;
+                if (second == 0)
+                {
+                    second=nbRes*2 +1;
+                }
+                nbRes= second--;
+                tempId =Id;
             }
-            nbRes= second--;
-            tempId =Id;
+            else
+            {
+                tempId =Id;
+                nbRes++;
+            }
         }
         else
         {
@@ -116,6 +133,7 @@ void DNA::renumberModel (Rigidbody& model)const
         }
     }
     ap.SetResidId(nbRes);
+    ap.SetChainId(chain);
     model.SetAtomProperty(i,ap);
   }
 }
