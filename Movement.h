@@ -78,7 +78,7 @@ namespace PTools
 
   /*! \brief rotation around z (perpendicular axis)
   */
-  class Twist: public Movement 
+  class Twist: public Movement
   {
     public:
     Twist(double);

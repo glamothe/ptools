@@ -623,3 +623,13 @@ void DNA::replace(const DNA & d,int start)
 
 
 }
+
+void DNA::changeType(int pos, std::string type, std::string filename) {
+    Rigidbody dataBase = Rigidbody(filename);
+    Movement mov = Movement(strand[pos].getMatrix());
+
+    strand[pos] = BasePair(dataBase.SelectChainId(type).CreateRigid());
+    strand[pos].apply(mov);
+
+    changeFormat();
+}

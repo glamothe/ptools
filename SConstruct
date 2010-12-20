@@ -3,8 +3,8 @@ import os.path
 
 
 #compilation mode: please choose between debug and release
-compile_mode = "release"
-#compile_mode = "debug"
+#compile_mode = "release"
+compile_mode = "debug"
 
 #users may overide these settings if SCons cannot automatically locate some library:
 
@@ -178,6 +178,7 @@ if python24dir is None:
 	  PYTHON_CPPPATH=[python26dir]
 	  PYTHON_LIBS=["python2.6"]
    else:
+      print "Python 2.5 found!"
       PYTHON_CPPPATH=[python25dir]
       PYTHON_LIBS=["python2.5"]
 

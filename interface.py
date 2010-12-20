@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 from pyplusplus import module_builder
 

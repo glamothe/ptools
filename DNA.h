@@ -94,6 +94,13 @@ namespace PTools
 
     ///replace the basePair of this DNA by the basePair of a given DNA starting from a given position to the end of one of the DNAs
     void replace(const DNA & d,int start);
+
+    ///change the type of the base pair at position pos to the indicated type using the coresponding structure in the designed database of pdb.
+    void changeType(int pos, std::string type, std::string filename );
+
+
+
+
     private:
 
     //attribut
