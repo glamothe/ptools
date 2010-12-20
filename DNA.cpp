@@ -613,11 +613,11 @@ void DNA::replace(const DNA & d,int start)
     DNA preDNA = this->subDNA(0,start);
     DNA postDNA =this->subDNA(start+d.size(),this->size());
 
-
+    Movement initMov = Movement(strand[0].getMatrix());
     strand.clear();
 
 
-    this->add(preDNA);
+    this->add(preDNA,initMov);
     this->add(d);
     this->add(postDNA);
 
