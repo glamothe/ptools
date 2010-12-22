@@ -58,6 +58,9 @@ namespace PTools
     void applyGlobal(const Matrix&,int posAnchor);
     ///apply a Matrix to the DNA as a rigidbody
     void apply(const Matrix&);
+
+    ///apply a vector to the DNA as a rigidbody
+    void translate(Coord3D coord);
     
     ///return the local Matrix of the specified BasePair (for the position i the Matrix to go from i-1 to i)
     Matrix getLocalMatrix(int pos)const;

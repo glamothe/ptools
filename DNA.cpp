@@ -633,3 +633,15 @@ void DNA::changeType(int pos, std::string type, std::string filename) {
 
     changeFormat();
 }
+
+void DNA::translate(Coord3D coord)
+{
+  unsigned int strandSize  = strand.size();
+  for (unsigned int i=0; i <strandSize; i++)
+  {
+    Rigidbody rb = strand[i].getRigidBody();
+    rb.Translate(coord);
+    strand[i].setRigidBody(rb);
+  }
+
+}
