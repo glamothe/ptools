@@ -19,6 +19,8 @@ namespace PTools
     DNA( std::string , std::string , const Movement & mov = BDNAjumna());
     ///initialize a dna from another dna.
     DNA( const DNA& model );
+    ///initialize a dna from dna in a rigidbody
+    DNA( std::string dataBaseFile,Rigidbody model);
     ///initialize a hollow dna (no BasePair in the strand)
     DNA();
     ~DNA();
