@@ -42,11 +42,7 @@ DNA::DNA( const DNA& model )
 
 DNA::DNA( string dataBaseFile, Rigidbody model)
 {
-    renumberModel ( model);
-    string seq =getSeq(model);
-    assembleSeq (dataBaseFile,seq);
-
-    placeBasePairs(model);
+    buildDNAfromModel(dataBaseFile,model);
 }
 
 DNA::DNA()
@@ -57,14 +53,17 @@ void DNA::buildDNAfromPDB (string dataBaseFile, string pdbFile )
 {
     
     Rigidbody model = Rigidbody(pdbFile);
+    buildDNAfromModel(dataBaseFile,model);
+}
 
+void DNA::buildDNAfromModel(string dataBaseFile,Rigidbody model)
+{
     renumberModel ( model);
     string seq =getSeq(model);
     assembleSeq (dataBaseFile,seq);
-    
+
     placeBasePairs(model);
 }
-
 
 DNA::~DNA()
 {

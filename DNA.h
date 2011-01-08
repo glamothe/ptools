@@ -131,6 +131,7 @@ namespace PTools
 
     ///initialize a new object from a PDB file
     void buildDNAfromPDB ( std::string database, std::string pdbfile);
+    void buildDNAfromModel(std::string dataBaseFile,Rigidbody model  );
     ///check if a file have a pdb extension
     bool isPdbFile (std::string)const;
     ///return the sequence of a DNA model
