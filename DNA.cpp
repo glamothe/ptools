@@ -70,7 +70,6 @@ DNA::~DNA()
 
 }
 
-
 void DNA::placeBasePairs(const Rigidbody& model)
 {
     unsigned int DNASize  = (strand.size()*2)-1;

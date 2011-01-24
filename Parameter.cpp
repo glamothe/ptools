@@ -108,7 +108,7 @@ Rigidbody Parameter::buildAxisAAGeometricCenter(const Rigidbody& bp)const
     if (grain.Size() == 0) {
             grain = bp.SelectAtomType("GA1");
     }
-    assert(grain.Size() == 1);
+    assert(grain.Size() >= 1); //// /!\
     Coord3D pointX = grain[0].GetCoords();
     // Y
     Coord3D axeY =  (pointY - center).Normalize();
