@@ -59,17 +59,32 @@ Rigidbody Parameter::buildAxisCGGeometricCenter(const Rigidbody& bp)const
     // define atoms for base3D construction
     Coord3D center = selSugar.CreateRigid().FindCenter(); // middle of GS2
     Coord3D pointY = selSugar[0].GetCoords(); // point toward Y (first GS2)
-    AtomSelection grain = bp.SelectAtomType("GG1"); // GG1 or GA1
-    if (grain.Size() == 0) {
-            grain = bp.SelectAtomType("GA1");
+    AtomSelection grain1 = bp.SelectAtomType("GG1"); // GG1 or GA1
+    if (grain1.Size() == 0) {
+            grain1 = bp.SelectAtomType("GA1");
     }
-    assert(grain.Size() == 1);
-    Coord3D pointX = grain[0].GetCoords();
+    assert(grain1.Size() == 1);
+
+    AtomSelection grain2 = bp.SelectAtomType("GC1"); // GG1 or GA1
+    if (grain2.Size() == 0) {
+            grain2 = bp.SelectAtomType("GT1");
+    }
+    assert(grain2.Size() == 1);
+    Coord3D pointX1 = grain1[0].GetCoords();
+    Coord3D pointX2 = grain2[0].GetCoords();
     // Y
     Coord3D axeY =  (pointY - center).Normalize();
     // Z
+    Coord3D axeZ1;
+    VectProd(pointX1 - center, axeY, axeZ1);
+    axeZ1 = axeZ1.Normalize();
+
+    Coord3D axeZ2;
+    VectProd(pointX2 - center, axeY, axeZ2);
+    axeZ2 = axeZ2.Normalize();
+
     Coord3D axeZ;
-    VectProd(pointX - center, axeY, axeZ);
+    axeZ = axeZ1 + axeZ2;
     axeZ = axeZ.Normalize();
     // X
     Coord3D axeX;
@@ -108,14 +123,22 @@ Rigidbody Parameter::buildAxisAAGeometricCenter(const Rigidbody& bp)const
     if (grain.Size() == 0) {
             grain = bp.SelectAtomType("GA1");
     }
-    assert(grain.Size() >= 1); //// /!\
-    Coord3D pointX = grain[0].GetCoords();
+    assert(grain.Size() >= 1); /* /!\ */
     // Y
     Coord3D axeY =  (pointY - center).Normalize();
     // Z
+    Coord3D axeZ1;
+    VectProd(grain[0].GetCoords() - center, axeY, axeZ1);
+    axeZ1 = axeZ1.Normalize();
+    
+    Coord3D axeZ2;
+    VectProd(grain[1].GetCoords() - center, axeY, axeZ2);
+    axeZ2 = axeZ2.Normalize();
+
     Coord3D axeZ;
-    VectProd(pointX - center, axeY, axeZ);
+    axeZ = axeZ1 + axeZ2;
     axeZ = axeZ.Normalize();
+
     // X
     Coord3D axeX;
     VectProd(axeY, axeZ, axeX);
@@ -132,7 +155,7 @@ Rigidbody Parameter::buildAxisAAGeometricCenter(const Rigidbody& bp)const
     atp.SetType("OY");
     base3D.AddAtom(atp, origin + axeY);
     atp.SetType("OZ");
-    base3D.AddAtom(atp, origin + axeZ);
+    base3D.AddAtom(atp, origin + axeZ1);
     return base3D;
 
 }
