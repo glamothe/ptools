@@ -58,7 +58,8 @@ void DNA::buildDNAfromPDB (string dataBaseFile, string pdbFile )
 
 void DNA::buildDNAfromModel(string dataBaseFile,Rigidbody model)
 {
-    renumberModel ( model);
+    renumberModel (model);
+    model = delSingleBase (model);
     string seq =getSeq(model);
     assembleSeq (dataBaseFile,seq);
 
@@ -162,6 +163,33 @@ bool DNA::isJumna (const Rigidbody& model)const
     return (d1>d2);
 }
 
+Rigidbody DNA::delSingleBase (Rigidbody& model)const
+{
+    string seq =getSeq(model);////don't send the whole thing !!!!1!11
+    cout << seq << endl;
+    int l = seq.length();
+    string s1 = seq.substr(0,(l-1)/2.);
+    string s2 = seq.substr(((l-1)/2.)+1,l-1);
+    cout << s1<< " "<<s2 << endl;
+    if (isAlign(s1,s2)) return model;
+    else if (isAlign(s1,s2,1))
+    {
+       //something
+       return model;
+    }
+    else
+    {
+       //something
+       return model;
+    }
+    
+}
+
+bool DNA::isAlign(std::string s1,std::string s2,int shift)const
+{
+    return (s1.compare(shift,s1.length(), s2, 0,s2.length()-shift)!=0);
+}
+
 Rigidbody DNA::getModelOfBasePair(const Rigidbody& model,int posA,int posB)const
 {
         return (model.SelectResRange(posA, posA)|model.SelectResRange(posB, posB)).CreateRigid();
@@ -200,11 +228,12 @@ string DNA::getSeq ( const Rigidbody& model)const
     for ( unsigned int i=0 ; i< strandSize ; i++ )
     {
          string type = model.SelectResRange( i, i)[0].GetResidType();
-         
-         if      ( type.find ('A') != string::npos || type.find ('a') != string::npos) seq+='A';
-         else if ( type.find ('T') != string::npos || type.find ('t') != string::npos) seq+='T';
-         else if ( type.find ('G') != string::npos || type.find ('g') != string::npos) seq+='G';
+         // /!\ the order of the check is important! somme pdb use a CYT description for C, a wrong order could detect this as a T
+         if      ( type.find ('G') != string::npos || type.find ('g') != string::npos) seq+='G';
          else if ( type.find ('C') != string::npos || type.find ('c') != string::npos) seq+='C';
+         else if ( type.find ('A') != string::npos || type.find ('a') != string::npos) seq+='A';
+         else if ( type.find ('T') != string::npos || type.find ('t') != string::npos) seq+='T';
+
     }
     return seq;
 }

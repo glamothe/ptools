@@ -145,13 +145,18 @@ namespace PTools
     ///A 1 2 3
     ///B 6 5 4
     void renumberModel (Rigidbody& model)const;
+   
 
     // test if the model follow the jumna convention
     //A 1 2 3
     //B 4 5 6
     bool isJumna (const Rigidbody& model)const;
 
-
+    //detect and delete single base at extremeties of DNA
+    Rigidbody delSingleBase (Rigidbody& model)const;
+    //detect if two string are aligned. a shift can be precised
+    bool isAlign(std::string s1,std::string s2,int shift = 0)const;
+    
     ///place the base in the same position as the model
     void placeBasePairs(const Rigidbody& model);
 
