@@ -154,6 +154,10 @@ namespace PTools
 
     //detect and delete single base at extremeties of DNA
     Rigidbody delSingleBase (Rigidbody& model)const;
+
+    //use by delsinglebase
+    int calcPart (int solution [] , int pos1, int pos2, int l )const;
+
     //detect if two string are aligned. a shift can be precised
     bool isAlign(std::string s1,std::string s2,int shift = 0)const;
     

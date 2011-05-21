@@ -9,6 +9,7 @@
 #include <fstream>
 #include <limits>
 #include <limits.h>
+#include <numeric>
 #include "Parameter.h"
 
 using namespace std;
@@ -165,29 +166,217 @@ bool DNA::isJumna (const Rigidbody& model)const
 
 Rigidbody DNA::delSingleBase (Rigidbody& model)const
 {
-    string seq =getSeq(model);////don't send the whole thing !!!!1!11
-    cout << seq << endl;
-    int l = seq.length();
-    string s1 = seq.substr(0,(l-1)/2.);
-    string s2 = seq.substr(((l-1)/2.)+1,l-1);
-    cout << s1<< " "<<s2 << endl;
-    if (isAlign(s1,s2)) return model;
-    else if (isAlign(s1,s2,1))
+    string seq;
+    unsigned int strandSize;
+    Rigidbody newModel = Rigidbody();
+    
+    if ((model.SelectAtomType("C1'").Size()) >0)
     {
-       //something
-       return model;
+        strandSize = model.SelectAtomType("C1'").Size();
+    }else if ((model.SelectAtomType("C1*").Size()) >0)
+    {
+        strandSize = model.SelectAtomType("C1*").Size();
+    }else if ((model.SelectAtomType("GS1").Size()) >0)
+    {
+        strandSize = model.SelectAtomType("GS1").Size();
+    }else {return model;}
+    for ( unsigned int i=0 ; i< strandSize ; i++ )
+    {
+         string type = model.SelectResRange( i, i)[0].GetResidType();
+         // /!\ the order of the check is important! somme pdb use a CYT description for C, a wrong order could detect this as a T
+         if      ( type.find ('G') != string::npos || type.find ('g') != string::npos) seq+='G';
+         else if ( type.find ('C') != string::npos || type.find ('c') != string::npos) seq+='C';
+         else if ( type.find ('A') != string::npos || type.find ('a') != string::npos) seq+='A';
+         else if ( type.find ('T') != string::npos || type.find ('t') != string::npos) seq+='T';
+         else {
+            cerr <<"unrecognised resid type for base "<< i+1 <<" : "<<type<< endl;
+            exit(0);
+         };
+
+    }
+    int l = seq.length();
+    
+    int solution[l];
+    for (int i=0; i<l;i++){solution[i]=0;}
+
+    string rseq = seq;
+    for (int i = 0; i<l;i++){
+        if      (seq[l-i-1]=='A')  rseq[i]='T';
+        else if (seq[l-i-1]=='T')  rseq[i]='A';
+        else if (seq[l-i-1]=='G')  rseq[i]='C';
+        else if (seq[l-i-1]=='C')  rseq[i]='G';
+    }
+    //cout << seq << " " << rseq.length() << endl;
+    if (isAlign(seq,rseq))
+    {
+        return model;
     }
     else
     {
-       //something
-       return model;
+        //build matrix
+	int mat [l][l];
+        for (int i =0; i<l; i++){
+            for(int j =0; j<l; j++){
+                mat[i][j] = 0;
+            }
+        }
+	//fill it
+        for (int i=l-1; i>=0;i--)
+        {
+            for(int j =0; j<l; j++)
+            {
+                if ((i == j) || (i-1 == j)|| (i>j))
+                {
+                    mat[i][j] = 0;
+                }
+                else
+                {
+                    int one =0;
+                    if ((seq[i]=='A' && seq[j]=='T') || (seq[i]=='T' && seq[j]=='A') || (seq[i]=='G' && seq[j]=='C') || (seq[i]=='C' && seq[j]=='G'))
+                    {
+                         one = mat[i+1][j-1] +1;
+                    }
+                    int two = mat[i+1][j];
+		    int three=mat[i][j-1];
+		    mat[i][j] = max(max(one, two),three);
+                  
+                }
+            }
+        }
+	//go trougth it to find aligned part
+
+        int i = 0;
+        int j= l-1;
+        int current =mat[i][j];
+        while (current !=0)
+        {
+            int pair = mat[i+1][j-1];
+            if(pair < mat[i+1][j])
+            {
+                current=mat[i+1][j];
+                i++;
+            }
+            else if (pair< mat[i][j-1])
+            {
+                current=mat[i][j-1];
+		j--;
+            }
+            else
+            {
+                if ((seq[i]=='A' && seq[j]=='T') || (seq[i]=='T' && seq[j]=='A') || (seq[i]=='G' && seq[j]=='C') || (seq[i]=='C' && seq[j]=='G'))
+                {
+			solution[i]=1;
+			solution[j]=1;
+                }
+		i++;
+		j--;
+		current = pair;
+            }
+        }
+
+
+        //print matrix
+      /*  for (int i =0; i<l; i++){
+            for(int j =0; j<l; j++){
+                cout << mat[i][j];
+            }
+            cout << endl;
+        }
+    cout <<  endl;
+    cout <<  endl;
+    */
+    //check ambiguity
+    for (int i =0; i<l; i++)
+    {
+        if(solution[i]==0)
+        {
+            char c = seq[i];
+            int start = i;
+            int end = i;
+            //find the start
+            while (seq[start]==c) start--;
+            start++;
+            while (seq[end]==c) end++;
+            end--;
+            if ((start-end) == 0) continue;
+            int diff [end-start];
+            for (int j =start;j<end;j++)
+            {
+                diff[j-start]= calcPart (solution,j,i,l ); 
+            }
+            int min = diff[0];
+            int idx = start;
+            for (int j =1; j<end; j ++)
+            {
+                if (diff[j]<min)
+                {
+                    min = diff[j];
+                    idx = j+start;
+                }
+            }
+            solution[i] = 1;
+            solution[idx] = 0;
+            
+        }
     }
+    //for (int i =0; i<l; i++)
+    //{
+    //    cout << solution[i];
+    //}
+    //cout << endl;
+ 
+
+  
+    for (int i =0; i<l; i++)
+    {
+        if ( solution[i]==1)
+        {
+              newModel= newModel + model.SelectResRange(i,i).CreateRigid();
+        }
+    }
+    //cout << newModel.PrintPDB()<< endl;
+    renumberModel (newModel);
     
+
+    return newModel;
+    }
+}
+
+int DNA::calcPart (int solution[],int pos0, int pos1, int l )const
+{
+    int alt[l];
+    for (int j =0; j<l; j++)
+    {
+        alt[j] = solution[j];
+    }
+    alt [pos1] = 1;
+    alt [pos0] = 0;
+
+    
+    int firstAlt = 0;
+    int secondAlt = -1;
+
+    for(int j =0; j<l; j++)
+    {
+       if (alt[j] == 1 && secondAlt == -1)
+       {
+           firstAlt ++;
+       }
+       if (alt[j] ==0 && firstAlt != 0)
+       {
+           secondAlt = 0;
+       }
+       if (alt[j] == 1 && secondAlt != -1)
+       {
+           secondAlt +=1;
+       }
+    }
+    return abs(firstAlt-secondAlt);
 }
 
 bool DNA::isAlign(std::string s1,std::string s2,int shift)const
 {
-    return (s1.compare(shift,s1.length(), s2, 0,s2.length()-shift)!=0);
+    return (s1.compare(shift,s1.length(), s2, 0,s2.length()-shift)==0);
 }
 
 Rigidbody DNA::getModelOfBasePair(const Rigidbody& model,int posA,int posB)const
