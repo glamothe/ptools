@@ -162,6 +162,9 @@ Parameter = mb.class_("Parameter").include()
 
 inverseMatrix44 = mb.free_function("inverseMatrix44").include()
 
+MatTrans2screw = mb.free_function("MatTrans2screw").include()
+
+
 Stacking = mb.class_("Stacking").include()
 try:
     surreal = mb.class_("surreal")
