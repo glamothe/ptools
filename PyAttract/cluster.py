@@ -26,7 +26,7 @@ from optparse import OptionParser
 import re
 import shelve
 
-import Extract
+import extract
 from ptools import *
 from calculateonce import NoRecalc
 
@@ -62,7 +62,7 @@ class Struct:
 
 
 ########################
-# from Extract.py
+# from extract.py
 
 class StructureI:
     def __cmp__(self, other):
@@ -91,7 +91,7 @@ def cluster(lig,structures, nstruct, cluster_memory):
         if s.ener>0:
             break
         new=True
-        sc = Extract.rigidXMat44(lig,s.matrix)
+        sc = extract.rigidXMat44(lig,s.matrix)
 
         for c in reversed(thecluster[-cluster_memory:]):
             if ( ( c.ext.ener-s.ener < limit_ener ) and ( Rmsd(sc,c.structure) < limit_rmsd ) ):
@@ -146,7 +146,7 @@ if (__name__=="__main__"):
     ligandfile = sys.argv[2]
     lig = Rigidbody(ligandfile)
 
-    e = Extract.Extractor(outputfile)   #extracts output structures or reuse the generated database
+    e = extract.Extractor(outputfile)   #extracts output structures or reuse the generated database
     validkeys=[]
     regexp = re.compile("[0-9]+:[0-9]+")  #filter keys of the form "23:356"
     for k in e.d.keys():
