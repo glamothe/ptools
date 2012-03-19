@@ -4,10 +4,9 @@ from pyplusplus import module_builder
 
 import fnmatch
 
-#generate svnrev.h (revision number of the library)
-os.system("gcc svnrev.c -o svnrev")
-svnrevfiles = [f for f in os.listdir('.') if fnmatch.fnmatch(f, "*.cpp") or fnmatch.fnmatch(f,"*.h") and not fnmatch.fnmatch(f,"svnrev.*") ]  #list every .h or .cpp
-os.system("./svnrev %s"%(" ".join(svnrevfiles)))
+#generates bzrrev.h:
+import bzrrev
+
 
 #Creating an instance of class that will help you to expose your declarations
 mb = module_builder.module_builder_t( [os.path.abspath('./ptools.h'), os.path.abspath('./py_details.h')]

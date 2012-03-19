@@ -1,4 +1,3 @@
-// $Id$
 #ifndef PAIRLIST_H
 #define PAIRLIST_H
 

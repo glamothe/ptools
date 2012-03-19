@@ -1,4 +1,3 @@
-// $Id$
 #ifndef RMSD_H
 #define RMSD_H
 

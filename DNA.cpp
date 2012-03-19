@@ -1,4 +1,3 @@
-
 #include <rigidbody.h>
 #include <pdbio.h>
 #include <superpose.h>
