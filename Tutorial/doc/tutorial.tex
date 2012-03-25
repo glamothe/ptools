@@ -1200,6 +1200,76 @@ docking simulation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
+\section{Modeling proteins filaments: Heligeom}
+This part shows the Ptools helicoidal modeling application called heligeom. It can
+modelize helicoidal protein filaments but also linear and circular filaments, as 
+the screw movement can represent any kind of motion. 
+
+
+
+\subsection{Circular filaments: 2GLS}
+To use heligeom, one have to obtain two successives monomer of the filament one wish to study. In this example, we will separate part of the circular filament 2GLS, aviable on the PDB. This is easily done with ptools :
+\begin{verbatim}
+from ptools import *
+pdb = Rigidbody("2GLS.pdb")
+
+selA = (pdb.SelectChainId("A")|pdb.SelectChainId("G"))
+selB = (pdb.SelectChainId("B")|pdb.SelectChainId("H"))
+
+pdbA = selA.CreateRigid()
+pdbB = selB.CreateRigid()
+
+WritePDB(pdbA,"2GLS_A.pdb")
+WritePDB(pdbB,"2GLS_B.pdb")
+\end{verbatim}
+
+\subsection{Helicoidal parameters}
+You can obtain the helecoidal parameters with this line:
+\begin{verbatim}
+python heligeom.py 2GLS_A.pdb 2GLS_B.pdb
+\end{verbatim}
+heligeom should print back the following text:
+\begin{verbatim}
+quality (Rmsd): 1.45455791411e-14
+
+theta:  -1.04719853184
+omega:  -3.29384e-07  -2.6531e-07  1
+P:      0.000391407  -0.000206358  0
+trans   0.00026971416906
+monomer by turn:        5.99999438135
+pitch:  0.00161828349893
+\end{verbatim}
+
+Where quality is an estimation of the superpostion of the second monomer and the first monomer after the screw movement. it should always be as close to zero as possible. There is for parameters to describe the screw motion.first, a vector omega and a point P to form the axis and second, the angle theta ( in radian ) of the rotation and the translation trans to aply along the axis. This for parameters are ilustrated on Fig.~\ref{screw}. Finally, heligeom provide the number of monomer by turn and the pitch (the distance between the monomers at the ends of a complete turn).
+
+\begin{figure}[htbp]
+\center
+\includegraphics*[width=0.50\textwidth]{img/schema_heligeom.pdf}
+\caption{Schema of the screw motion model of heligeom between two monomers A and B.}
+\label{screw}
+\end{figure}
+\newpage
+\subsection{Modeling}
+With the for screw motion parameters, you can extend your two monomer as you want to form a longer helix. such operation is easily done with heligeom by giving the wanted number of monomers as argument :
+      
+\begin{verbatim}
+python heligeom.py 2GLS_A.pdb 2GLS_B.pdb 6 > new_2GLS.pdb
+\end{verbatim}
+You can also precize a "-Z" option to align your helix on the Z axis.
+
+You can visualize the result with pymol,as illustrated Fig.~\ref{2gls}:
+\begin{verbatim}
+pymol new_2GLS.pdb
+\end{verbatim}
+
+\begin{figure}[htbp]
+\center
+\includegraphics*[width=0.60\textwidth]{img/2GLS.png}
+\caption{The circular filaments 2GLS as modelized with heligeom from two monomer A and B (in cyan and red respectively).}
+\label{2gls}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \section{Misc. tips and tricks}
 
 
