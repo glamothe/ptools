@@ -155,8 +155,7 @@ Tilt = mb.class_("Tilt").include()
 
 BDNA = mb.class_("BDNA").include()
 ADNA = mb.class_("ADNA").include()
-ADNBrigitte = mb.class_("BrigitteDNA").include()
-BDNAjumna = mb.class_("BDNAjumna").include()
+
 Parameter = mb.class_("Parameter").include()
 
 inverseMatrix44 = mb.free_function("inverseMatrix44").include()

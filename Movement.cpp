@@ -313,25 +313,13 @@ Tilt::Tilt(double alpha)
 // Movement for building "classic" DNA
 // reference for parameter:
 // S.Arnott, R.Chandrasekaran, D.L.Birdsall, A.G.W.Leslie and R.L.Ratliff, Nature 283, 743-746 (1980) 
-BDNA::BDNA()
- :Movement()
-{
-  m=(Twist(35.99)+Roll(0.91)+Rise(3.38)+Slide(0.08)).getMatrix();
-}
 
 ADNA::ADNA():Movement()
 {
   m=(Twist(30.69)+Roll(11.44)+Rise(3.44)+Slide(-1.92)).getMatrix();
 }
 
-BrigitteDNA::BrigitteDNA():Movement()
-{
-  m=(Twist(36.0001)+Roll(1.9344 )+Tilt(-5.9748)+Rise(3.3800)+Slide(-0.6995)+Shift(0.0145)).getMatrix();
-
-
-}
-
-BDNAjumna::BDNAjumna():Movement()
+BDNA::BDNA():Movement()
 {
   m=(Twist( 35.9063052632 )+Roll( -2.66592947368 )+Tilt( -1.80234789474 )+Rise( 3.27145684211 )+Slide( -1.34487389474 )+Shift( -0.425181378947 )).getMatrix();
 

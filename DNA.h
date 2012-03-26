@@ -16,7 +16,7 @@ namespace PTools
     
     public:
     ///initialize a new object with a sequence and a database of pdb to pick from. an initial movement for the construction of the dna can be precised. 
-    DNA( std::string , std::string , const Movement & mov = BDNAjumna());
+    DNA( std::string , std::string , const Movement & mov = BDNA());
     ///initialize a dna from another dna.
     DNA( const DNA& model );
     ///initialize a dna from dna in a rigidbody
@@ -90,9 +90,9 @@ namespace PTools
           return strand[i];};
 
     /// add the basePairs of a DNA to the strand of this DNA. the specified movement do the liason betwen the two strand
-    void add(const DNA & d, const Movement & mov = BDNAjumna());
+    void add(const DNA & d, const Movement & mov = BDNA());
     /// add a basepair at the end of the strand of this DNA
-    void add(BasePair bp, const Movement & mov = BDNAjumna());
+    void add(BasePair bp, const Movement & mov = BDNA());
 
     ///return the specified subDNA
     DNA subDNA(int start,int end)const;

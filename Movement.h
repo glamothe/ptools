@@ -103,11 +103,6 @@ namespace PTools
   /*! \brief a mouvement describing the local parameter of a B dna
   *reference : S.Arnott, R.Chandrasekaran, D.L.Birdsall, A.G.W.Leslie and R.L.Ratliff, Nature 283, 743-746 (1980)
   */
-  class BDNA: public Movement 
-  {
-    public:
-    BDNA();
-  };
 
   /*! \brief a mouvement describing the local parameter of a A dna
   *reference : S.Arnott, R.Chandrasekaran, D.L.Birdsall, A.G.W.Leslie and R.L.Ratliff, Nature 283, 743-746 (1980)
@@ -118,17 +113,10 @@ namespace PTools
     ADNA();
   };
 
-  class BrigitteDNA: public Movement
+  class BDNA: public Movement
   {
     public:
-    BrigitteDNA();
-
-  };
-
-  class BDNAjumna: public Movement
-  {
-    public:
-    BDNAjumna();
+    BDNA();
 
   };
 }//end namespace
