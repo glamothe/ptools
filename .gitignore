@@ -1,0 +1,13 @@
+*.o
+*.os
+*.pyc
+*~
+.scon*
+Pybindings/
+Tests/ptoolstest.bin
+Tests/runner.cpp
+libptools.a
+_ptools.so
+config.log
+version.tmp
+
