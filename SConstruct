@@ -157,31 +157,23 @@ else:
     python_target = False
 
 if python_target:
-   python24dir=FIND_HEADER(["Python.h"], ["/usr/include/python2.4", \
-      "/sw/include/python2.4"])
-
-   if python24dir is not None:
-      print "python2.4 found, configuring path and libs"
-      PYTHON_CPPPATH=[python24dir]
-      PYTHON_LIBS=["python2.4"]
-
-
-   if python24dir is None:
-      print "cannot locate python2.4, tying with python2.5:"
-      python25dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.5/",
-      "/sw/include/python2.5/"])
-      if python25dir is None:
-         print "cannot locate Python2.5, the library may not compile..."
-         print "trying to locate Python 2.6:"
-         python26dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.6/",
-      "/sw/include/python2.6/"])
-         if python26dir is not None:
-	     print "Python 2.6 found!"
-	     PYTHON_CPPPATH=[python26dir]
-	     PYTHON_LIBS=["python2.6"]
-      else:
-         PYTHON_CPPPATH=[python25dir]
-         PYTHON_LIBS=["python2.5"]
+    
+   python_dirs = {'2.4': ["/usr/include/python2.4", "/sw/include/python2.4"] , 
+                  '2.5': ["/usr/include/python2.5", "/sw/include/python2.5"] , 
+                  '2.6': ["/usr/include/python2.6", "/sw/include/python2.6"] , 
+                  '2.7': ["/usr/include/python2.7", "/sw/include/python2.7"] , 
+                 }
+   
+   python_versions = ['2.7', '2.6', '2.5', '2.4'] 
+    
+   
+   
+   for version in python_versions:
+       dir = FIND_HEADER(["Python.h"], python_dirs[version])
+       if dir is not None:
+           PYTHON_CPPPATH=[dir]
+           PYTHON_LIBS=["python%s"%version]
+           break
 
 
 
