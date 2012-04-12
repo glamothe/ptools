@@ -4,7 +4,6 @@ cdef extern from "coord3d.h" namespace "PTools":
         CppCoord3D()
         CppCoord3D(double nx, double ny, double nz)
         int operator==(CppCoord3D&)
-        
 
 cdef class Coord3D:
     cdef CppCoord3D *thisptr
@@ -23,4 +22,13 @@ cdef class Coord3D:
        def __set__(self,y): self.thisptr.y = y
     property z:
        def __get__(self): return self.thisptr.z
-       def __set__(self,z): self.thisptr.z = z   
+       def __set__(self,z): self.thisptr.z = z
+    
+    def __add__(self, other):
+        cdef Coord3D c
+        c = Coord3D()
+        c.x = self.x + other.x
+        c.y = self.y + other.y
+        c.z = self.z + other.z
+        return c
+    
