@@ -1,4 +1,5 @@
 from cython.operator cimport dereference as deref
+from libcpp.string cimport string
 
 cdef extern from "coord3d.h" namespace "PTools":
     cdef cppclass CppCoord3D  "PTools::Coord3D":  
@@ -12,6 +13,13 @@ cdef extern from "coord3d.h" namespace "PTools":
     
     cdef double Norm(CppCoord3D&)
     cdef double Norm2(CppCoord3D&)
+    
+    
+cdef extern from "rigidbody.h" namespace "PTools":
+    cdef cppclass CppRigidbody "PTools::Rigidbody":
+        CppRigidbody(string)
+        CppRigidbody()
+    
         
 cdef makeCoord3D(CppCoord3D c):
     cdef Coord3D result = Coord3D(c.x, c.y, c.z)
@@ -69,4 +77,27 @@ def norm(Coord3D v):
 def norm2(Coord3D v):
     return Norm2(deref(v.thisptr))
 
+cdef class Rigidbody:
+    cdef CppRigidbody* thisptr
     
+    def __cinit__(self, filename=''):
+        if filename ==  '':
+            self.thisptr = new CppRigidbody()
+        
+    def __dealloc__(self):
+        del self.thisptr
+            
+cdef _getRigidbody_from_py_name(Rigidbody rigid, pyname):
+    cdef char* name = pyname
+    cdef string *cppname = new string(name)
+    cdef CppRigidbody *newrigid = new CppRigidbody(deref(cppname))
+    rigid.thisptr = newrigid
+    
+            
+
+cdef totostring(pystring):
+    cdef char* test = <bytes?> pystring
+def c_to_python_string():
+    cdef char * test = "hello world"
+    cdef bytes b = test
+    return b
