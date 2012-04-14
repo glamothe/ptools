@@ -7,6 +7,7 @@ cdef extern from "coord3d.h" namespace "PTools":
         double x, y, z
         CppCoord3D()
         CppCoord3D(double nx, double ny, double nz)
+        CppCoord3D(CppCoord3D &)
         bint operator==(CppCoord3D&)
 
     cdef CppCoord3D operator+ (CppCoord3D& A, CppCoord3D& B)

@@ -7,6 +7,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         CppRigidbody(string)
         CppRigidbody()
         unsigned int Size()
+        CppCoord3D GetCoords(unsigned int)
         
 
 cdef class Rigidbody:
@@ -22,6 +23,14 @@ cdef class Rigidbody:
         del self.thisptr
     def __len__(self):
         return self.thisptr.Size()
+    def getCoords(self, unsigned int i):
+        cdef Coord3D c = Coord3D () 
+        cdef CppCoord3D cpp = self.thisptr.GetCoords(i)
+        c.x = cpp.x
+        c.y = cpp.y
+        c.z = cpp.z
+        return c
+
 
         
 cdef CppRigidbody* _getRigidbody_from_py_name(pyname):
