@@ -19,6 +19,8 @@ cdef extern from "rigidbody.h" namespace "PTools":
     cdef cppclass CppRigidbody "PTools::Rigidbody":
         CppRigidbody(string)
         CppRigidbody()
+        unsigned int Size()
+        
     
         
 cdef makeCoord3D(CppCoord3D c):
@@ -83,20 +85,22 @@ cdef class Rigidbody:
     def __cinit__(self, filename=''):
         if filename ==  '':
             self.thisptr = new CppRigidbody()
-        
+        else:
+            self.thisptr = _getRigidbody_from_py_name(filename)
+           
     def __dealloc__(self):
         del self.thisptr
-            
-cdef _getRigidbody_from_py_name(Rigidbody rigid, pyname):
+    def __len__(self):
+        return self.thisptr.Size()
+
+        
+cdef CppRigidbody* _getRigidbody_from_py_name(pyname):
     cdef char* name = pyname
     cdef string *cppname = new string(name)
     cdef CppRigidbody *newrigid = new CppRigidbody(deref(cppname))
-    rigid.thisptr = newrigid
+    return newrigid
     
-            
 
-cdef totostring(pystring):
-    cdef char* test = <bytes?> pystring
 def c_to_python_string():
     cdef char * test = "hello world"
     cdef bytes b = test
