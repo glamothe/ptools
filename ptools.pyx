@@ -11,6 +11,7 @@ cdef extern from "coord3d.h" namespace "PTools":
     cdef CppCoord3D operator* (double scal, CppCoord3D A)
     
     cdef double Norm(CppCoord3D&)
+    cdef double Norm2(CppCoord3D&)
         
 cdef makeCoord3D(CppCoord3D c):
     cdef Coord3D result = Coord3D(c.x, c.y, c.z)
@@ -64,5 +65,8 @@ cdef class Coord3D:
           
 def norm(Coord3D v):
     return Norm(deref(v.thisptr))
+
+def norm2(Coord3D v):
+    return Norm2(deref(v.thisptr))
 
     
