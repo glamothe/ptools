@@ -8,8 +8,15 @@ cdef extern from "coord3d.h" namespace "PTools":
         bint operator==(CppCoord3D&)
 
     cdef CppCoord3D operator+ (CppCoord3D& A, CppCoord3D& B)
+    cdef CppCoord3D operator* (double scal, CppCoord3D A)
+    
+    cdef double Norm(CppCoord3D&)
         
-
+cdef makeCoord3D(CppCoord3D c):
+    cdef Coord3D result = Coord3D(c.x, c.y, c.z)
+    return result
+        
+        
 cdef class Coord3D:
     cdef CppCoord3D *thisptr
     def __cinit__(self, x=0, y=0, z=0):
@@ -46,3 +53,16 @@ cdef class Coord3D:
           cdef Coord3D result = Coord3D(cppresult.x, cppresult.y, cppresult.z)
           return result
           
+    def __mul__(Coord3D self, double scal):
+        
+         cdef CppCoord3D r = scal*deref(self.thisptr)
+         return makeCoord3D(r)
+         
+    def __str__(self):
+        return "%f %f %f"%(self.x, self.y, self.z)
+        
+          
+def norm(Coord3D v):
+    return Norm(deref(v.thisptr))
+
+    
