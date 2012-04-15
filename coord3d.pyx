@@ -11,6 +11,7 @@ cdef extern from "coord3d.h" namespace "PTools":
         bint operator==(CppCoord3D&)
 
     cdef CppCoord3D operator+ (CppCoord3D& A, CppCoord3D& B)
+    cdef CppCoord3D operator- (CppCoord3D& A, CppCoord3D& B)
     cdef CppCoord3D operator* (double scal, CppCoord3D A)
     
     cdef double Norm(CppCoord3D&)
@@ -60,10 +61,27 @@ cdef class Coord3D:
           cdef Coord3D result = Coord3D(cppresult.x, cppresult.y, cppresult.z)
           return result
           
-    def __mul__(Coord3D self, double scal):
+    def __sub__(Coord3D self, Coord3D other):
+        cdef CppCoord3D cppself = deref(self.thisptr)
+        cdef CppCoord3D cppother = deref(other.thisptr)
+        cdef CppCoord3D cppresult = cppself-cppother
         
-         cdef CppCoord3D r = scal*deref(self.thisptr)
+        cdef Coord3D result = Coord3D(cppresult.x, cppresult.y, cppresult.z)
+        return result
+        
+          
+    def __mul__(self, scal):
+         cdef Coord3D pymyself
+         cdef double cscal
+         if not isinstance(self, Coord3D):
+             self, scal = scal, self
+         
+         pymyself = <Coord3D> self
+         cscal = <double> scal
+         
+         cdef CppCoord3D r = cscal*deref(pymyself.thisptr)
          return makeCoord3D(r)
+         
          
     def __str__(self):
         return "%f %f %f"%(self.x, self.y, self.z)

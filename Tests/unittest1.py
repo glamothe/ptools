@@ -34,14 +34,14 @@ class TestRigidbody(unittest.TestCase):
         self.assertEqual(len(s), len(self.r))
         self.assertEqual(self.r.FindCenter(), s.FindCenter())
     def testSize(self):
-        self.assertEqual(self.r.Size(), 2365)
+        self.assertEqual(len(self.r), 2365)
     def testSetAtom(self):
         atom = self.r.CopyAtom(3)
         atom.SetCoords(Coord3D(3,4,5))
         self.r.SetAtom(3,atom)
         #test to see if the mofification worked:
         atom2 = self.r.CopyAtom(3)
-        self.assertTrue( Norm2(atom2.GetCoords() - Coord3D(3,4,5) ) < 1e6 )
+        self.assertTrue( norm2(atom2.GetCoords() - Coord3D(3,4,5) ) < 1e6 )
 
 
     def testUnsafeGetCoords(self):
@@ -89,7 +89,7 @@ class TestBasicMoves(unittest.TestCase):
         self.rigid1.Translate(Coord3D(3.0, -55.67, 1))
         CoM2 = self.rigid1.FindCenter()
         diff=CoM2-CoM1
-        self.assertTrue( Norm2(diff + Coord3D(-3.0, 55.67, -1.0)) < 1e-6)
+        self.assertTrue( norm2(diff + Coord3D(-3.0, 55.67, -1.0)) < 1e-6)
         self.rigid1.Translate(Coord3D(-3.0, 55.67, -1.0))   # translate back
         self.assertTrue(Rmsd(self.rigid1, self.rigid2) < 1e-6)
 
@@ -118,7 +118,7 @@ class TestCoordsArray(unittest.TestCase):
     def testGetAtom(self):
         c1 = Coord3D()
         self.c.GetCoords(0, c1)
-        self.assertTrue(  Norm2(c1 - Coord3D(3.0, 4.0, 5.0))<1e-6 )
+        self.assertTrue(  norm2(c1 - Coord3D(3.0, 4.0, 5.0))<1e-6 )
 
     def testBasicTranslation(self):
         self.c.Translate(self.tr)
@@ -140,7 +140,7 @@ class TestCoordsArray(unittest.TestCase):
         self.c.SetCoords(0,co)
         co2=Coord3D()
         self.c.GetCoords(0,co2) #get the coordinates back
-        self.assertTrue(Norm2(co-co2)<1.0e-6)
+        self.assertTrue(norm2(co-co2)<1.0e-6)
 
 
 
