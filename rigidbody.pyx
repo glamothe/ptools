@@ -9,9 +9,12 @@ cdef extern from "rigidbody.h" namespace "PTools":
         CppRigidbody(CppRigidbody&)
         unsigned int Size()
         CppCoord3D GetCoords(unsigned int)
+        void unsafeGetCoords(unsigned int, CppCoord3D&)
         void ABrotate(CppCoord3D&, CppCoord3D&, double)
         void Translate(CppCoord3D&)
         CppCoord3D FindCenter()
+        void syncCoords()
+
 
 #cdef CppRigidbody* copy_rigidbody(newptr, ptr):
 #    cdef CppRigidbody *result
@@ -51,6 +54,11 @@ cdef class Rigidbody:
         c.y = cpp.y
         c.z = cpp.z
         return c
+        
+    def unsafeGetCoords(self, unsigned int i, Coord3D co):
+        self.thisptr.unsafeGetCoords(i, deref(co.thisptr))
+        
+        
     def Translate(self, Coord3D tr):
         self.thisptr.Translate(deref(tr.thisptr))
     def FindCenter(self):
@@ -61,9 +69,13 @@ cdef class Rigidbody:
         c.z = cpp.z
         return c
         
-#    def ABrotate(self, Coord3D A, Coord3D B, double theta):
-#        self.thisptr.ABrotate(deref(A.thisptr),deref(B.thisptr),theta)
-#        return None
+    def ABrotate(self, Coord3D A, Coord3D B, double theta):
+        self.thisptr.ABrotate(deref(A.thisptr),deref(B.thisptr),theta)
+        return None
+    
+    def syncCoords(self):
+        self.thisptr.syncCoords()
+        
 
         
 cdef CppRigidbody* _getRigidbody_from_py_name(pyname):
