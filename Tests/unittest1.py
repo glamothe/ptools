@@ -58,10 +58,10 @@ class TestRigidbody(unittest.TestCase):
 
         self.r2.syncCoords()
         #same rotation and translation for r and r2: should have exact same coordinates
-        for i in range(self.r.Size()):
+        for i in range(len(self.r)):
             co1 = Coord3D()
             co2 = Coord3D()
-            co1 = self.r.GetCoords(i)
+            co1 = self.r.getCoords(i)
             self.r2.unsafeGetCoords(i,co2)
             self.assertEqual(co1,co2)
 
