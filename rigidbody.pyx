@@ -14,6 +14,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         void Translate(CppCoord3D&)
         CppCoord3D FindCenter()
         void syncCoords()
+        void AttractEulerRotate(double, double, double)
 
 
 #cdef CppRigidbody* copy_rigidbody(newptr, ptr):
@@ -72,6 +73,9 @@ cdef class Rigidbody:
     def ABrotate(self, Coord3D A, Coord3D B, double theta):
         self.thisptr.ABrotate(deref(A.thisptr),deref(B.thisptr),theta)
         return None
+        
+    def AttractEulerRotate(self, double phi, double ssi, double rot):
+        self.thisptr.AttractEulerRotate(phi, ssi, rot)
     
     def syncCoords(self):
         self.thisptr.syncCoords()
