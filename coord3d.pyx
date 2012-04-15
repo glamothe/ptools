@@ -26,6 +26,8 @@ cdef class Coord3D:
     cdef CppCoord3D *thisptr
     def __cinit__(self, x=0, y=0, z=0):
         self.thisptr = new CppCoord3D(x,y,z)
+        if not self.thisptr: 
+            print "temoin Coord3D: ne doit jamais etre nul"
     def __dealloc__(self):
         del self.thisptr
 
