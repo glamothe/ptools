@@ -11,6 +11,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         CppCoord3D GetCoords(unsigned int)
         void ABrotate(CppCoord3D&, CppCoord3D&, double)
         void Translate(CppCoord3D&)
+        CppCoord3D FindCenter()
 
 #cdef CppRigidbody* copy_rigidbody(newptr, ptr):
 #    cdef CppRigidbody *result
@@ -52,6 +53,13 @@ cdef class Rigidbody:
         return c
     def Translate(self, Coord3D tr):
         self.thisptr.Translate(deref(tr.thisptr))
+    def FindCenter(self):
+        cdef Coord3D c = Coord3D()
+        cdef CppCoord3D cpp = self.thisptr.FindCenter()
+        c.x = cpp.x
+        c.y = cpp.y
+        c.z = cpp.z
+        return c
         
 #    def ABrotate(self, Coord3D A, Coord3D B, double theta):
 #        self.thisptr.ABrotate(deref(A.thisptr),deref(B.thisptr),theta)

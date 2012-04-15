@@ -31,7 +31,7 @@ class TestRigidbody(unittest.TestCase):
         self.r = Rigidbody("1FIN_r.pdb")
     def testCopy(self):
         s = Rigidbody(self.r)
-        self.assertEqual(s.Size(), self.r.Size())
+        self.assertEqual(len(s), len(self.r))
         self.assertEqual(self.r.FindCenter(), s.FindCenter())
     def testSize(self):
         self.assertEqual(self.r.Size(), 2365)
