@@ -24,12 +24,11 @@ cdef class Rigidbody:
     def __cinit__(self, filename=''):
         cdef CppRigidbody* oldrigidptr
         cdef Rigidbody  oldrigid
-        print type(filename)
         if isinstance(filename, str):
             if filename ==  '':
                 self.thisptr = new CppRigidbody()
             else:
-                print "there is a filename, loading the pdb file"
+                # there is a filename, loading the pdb file
                 self.thisptr = _getRigidbody_from_py_name(filename)
         if isinstance(filename, Rigidbody):
             oldrigid = <Rigidbody> filename
@@ -52,11 +51,6 @@ cdef class Rigidbody:
         c.z = cpp.z
         return c
     def Translate(self, Coord3D tr):
-        if self.thisptr:
-            print "rigidbody thisptr in not null"
-        if tr.thisptr:
-            print "Coord3D thisptr in not null"
-            
         self.thisptr.Translate(deref(tr.thisptr))
         
 #    def ABrotate(self, Coord3D A, Coord3D B, double theta):
