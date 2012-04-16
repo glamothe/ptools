@@ -1,5 +1,7 @@
 include "coord3d.pyx"
+include "matrix.pyx"
 include "rigidbody.pyx"
 include "rmsd.pyx"
 include "version.pyx"
 include "coordsarray.pyx"
+include "superpose.pyx"
