@@ -16,17 +16,22 @@ cdef extern from "atom.h" namespace "PTools":
         string GetExtra()
         
     cdef cppclass CppAtom "PTools::Atom":
-        CppAtom(Atomproperty, CppCoord3D)
-        Coord3D GetCoords()
+        CppAtom()
+        CppAtom(CppAtomproperty, CppCoord3D)
+        CppCoord3D GetCoords()
         void SetCoords(CppCoord3D& )
         string ToString()
         string ToPdbString()
         void Translate(CppCoord3D&)
-        double Dist(CppAtom& , CppAtom& )
-        double Dist2(CppAtom& , CppAtom& )
-
         
-cdef class AtomProperty:
+    cdef double cppDist "PTools::Dist" (CppAtom& , CppAtom& )
+    cdef double cppDist2 "PTools::Dist2" (CppAtom& , CppAtom& )
+
+cdef extern from "cython_wrappers.h":
+    cdef void cy_copy_atom(CppAtom* , CppAtom* )
+    
+        
+cdef class Atomproperty:
     cdef CppAtomproperty * thisptr
     
     def __cinit__(self):
@@ -65,4 +70,68 @@ cdef class AtomProperty:
         self.thisptr.SetChainId(string(c_chainid))
         
     def GetResidId(self):
-        return <bytes>  self.thisptr.GetResidId().c_str()
+        return self.thisptr.GetResidId()
+        
+    def SetResidId(self, unsigned int resid):
+        self.thisptr.SetResidId(resid)
+        
+    def GetAtomId(self):
+        return self.thisptr.GetAtomId()
+    def SetAtomId(self, unsigned int atomid):
+        self.thisptr.SetAtomId(atomid)
+    def SetExtra(self, bytes extra):
+        cdef char* c_extra = extra
+        self.thisptr.SetExtra(string(c_extra))
+    def GetExtra(self):
+        return self.thisptr.GetExtra().c_str()
+
+        
+cdef class Atom:
+    cdef CppAtom * thisptr
+    #def __cinit__(self, Atomproperty atproperty, Coord3D coords):
+    def __cinit__(self, *args ):
+        cdef CppAtomproperty * cppatpropptr
+        cdef CppCoord3D * cpp_coptr
+        
+        if len(args) == 0:
+            self.thisptr = new CppAtom()
+        else:
+           atproperty = <Atomproperty?> args[0]
+           coords = <Coord3D?> args[1]
+           cppatpropptr = atproperty.thisptr
+           cpp_coptr = coords.thisptr
+           self.thisptr = new CppAtom(deref(cppatpropptr), deref(cpp_coptr))
+        
+    def __dealloc__(self):
+        
+        del self.thisptr
+     
+    def GetCoords(self):
+        co = Coord3D()
+        cdef CppCoord3D c_coord3D = self.thisptr.GetCoords()
+        co.x = c_coord3D.x
+        co.y = c_coord3D.y
+        co.z = c_coord3D.z
+        
+        return co
+        
+    def SetCoords(self, Coord3D co):
+        self.thisptr.SetCoords(deref(co.thisptr))
+        
+    def ToString(self):
+        return <bytes> self.thisptr.ToString().c_str()
+    def __str__(self):
+        return self.ToString()
+        
+    def ToPdbString(self):
+        return <bytes> self.thisptr.ToPdbString().c_str()
+    
+    def Translate(self,Coord3D co):
+        self.thisptr.Translate(deref(co.thisptr))
+    
+def Dist(Atom at1, Atom at2):
+    return cppDist(deref(at1.thisptr), deref(at2.thisptr))
+    
+def Dist2(Atom at1, Atom at2):
+    return cppDist2(deref(at1.thisptr), deref(at2.thisptr))
+        
