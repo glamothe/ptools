@@ -15,6 +15,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         CppCoord3D FindCenter()
         void syncCoords()
         void AttractEulerRotate(double, double, double)
+        void ApplyMatrix(Array2D[double] &)
 
 
 #cdef CppRigidbody* copy_rigidbody(newptr, ptr):
@@ -79,6 +80,9 @@ cdef class Rigidbody:
     
     def syncCoords(self):
         self.thisptr.syncCoords()
+
+    def ApplyMatrix(self, Matrix mat):
+        self.thisptr.ApplyMatrix(deref(mat.thisptr))
         
 
         
