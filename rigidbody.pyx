@@ -16,7 +16,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         void syncCoords()
         void AttractEulerRotate(double, double, double)
         void ApplyMatrix(Array2D[double] &)
-
+        CppAtom CopyAtom(unsigned int )
 
 #cdef CppRigidbody* copy_rigidbody(newptr, ptr):
 #    cdef CppRigidbody *result

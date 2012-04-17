@@ -1,5 +1,6 @@
 include "coord3d.pyx"
 include "matrix.pyx"
+include "atom.pyx"
 include "rigidbody.pyx"
 include "rmsd.pyx"
 include "version.pyx"
