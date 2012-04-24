@@ -2,6 +2,7 @@
 #include <cctype>
 #include <iostream>
 #include <fstream>
+#include <istream>
 
 #include "atom.h"
 #include "stdio.h"
@@ -91,7 +92,7 @@ std::string readresidtype(const std::string &ligne) {
 }
 
 
-void ReadPDB(ifstream& fichier, Rigidbody& protein) {
+void ReadPDB(istream& fichier, Rigidbody& protein) {
 
     std::string ligne ;
     int compteur = 0 , compteur1=0;
