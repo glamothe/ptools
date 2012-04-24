@@ -86,7 +86,7 @@ private:
     Coord3D mCoords; ///< Atom cartesian coordinates
 
 public:
-
+    Atom() {};
     Atom(Atomproperty ap, Coord3D co)
             : Atomproperty(ap), mCoords(co) {};
     Coord3D GetCoords() const; ///< return atom coordinates
