@@ -41,6 +41,30 @@ class TestRigidbody(unittest.TestCase):
         self.assertAlmostEqual(coords.x, -16.159)
         self.assertAlmostEqual(coords.y, 189.782 )
         self.assertAlmostEqual(coords.z, 106.402)
+        self.assertEqual(atom.GetAtomId(), 4)
+        self.assertEquel(atom.GetChainId(), '')
+        
+    def testGetCoords(self):
+        coords = self.r.getCoords(3)
+        self.assertAlmostEqual(coords.x, -16.159)
+        self.assertAlmostEqual(coords.y, 189.782 )
+        self.assertAlmostEqual(coords.z, 106.402)
+        
+    def testTranslate(self):
+        tr = Coord3D(3.2, 2.98, 14.22)
+        s = Rigidbody(self.r)
+        s.Translate(tr)
+        coords = s.getCoords(3)
+        self.assertAlmostEqual(coords.x, -16.159 + 3.2)
+        self.assertAlmostEqual(coords.y, 189.782 + 2.98 )
+        self.assertAlmostEqual(coords.z, 106.402 + 14.22)
+     
+    def testFindCenter(self):
+        cen = self.r.FindCenter()
+        self.assertAlmostEqual(cen.x, -20.171249, delta=1e-6) 
+        self.assertAlmostEqual(cen.y, 215.498060, delta=1e-6)
+        self.assertAlmostEqual(cen.z, 119.427781, delta=1e-6)
+        
         
     def testSetAtom(self):
         atom = self.r.CopyAtom(3)
@@ -72,6 +96,15 @@ class TestRigidbody(unittest.TestCase):
             self.r2.unsafeGetCoords(i,co2)
             self.assertEqual(co1,co2)
 
+            
+    def testAddAtoms(self):
+         r = Rigidbody()
+         self.assertEqual(len(r), 0)
+         at = Atom()
+         at.SetCoords(Coord3D(2,3,4))
+         r.AddAtom(at)
+         self.assertAlmostEqual(len(r),1)
+            
 
 class TestBasicMoves(unittest.TestCase):
     def setUp(self):
