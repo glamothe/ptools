@@ -35,6 +35,13 @@ class TestRigidbody(unittest.TestCase):
         self.assertEqual(self.r.FindCenter(), s.FindCenter())
     def testSize(self):
         self.assertEqual(len(self.r), 2365)
+    def testCopyAtom(self):
+        atom = self.r.CopyAtom(3)
+        coords = atom.GetCoords()
+        self.assertAlmostEqual(coords.x, -16.159)
+        self.assertAlmostEqual(coords.y, 189.782 )
+        self.assertAlmostEqual(coords.z, 106.402)
+        
     def testSetAtom(self):
         atom = self.r.CopyAtom(3)
         atom.SetCoords(Coord3D(3,4,5))

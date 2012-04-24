@@ -105,6 +105,7 @@ cdef class Rigidbody:
         cdef Atom at = Atom()
         cdef CppAtom* cpp_dest = at.thisptr
         cy_copy_atom(&cpp_at , cpp_dest )
+        return at
         
         
 
