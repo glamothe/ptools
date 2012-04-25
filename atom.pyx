@@ -1,5 +1,7 @@
 cdef extern from "atom.h" namespace "PTools":
     cdef cppclass CppAtomproperty "PTools::Atomproperty":
+        CppAtomproperty()
+        CppAtomproperty(CppAtomproperty&)
         string GetType()
         void SetType(string )
         string GetResidType() 

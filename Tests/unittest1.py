@@ -118,6 +118,13 @@ class TestRigidbody(unittest.TestCase):
          at.SetCoords(Coord3D(2,3,4))
          r.AddAtom(at)
          self.assertAlmostEqual(len(r),1)
+         
+    def testGetAtomProperty(self):
+        atprop = self.r.GetAtomProperty(8)
+        self.assertEqual(atprop.GetResidType(), 'GLU')
+        self.assertEqual(atprop.GetResidId(), 2)
+        self.assertEqual(atprop.GetAtomId(), 9)
+        
             
 
 class TestBasicMoves(unittest.TestCase):

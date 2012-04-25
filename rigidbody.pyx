@@ -29,7 +29,9 @@ cdef extern from "rigidbody.h" namespace "PTools":
         void AddAtom(CppAtomproperty& , CppCoord3D )
         void AddAtom(CppAtom&)
         void SetAtom(unsigned int, CppAtom&)
-
+        
+        CppAtomproperty & GetAtomProperty(unsigned int)
+        void SetAtomProperty(unsigned int, CppAtomproperty& )
         
 
 cdef extern from "pdbio.h" namespace "PTools":
@@ -119,6 +121,20 @@ cdef class Rigidbody:
 
     def SetAtom(self, unsigned int position, Atom at):
         self.thisptr.SetAtom(position, deref(at.thisptr))
+    
+    
+    def GetAtomProperty(self, unsigned int position):
+        cdef CppAtomproperty cppatprop = self.thisptr.GetAtomProperty(position)
+        cdef Atomproperty pyAtprop = Atomproperty()
+        cdef CppAtomproperty* new_atomprop = new CppAtomproperty(cppatprop)
+        del pyAtprop.thisptr
+        pyAtprop.thisptr = new_atomprop
+        
+        return pyAtprop
+        
+    
+    
+    #    void SetAtomProperty(unsigned int, Atomproperty& )
     
 
         
