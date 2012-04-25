@@ -52,7 +52,7 @@ class TestRigidbody(unittest.TestCase):
         self.assertAlmostEqual(coords.y, 189.782 )
         self.assertAlmostEqual(coords.z, 106.402)
         self.assertEqual(atom.GetAtomId(), 4)
-        self.assertEquel(atom.GetChainId(), '')
+        self.assertEqual(atom.GetChainId(), '')
         
     def testGetCoords(self):
         coords = self.r.getCoords(3)

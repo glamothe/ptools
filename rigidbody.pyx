@@ -110,17 +110,17 @@ cdef class Rigidbody:
         cdef CppAtom cpp_at = self.thisptr.CopyAtom(atid)
         
         cdef Atom at = Atom()
-        cdef CppAtom* cpp_dest = at.thisptr
+        cdef CppAtom* cpp_dest =<CppAtom*> at.thisptr
         cy_copy_atom(&cpp_at , cpp_dest )
         return at
         
         
     def AddAtom(self, Atom at):
-        self.thisptr.AddAtom(deref(at.thisptr))
+        self.thisptr.AddAtom(deref(<CppAtom*>at.thisptr))
         
 
     def SetAtom(self, unsigned int position, Atom at):
-        self.thisptr.SetAtom(position, deref(at.thisptr))
+        self.thisptr.SetAtom(position, deref(<CppAtom*>at.thisptr))
     
     
     def GetAtomProperty(self, unsigned int position):

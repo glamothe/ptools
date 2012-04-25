@@ -17,7 +17,7 @@ cdef extern from "atom.h" namespace "PTools":
         void SetExtra(string extra)
         string GetExtra()
         
-    cdef cppclass CppAtom "PTools::Atom":
+    cdef cppclass CppAtom "PTools::Atom"(CppAtomproperty):
         CppAtom()
         CppAtom(CppAtomproperty, CppCoord3D)
         CppCoord3D GetCoords()
@@ -40,7 +40,8 @@ cdef class Atomproperty:
         self.thisptr = new CppAtomproperty()
         
     def __dealloc__(self):
-        del self.thisptr
+        if self.thisptr:
+            del self.thisptr
     
     
     def GetType(self):
@@ -88,16 +89,23 @@ cdef class Atomproperty:
         return self.thisptr.GetExtra().c_str()
 
         
-cdef class Atom:
-    cdef CppAtom * thisptr
+cdef class Atom(Atomproperty):
+    #cdef CppAtom * thisptr
     #def __cinit__(self, Atomproperty atproperty, Coord3D coords):
     def __cinit__(self, *args ):
         cdef CppAtomproperty * cppatpropptr
         cdef CppCoord3D * cpp_coptr
         
+        #the contructor of Atomproperty was already called here,
+        #so thisptr already points to allocated data
+        #we allocate here new data for a CppAtom instead of a CppAtomproperty
+        del self.thisptr
+        
         if len(args) == 0:
+            #no argument: allocate empty object
             self.thisptr = new CppAtom()
         else:
+           #contructor called with (Atomproperty atproperty, Coord3D coords)
            atproperty = <Atomproperty?> args[0]
            coords = <Coord3D?> args[1]
            cppatpropptr = atproperty.thisptr
@@ -107,10 +115,11 @@ cdef class Atom:
     def __dealloc__(self):
         
         del self.thisptr
+        self.thisptr = <CppAtomproperty*> 0
      
     def GetCoords(self):
         co = Coord3D()
-        cdef CppCoord3D c_coord3D = self.thisptr.GetCoords()
+        cdef CppCoord3D c_coord3D = (<CppAtom*>self.thisptr).GetCoords()
         co.x = c_coord3D.x
         co.y = c_coord3D.y
         co.z = c_coord3D.z
@@ -118,22 +127,22 @@ cdef class Atom:
         return co
         
     def SetCoords(self, Coord3D co):
-        self.thisptr.SetCoords(deref(co.thisptr))
+        (<CppAtom*>self.thisptr).SetCoords(deref(co.thisptr))
         
     def ToString(self):
-        return <bytes> self.thisptr.ToString().c_str()
+        return <bytes> (<CppAtom*>self.thisptr).ToString().c_str()
     def __str__(self):
         return self.ToString()
         
     def ToPdbString(self):
-        return <bytes> self.thisptr.ToPdbString().c_str()
+        return <bytes> (<CppAtom*>self.thisptr).ToPdbString().c_str()
     
     def Translate(self,Coord3D co):
-        self.thisptr.Translate(deref(co.thisptr))
+       (<CppAtom*>self.thisptr).Translate(deref(co.thisptr))
     
 def Dist(Atom at1, Atom at2):
-    return cppDist(deref(at1.thisptr), deref(at2.thisptr))
+    return cppDist(deref(<CppAtom*>at1.thisptr), deref(<CppAtom*>at2.thisptr))
     
 def Dist2(Atom at1, Atom at2):
-    return cppDist2(deref(at1.thisptr), deref(at2.thisptr))
+    return cppDist2(deref(<CppAtom*>at1.thisptr), deref(<CppAtom*>at2.thisptr))
         
