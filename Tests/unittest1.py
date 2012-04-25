@@ -29,6 +29,16 @@ class TestCoord3D(unittest.TestCase):
 class TestRigidbody(unittest.TestCase):
     def setUp(self):
         self.r = Rigidbody("1FIN_r.pdb")
+        self.r2 = Rigidbody()
+        at = Atom()
+        at.SetCoords(Coord3D(1,0,0))
+        self.r2.AddAtom(at)
+        at.SetCoords(Coord3D(0,1,0))
+        self.r2.AddAtom(at)
+        at.SetCoords(Coord3D(0,0,1))
+        self.r2.AddAtom(at)
+        
+        
     def testCopy(self):
         s = Rigidbody(self.r)
         self.assertEqual(len(s), len(self.r))
@@ -73,27 +83,31 @@ class TestRigidbody(unittest.TestCase):
         #test to see if the mofification worked:
         atom2 = self.r.CopyAtom(3)
         self.assertTrue( norm2(atom2.GetCoords() - Coord3D(3,4,5) ) < 1e6 )
+        coords2 = atom2.GetCoords()
+        self.assertAlmostEqual(coords2.x, 3)
+        self.assertAlmostEqual(coords2.y, 4)
+        self.assertAlmostEqual(coords2.z, 5)
 
 
     def testUnsafeGetCoords(self):
         """in principle GetCoords(i,co) and unsafeGetCoords(i,co) should
         lead to the exact same coordinates if a sync has been done before
         calling the 'unsafe' version"""
-        self.r2 = Rigidbody("1FIN_r.pdb")
+        r2 = Rigidbody("1FIN_r.pdb")
         A = Coord3D(4.23, 5.72, 99.02)
         B = Coord3D(1.23, 6.33, 1.234)
         self.r.ABrotate(A,B, 2.2345)
-        self.r2.ABrotate(A,B, 2.2345)
+        r2.ABrotate(A,B, 2.2345)
         self.r.Translate(Coord3D(34.23, 123.45,11.972))
-        self.r2.Translate(Coord3D(34.23, 123.45,11.972))
+        r2.Translate(Coord3D(34.23, 123.45,11.972))
 
-        self.r2.syncCoords()
+        r2.syncCoords()
         #same rotation and translation for r and r2: should have exact same coordinates
         for i in range(len(self.r)):
             co1 = Coord3D()
             co2 = Coord3D()
             co1 = self.r.getCoords(i)
-            self.r2.unsafeGetCoords(i,co2)
+            r2.unsafeGetCoords(i,co2)
             self.assertEqual(co1,co2)
 
             

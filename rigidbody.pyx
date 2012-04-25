@@ -26,6 +26,11 @@ cdef extern from "rigidbody.h" namespace "PTools":
         void AttractEulerRotate(double, double, double)
         void ApplyMatrix(Array2D[double] &)
         CppAtom CopyAtom(unsigned int )
+        void AddAtom(CppAtomproperty& , CppCoord3D )
+        void AddAtom(CppAtom&)
+        void SetAtom(unsigned int, CppAtom&)
+
+        
 
 cdef extern from "pdbio.h" namespace "PTools":
     # in fact ReadPDB does not really take a stringstream as input argument, but it makes 
@@ -108,7 +113,13 @@ cdef class Rigidbody:
         return at
         
         
+    def AddAtom(self, Atom at):
+        self.thisptr.AddAtom(deref(at.thisptr))
+        
 
+    def SetAtom(self, unsigned int position, Atom at):
+        self.thisptr.SetAtom(position, deref(at.thisptr))
+    
 
         
 cdef CppRigidbody* _getRigidbody_from_py_name(pyname):
