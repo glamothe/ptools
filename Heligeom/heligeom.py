@@ -105,11 +105,17 @@ def main():
     #print >> sys.stderr, "resid number :",a,b
 
     rmsd=test(hp,mono1,mono2)
-    print >> sys.stderr,"quality (Rmsd):",rmsd
-    print >> sys.stderr," "
-    print >> sys.stderr,"theta:\t"+str(hp.angle)+"\nomega:\t"+hp.unitVector.toString()+"P:\t"+hp.point.toString()+"trans\t"+str(hp.normtranslation)
-    print >> sys.stderr,"monomer by turn:\t", 360./abs(math.degrees(hp.angle))
+    #print >> sys.stderr,"quality (Rmsd):",rmsd
+    #print >> sys.stderr," "
+    print >> sys.stderr,"P:\t"+hp.point.toString()+"omega:\t"+hp.unitVector.toString()+"angle theta:\t radian:"+str(hp.angle)+"\t degree:"+str(math.degrees(hp.angle))+"\ntrans\t"+str(hp.normtranslation)
+    print >> sys.stderr,"monomer per turn:\t", 360./abs(math.degrees(hp.angle))
     print >> sys.stderr,"pitch:\t",hp.normtranslation*(360./abs(math.degrees(hp.angle)))
+    
+    if hp.angle * hp.normtranslation > 0:
+        sens = "right-handed"
+    else: sens = "left-handed"
+    print >> sys.stderr,"Helix sense : "+sens
+    
     if nargs >= 4:
         Z=False
         if nargs >= 5:

@@ -3,8 +3,8 @@ import math
 import sys
 import os
 
-PB_CG = "../../../script/pb.cg.pdb"
-PB_AA = "../../../script/pb.aa.pdb"
+PB_CG = "pb.cg.pdb"
+PB_AA = "pb.aa.pdb"
 
 def readline(lineName):
     line=[]
@@ -183,7 +183,7 @@ def buildDNA(line):
 def main():
     nargs = len(sys.argv)
     if nargs < 2:
-        print "usage: makeCandidate.py  dots"
+        print "usage: buildDNAalongAnAxis.py  axis"
         raise SystemExit
 
     line = readline(sys.argv[1])

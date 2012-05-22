@@ -3,8 +3,8 @@ import math
 import sys
 import os
 
-PB_CG = "../../../script/pb.cg.pdb"
-PB_AA = "../../../script/pb.aa.pdb"
+PB_CG = "pb.cg.pdb"
+PB_AA = "pb.aa.pdb"
 
 def ScalProd(a,b):
     return a.x * b.x + a.y * b.y + a.z * b.z ;
@@ -74,6 +74,9 @@ def rotateDNA(dna,axislist,angle):
         #print bp.PrintPDB()
         new = new + bp
         #print new.size()
+    bp = dna[dna.size()-1].getRigidBody()
+    ABrotate( model.CopyAtom(0).GetCoords(), model.CopyAtom(1).GetCoords(), bp, math.radians(angle) )
+    new = new + bp
     return new
     #python screwOptimisation.py ../1QRV_93.axis ../1QRV_93.candidate ../../cgPyAttract/1QRV_bound-prot.red
 ##python screwOptimisation.py ../3CRO_93.dots.3clust.axis ../3CRO_93.dots.3clust.candidate.pdb ../../cgPyAttract/3CRO_bound-prot.red >toto.pdb                           python screwOptimisation.py ../3CRO_93.dots.3clust.axis 3CRO_test.pdb ../../cgPyAttract/3CRO_bound-prot.red >toto.pdb   
@@ -82,7 +85,7 @@ def rotateDNA(dna,axislist,angle):
 def main():
     nargs = len(sys.argv)
     if nargs < 3:
-        print "usage: makeCandidate.py  line.dot DNA.pdb angle(degree)"
+        print "usage: makeCandidate.py axis DNA.pdb angle(degree)"
         raise SystemExit
 
     line = readline(sys.argv[1])

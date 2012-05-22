@@ -1240,7 +1240,7 @@ monomer by turn:        5.99999438135
 pitch:  0.00161828349893
 \end{verbatim}
 
-Where quality is an estimation of the superpostion of the second monomer and the first monomer after the screw movement. it should always be as close to zero as possible. There is for parameters to describe the screw motion.first, a vector omega and a point P to form the axis and second, the angle theta ( in radian ) of the rotation and the translation trans to aply along the axis. This for parameters are ilustrated on Fig.~\ref{screw}. Finally, heligeom provide the number of monomer by turn and the pitch (the distance between the monomers at the ends of a complete turn).
+There is for parameters to describe the screw motion.first, a vector omega and a point P to form the axis and second, the angle theta ( in radian ) of the rotation and the translation trans to aply along the axis. This for parameters are ilustrated on Fig.~\ref{screw}. Finally, heligeom provide the number of monomer by turn and the pitch (the distance between the monomers at the ends of a complete turn).
 
 \begin{figure}[htbp]
 \center
@@ -1250,7 +1250,7 @@ Where quality is an estimation of the superpostion of the second monomer and the
 \end{figure}
 \newpage
 \subsection{Modeling}
-With the for screw motion parameters, you can extend your two monomer as you want to form a longer helix. such operation is easily done with heligeom by giving the wanted number of monomers as argument :
+With the four screw motion parameters, you can extend your two monomer as you want to form a longer helix. such operation is easily done with heligeom by giving the wanted number of monomers as argument :
       
 \begin{verbatim}
 python heligeom.py 2GLS_A.pdb 2GLS_B.pdb 6 > new_2GLS.pdb
@@ -1268,6 +1268,261 @@ pymol new_2GLS.pdb
 \caption{The circular filaments 2GLS as modelized with heligeom from two monomer A and B (in cyan and red respectively).}
 \label{2gls}
 \end{figure}
+
+you can also use another tool to form a monomer along an arbitrary axis.For this exemple we will use a different protein. Dowload the pdb file 3CMT and use the following code to obtain two monomer:
+\begin{verbatim}
+rig =Rigidbody("3CMT.pdb")
+m1 = rig.SelectChainId ("A") & rig.SelectResRange (2000,2999)
+m2 = rig.SelectChainId ("A") & rig.SelectResRange (3000,3999)
+
+WritePDB (m1.CreateRigid () , "3CMT_m1.pdb")
+WritePDB (m2.CreateRigid () , "3CMT_m2.pdb")
+\end{verbatim}       
+First you have to generate an arbitrary axis. Here an exemple of a script to generate such axis (let's call it "genAxis.py")
+\begin{verbatim}
+from ptools import *
+
+l=[]
+r =Rigidbody()
+r.AddAtom (Atom (Atomproperty(), Coord3D (20,0,0)))
+m=(Rise(0.7)+Roll(0.1)).getMatrix()
+
+for i in xrange(0,2000):
+     r.ApplyMatrix(m)
+     print r.PrintPDB(),
+\end{verbatim} 
+
+Generate the axis file:
+\begin{verbatim}
+python genAxis.py > axis.pdb
+\end{verbatim}
+
+Then call the script buildProteinAlongAxis.py : 
+\begin{verbatim}
+python buildProteinAlongAnAxis.py axis.pdb 3CMT_m1.pdb 3CMT_m2.pdb >new.pdb
+\end{verbatim}
+
+Optionally a angle can be precised to operate a rotation around the axis (comparatively to the conformation when the script is call without argument). the angle is given in degree.
+
+\begin{verbatim}
+python buildProteinAlongAnAxis.py axis.pdb 3CMT_m1.pdb 3CMT_m2.pdb 180 >new2.pdb
+\end{verbatim}
+
+Altough the script was made for protein, it accept any kind of pdb file.
+
+\subsection{Helix and docking simulations}
+
+Ptools offer scripts to rank your docking simulation results by helical properties, such as the number of monomer by turn or pitch. first transform your docking result ( let's call them "myResult.att") with the following script.
+\begin{verbatim}
+python extractHelicoidalParameter.py myResult.att receptor.red > h-parameter.txt
+\end{verbatim}
+
+the files "h-parameter.txt" will look someting similar to this:
+\begin{verbatim}
+1 1 2.71407733582 79.9787435719 L -12.5671003
+1 2 2.98516008093 66.1655247583 R -19.7301312
+1 3 19.5744814746 1713.82947959 R -0.0004227
+...
+\end{verbatim}
+The two first colums are the rotation and translation number that are unique for each docking simulation. The third colum is the number of monomers by turn and the fourth the pitch. the fifth colum indicate if the helix is left-handed (L) or rigth-handed (R). Finally the last colum give the energy of interaction at the end of the docking simulation.
+  
+You can then use the following script to precise range of selection for the number of monomer by turn, pitch or direction of the helix (left- or rigth-handed).
+\begin{verbatim}
+python filterHelicodalParameters.py h-parameter.txt --pitch 30 50 --nbMono 5 6 --direction R
+\end{verbatim}
+
+Or you can use the abrievated form :
+\begin{verbatim}
+python filterHelicodalParameters.py h-parameter.txt -p 30 50 -n 5 6 -d R
+\end{verbatim}
+
+This will return you all the simulation coresponding to your criteria, ordered by energy. Note the translation and rotation of the ones that interest you, and then use the following script to exctract the pdb model.
+\begin{verbatim} 
+python extractHelicoidalModel.py myResult.att receptor.pdb 124 57 >myHelix.pdb 
+\end{verbatim}
+this will return you a whole turn of the helix. You can precise the number of turn if you want more than one.
+\begin{verbatim} 
+python extractHelicoidalModel.py myResult.att receptor.pdb 124 57 3 >myHelix.pdb 
+\end{verbatim}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{DNA manipulation with PTools}
+
+\subsection{Introduction}
+To manipulate double stranded dna in Ptools, you can of course use a Rigidbody() object, but Ptools provide a special object, call DNA() to operate advanced operation on double stranded dna.
+\subsubsection{DNA object}
+There is many way to create a DNA object. It can be created empty:
+\begin{verbatim}
+d = DNA()
+\end{verbatim}
+Or from another DNA() object:
+\begin{verbatim}
+d = DNA(old_d)
+\end{verbatim}
+You can also generate a new DNA() from a PDB file. For that you will need a file with base pair data. Two are provided with Ptools, see the "base pair files" section for more details.
+\begin{verbatim}
+d = DNA("pb.aa.pdb","mydna.pdb")
+\end{verbatim}       
+Finally you can generate a completely new DNA() by giving the data file for base pair, the expected sequence and the parameters to describe how to position a base pair from one another. Such parameters are hold in PTools in Movement() object, which are discribed in detail in the section "Regular conformation" 
+\begin{verbatim}
+d = DNA("pb.aa.pdb","AATTGCTTAA",BDNA())
+\end{verbatim} 
+
+It is easy to make the trasition from DNA() to Rigidbody() or from Rigidbody() to DNA().
+
+\begin{verbatim}
+mydna = DNA("pb.aa.pdb",myRigidbody)
+myNewRigidbody = mydna.createRigid() 
+\end{verbatim} 
+
+You can also obtain the rigidbody of only one strand easily.
+
+\begin{verbatim}
+rigidStrandA = mydna.createRigidOfStrand ("A")
+\end{verbatim} 
+\subsubsection{BasePair object}
+BasePair() object are a convenient way to hold the data of the base pair of the DNA() object. they can be easily acceded to.
+\begin{verbatim}
+d = DNA("pb.aa.pdb","AAAAA",BDNA())
+basePairNumber2 = d[1] #numeration start at 0
+\end{verbatim} 
+
+you can obtain the Rigidbody() of a given base pair.
+\begin{verbatim}
+myRigidbody = d[1].getRigidBody() 
+\end{verbatim} 
+
+\subsubsection{base pair files}
+PTools need data to build or reconstruct DNA(). Such data are provided by the base pair files. you can find two of these files in the DNA/ directory. the file "pb.aa.pdb" give you base pair in all atom representation while the "pb.cg.pdb" provide base pair in coarse grain representation such as the one use in docking simulation.
+
+Once created, the representation of a DNA can be easily change.
+
+\begin{verbatim}
+myAllAtomDNA = myCoarseGrainDNA.changeRepresentation ("pb.aa.pdb")
+\end{verbatim} 
+
+\subsubsection{Regular conformation}
+For a rigid body, there is six degree of freedom : three translation and three rotation. A change from this parameters to a new set of parameters can be represented by a matrix, but for convenience PTools provided also a Movement() object.
+ 
+You can easily make the transition to and from a matrix.
+
+\begin{verbatim}
+mov = Movement (matrix)
+matrix = mov.getMatrix ()
+\end{verbatim} 
+
+Again for convenience's sake,special objects inherited from Movement() are provided to define rotation or translation. Rotation are given in degree.
+\begin{verbatim}
+mov = Shift (2) #translation on x (short axis)
+mov = Slide (2) #translation on y (long axis)
+mov = Rise  (2) #translation on z (perpendicular axis)
+mov = Twist(15) #rotation around z (perpendicular axis)
+mov = Roll (15) #rotation around y (long axis) 
+mov = Tilt (15) #rotation around x (short axis)
+\end{verbatim} 
+ 
+Movement() can be add to each other to form new movement. There is a special order to mix translation and rotation : 
+
+\begin{verbatim}
+mov = Twist( 31.1 )+Roll( 2.0 )+Tilt( 2.1 )+Rise( 3.3 )+Slide( -2.4 )+Shift( -0.5 )
+\end{verbatim} 
+
+There is also provided two Movements object representing the step between two base pair in a regular conformation of the dna. the first one, BDNA(), is for dna in B conformation. the second one, ADNA() is , as you have guessed, for dna in A conformation.
+ 
+If you need to get the parameters of a dna conformation that is not already defined, you can use the "computeParametersOfDNA.py" script provided in the DNA directory.
+\begin{verbatim}
+python computeParametersOfDNA.py mydna.pdb
+\end{verbatim} 
+
+\subsection{Exemple}
+\subsubsection{Edition}
+
+The type of a base pair (A,T,G,C) may be change by a simple instruction.
+\begin{verbatim}
+d.changeType(0,"A","pb.cg.pdb")
+\end{verbatim}
+
+Here a simple script to change the complete sequence of a DNA (provided the length of the old and new sequence are the same): 
+\begin{verbatim}
+d = DNA("pb.cg.pdb","mydna.pdb" )
+for i,c in enumerate ("AAATTATTTTACTCTGTGTAATAAATAAAA"):
+    d.changeType(i,c,"pb.cg.pdb")
+\end{verbatim} 
+
+When you have more than one DNA, you can "add" one to the other. That will put the second dna at the end of the first one, with the provided movement between them. By default a BDNA() movement is provided.
+\begin{verbatim}
+d1 = DNA("pb.aa.pdb","AAAAT",BDNA())
+d2 = DNA("pb.aa.pdb","GCCCC",ADNA())
+d1.add(d2) # the last base T of d1 will be connected to the first base G of d2
+\end{verbatim}
+
+you can also "extract" a DNA from a bigger one.
+ 
+\begin{verbatim}
+new_d =d.subDNA(1,3) # will create a new dna of 3 base pairs
+\end{verbatim}
+ 
+\subsubsection{Modification}
+you can change the position of a DNA by a vector ...
+\begin{verbatim}
+d.translate(Coord3D(0,0,1))
+\end{verbatim}
+
+... or a transformation matrix (or Movement)
+\begin{verbatim}
+d.apply(Slide(5))
+\end{verbatim}
+
+you can also modify a specific base pair with a transformation matrix. such change will be done relatively to the local frame of the base pair.
+\begin{verbatim}
+d.applyLocal(Slide(5),2)# will displace on Y the third base pair 
+\end{verbatim}
+
+This operation can modify the position of the following base pairs in the DNA. To avoid unwanted deplacement, you can provide a base pair position as anchor to make sure of wich part will move 
+\begin{verbatim}
+d.applyLocal(Slide(5),2,0)
+\end{verbatim}
+
+finally you can apply such transformation on each base pairs at once:
+\begin{verbatim}
+d.applyGlobal(Slide(5)) 
+\end{verbatim}
+    
+\subsection{DNA and Axis}
+PTools also provide tools to build a DNA aroud a given axis. Such axis must be define as set of atom forming a line and not too apart from each other (around 1 angstrom for exemple).
+
+Here a script to generate such an axis:
+
+\begin{verbatim}
+from ptools import *
+
+l=[]
+r =Rigidbody()
+r.AddAtom (Atom (Atomproperty(), Coord3D (20,0,0)))
+m=(Rise(0.3)+Twist(1.7)).getMatrix()
+
+for i in xrange(0,300):
+     r.ApplyMatrix(m)
+     print r.PrintPDB(),
+\end{verbatim} 
+
+it's then trivial to generate the DNA.
+
+\begin{verbatim}
+python buildDNAalongAnAxis.py  axis > myDNA.pdb
+\end{verbatim} 
+
+The new DNA wil perhaps not be in a convenient phase. you can rotate it around its axis with the rotateDNAaroundAxis.py by giving an angle (in degree).
+
+\begin{verbatim}
+python rotateDNAaroundAxis.py axis DNA.pdb 15 > myNewDNA.pdb
+\end{verbatim} 
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{Misc. tips and tricks}
