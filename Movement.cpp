@@ -315,7 +315,7 @@ Tilt::Tilt(double alpha)
 // S.Arnott, R.Chandrasekaran, D.L.Birdsall, A.G.W.Leslie and R.L.Ratliff, Nature 283, 743-746 (1980) 
 ADNA::ADNA():Movement()
 {
-  m=Twist( 31.1185909091 )+Roll( 2.06055181818 )+Tilt( 2.12008054545 )+Rise( 3.37983727273 )+Slide( -2.41029181818 )+Shift( -0.549621454545 );
+  m=(Twist( 31.1185909091 )+Roll( 2.06055181818 )+Tilt( 2.12008054545 )+Rise( 3.37983727273 )+Slide( -2.41029181818 )+Shift( -0.549621454545 )).getMatrix();
 }
 
 BDNA::BDNA():Movement()
