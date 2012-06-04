@@ -20,6 +20,8 @@ cdef extern from "attractrigidbody.h" namespace "PTools":
         void setRotation(bool)
         void setTranslation(bool)
 
+        unsigned int Size()
+
 
 
 cdef CppAttractRigidbody* _getAttractRigidbody_from_py_name(pyname):
@@ -42,6 +44,8 @@ cdef class AttractRigidbody:
         elif isinstance(arg, str):
            self.thisptr = _getAttractRigidbody_from_py_name(arg)
            return
+        else:
+           print "Should never reach here(attractrigidbody.pyx:AttractRigidbody:__cinit__)"
 
 
     def __dealloc__(self):
@@ -70,4 +74,5 @@ cdef class AttractRigidbody:
         self.thisptr.resetForces()
 
     
-        
+    def Size(self):
+        return self.thisptr.Size()
