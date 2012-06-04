@@ -142,6 +142,7 @@ cdef CppRigidbody* _getRigidbody_from_py_name(pyname):
     cdef char* name = pyname
     cdef string *cppname = new string(name)
     cdef CppRigidbody *newrigid = new CppRigidbody(deref(cppname))
+    del cppname
     return newrigid
 
 
