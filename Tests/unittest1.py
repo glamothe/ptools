@@ -286,7 +286,7 @@ class TestCoordsArray(unittest.TestCase):
         self.tr = Coord3D(3.0, 4.5, -3.0)
         
     def testSize(self):
-        self.assertTrue(self.c.Size() == 2)
+        self.assertTrue(len(self.c) == 2)
         
     def testGetAtom(self):
         c1 = Coord3D()
@@ -349,15 +349,17 @@ class TestForceFields(unittest.TestCase):
         c = Rigidbody("pk6c.red")
         a = AttractRigidbody(a)
         c = AttractRigidbody(c)
+        
+        print "*********** sizes:", a.Size(), '/', c.Size()
         a.setRotation(False)
         a.setTranslation(False)
         FF = AttractForceField2("mbest1k.par", 20.0)
         FF.AddLigand(a)
         FF.AddLigand(c)
-        x = Vdouble()
+        x = []
         for i in range(6):
-            x.append(0)
-        self.assertTrue( abs(FF.Function(x)+32.9487770656) < 1e-6) #energy from ptools 0.3
+            x.append(0.0)
+        self.assertAlmostEqual(FF.Function(x),-32.9487770656) #energy from ptools 0.3
 	self.assertEqual(FF.Function(x), FF.getVdw() + FF.getCoulomb())
 
          
