@@ -7,6 +7,7 @@ cdef extern from "attractrigidbody.h" namespace "PTools":
         CppAttractRigidbody()
         CppAttractRigidbody(string&)  #filename
         CppAttractRigidbody(CppRigidbody&)
+        CppAttractRigidbody(CppAttractRigidbody&)
 
         unsigned int getAtomTypeNumber(unsigned int)
 
@@ -19,6 +20,7 @@ cdef extern from "attractrigidbody.h" namespace "PTools":
  
         void setRotation(bool)
         void setTranslation(bool)
+        CppCoord3D FindCenter()
 
         unsigned int Size()
 
@@ -44,8 +46,14 @@ cdef class AttractRigidbody:
         elif isinstance(arg, str):
            self.thisptr = _getAttractRigidbody_from_py_name(arg)
            return
-        else:
+        elif isinstance(arg, AttractRigidbody):
+           oldrigidbody = <AttractRigidbody> arg
+           oldrigidbody_ptr = <CppAttractRigidbody*> oldrigidbody.thisptr
+           self.thisptr = new CppAttractRigidbody(deref(oldrigidbody_ptr) )          
+           return
+        else: 
            print "Should never reach here(attractrigidbody.pyx:AttractRigidbody:__cinit__)"
+           print arg
 
 
     def __dealloc__(self):
@@ -76,3 +84,21 @@ cdef class AttractRigidbody:
     
     def Size(self):
         return self.thisptr.Size()
+        
+    def FindCenter(self):
+        cdef CppRigidbody* rig = <CppRigidbody*> self.thisptr
+        cdef CppCoord3D* co = new CppCoord3D (rig.FindCenter())
+        ret = Coord3D()
+        del ret.thisptr
+        ret.thisptr = co
+        
+        return ret
+        
+    def Translate(self, Coord3D co):
+        cdef CppRigidbody* rig = <CppRigidbody*> self.thisptr
+        rig.Translate(deref(co.thisptr))
+        
+    def  AttractEulerRotate(self, double phi, double ssi, double rot):
+        cdef CppRigidbody* rig = <CppRigidbody*> self.thisptr
+        rig.AttractEulerRotate(phi, ssi, rot)
+        

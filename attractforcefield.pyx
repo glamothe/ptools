@@ -49,3 +49,9 @@ cdef class AttractForceField2:
            v.push_back(el)
 
         return self.thisptr.Function(v)
+        
+    def getVdw(self):
+        return self.thisptr.getVdw()
+    
+    def getCoulomb(self):
+        return self.thisptr.getCoulomb()
