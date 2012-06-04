@@ -375,7 +375,6 @@ Screw MatTrans2screw(const Matrix& mat)
     screw.angle = acos(cost);
     if (sint < 0) screw.angle = -screw.angle ;
 
-    screw.angle *= -1;
     return screw ;
 }
 
