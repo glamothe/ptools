@@ -11,6 +11,10 @@ import bz2  #for compression of Ligand and receptor data
 import base64 #compressed ligand and receptor as base64 strings
 
 
+
+def surreal(i):
+    return i
+
 def rmsdca(l1,l2):
     return Rmsd(l1.CA(), l2.CA())
 
@@ -200,9 +204,8 @@ print """
 **                                                                  **
 **********************************************************************
 PTools revision %s
-from branch %s
-unique id %s
-"""%(Version().revstr, Version().branchnick, Version().revid)
+
+"""%(Version().revid)
 
 import locale
 
