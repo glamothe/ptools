@@ -36,6 +36,7 @@ void mat44xmat44( const dbl mat1[ 4 ][ 4 ], const dbl mat2[ 4 ][ 4 ], dbl result
 
 
 
+
 void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
 {
 
@@ -46,55 +47,13 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
 
     dbl mat1[ 4 ][ 4 ] ;
 
-
-    // translation of vector BA
-    for ( int i = 0; i < 4; i++ )
-        for ( int j = 0; j < 4; j++ )
-            if ( i != j )
-            {
-                mat1[ i ][ j ] = 0 ;
-            }
-            else
-                mat1[ i ][ j ] = 1 ;
-
-    mat1[ 0 ][ 3 ] = -A.x;
-    mat1[ 1 ][ 3 ] = -A.y;
-    mat1[ 2 ][ 3 ] = -A.z;
+    
+    MakeTranslationMat44( Coord3D() -A , mat1 );
+    
 
     dbl cost = cos( theta );
     dbl sint = sin( theta );
         
-    // rotation to get back to plan Oxz: rotation 1 around X, angle -gamma (-g).
-    dbl d = sqrt( dy*dy + dz*dz ) ; // projection of AB on the Oyz plan
-    
-    
-    
-    
-
-    if ( real(d) == 0 )  // AB belongs to (Ox)
-    {
-        
-
-        out[ 0 ][ 0 ] = 1 ;
-        out[ 0 ][ 1 ] = 0 ;
-        out[ 0 ][ 2 ] = 0 ;
-        out[ 0 ][ 3 ] = 0 ;
-        out[ 1 ][ 0 ] = 0 ;
-        out[ 1 ][ 1 ] = cost ;
-        out[ 1 ][ 2 ] = sint ;
-        out[ 1 ][ 3 ] = 0 ;
-        out[ 2 ][ 0 ] = 0 ;
-        out[ 2 ][ 1 ] = -sint;
-        out[ 2 ][ 2 ] = cost ;
-        out[ 2 ][ 3 ] = 0 ;
-        out[ 3 ][ 0 ] = 0 ;
-        out[ 3 ][ 1 ] = 0 ;
-        out[ 3 ][ 2 ] = 0 ;
-        out[ 3 ][ 3 ] = 1 ;
-        //printmat44(out);
-        return ;
-
-    }
 
     //we normalize the AB vector
     dbl x,y,z;
@@ -105,195 +64,42 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     
     dbl V = sqrt(x*x+y*y) ; //shortcut
     
+    dbl rodrig[4][4];
+    
     //Rodrigues' rotation matrix:
     
-    mat2[0][0] = cost + x*x*(1-cost);
-    mat2[0][1] = x*y*(1-cost) + z*sint;
-    mat2[0][2] = z*x*(1-cost) - y*sint;
-    mat2[0][2] = 0;
+    rodrig[0][0] = cost + x*x*(1-cost);
+    rodrig[1][0] = x*y*(1-cost) + z*sint;
+    rodrig[2][0] = z*x*(1-cost) - y*sint;
+    rodrig[3][0] = 0;
     
-    mat2[1][0] = x*y*(1-cost) - z*sint ; 
-    mat2[1][1] = cost + y*y*(1-cost);
-    mat2[1][2] = z*y*(1-cost) + x*sint;
-    mat2[1][3] = 0;
+    rodrig[0][1] = x*y*(1-cost) - z*sint ; 
+    rodrig[1][1] = cost + y*y*(1-cost);
+    rodrig[2][1] = z*y*(1-cost) + x*sint;
+    rodrig[3][1] = 0;
     
-    mat2[2][0] = x*z*(1-cost) + y*sint;
-    mat2[2][1] = y*z*(1-cost)-x*sint;
-    mat2[2][2] = cost + z*z*(1-cost);
-    mat2[2][3] = 0;
+    rodrig[0][2] = x*z*(1-cost) + y*sint;
+    rodrig[1][2] = y*z*(1-cost)-x*sint;
+    rodrig[2][2] = cost + z*z*(1-cost);
+    rodrig[3][2] = 0;
     
-    mat2[3][0] = 0;
-    mat2[3][1] = 0;
-    mat2[3][2] = 0;
-    mat2[3][3] = 1;
-    
-    
+    rodrig[0][3] = 0;
+    rodrig[1][3] = 0;
+    rodrig[2][3] = 0;
+    rodrig[3][3] = 1;
     
     
     
+    //left multiply translation matrix by the Rodrigues matrix:
+    mat44xmat44(rodrig, mat1, out);
     
+    //translate back to point A:
+    MakeTranslationMat44(A, mat1);
     
+    //left multiply rot+trans matrix by the back translation to A:
     
+    mat44xmat44(mat1, out, out);
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    dbl cosg = dz / d ;
-    dbl sing = dy / d ;
-    dbl mat2[ 4 ][ 4 ] ;
-
-    mat2[ 0 ][ 0 ] = 1 ;
-    mat2[ 0 ][ 1 ] = 0 ;
-    mat2[ 0 ][ 2 ] = 0 ;
-    mat2[ 0 ][ 3 ] = 0 ;
-    mat2[ 1 ][ 0 ] = 0 ;
-    mat2[ 1 ][ 1 ] = cosg ;
-    mat2[ 1 ][ 2 ] = sing ;
-    mat2[ 1 ][ 3 ] = 0 ;
-    mat2[ 2 ][ 0 ] = 0;
-    mat2[ 2 ][ 1 ] = -sing;
-    mat2[ 2 ][ 2 ] = cosg ;
-    mat2[ 2 ][ 3 ] = 0 ;
-    mat2[ 3 ][ 0 ] = 0 ;
-    mat2[ 3 ][ 1 ] = 0 ;
-    mat2[ 3 ][ 2 ] = 0;
-    mat2[ 3 ][ 3 ] = 1 ;
-
-    //printmat44(mat2);
-
-    dbl mat3[ 4 ][ 4 ];
-    mat44xmat44( mat2, mat1, mat3 ); // mat3 == mat2*mat1 (!= mat1*mat2 )
-
-
-    // rotation to get back to the Oz axis: rotation 2. Axis (Oy), angle p.
-    dbl f = sqrt(  dx*dx + dy*dy + dz*dz ); // norm
-    dbl cosp, sinp ;
-    
-//     cosp = d / f;
-//     sinp = dx / f;
-
-    cosp = dz/f;
-    sinp = d/f;
-    
-
-    mat1[ 0 ][ 0 ] = cosp ;
-    mat1[ 0 ][ 1 ] = 0 ;
-    mat1[ 0 ][ 2 ] = sinp ;
-    mat1[ 0 ][ 3 ] = 0 ;
-    mat1[ 1 ][ 0 ] = 0 ;
-    mat1[ 1 ][ 1 ] = 1 ;
-    mat1[ 1 ][ 2 ] = 0 ;
-    mat1[ 1 ][ 3 ] = 0 ;
-    mat1[ 2 ][ 0 ] = -sinp ;
-    mat1[ 2 ][ 1 ] = 0 ;
-    mat1[ 2 ][ 2 ] = cosp ;
-    mat1[ 2 ][ 3 ] = 0 ;
-    mat1[ 3 ][ 0 ] = 0 ;
-    mat1[ 3 ][ 1 ] = 0 ;
-    mat1[ 3 ][ 2 ] = 0 ;
-    mat1[ 3 ][ 3 ] = 1 ;
-
-    mat44xmat44( mat1, mat3, mat2 ); // result stored in mat2
-
-
-    // effective rotation (around 0z axis, angle theta)
-    dbl rotmatrix[ 4 ][ 4 ] ;
-    dbl cost = cos( theta );
-    dbl sint = sin( theta );
-
-    rotmatrix[ 0 ][ 0 ] = cost ;
-    rotmatrix[ 0 ][ 1 ] = sint;
-    rotmatrix[ 0 ][ 2 ] = 0;
-    rotmatrix[ 0 ][ 3 ] = 0;
-    rotmatrix[ 1 ][ 0 ] = -sint;
-    rotmatrix[ 1 ][ 1 ] = cost;
-    rotmatrix[ 1 ][ 2 ] = 0;
-    rotmatrix[ 1 ][ 3 ] = 0;
-    rotmatrix[ 2 ][ 0 ] = 0 ;
-    rotmatrix[ 2 ][ 1 ] = 0 ;
-    rotmatrix[ 2 ][ 2 ] = 1;
-    rotmatrix[ 2 ][ 3 ] = 0;
-    rotmatrix[ 3 ][ 0 ] = 0 ;
-    rotmatrix[ 3 ][ 1 ] = 0 ;
-    rotmatrix[ 3 ][ 2 ] = 0;
-    rotmatrix[ 3 ][ 3 ] = 1;
-
-    mat44xmat44( rotmatrix, mat2, mat3 ); // result stored in mat3
-
-
-    //rotation -2:
-    mat1[ 0 ][ 0 ] = cosp ;
-    mat1[ 0 ][ 1 ] = 0 ;
-    mat1[ 0 ][ 2 ] = sinp ;
-    mat1[ 0 ][ 3 ] = 0 ;
-    mat1[ 1 ][ 0 ] = 0 ;
-    mat1[ 1 ][ 1 ] = 1 ;
-    mat1[ 1 ][ 2 ] = 0 ;
-    mat1[ 1 ][ 3 ] = 0 ;
-    mat1[ 2 ][ 0 ] = -sinp ;
-    mat1[ 2 ][ 1 ] = 0 ;
-    mat1[ 2 ][ 2 ] = cosp ;
-    mat1[ 2 ][ 3 ] = 0 ;
-    mat1[ 3 ][ 0 ] = 0 ;
-    mat1[ 3 ][ 1 ] = 0 ;
-    mat1[ 3 ][ 2 ] = 0 ;
-    mat1[ 3 ][ 3 ] = 1 ;
-
-
-
-
-    mat44xmat44( mat1, mat3, rotmatrix ); // result in rotmatrix
-
-    //rotation -1:
-
-    mat2[ 0 ][ 0 ] = 1 ;
-    mat2[ 0 ][ 1 ] = 0 ;
-    mat2[ 0 ][ 2 ] = 0 ;
-    mat2[ 0 ][ 3 ] = 0 ;
-    mat2[ 1 ][ 0 ] = 0 ;
-    mat2[ 1 ][ 1 ] = cosg ;
-    mat2[ 1 ][ 2 ] = sing ;
-    mat2[ 1 ][ 3 ] = 0 ;
-    mat2[ 2 ][ 0 ] = 0 ;
-    mat2[ 2 ][ 1 ] = -sing ;
-    mat2[ 2 ][ 2 ] = cosg ;
-    mat2[ 2 ][ 3 ] = 0 ;
-    mat2[ 3 ][ 0 ] = 0 ;
-    mat2[ 3 ][ 1 ] = 0 ;
-    mat2[ 3 ][ 2 ] = 0 ;
-    mat2[ 3 ][ 3 ] = 1 ;
-
-
-
-    mat44xmat44( mat2, rotmatrix, mat3 );
-
-
-    //translation-1:
-    for ( int i = 0; i < 4; i++ )
-        for ( int j = 0; j < 4; j++ )
-            if ( i != j )
-            {
-                mat1[ i ][ j ] = 0 ;
-            }
-            else
-                mat1[ i ][ j ] = 1 ;
-
-    mat1[ 0 ][ 3 ] = A.x;
-    mat1[ 1 ][ 3 ] = A.y;
-    mat1[ 2 ][ 3 ] = A.z;
-
-    mat44xmat44( mat1, mat3, out );
-
 }
 
 
@@ -388,8 +194,10 @@ dbl MakeTranslationMat44(Coord3D t, dbl out[4][4] )
 {
     for (int i=0; i<4; i++)
       for(int j=0; j<4; j++)
+      {
         if (i==j) out[i][i]=1.0;
         else out[i][j]=0.0;
+      }
 
      out[0][3]=t.x;
      out[1][3]=t.y;
