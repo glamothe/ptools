@@ -169,11 +169,13 @@ class TestRotations(unittest.TestCase):
         at1 = Atom(Atomproperty(),Coord3D(1,0,0))
         at2 = Atom(Atomproperty(),Coord3D(0,1,0))
         at3 = Atom(Atomproperty(),Coord3D(0,0,1))
+        at4 = Atom(Atomproperty(),Coord3D(1,1,1))
         
         rig = Rigidbody()
         rig.AddAtom(at1)
         rig.AddAtom(at2)
         rig.AddAtom(at3)
+        rig.AddAtom(at4)
         
         self.rig = rig
         
@@ -241,6 +243,34 @@ class TestRotations(unittest.TestCase):
         self.assertAlmostEqual(co3.x, 1)
         self.assertAlmostEqual(co3.y, 0)
         self.assertAlmostEqual(co3.z, 0)
+        
+        
+    def testRotZ_trans(self):
+        
+        self.rig.ABrotate(Coord3D(1,1,1), Coord3D(1,1,3), math.pi/2)
+        
+        
+        co1 = self.rig.CopyAtom(0).GetCoords()
+        self.assertAlmostEqual(co1.x, 2)
+        self.assertAlmostEqual(co1.z, 0)
+        self.assertAlmostEqual(co1.y, 1)
+        
+        
+        co2 = self.rig.CopyAtom(1).GetCoords()
+        self.assertAlmostEqual(co2.x, 1)
+        self.assertAlmostEqual(co2.y, 0)
+        self.assertAlmostEqual(co2.z, 0)
+
+        co3 = self.rig.CopyAtom(2).GetCoords()
+        self.assertAlmostEqual(co3.x, 2)
+        self.assertAlmostEqual(co3.y, 0)
+        self.assertAlmostEqual(co3.z, 1)
+
+        co4 = self.rig.CopyAtom(3).GetCoords()
+        self.assertAlmostEqual(co4.x, 1)
+        self.assertAlmostEqual(co4.y, 1)
+        self.assertAlmostEqual(co4.z, 1)
+        
         
         
 
