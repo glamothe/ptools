@@ -357,7 +357,7 @@ class TestForceFields(unittest.TestCase):
         x = Vdouble()
         for i in range(6):
             x.append(0)
-        self.assertTrue( (FF.Function(x)+32.9487770656) < 1e-6) #energy from ptools 0.3
+        self.assertTrue( abs(FF.Function(x)+32.9487770656) < 1e-6) #energy from ptools 0.3
 	self.assertEqual(FF.Function(x), FF.getVdw() + FF.getCoulomb())
 
          
