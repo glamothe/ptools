@@ -61,13 +61,19 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     mat1[ 1 ][ 3 ] = -A.y;
     mat1[ 2 ][ 3 ] = -A.z;
 
+    dbl cost = cos( theta );
+    dbl sint = sin( theta );
+        
     // rotation to get back to plan Oxz: rotation 1 around X, angle -gamma (-g).
-    dbl d = sqrt( dy*dy + dz*dz ) ; // projection of AB on the Oxy plan
+    dbl d = sqrt( dy*dy + dz*dz ) ; // projection of AB on the Oyz plan
+    
+    
+    
+    
 
     if ( real(d) == 0 )  // AB belongs to (Ox)
     {
-        dbl cost = cos( theta );
-        dbl sint = sin( theta );
+        
 
         out[ 0 ][ 0 ] = 1 ;
         out[ 0 ][ 1 ] = 0 ;
@@ -90,6 +96,57 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
 
     }
 
+    //we normalize the AB vector
+    dbl x,y,z;
+    dbl L = sqrt(dx*dx+dy*dy+dz*dz);
+    x = dx / L;
+    y = dy / L;
+    z = dz / L;
+    
+    dbl V = sqrt(x*x+y*y) ; //shortcut
+    
+    //Rodrigues' rotation matrix:
+    
+    mat2[0][0] = cost + x*x*(1-cost);
+    mat2[0][1] = x*y*(1-cost) + z*sint;
+    mat2[0][2] = z*x*(1-cost) - y*sint;
+    mat2[0][2] = 0;
+    
+    mat2[1][0] = x*y*(1-cost) - z*sint ; 
+    mat2[1][1] = cost + y*y*(1-cost);
+    mat2[1][2] = z*y*(1-cost) + x*sint;
+    mat2[1][3] = 0;
+    
+    mat2[2][0] = x*z*(1-cost) + y*sint;
+    mat2[2][1] = y*z*(1-cost)-x*sint;
+    mat2[2][2] = cost + z*z*(1-cost);
+    mat2[2][3] = 0;
+    
+    mat2[3][0] = 0;
+    mat2[3][1] = 0;
+    mat2[3][2] = 0;
+    mat2[3][3] = 1;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     dbl cosg = dz / d ;
     dbl sing = dy / d ;
@@ -101,10 +158,10 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     mat2[ 0 ][ 3 ] = 0 ;
     mat2[ 1 ][ 0 ] = 0 ;
     mat2[ 1 ][ 1 ] = cosg ;
-    mat2[ 1 ][ 2 ] = -sing ;
+    mat2[ 1 ][ 2 ] = sing ;
     mat2[ 1 ][ 3 ] = 0 ;
     mat2[ 2 ][ 0 ] = 0;
-    mat2[ 2 ][ 1 ] = sing;
+    mat2[ 2 ][ 1 ] = -sing;
     mat2[ 2 ][ 2 ] = cosg ;
     mat2[ 2 ][ 3 ] = 0 ;
     mat2[ 3 ][ 0 ] = 0 ;
@@ -121,21 +178,23 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     // rotation to get back to the Oz axis: rotation 2. Axis (Oy), angle p.
     dbl f = sqrt(  dx*dx + dy*dy + dz*dz ); // norm
     dbl cosp, sinp ;
-    cosp = d / f;
-    sinp = dx / f;
+    
+//     cosp = d / f;
+//     sinp = dx / f;
 
-
-
+    cosp = dz/f;
+    sinp = d/f;
+    
 
     mat1[ 0 ][ 0 ] = cosp ;
     mat1[ 0 ][ 1 ] = 0 ;
-    mat1[ 0 ][ 2 ] = -sinp ;
+    mat1[ 0 ][ 2 ] = sinp ;
     mat1[ 0 ][ 3 ] = 0 ;
     mat1[ 1 ][ 0 ] = 0 ;
     mat1[ 1 ][ 1 ] = 1 ;
     mat1[ 1 ][ 2 ] = 0 ;
     mat1[ 1 ][ 3 ] = 0 ;
-    mat1[ 2 ][ 0 ] = sinp ;
+    mat1[ 2 ][ 0 ] = -sinp ;
     mat1[ 2 ][ 1 ] = 0 ;
     mat1[ 2 ][ 2 ] = cosp ;
     mat1[ 2 ][ 3 ] = 0 ;

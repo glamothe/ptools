@@ -3,6 +3,7 @@ from ptools import *
 import random
 import unittest
 
+import math
 
 class TestCoord3D(unittest.TestCase):
         def setUp(self):
@@ -161,6 +162,87 @@ class TestBasicMoves(unittest.TestCase):
         self.rigid2.Translate(vec1-vec2)
         self.rigid2.Translate(Coord3D() - 2*vec1)  #should be a global null translation + round error
         self.assertTrue(Rmsd(self.rigid2, self.rigid3) < 1e-6)
+
+class TestRotations(unittest.TestCase):
+    def setUp(self):
+       
+        at1 = Atom(Atomproperty(),Coord3D(1,0,0))
+        at2 = Atom(Atomproperty(),Coord3D(0,1,0))
+        at3 = Atom(Atomproperty(),Coord3D(0,0,1))
+        
+        rig = Rigidbody()
+        rig.AddAtom(at1)
+        rig.AddAtom(at2)
+        rig.AddAtom(at3)
+        
+        self.rig = rig
+        
+    def testRotZ(self):
+        
+        
+        self.rig.ABrotate(Coord3D(0,0,0), Coord3D(0,0,1), math.pi/2)
+        # i should now be j
+        co1 = self.rig.CopyAtom(0).GetCoords()
+        self.assertAlmostEqual(co1.x, 0)
+        self.assertAlmostEqual(co1.z, 0)
+        self.assertAlmostEqual(co1.y, 1)
+        
+        # j becomes -i
+        co2 = self.rig.CopyAtom(1).GetCoords()
+        self.assertAlmostEqual(co2.x, -1)
+        self.assertAlmostEqual(co2.y, 0)
+        self.assertAlmostEqual(co2.z, 0)
+
+        #k is still k:
+        co3 = self.rig.CopyAtom(2).GetCoords()
+        self.assertAlmostEqual(co3.x, 0)
+        self.assertAlmostEqual(co3.y, 0)
+        self.assertAlmostEqual(co3.z, 1)
+        
+    def testRotX(self):
+        self.rig.ABrotate(Coord3D(0,0,0), Coord3D(1,0,0), math.pi/2)
+        
+        #i is still i
+        co1 = self.rig.CopyAtom(0).GetCoords()
+        self.assertAlmostEqual(co1.x, 1)
+        self.assertAlmostEqual(co1.z, 0)
+        self.assertAlmostEqual(co1.y, 0)
+        
+        # j becomes k
+        co2 = self.rig.CopyAtom(1).GetCoords()
+        self.assertAlmostEqual(co2.x, 0)
+        self.assertAlmostEqual(co2.y, 0)
+        self.assertAlmostEqual(co2.z, 1)
+
+        #k becomes -j
+        co3 = self.rig.CopyAtom(2).GetCoords()
+        self.assertAlmostEqual(co3.x, 0)
+        self.assertAlmostEqual(co3.y, -1)
+        self.assertAlmostEqual(co3.z, 0)
+        
+
+    def testRotY(self):
+        self.rig.ABrotate(Coord3D(0,0,0), Coord3D(0,1,0), math.pi/2)
+        
+        #i becomes -j
+        co1 = self.rig.CopyAtom(0).GetCoords()
+        self.assertAlmostEqual(co1.x, 0)
+        self.assertAlmostEqual(co1.z, -1)
+        self.assertAlmostEqual(co1.y, 0)
+        
+        # j is still j
+        co2 = self.rig.CopyAtom(1).GetCoords()
+        self.assertAlmostEqual(co2.x, 0)
+        self.assertAlmostEqual(co2.y, 1)
+        self.assertAlmostEqual(co2.z, 0)
+
+        #k becomes i
+        co3 = self.rig.CopyAtom(2).GetCoords()
+        self.assertAlmostEqual(co3.x, 1)
+        self.assertAlmostEqual(co3.y, 0)
+        self.assertAlmostEqual(co3.z, 0)
+        
+        
 
 class TestCoordsArray(unittest.TestCase):
     def setUp(self):
