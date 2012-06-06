@@ -12,6 +12,7 @@ cdef extern from "<vector>" namespace "std":
         void push_back(T&)
         T& operator[](int)
         T& at(int)
+        int size()
         iterator begin()
         iterator end()
 
@@ -55,3 +56,45 @@ cdef class AttractForceField2:
     
     def getCoulomb(self):
         return self.thisptr.getCoulomb()
+
+
+
+cdef extern from "attractforcefield.h" namespace "PTools":
+    cdef cppclass CppAttractForceField1 "PTools::AttractForceField1":
+       CppAttractForceField1(string&, double)
+       void AddLigand(CppAttractRigidbody&)
+       double Function(vector[double]&)
+       double getVdw()
+       double getCoulomb()
+
+
+cdef class AttractForceField1:
+   
+    cdef CppAttractForceField1* thisptr
+
+
+    def __cinit__(self, filename, cutoff):
+        cdef char* c_filename
+        cdef string * cppname
+
+        c_filename = <char*> filename
+        cppname = new string(c_filename)
+        
+        self.thisptr = new CppAttractForceField1(deref(cppname), cutoff)
+
+    def AddLigand(self, AttractRigidbody rig):
+        self.thisptr.AddLigand(deref(rig.thisptr))
+
+    def Function(self, vec):
+        cdef vector[double] v
+        for el in vec:
+           v.push_back(el)
+
+        return self.thisptr.Function(v)
+        
+    def getVdw(self):
+        return self.thisptr.getVdw()
+    
+    def getCoulomb(self):
+        return self.thisptr.getCoulomb()
+
