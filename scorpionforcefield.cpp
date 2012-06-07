@@ -11,34 +11,6 @@ using std::ios_base;
 
 namespace PTools {
 
-/*! \brief Extracts extra information from ATOM lines.
- *
- *  For Attract pdb files, the library currently reads some extra informations
-*  after the x,y,z coordinates. This information is extracted here.
-*  Two arrays are populated then: atcategory which contains the atom type category
-* (AKA iaci variable in the fortran code) and the atom charge ('xlai' in the fortran code)
- */
-void extractExtra( Rigidbody& rig, std::vector<uint>& vCat, std::vector<dbl>& vCh)
-{
-
-    uint   atcategory  = 0;
-    dbl  atcharge   = 0.0;
-
-    for (uint i=0; i<rig.Size(); i++)
-    {
-        const Atomproperty at = rig.GetAtomProperty(i);
-        std::string extra = at.GetExtra();
-        //std::cout << extra << std::endl;
-        std::istringstream iss( extra );
-        iss >> atcategory >> atcharge ;
-        vCat.push_back(atcategory-1);
-        vCh.push_back(atcharge);
-    }
-
-
-}
-
-
 
 ScorpionForceField::ScorpionForceField(std::string paramsFileName, dbl cutoff)
 //         :m_refreceptor(recept), m_refligand(lig), m_receptor(recept), m_ligand(lig),m_savligand(lig),
@@ -67,7 +39,7 @@ void ScorpionForceField::InitParams(const std::string & paramsFileName )
     if (!aminon)
     {
         //the file cannot be opened
-        std::string msg = "Forcefield.cpp: Cannot Locate file forcefield parameters (aminon.par)\n";
+        std::string msg = "Forcefield.cpp: Cannot Locate file forcefield parameters (scorpion.par)\n";
         std::cout << msg ;
         throw std::invalid_argument(msg);
     }
