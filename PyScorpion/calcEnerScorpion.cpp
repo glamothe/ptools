@@ -21,7 +21,7 @@ ff.AddLigand(lig);
 std::vector<double> X(20);
 
 
-cout << ff.Function(X) << endl;
+cout << ff.Function(X)*4.184 << endl;
 
 return 0;
 }
