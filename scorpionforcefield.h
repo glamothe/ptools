@@ -1,7 +1,7 @@
-#ifndef ATTRACTFORCEFIELD_H
-#define ATTRACTFORCEFIELD_H
+#ifndef SCORPIONFORCEFIELD_H
+#define SCORPIONFORCEFIELD_H
 
-#include "forcefield.h"
+#include "attractforcefield.h"
 
 
 namespace PTools{
@@ -13,9 +13,9 @@ class ScorpionForceField: public BaseAttractForceField
 public:
     void InitParams(const std::string & paramsFileName);
     ScorpionForceField(std::string paramsFileName, dbl cutoff);
-    dbl nonbon_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
+    dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
 
-    virtual ~AttractForceField1(){};
+    virtual ~ScorpionForceField1(){};
 private:
 
     Vdouble m_epsilon, m_lambda, m_sigma ; 
@@ -39,7 +39,7 @@ private:
 
 
 
-#endif //ATTRACTFORCEFIELD_H
+#endif //SCORPIONFORCEFIELD_H
 
 
 
