@@ -5,7 +5,7 @@ import sys
 import copy
 
 from ptools import *
-
+from ordereddict import OrderedDict
 
 
 class IncompleteBead:
@@ -77,7 +77,7 @@ for p in parameters:
   lspl = p.split() 
   try:  
     if lspl[0] != '#':
-        listofgrains = residNames.get(lspl[0], {})
+        listofgrains = residNames.get(lspl[0], OrderedDict() )
         listofgrains[lspl[5]] = 1    #add coarse grain name    
         residNames[lspl[0]] = listofgrains
 
