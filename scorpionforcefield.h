@@ -15,7 +15,7 @@ public:
     ScorpionForceField(std::string paramsFileName, dbl cutoff);
     dbl nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& lig, AttractPairList & pairlist, std::vector<Coord3D>& forcerec, std::vector<Coord3D>& forcelig, bool print=false);
 
-    virtual ~ScorpionForceField1(){};
+    virtual ~ScorpionForceField(){};
 private:
 
     Vdouble m_epsilon, m_lambda, m_sigma ; 

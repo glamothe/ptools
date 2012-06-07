@@ -60,7 +60,7 @@ void ScorpionForceField::InitParams(const std::string & paramsFileName )
     int indice;
     dbl sigma;
     dbl lambda;
-    dbl espilon;
+    dbl epsilon;
     
 
     std::ifstream aminon(paramsFileName.c_str());
@@ -75,9 +75,9 @@ void ScorpionForceField::InitParams(const std::string & paramsFileName )
     while (!aminon.eof())
     {
         aminon >> indice >> epsilon >> lambda >> sigma ;
-        m_epsilon.push_back(epsi) ;
-        m_lambda.push_back(lamb) ;
-        m_sigma.push_back(sig) ;
+        m_epsilon.push_back(epsilon) ;
+        m_lambda.push_back(lambda) ;
+        m_sigma.push_back(sigma) ;
 
         assert(m_sigma.size()<64);
     }
@@ -185,7 +185,7 @@ dbl ScorpionForceField::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
 
         Coord3D dx = a-b ;
         dbl r2 = Norm2(dx);
-        dbl r1 = Norm(dx)
+        dbl r1 = Norm(dx);
 
         if (r2 < 0.001 ) r2=0.001;
         dbl rr2 = 1.0/r2 ; // 1/r^2
