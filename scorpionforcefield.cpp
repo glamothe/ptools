@@ -61,7 +61,7 @@ void ScorpionForceField::InitParams(const std::string & paramsFileName )
         {
             m_lamb6[i][j]=pow(0.5*(m_lambda[i]+m_lambda[j]),6);
             m_sig2[i][j]=0.25*(m_sigma[i]+m_sigma[j])*(m_sigma[i]+m_sigma[j]);
-            m_epsij[i][j]=sqrt(m_epsilon[i]+m_epsilon[j]);
+            m_epsij[i][j]=sqrt(m_epsilon[i]*m_epsilon[j]);
  
         }
 }
