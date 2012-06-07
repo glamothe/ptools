@@ -10,4 +10,6 @@ libptools.a
 _ptools.so
 config.log
 version.tmp
+gitrev.h
+
 
