@@ -186,11 +186,6 @@ dbl ScorpionForceField::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
         dbl chargeR = rec.m_charge[ir];
         dbl chargeL = lig.m_charge[jl];
         dbl charge = chargeR * chargeL * (332.053986);
-//        dbl pi = 4.0*atan(1.0);
-//        dbl navo = 6.0225 ;
-//        dbl elechg = 1.602 ;
-//        dbl epso = 8.854 ;
-//        dbl charge = chargeR * chargeL *10000.0*navo*elechg*elechg/4.0/pi/epso/4.184 ;
       
         if (fabs(charge) > 0.0)
         { 
@@ -208,9 +203,8 @@ dbl ScorpionForceField::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
     m_vdw = sumLJ;
     m_elec = sumElectrostatic;
 
-    std::cout << "ELJ: " << sumLJ*4.184 << " EElec: " << sumElectrostatic*4.184 << std::endl ;
+//    std::cout << "ELJ: " << sumLJ*4.184 << " EElec: " << sumElectrostatic*4.184 << std::endl ;
     return sumLJ + sumElectrostatic;
-//    return sumLJ;
 }
 
 
