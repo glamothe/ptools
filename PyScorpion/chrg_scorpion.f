@@ -1,4 +1,5 @@
-      PROGRAM chrg_scorpion
+      SUBROUTINE chrg_scorpion(natom,charge,radius,coorx,coory,coorz,
+     &           nbead,cgchg,cgrad,cgcox,cgcoy,cgcoz)
 
 ************************************************************************
 *                                                                      *
@@ -31,10 +32,15 @@
 
       INTEGER   natom,nbead
 
-      REAL*8    charge(namax),radius(namax)
-      REAL*8    coorx(namax),coory(namax),coorz(namax)
-      REAL*8    cgchg(npmax),cgrad(npmax),optch(npmax)
-      REAL*8    cgcox(npmax),cgcoy(npmax),cgcoz(npmax)
+      REAL*8    charge(*),radius(*)
+      REAL*8    coorx(*),coory(*),coorz(*)
+      REAL*8    cgchg(*),cgrad(*),optch(npmax)
+      REAL*8    cgcox(*),cgcoy(*),cgcoz(*)
+
+      REAL*8    zcharge(namax),zradius(namax)
+      REAL*8    zcoorx(namax),zcoory(namax),zcoorz(namax)
+      REAL*8    zcgchg(npmax),zcgrad(npmax)
+      REAL*8    zcgcox(npmax),zcgcoy(npmax),zcgcoz(npmax)
 
 *-------------------- LOCAL VARIABLES ----------------------------------
 
@@ -52,6 +58,31 @@
       real*8    wa(ngmax*npmax+5*npmax+ngmax)
 
 *==================== EXECUTABLE STATEMENTS ============================
+
+      common /chgcoo/ zcharge,zcoorx,zcoory,zcoorz,
+     z zcgchg,zcgcox,zcgcoy,zcgcoz,xpts,ypts,zpts,bx,by,bz
+
+      external diffpot
+
+      do ii=1,namax
+        zcharge(ii)=charge(ii)
+        zradius(ii)=radius(ii)
+        zcoorx(ii)=coorx(ii)
+        zcoory(ii)=coory(ii)
+        zcoorz(ii)=coorz(ii)
+      enddo
+
+      do ii=1,npmax
+        zcgchg(ii)=cgchg(ii)
+        zcgrad(ii)=cgrad(ii)
+        zcgcox(ii)=cgcox(ii)
+        zcgcoy(ii)=cgcoy(ii)
+        zcgcoz(ii)=cgcoz(ii)
+      enddo
+
+c------------------------------------------verification entree variables
+
+      write(*,*) natom,nbead
 
       ngrid=int(boxsize/delgrid)+1
 
@@ -145,8 +176,7 @@ c---------------------------------------------------minimisation
 
       lwa=npts1*nbead+5*nbead+npts1
 
-      call diffpot(natom,charge,coorx,coory,coorz,nbead,cgchg,
-     & cgcox,cgcoy,cgcoz,npts1,xpts,ypts,zpts,bx,by,bz,optch,dpot,iflag)
+      call diffpot(npts1,nbead,optch,dpot,iflag)
 
       call lmdif1(diffpot,npts1,nbead,optch,dpot,tol,info,iwa,wa,lwa)
 
@@ -214,21 +244,33 @@ c---------------------------------------------------verifications
 *----- SUBROUTINE DIFFPOT ----------------------------------------------
 *=======================================================================
 
-      SUBROUTINE diffpot(natom,charge,coorx,coory,coorz,nbead,cgchg,
-     & cgcox,cgcoy,cgcoz,npts1,xpts,ypts,zpts,bx,by,bz,optch,dpot,iflag)
+      SUBROUTINE diffpot(npts1,nbead,optch,dpot,iflag)
 
 *======================= DECLARATIONS ==================================
 
       IMPLICIT none
+
+      integer   npmax,namax,ngmax
+
+      parameter (npmax=2000)
+      parameter (namax=20000)
+      parameter (ngmax=100000)
 
 *----------------------- INPUT VARIABLES -------------------------------
 
       INTEGER   natom,nbead,npts1,iflag
 
       REAL*8    bx,by,bz
-      REAL*8    charge(*),coorx(*),coory(*),coorz(*)
-      REAL*8    cgchg(*),cgcox(*),cgcoy(*),cgcoz(*)
-      REAL*8    xpts(*),ypts(*),zpts(*),optch(*),dpot(*)
+
+      REAL*8    charge(namax),coorx(namax),coory(namax),coorz(namax)
+      REAL*8    cgchg(npmax),cgcox(npmax),cgcoy(npmax),cgcoz(npmax)
+      REAL*8    xpts(ngmax),ypts(ngmax),zpts(ngmax),dpot(ngmax)
+      REAL*8    optch(npmax)
+
+      REAL*8    zcharge(namax)
+      REAL*8    zcoorx(namax),zcoory(namax),zcoorz(namax)
+      REAL*8    zcgchg(npmax)
+      REAL*8    zcgcox(npmax),zcgcoy(npmax),zcgcoz(npmax)
 
 *-------------------- LOCAL VARIABLES ----------------------------------
 
@@ -236,9 +278,26 @@ c---------------------------------------------------verifications
 
       real*8  qlambda,plambda,aatotc,cgtotc
       real*8  aatotpx,aatotpy,aatotpz,cgtotpx,cgtotpy,cgtotpz
-      real*8  rx,ry,rz,rr,xx,yy,zz,potaa,potcg,diffch
+      real*8  rx,ry,rz,rr,xx,yy,zz,potaa,potcg
 
 *==================== EXECUTABLE STATEMENTS ============================
+
+      common /chgcoo/ zcharge,zcoorx,zcoory,zcoorz,
+     z zcgchg,zcgcox,zcgcoy,zcgcoz,xpts,ypts,zpts,bx,by,bz
+
+      do ii=1,namax
+        charge(ii)=zcharge(ii)
+        coorx(ii)=zcoorx(ii)
+        coory(ii)=zcoory(ii)
+        coorz(ii)=zcoorz(ii)
+      enddo
+
+      do ii=1,npmax
+        cgchg(ii)=zcgchg(ii)
+        cgcox(ii)=zcgcox(ii)
+        cgcoy(ii)=zcgcoy(ii)
+        cgcoz(ii)=zcgcoz(ii)
+      enddo
 
 c-------------------------------------------------charge et dipole total
 

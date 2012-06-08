@@ -73,6 +73,11 @@ initalBeadCharge= {
 
 
 
+allAtomRadius = {}
+allAtomCharges = {}
+beadRadius = {}
+
+
 for p in parameters:
   lspl = p.split() 
   try:  
@@ -93,6 +98,11 @@ for p in parameters:
                                           beadradius=float(lspl[7]),
                                         ) 
                                    )
+
+        allAtomRadius["%s:%s"%(lspl[0], lspl[1]) ] = float(lspl[3]) 
+        allAtomCharges["%s:%s"%(lspl[0], lspl[1]) ] = float(lspl[2])
+        beadRadius["%s:%s"%(lspl[0], lspl[5])  ] = float(lspl[7]) 
+
         grainMap["%s:%s"%(lspl[0], lspl[5]) ] = listOfAtomsInAGrain
 
  
@@ -124,12 +134,13 @@ print beadCorresp
 ####
 
 
+
 allAtom=Rigidbody(sys.argv[1])
-sys.stderr.write("Number of atoms: %d\n" %(len(allAtom)))
+sys.stderr.write("Number of atoms: %d\n" %(len(allAtom) ))
 
 #extract all 'atoms' objects
 atoms=[]
-for i in xrange(len(allAtom)):
+for i in xrange(len(allAtom) ):
       atoms.append(allAtom.CopyAtom(i))
 
 
@@ -157,6 +168,8 @@ sys.stderr.write(out+"\n")
 #iterates through all the residues and create reduced beads:
 
 totAtoms=0
+
+protein = [] 
 
 for residKey, atomList in zip(residulist,orderedresid):
       residType=residKey[:3]
@@ -186,4 +199,56 @@ for residKey, atomList in zip(residulist,orderedresid):
             bead.SetExtra(extra)
             bead.SetAtomId(totAtoms)
             bead.SetResidId(residNumber)
+            protein.append(bead)
             print bead.ToPdbString(),  # ',' because of the extra \n caracter from the ptools C++ library
+
+
+
+
+from cgopt import optimize
+
+charge = []
+radius = []
+cx = []
+cy = []
+cz = []
+
+cgch = []
+cgr = []
+cgx = []
+cgy = []
+cgz = []
+
+
+
+for i in range(len(allAtom)):
+   atom = allAtom.CopyAtom(i)
+  # print dir(atom)
+#   residu_name = atom. 
+   residu_type= atom.GetResidType() 
+   atomtype = atom.GetType()
+   key = "%s:%s"%(residu_type, atomtype) 
+   radius.append(  allAtomRadius[key] ) 
+   charge.append ( allAtomCharges[key]   )
+   cx.append( atom.GetCoords().x)
+   cy.append( atom.GetCoords().y)
+   cz.append( atom.GetCoords().z)
+   print  key ,  charge[i], radius[i], cx[i], cy[i], cz[i]
+   
+  
+for i, atom in enumerate(protein):
+   
+   cgch.append( atom.GetAtomCharge() ) 
+   
+   residu_type= atom.GetResidType() 
+   atomtype = atom.GetType()
+   key = "%s:%s"%(residu_type, atomtype) 
+
+   cgr.append( beadRadius[key] )  
+   cgx.append( atom.GetCoords().x)
+   cgy.append( atom.GetCoords().y)
+   cgz.append( atom.GetCoords().z)
+
+   print key, cgch[i], cgr[i], cgx[i], cgy[i], cgz[i]
+
+print optimize(len(allAtom), charge, radius, cx, cy, cz, len(protein), cgch, cgr, cgx, cgy, cgz )
