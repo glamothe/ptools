@@ -72,6 +72,7 @@ cdef class AttractRigidbody:
 
     #void setTranslation(bool)
     def setTranslation(self, flag):
+        print "the flag is: ", flag
         self.thisptr.setTranslation(flag)
 
     def isAtomActive(self, atomid):
