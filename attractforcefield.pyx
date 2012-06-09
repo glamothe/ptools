@@ -17,19 +17,36 @@ cdef extern from "<vector>" namespace "std":
         iterator end()
 
 
+        
+cdef extern from "forcefield.h" namespace "PTools":
+    cdef cppclass CppForceField "PTools::ForceField":
+        pass
 
 cdef extern from "attractforcefield.h" namespace "PTools":
-    cdef cppclass CppAttractForceField2 "PTools::AttractForceField2":
+    
+    cdef cppclass CppBaseAttractForceField "PTools::BaseAttractForceField" (CppForceField):
+        unsigned int ProblemSize()
+        double Function(vector[double]&)
+        void AddLigand(CppAttractRigidbody &)
+        double getVdw()
+        double getCoulomb()
+        
+        
+        
+    
+    cdef cppclass CppAttractForceField2 "PTools::AttractForceField2" (CppBaseAttractForceField)  :
        CppAttractForceField2(string&, double)
-       void AddLigand(CppAttractRigidbody&)
-       double Function(vector[double]&)
-       double getVdw()
-       double getCoulomb()
+       
+       
+cdef class BaseAttractForceField:
+    cdef CppBaseAttractForceField * thisptr
+       
+       
+    
 
-
-cdef class AttractForceField2:
+cdef class AttractForceField2(BaseAttractForceField):
    
-    cdef CppAttractForceField2* thisptr
+    #cdef CppAttractForceField2* thisptr
 
 
     def __cinit__(self, filename, cutoff):
@@ -60,7 +77,7 @@ cdef class AttractForceField2:
 
 
 cdef extern from "attractforcefield.h" namespace "PTools":
-    cdef cppclass CppAttractForceField1 "PTools::AttractForceField1":
+    cdef cppclass CppAttractForceField1 "PTools::AttractForceField1"(CppBaseAttractForceField):
        CppAttractForceField1(string&, double)
        void AddLigand(CppAttractRigidbody&)
        double Function(vector[double]&)
@@ -68,9 +85,9 @@ cdef extern from "attractforcefield.h" namespace "PTools":
        double getCoulomb()
 
 
-cdef class AttractForceField1:
+cdef class AttractForceField1(BaseAttractForceField):
    
-    cdef CppAttractForceField1* thisptr
+    #cdef CppAttractForceField1* thisptr
 
 
     def __cinit__(self, filename, cutoff):
