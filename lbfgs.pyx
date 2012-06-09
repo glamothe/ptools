@@ -3,7 +3,7 @@ from libcpp.string cimport string
 
 cdef extern from "minimizers/lbfgs_interface.h" namespace "PTools":
     cdef cppclass CppLbfgs "PTools::Lbfgs":
-        CppLbfgs(CppAttractForceField1&)
+        CppLbfgs(CppBaseAttractForceField&)
         void minimize(int)
         vector[double] GetMinimizedVars()
         vector[double] GetMinimizedVarsAtIter(int)
@@ -15,8 +15,8 @@ cdef class Lbfgs:
 
     def __cinit__(self, forcefield):
         
-        ff = <AttractForceField1?> forcefield
-        cdef CppAttractForceField1 * ffptr = ff.thisptr
+        ff = <BaseAttractForceField?> forcefield
+        cdef CppBaseAttractForceField * ffptr = <CppBaseAttractForceField*?> ff.thisptr
         self.thisptr = new CppLbfgs(deref(ffptr))
 
     def __dealloc__(self):
