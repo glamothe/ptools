@@ -251,4 +251,13 @@ for i, atom in enumerate(protein):
 
    print key, cgch[i], cgr[i], cgx[i], cgy[i], cgz[i]
 
-print optimize(len(allAtom), charge, radius, cx, cy, cz, len(protein), cgch, cgr, cgx, cgy, cgz )
+optimized = optimize(len(allAtom), charge, radius, cx, cy, cz, len(protein), cgch, cgr, cgx, cgy, cgz )
+
+print "optimized charges: ", optimized
+#rig = AttractRigidbody()
+
+for i, bead in enumerate(protein):
+    #rig.AddAtom(bead)
+    bead.SetAtomCharge(optimized[i])
+    print bead.ToPdbString(),
+

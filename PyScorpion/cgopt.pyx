@@ -31,6 +31,6 @@ def optimize(int natom, charge, radius, cx, cy, cz, int nbead, cgch, cgr, cgx, c
 
     output = []
     for i in range(nbead):
-        output.append(cgch[i])
+        output.append(ccgch[i])
 
     return output
