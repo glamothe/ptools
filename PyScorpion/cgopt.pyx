@@ -28,4 +28,9 @@ def optimize(int natom, charge, radius, cx, cy, cz, int nbead, cgch, cgr, cgx, c
        ccgz[i] = cgz[i]
   
     result = chrg_scorpion__( &natom, ccharge, cradius, ccx, ccy, ccz, &nbead, ccgch, ccgr, ccgx, ccgy, ccgz)
-    print result
+
+    output = []
+    for i in range(natom):
+        output.append(ccharge[i])
+
+    return output
