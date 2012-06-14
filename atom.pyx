@@ -100,22 +100,27 @@ cdef class Atom(Atomproperty):
         #so thisptr already points to allocated data
         #we allocate here new data for a CppAtom instead of a CppAtomproperty
         del self.thisptr
+        self.thisptr = <CppAtomproperty*> 0
         
         if len(args) == 0:
             #no argument: allocate empty object
             self.thisptr = new CppAtom()
         else:
            #contructor called with (Atomproperty atproperty, Coord3D coords)
-           atproperty = <Atomproperty?> args[0]
-           coords = <Coord3D?> args[1]
-           cppatpropptr = atproperty.thisptr
-           cpp_coptr = coords.thisptr
-           self.thisptr = new CppAtom(deref(cppatpropptr), deref(cpp_coptr))
+           if isinstance(args[0],Atomproperty) and isinstance(args[1], Coord3D):
+               atproperty = <Atomproperty?> args[0]
+               coords = <Coord3D?> args[1]
+               cppatpropptr = atproperty.thisptr
+               cpp_coptr = coords.thisptr
+               self.thisptr = new CppAtom(deref(cppatpropptr), deref(cpp_coptr))
+               return
+           else:
+              raise TypeError("error: wrong argument type in Atom initialization")
         
     def __dealloc__(self):
-        
-        del self.thisptr
-        self.thisptr = <CppAtomproperty*> 0
+        if self.thisptr:
+            del self.thisptr
+            self.thisptr = <CppAtomproperty*> 0
      
     def GetCoords(self):
         co = Coord3D()
