@@ -72,9 +72,9 @@ class TestRigidbody(unittest.TestCase):
      
     def testFindCenter(self):
         cen = self.r.FindCenter()
-        self.assertAlmostEqual(cen.x, -20.171249, delta=1e-6) 
-        self.assertAlmostEqual(cen.y, 215.498060, delta=1e-6)
-        self.assertAlmostEqual(cen.z, 119.427781, delta=1e-6)
+        self.assertTrue(abs(cen.x +20.171249) < 1e-6) 
+        self.assertTrue(abs(cen.y - 215.498060) < 1e-6)
+        self.assertTrue(abs(cen.z - 119.427781) < 1e-6)
         
         
     def testSetAtom(self):
