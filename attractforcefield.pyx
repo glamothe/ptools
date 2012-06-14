@@ -45,20 +45,24 @@ cdef class BaseAttractForceField:
     
 
 cdef class AttractForceField2(BaseAttractForceField):
-   
+    cdef object rigidlist
     #cdef CppAttractForceField2* thisptr
-
-
+    
     def __cinit__(self, filename, cutoff):
         cdef char* c_filename
         cdef string * cppname
 
         c_filename = <char*> filename
         cppname = new string(c_filename)
+        self.rigidlist = []
         
         self.thisptr = new CppAttractForceField2(deref(cppname), cutoff)
 
+    def __dealloc__(self):
+        del self.thisptr
+
     def AddLigand(self, AttractRigidbody rig):
+        self.rigidlist.append(rig)
         self.thisptr.AddLigand(deref(rig.thisptr))
 
     def Function(self, vec):

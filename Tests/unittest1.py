@@ -345,10 +345,10 @@ class TestSuperposition(unittest.TestCase):
 class TestForceFields(unittest.TestCase):
     """ test if calculated energies are stable through library versions """
     def testFF2k(self):
-        a = Rigidbody("pk6a.red")
-        c = Rigidbody("pk6c.red")
-        a = AttractRigidbody(a)
-        c = AttractRigidbody(c)
+        a = AttractRigidbody("pk6a.red")
+        c = AttractRigidbody("pk6c.red")
+        #a = AttractRigidbody(a)
+        #c = AttractRigidbody(c)
         
         #print "*********** sizes:", a.Size(), '/', c.Size()
         a.setRotation(False)
