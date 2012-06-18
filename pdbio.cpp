@@ -117,15 +117,15 @@ void ReadPDB(istream& file, Rigidbody& protein) {
             pos.z=atof(sz.c_str());
 
             Atomproperty a;
-            a.SetType( readatomtype(line));
-            a.SetResidType(readresidtype(line));
+            a.atomType = readatomtype(line);
+            a.residType = readresidtype(line);
             std::string chainID = line.substr(21,1);
             if (chainID == " ") chainID = "";
-            a.SetChainId(chainID);
-            a.SetResidId(atoi(line.substr(22,4).c_str()));
-            a.SetAtomId(atoi(line.substr(6,5).c_str()));
+            a.chainId = chainID;
+            a.residId = atoi(line.substr(22,4).c_str());
+            a.atomId = atoi(line.substr(6,5).c_str());
             std::string extra = line.substr(54,line.size()-1-54+1); //extracts everything after the position 27 to the end of line
-            a.SetExtra(extra);
+            a.extra = extra ;
 
             protein.AddAtom(a,pos);
 
@@ -162,21 +162,21 @@ void WritePDB(const Rigidbody& rigid, std::string filename)
         const char * chainID="A" ;
 
         Atom at = rigid.CopyAtom(i);
-        const char* atomname=at.GetType().c_str();
-        const char* residName=at.GetResidType().c_str();
-        int residnumber = at.GetResidId();
-        chainID=at.GetChainId().c_str();
+        const char* atomname=at.atomType.c_str();
+        const char* residName=at.residType.c_str();
+        int residnumber = at.residId;
+        chainID = at.chainId.c_str();
 
-        int atomnumber = at.GetAtomId();
+        int atomnumber = at.atomId;
 
-        Coord3D coord = at.GetCoords();
+        Coord3D coord = at.coords;
         dbl x = coord.x;
         dbl y = coord.y;
         dbl z = coord.z ;
 
 
 
-        fprintf(file,"ATOM  %5d %-4s %3s %1s%4d    %8.3f%8.3f%8.3f%s",atomnumber,atomname,residName,chainID,residnumber,real(x),real(y),real(z),at.GetExtra().c_str());    
+        fprintf(file,"ATOM  %5d %-4s %3s %1s%4d    %8.3f%8.3f%8.3f%s",atomnumber,atomname,residName,chainID,residnumber,real(x),real(y),real(z),at.extra.c_str());    
         fprintf(file,"\n");
     }
 

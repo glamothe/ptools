@@ -27,16 +27,25 @@ class TestCoord3D(unittest.TestCase):
                 self.assertEqual(coo3.y, 6.0)
                 self.assertEqual(coo3.z, 12.5)
 
+class TestAtom(unittest.TestCase):
+    def setUp(self):
+        co = Coord3D(1,2,3)
+        self.atom = Atom(Atomproperty(), co)
+    def testToto(self):
+        print self.atom
+
+
+
 class TestRigidbody(unittest.TestCase):
     def setUp(self):
         self.r = Rigidbody("1FIN_r.pdb")
         self.r2 = Rigidbody()
         at = Atom()
-        at.SetCoords(Coord3D(1,0,0))
+        at.coords = Coord3D(1,0,0)
         self.r2.AddAtom(at)
-        at.SetCoords(Coord3D(0,1,0))
+        at.coords = Coord3D(0,1,0)
         self.r2.AddAtom(at)
-        at.SetCoords(Coord3D(0,0,1))
+        at.coords = Coord3D(0,0,1)
         self.r2.AddAtom(at)
         
         
@@ -48,12 +57,12 @@ class TestRigidbody(unittest.TestCase):
         self.assertEqual(len(self.r), 2365)
     def testCopyAtom(self):
         atom = self.r.CopyAtom(3)
-        coords = atom.GetCoords()
+        coords = atom.coords
         self.assertAlmostEqual(coords.x, -16.159)
         self.assertAlmostEqual(coords.y, 189.782 )
         self.assertAlmostEqual(coords.z, 106.402)
-        self.assertEqual(atom.GetAtomId(), 4)
-        self.assertEqual(atom.GetChainId(), '')
+        self.assertEqual(atom.atomId, 4)
+        self.assertEqual(atom.chainId, '')
         
     def testGetCoords(self):
         coords = self.r.getCoords(3)
@@ -79,12 +88,12 @@ class TestRigidbody(unittest.TestCase):
         
     def testSetAtom(self):
         atom = self.r.CopyAtom(3)
-        atom.SetCoords(Coord3D(3,4,5))
+        atom.coords = Coord3D(3,4,5)
         self.r.SetAtom(3,atom)
         #test to see if the mofification worked:
         atom2 = self.r.CopyAtom(3)
-        self.assertTrue( norm2(atom2.GetCoords() - Coord3D(3,4,5) ) < 1e6 )
-        coords2 = atom2.GetCoords()
+        self.assertTrue( norm2(atom2.coords - Coord3D(3,4,5) ) < 1e6 )
+        coords2 = atom2.coords
         self.assertAlmostEqual(coords2.x, 3)
         self.assertAlmostEqual(coords2.y, 4)
         self.assertAlmostEqual(coords2.z, 5)
@@ -116,15 +125,15 @@ class TestRigidbody(unittest.TestCase):
          r = Rigidbody()
          self.assertEqual(len(r), 0)
          at = Atom()
-         at.SetCoords(Coord3D(2,3,4))
+         at.coords = Coord3D(2,3,4)
          r.AddAtom(at)
          self.assertAlmostEqual(len(r),1)
          
     def testGetAtomProperty(self):
         atprop = self.r.GetAtomProperty(8)
-        self.assertEqual(atprop.GetResidType(), 'GLU')
-        self.assertEqual(atprop.GetResidId(), 2)
-        self.assertEqual(atprop.GetAtomId(), 9)
+        self.assertEqual(atprop.residType, 'GLU')
+        self.assertEqual(atprop.residId, 2)
+        self.assertEqual(atprop.atomId, 9)
         
             
 
@@ -184,19 +193,19 @@ class TestRotations(unittest.TestCase):
         
         self.rig.ABrotate(Coord3D(0,0,0), Coord3D(0,0,1), math.pi/2)
         # i should now be j
-        co1 = self.rig.CopyAtom(0).GetCoords()
+        co1 = self.rig.CopyAtom(0).coords
         self.assertAlmostEqual(co1.x, 0)
         self.assertAlmostEqual(co1.z, 0)
         self.assertAlmostEqual(co1.y, 1)
         
         # j becomes -i
-        co2 = self.rig.CopyAtom(1).GetCoords()
+        co2 = self.rig.CopyAtom(1).coords
         self.assertAlmostEqual(co2.x, -1)
         self.assertAlmostEqual(co2.y, 0)
         self.assertAlmostEqual(co2.z, 0)
 
         #k is still k:
-        co3 = self.rig.CopyAtom(2).GetCoords()
+        co3 = self.rig.CopyAtom(2).coords
         self.assertAlmostEqual(co3.x, 0)
         self.assertAlmostEqual(co3.y, 0)
         self.assertAlmostEqual(co3.z, 1)
@@ -205,19 +214,19 @@ class TestRotations(unittest.TestCase):
         self.rig.ABrotate(Coord3D(0,0,0), Coord3D(1,0,0), math.pi/2)
         
         #i is still i
-        co1 = self.rig.CopyAtom(0).GetCoords()
+        co1 = self.rig.CopyAtom(0).coords
         self.assertAlmostEqual(co1.x, 1)
         self.assertAlmostEqual(co1.z, 0)
         self.assertAlmostEqual(co1.y, 0)
         
         # j becomes k
-        co2 = self.rig.CopyAtom(1).GetCoords()
+        co2 = self.rig.CopyAtom(1).coords
         self.assertAlmostEqual(co2.x, 0)
         self.assertAlmostEqual(co2.y, 0)
         self.assertAlmostEqual(co2.z, 1)
 
         #k becomes -j
-        co3 = self.rig.CopyAtom(2).GetCoords()
+        co3 = self.rig.CopyAtom(2).coords
         self.assertAlmostEqual(co3.x, 0)
         self.assertAlmostEqual(co3.y, -1)
         self.assertAlmostEqual(co3.z, 0)
@@ -227,19 +236,19 @@ class TestRotations(unittest.TestCase):
         self.rig.ABrotate(Coord3D(0,0,0), Coord3D(0,1,0), math.pi/2)
         
         #i becomes -j
-        co1 = self.rig.CopyAtom(0).GetCoords()
+        co1 = self.rig.CopyAtom(0).coords
         self.assertAlmostEqual(co1.x, 0)
         self.assertAlmostEqual(co1.z, -1)
         self.assertAlmostEqual(co1.y, 0)
         
         # j is still j
-        co2 = self.rig.CopyAtom(1).GetCoords()
+        co2 = self.rig.CopyAtom(1).coords
         self.assertAlmostEqual(co2.x, 0)
         self.assertAlmostEqual(co2.y, 1)
         self.assertAlmostEqual(co2.z, 0)
 
         #k becomes i
-        co3 = self.rig.CopyAtom(2).GetCoords()
+        co3 = self.rig.CopyAtom(2).coords
         self.assertAlmostEqual(co3.x, 1)
         self.assertAlmostEqual(co3.y, 0)
         self.assertAlmostEqual(co3.z, 0)
@@ -250,23 +259,23 @@ class TestRotations(unittest.TestCase):
         self.rig.ABrotate(Coord3D(1,1,1), Coord3D(1,1,3), math.pi/2)
         
         
-        co1 = self.rig.CopyAtom(0).GetCoords()
+        co1 = self.rig.CopyAtom(0).coords
         self.assertAlmostEqual(co1.x, 2)
         self.assertAlmostEqual(co1.z, 0)
         self.assertAlmostEqual(co1.y, 1)
         
         
-        co2 = self.rig.CopyAtom(1).GetCoords()
+        co2 = self.rig.CopyAtom(1).coords
         self.assertAlmostEqual(co2.x, 1)
         self.assertAlmostEqual(co2.y, 0)
         self.assertAlmostEqual(co2.z, 0)
 
-        co3 = self.rig.CopyAtom(2).GetCoords()
+        co3 = self.rig.CopyAtom(2).coords
         self.assertAlmostEqual(co3.x, 2)
         self.assertAlmostEqual(co3.y, 0)
         self.assertAlmostEqual(co3.z, 1)
 
-        co4 = self.rig.CopyAtom(3).GetCoords()
+        co4 = self.rig.CopyAtom(3).coords
         self.assertAlmostEqual(co4.x, 1)
         self.assertAlmostEqual(co4.y, 1)
         self.assertAlmostEqual(co4.z, 1)

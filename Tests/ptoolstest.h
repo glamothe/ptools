@@ -80,11 +80,11 @@ Coord3D A, B;
     void testSetAtom()
     {
         Atom atom (r.CopyAtom(3) ) ;
-        atom.SetCoords(Coord3D(3,4,5));
+        atom.coords = Coord3D(3,4,5);
         r.SetAtom(3,atom);
         //#test to see if the mofification worked:
         Atom atom2 = r.CopyAtom(3);
-        TS_ASSERT( Norm2(atom2.GetCoords() - Coord3D(3,4,5) ) < 1e6 );
+        TS_ASSERT( Norm2(atom2.coords - Coord3D(3,4,5) ) < 1e6 );
 
     }
 

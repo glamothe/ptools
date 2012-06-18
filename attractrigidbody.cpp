@@ -48,8 +48,7 @@ void AttractRigidbody::init_()
     for (uint i = 0; i < Size() ; ++i)
     {
         Atomproperty & at (mAtomProp[i]);
-        std::string extra = at.GetExtra();
-
+        std::string extra = at.extra;
         std::istringstream iss( extra );
         iss >> atcategory >> atcharge ;
         m_atomTypeNumber.push_back(atcategory-1);  // -1 to directly use the atomTypeNumber into C-array
