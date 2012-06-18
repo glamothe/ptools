@@ -30,9 +30,25 @@ class TestCoord3D(unittest.TestCase):
 class TestAtom(unittest.TestCase):
     def setUp(self):
         co = Coord3D(1,2,3)
-        self.atom = Atom(Atomproperty(), co)
-    def testToto(self):
-        print self.atom
+        atom = Atom(Atomproperty(), co)
+        atom.atomType = 'CA'
+        #atom.atomElement = 'C'
+        atom.residType = 'LEU'
+        atom.residId = 6
+        atom.atomId = 123
+        atom.atomCharge = -1.23456
+        self.atom = atom
+        
+        
+    def testProperties(self):
+        atom = self.atom
+        self.assertEqual(atom.atomType, 'CA')
+        #self.assertEqual(atom.atomElement, 'C')
+        self.assertEqual(atom.residType, "LEU")
+        self.assertEqual(atom.residId, 6)
+        self.assertEqual(atom.atomId, 123)
+        self.assertEqual(atom.atomCharge, -1.23456)
+        
 
 
 
