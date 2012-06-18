@@ -3,6 +3,8 @@ from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
+import bzrrev
+
 setup(ext_modules=[Extension(
                    "_ptools",                 # name of extension
                    ["_ptools.pyx", "cython_wrappers.cpp", "atom.cpp" , "attractrigidbody.cpp", "coordsarray.cpp", "mcopff.cpp", "rigidbody.cpp", "surface.cpp",
