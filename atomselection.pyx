@@ -30,6 +30,8 @@ cdef class AtomSelection:
         cdef CppAtomSelection* atselptr
         cdef Rigidbody rig
         cdef CppRigidbody* rigptr
+
+        self.thisptr = <CppAtomSelection*> 0
         if arg is None:
             self.thisptr = new CppAtomSelection()
             return
@@ -48,6 +50,7 @@ cdef class AtomSelection:
         raise RuntimeError("cannot reach here")
 
     def __dealloc__(self):
-        del self.thisptr
+        if self.thisptr:
+            del self.thisptr
 
     
