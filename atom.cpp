@@ -8,15 +8,13 @@ using namespace std;
 
 namespace PTools{
 
-Coord3D Atom::GetCoords() const {return mCoords;}
 
 //! Convert an atom to a string
 std::string Atom::ToString() const {
     std::stringstream info;
-    info<<GetAtomId()<<" "<<GetType()<<" ";
-    info<<GetResidType()<<" "<<GetChainId()<<" "<<GetResidId();
-    Coord3D coord = GetCoords();
-    info<<PrintCoord(coord);
+    info << atomId << " " << atomType << " ";
+    info << residType << " " << chainId << " " << residId;
+    info << PrintCoord(coords);
     return info.str();
 }
 
@@ -25,19 +23,18 @@ std::string Atom::ToString() const {
 std::string Atom::ToPdbString() const
 {
     char output[81];
-    const char* atomname = GetType().c_str();
-    const char* residName = GetResidType().c_str();
-    int residnumber = GetResidId();
-    const char* chainID = GetChainId().c_str();
+    const char* atomname = this->atomType.c_str();
+    const char* residName = this->residType.c_str();
+    int residnumber = this->residId;
+    const char* chainID = this->chainId.c_str();
 
-    int atomnumber = GetAtomId();
+    int atomnumber = atomId;
 
-    Coord3D coord = GetCoords();
-    double x = coord.x;
-    double y = coord.y;
-    double z = coord.z ;
+    double x = coords.x;
+    double y = coords.y;
+    double z = coords.z ;
 
-    snprintf(output,80,"ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f%s\n",atomnumber,atomname,residName,chainID,residnumber,x,y,z,GetExtra().c_str());
+    snprintf(output,80,"ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f%s\n",atomnumber,atomname,residName,chainID,residnumber,x,y,z,extra.c_str());
     output[79]='\n';
     output[80]='\0';
     return std::string(output);
@@ -46,7 +43,7 @@ std::string Atom::ToPdbString() const
 //! translate an atom with a Coord3D vector
 void Atom::Translate(const Coord3D& tr)
 {
-    mCoords=mCoords+tr;
+    coords = coords+tr;
 }
 
 

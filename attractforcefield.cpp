@@ -27,7 +27,7 @@ void extractExtra( Rigidbody& rig, std::vector<uint>& vCat, std::vector<dbl>& vC
     for (uint i=0; i<rig.Size(); i++)
     {
         const Atomproperty at = rig.GetAtomProperty(i);
-        std::string extra = at.GetExtra();
+        std::string extra = at.extra;
         //std::cout << extra << std::endl;
         std::istringstream iss( extra );
         iss >> atcategory >> atcharge ;

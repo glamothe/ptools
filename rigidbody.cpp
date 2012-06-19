@@ -83,7 +83,7 @@ Atom Rigidbody::CopyAtom(uint i) const
           throw std::out_of_range(message);
        }
        Atomproperty atp(atom);
-       Coord3D co(atom.GetCoords());
+       Coord3D co(atom.coords);
        SetAtomProperty(pos, atp);
        SetCoords(pos,co);
     }
@@ -93,7 +93,7 @@ Atom Rigidbody::CopyAtom(uint i) const
 void Rigidbody::AddAtom(const Atom& at)
 {
     Atomproperty atp(at);
-    Coord3D co = at.GetCoords();
+    Coord3D co = at.coords;
     AddAtom(atp,co);
 }
 
@@ -178,7 +178,7 @@ AtomSelection Rigidbody::SelectAtomType(std::string atomtype)
 
     for (uint i=0; i<Size(); i++)
     {
-        if ( mAtomProp[i].GetType()==atomtype)
+        if ( mAtomProp[i].atomType == atomtype)
             newsel.AddAtomIndex(i);
     }
 
@@ -193,7 +193,7 @@ AtomSelection Rigidbody::SelectResidType(std::string residtype)
 
     for (uint i=0; i<Size(); i++)
     {
-        if (mAtomProp[i].GetResidType()==residtype)
+        if (mAtomProp[i].residType==residtype)
             newsel.AddAtomIndex(i);
     }
     return newsel;
@@ -205,7 +205,7 @@ AtomSelection Rigidbody::SelectChainId(std::string chainId) {
     newsel.SetRigid(*this);
     for (uint i=0; i<Size(); i++)
     {
-        if (mAtomProp[i].GetChainId()==chainId)
+        if (mAtomProp[i].chainId==chainId)
             newsel.AddAtomIndex(i);
     }
     return newsel;
@@ -219,7 +219,7 @@ AtomSelection Rigidbody::SelectResRange(uint start, uint stop)
     for (uint i=0; i < Size(); i++)
     {
         Atomproperty& atp ( mAtomProp[i] );
-        if (atp.GetResidId() >=start && atp.GetResidId() <= stop) newsel.AddAtomIndex(i);
+        if (atp.residId >=start && atp.residId <= stop) newsel.AddAtomIndex(i);
     }
     return newsel;
 }
@@ -251,7 +251,7 @@ AtomSelection Rigidbody::Backbone()
 
     for (uint i=0; i<this->Size(); i++)
     {
-        if (isBackbone(CopyAtom(i).GetType()) )
+        if (isBackbone(CopyAtom(i).atomType) )
         {
             newsel.AddAtomIndex(i);
         }

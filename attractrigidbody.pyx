@@ -18,8 +18,8 @@ cdef extern from "attractrigidbody.h" namespace "PTools":
         void resetForces()
         #void addForces(  #TODO: later
  
-        void setRotation(bool)
-        void setTranslation(bool)
+        void setRotation(int)
+        void setTranslation(int)
         CppCoord3D FindCenter()
 
         unsigned int Size()
@@ -72,7 +72,6 @@ cdef class AttractRigidbody:
 
     #void setTranslation(bool)
     def setTranslation(self, flag):
-        print "the flag is: ", flag
         self.thisptr.setTranslation(flag)
 
     def isAtomActive(self, atomid):

@@ -2,29 +2,23 @@ cdef extern from "atom.h" namespace "PTools":
     cdef cppclass CppAtomproperty "PTools::Atomproperty":
         CppAtomproperty()
         CppAtomproperty(CppAtomproperty&)
-        string GetType()
-        void SetType(string )
-        string GetResidType() 
-        void SetResidType(string)
-        double GetAtomCharge() 
-        void SetAtomCharge(double)
-        string GetChainId()
-        void SetChainId(string chainid)
-        unsigned int GetResidId() 
-        void SetResidId(unsigned int)
-        unsigned int GetAtomId()
-        void SetAtomId(unsigned int)
-        void SetExtra(string extra)
-        string GetExtra()
+        
+        string atomType
+        string residType
+        double atomCharge
+        string chainId
+        unsigned int residId
+        unsigned int atomId
+        string extra
         
     cdef cppclass CppAtom "PTools::Atom"(CppAtomproperty):
         CppAtom()
         CppAtom(CppAtomproperty, CppCoord3D)
-        CppCoord3D GetCoords()
-        void SetCoords(CppCoord3D& )
+        
         string ToString()
         string ToPdbString()
         void Translate(CppCoord3D&)
+        CppCoord3D coords
         
     cdef double cppDist "PTools::Dist" (CppAtom& , CppAtom& )
     cdef double cppDist2 "PTools::Dist2" (CppAtom& , CppAtom& )
@@ -43,50 +37,58 @@ cdef class Atomproperty:
         if self.thisptr:
             del self.thisptr
     
+    property atomType:
+        def __get__(self):
+            return <bytes> self.thisptr.atomType.c_str()
+        def __set__(self, bytes b):
+            cdef char* c = b
+            cdef string cppname = string(c)
+            self.thisptr.atomType = cppname
+            
+    property residType:
+        def __get__(self):   
+            return <bytes> self.thisptr.residType.c_str()
     
-    def GetType(self):
-        return <bytes> self.thisptr.GetType().c_str()
+        def __set__(self, bytes residtype):
+            cdef char * c_residtype = residtype
+            self.thisptr.residType = string(c_residtype)
+
+    property atomCharge:
+        def __get__(self):
+            return self.thisptr.atomCharge
+    
+        def __set__(self, double charge):
+            self.thisptr.atomCharge = charge
+    
+    
+    property chainId:
+        def __get__(self):
+            return <bytes> self.thisptr.chainId.c_str()
+    
+        def __set__(self, bytes chainid):
+            cdef char * c_chainid = chainid
+            self.thisptr.chainId = string(c_chainid)
+    
+    property residId:    
+        def __get__(self):
+            return self.thisptr.residId
         
-    def SetType(self, bytes b):
-        cdef char* c = b
-        cdef string cppname = string(c)
-        self.thisptr.SetType(cppname)
+        def __set__(self, unsigned int resid):
+            self.thisptr.residId = resid 
         
-    def GetResidType(self):
-        return <bytes> self.thisptr.GetResidType().c_str()
     
-    def SetResidType(self, bytes residtype):
-        cdef char * c_residtype = residtype
-        self.thisptr.SetResidType(string(c_residtype))
-    
-    def GetAtomCharge(self):
-        return self.thisptr.GetAtomCharge()
-    
-    def SetAtomCharge(self, double charge):
-        self.thisptr.SetAtomCharge(charge)
-    
-    def GetChainId(self):
-        return <bytes> self.thisptr.GetChainId().c_str()
-    
-    def SetChainId(self, bytes chainid):
-        cdef char * c_chainid = chainid
-        self.thisptr.SetChainId(string(c_chainid))
-        
-    def GetResidId(self):
-        return self.thisptr.GetResidId()
-        
-    def SetResidId(self, unsigned int resid):
-        self.thisptr.SetResidId(resid)
-        
-    def GetAtomId(self):
-        return self.thisptr.GetAtomId()
-    def SetAtomId(self, unsigned int atomid):
-        self.thisptr.SetAtomId(atomid)
-    def SetExtra(self, bytes extra):
-        cdef char* c_extra = extra
-        self.thisptr.SetExtra(string(c_extra))
-    def GetExtra(self):
-        return self.thisptr.GetExtra().c_str()
+    property atomId:
+        def __get__(self):
+            return self.thisptr.atomId
+        def __set__(self, unsigned int atomid):
+            self.thisptr.atomId = atomid
+
+    property extra:
+        def __set__(self, bytes extra):
+            cdef char* c_extra = extra
+            self.thisptr.extra = string(c_extra)
+        def __get__(self):
+            return self.thisptr.extra.c_str()
 
         
 cdef class Atom(Atomproperty):
@@ -100,34 +102,39 @@ cdef class Atom(Atomproperty):
         #so thisptr already points to allocated data
         #we allocate here new data for a CppAtom instead of a CppAtomproperty
         del self.thisptr
+        self.thisptr = <CppAtomproperty*> 0
         
         if len(args) == 0:
             #no argument: allocate empty object
             self.thisptr = new CppAtom()
         else:
            #contructor called with (Atomproperty atproperty, Coord3D coords)
-           atproperty = <Atomproperty?> args[0]
-           coords = <Coord3D?> args[1]
-           cppatpropptr = atproperty.thisptr
-           cpp_coptr = coords.thisptr
-           self.thisptr = new CppAtom(deref(cppatpropptr), deref(cpp_coptr))
+           if isinstance(args[0],Atomproperty) and isinstance(args[1], Coord3D):
+               atproperty = <Atomproperty?> args[0]
+               coords = <Coord3D?> args[1]
+               cppatpropptr = atproperty.thisptr
+               cpp_coptr = coords.thisptr
+               self.thisptr = new CppAtom(deref(cppatpropptr), deref(cpp_coptr))
+               return
+           else:
+              raise TypeError("error: wrong argument type in Atom initialization")
         
     def __dealloc__(self):
+        if self.thisptr:
+            del self.thisptr
+            self.thisptr = <CppAtomproperty*> 0
+    
+    property coords:
+        def __get__(self):
+            co = Coord3D()
+            cdef CppCoord3D c_coord3D = (<CppAtom*>self.thisptr).coords
+            co.x = c_coord3D.x
+            co.y = c_coord3D.y
+            co.z = c_coord3D.z
+            return co
         
-        del self.thisptr
-        self.thisptr = <CppAtomproperty*> 0
-     
-    def GetCoords(self):
-        co = Coord3D()
-        cdef CppCoord3D c_coord3D = (<CppAtom*>self.thisptr).GetCoords()
-        co.x = c_coord3D.x
-        co.y = c_coord3D.y
-        co.z = c_coord3D.z
-        
-        return co
-        
-    def SetCoords(self, Coord3D co):
-        (<CppAtom*>self.thisptr).SetCoords(deref(co.thisptr))
+        def __set__(self, Coord3D co):
+            (<CppAtom*>self.thisptr).coords = deref(co.thisptr)
         
     def ToString(self):
         return <bytes> (<CppAtom*>self.thisptr).ToString().c_str()

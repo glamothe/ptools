@@ -137,7 +137,7 @@ Rigidbody Surface::surfpoint(const Rigidbody & rigid, dbl srad)
                     if (!coverd)
                     {
                         Atom m_atom2 = rigid.CopyAtom(i);
-                        m_atom2.SetCoords(coord1 + coord4);
+                        m_atom2.coords = coord1 + coord4;
                         rigidsurf.AddAtom(m_atom2);
                     }
                 }
@@ -164,7 +164,7 @@ Rigidbody Surface::surfpoint(const Rigidbody & rigid, dbl srad)
                 if (!coverd)
                 {
                     Atom m_atom2 = rigid.CopyAtom(i);
-                    m_atom2.SetCoords(coord1 + coord4);
+                    m_atom2.coords = coord1 + coord4 ;
                     rigidsurf.AddAtom(m_atom2);
                 }
                 costh+=2;
