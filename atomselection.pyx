@@ -17,9 +17,10 @@ cdef extern from "atomselection.h" namespace "PTools":
 
         CppAtomSelection non(CppAtomSelection &)
 
-    cdef AtomSelection operator& (CppAtomSelection&, CppAtomSelection&)
-    cdef AtomSelection operator| (CppAtomSelection&, CppAtomSelection&)
-#    cdef AtomSelection operator not (CppAtomSelection&, CppAtomSelection&) 
+    cdef CppAtomSelection operator& (CppAtomSelection&, CppAtomSelection&)
+    cdef CppAtomSelection operator| (CppAtomSelection&, CppAtomSelection&)
+#    cdef CppAtomSelection operator! (CppAtomSelection&) 
+    cdef CppAtomSelection op_not (CppAtomSelection&)
 
 cdef class AtomSelection:
 
@@ -53,4 +54,27 @@ cdef class AtomSelection:
         if self.thisptr:
             del self.thisptr
 
+    def __len__(self):
+        return self.thisptr.Size()
     
+    def __and__(AtomSelection self, AtomSelection second):
+        ret = AtomSelection()
+        del ret.thisptr
+        cdef CppAtomSelection new_sel =   deref(self.thisptr) & deref(second.thisptr)    
+        ret.thisptr  = new CppAtomSelection(new_sel)
+        return ret
+
+    def __or__(AtomSelection self, AtomSelection second):
+        ret = AtomSelection()
+        del ret.thisptr
+        cdef CppAtomSelection new_sel =   deref(self.thisptr) | deref(second.thisptr)    
+        ret.thisptr  = new CppAtomSelection(new_sel)
+        return ret
+
+
+    def __not__(AtomSelection self):
+        ret = AtomSelection()
+        del ret.thisptr
+        cdef CppAtomSelection new_sel =   op_not(deref(self.thisptr))
+        ret.thisptr  = new CppAtomSelection(new_sel)
+        return ret

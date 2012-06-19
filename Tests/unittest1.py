@@ -50,7 +50,47 @@ class TestAtom(unittest.TestCase):
         self.assertEqual(atom.atomCharge, -1.23456)
         
 
-
+class TestAtomSelection(unittest.TestCase):
+    def setUp(self):
+        self.rig = Rigidbody("1F88.pdb")
+        
+    def testSelectAll(self):
+        allAtoms = self.rig.SelectAllAtoms()
+        self.assertEqual(len(allAtoms), 5067)
+    
+    def testSelectCA(self):
+        CAatoms = self.rig.CA()
+        self.assertEqual(len(CAatoms),643)
+        
+    def testSelectAtomType(self):
+        CAatoms = self.rig.SelectAtomType("CA")
+        self.assertEqual(len(CAatoms), 643)
+        
+    def testSelectBackbone(self):
+        bbAtoms = self.rig.Backbone()
+        self.assertEqual(len(bbAtoms), 2572)
+        
+    def testSelectResRange(self):
+        res_1_35 = self.rig.SelectResRange(1,35)
+        self.assertEqual(len(res_1_35), 566)  # two chains
+    
+    def testAnd(self):
+        res_1_35 = self.rig.SelectResRange(1,35) 
+        CAatoms = self.rig.SelectAtomType("CA")
+        
+        ca_1_35 = res_1_35 & CAatoms
+        self.assertEqual(len(ca_1_35), 70)  #2*35: two chains, A and B
+        
+    def testSelectResidType(self):
+        met1 = self.rig.SelectResidType("MET") & self.rig.SelectResRange(1,5) 
+        self.assertEqual(len(met1), 16)
+        met1A = self.rig.SelectResidType("MET") & self.rig.SelectResRange(1,5) & self.rig.SelectChainId("A")
+        self.assertEqual(len(met1A), 8)
+        
+    def testSelectChainId(self):
+        chainA = self.rig.SelectChainId("A")
+        self.assertEqual(len(chainA), 2638)
+        
 
 class TestRigidbody(unittest.TestCase):
     def setUp(self):
