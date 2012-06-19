@@ -78,3 +78,11 @@ cdef class AtomSelection:
         cdef CppAtomSelection new_sel =   op_not(deref(self.thisptr))
         ret.thisptr  = new CppAtomSelection(new_sel)
         return ret
+
+    def CreateRigid(self):
+        ret = Rigidbody()
+        if ret.thisptr:
+            del ret.thisptr
+        cdef CppRigidbody rig = self.thisptr.CreateRigid()
+        ret.thisptr = new CppRigidbody(rig)
+        return ret

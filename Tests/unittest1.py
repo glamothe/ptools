@@ -91,6 +91,11 @@ class TestAtomSelection(unittest.TestCase):
         chainA = self.rig.SelectChainId("A")
         self.assertEqual(len(chainA), 2638)
         
+    def testCreateRigid(self):
+        met1A = self.rig.SelectResidType("MET") & self.rig.SelectResRange(1,5) & self.rig.SelectChainId("A")
+        rigid = met1A.CreateRigid()
+        self.assertEqual(len(rigid), 8)
+        
 
 class TestRigidbody(unittest.TestCase):
     def setUp(self):
