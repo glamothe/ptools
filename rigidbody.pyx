@@ -32,6 +32,16 @@ cdef extern from "rigidbody.h" namespace "PTools":
         
         CppAtomproperty & GetAtomProperty(unsigned int)
         void SetAtomProperty(unsigned int, CppAtomproperty& )
+
+
+        #AtomSelection:
+        CppAtomSelection SelectAllAtoms()
+        CppAtomSelection SelectAtomType(string)
+        CppAtomSelection SelectResidType(string)
+        CppAtomSelection SelectChainId(string)
+        CppAtomSelection SelectResRange(unsigned int, unsigned int)
+        CppAtomSelection CA()
+        CppAtomSelection Backbone()
         
 
 cdef extern from "pdbio.h" namespace "PTools":
@@ -135,6 +145,74 @@ cdef class Rigidbody:
     
     
     #    void SetAtomProperty(unsigned int, Atomproperty& )
+
+
+    #AtomSelection:
+    def SelectAllAtoms(self):
+       ret = AtomSelection()
+       del ret.thisptr
+       cdef CppAtomSelection new_sel =  self.thisptr.SelectAllAtoms()
+       ret.thisptr  = new CppAtomSelection(new_sel)
+       return ret
+
+
+    def SelectAtomType(self, bytes b):
+       ret = AtomSelection()
+       del ret.thisptr
+       cdef char* c_typename = b
+       cdef string* cpp_atomtype = new string(c_typename)
+       cdef CppAtomSelection new_sel =  self.thisptr.SelectAtomType(deref(cpp_atomtype))
+       del cpp_atomtype
+       ret.thisptr  = new CppAtomSelection(new_sel)
+       return ret
+       
+
+
+    def SelectResidType(self, bytes b):
+       ret = AtomSelection()
+       del ret.thisptr
+       cdef char* c_typename = b
+       cdef string* cpp_residtype = new string(c_typename)
+       cdef CppAtomSelection new_sel =  self.thisptr.SelectResidType(deref(cpp_residtype))
+       del cpp_residtype
+       ret.thisptr  = new CppAtomSelection(new_sel)
+       return ret
+
+
+    def SelectChainId(self, bytes b):
+       ret = AtomSelection()
+       del ret.thisptr
+       cdef char* c_typename = b
+       cdef string* cpp_chainid = new string(c_typename)
+       cdef CppAtomSelection new_sel =  self.thisptr.SelectChainId(deref(cpp_chainid))
+       del cpp_chainid
+       ret.thisptr  = new CppAtomSelection(new_sel)
+       return ret
+
+
+    def SelectResRange(self, unsigned int i, unsigned int j):
+       ret = AtomSelection()
+       del ret.thisptr
+       cdef CppAtomSelection new_sel =  self.thisptr.SelectResRange(i,j)
+       ret.thisptr  = new CppAtomSelection(new_sel)
+       return ret
+
+
+    def CA(self):
+       ret = AtomSelection()
+       del ret.thisptr
+       cdef CppAtomSelection new_sel =  self.thisptr.CA()
+       ret.thisptr  = new CppAtomSelection(new_sel)
+       return ret
+
+
+    def Backbone(self):
+       ret = AtomSelection()
+       del ret.thisptr
+       cdef CppAtomSelection new_sel =  self.thisptr.Backbone()
+       ret.thisptr  = new CppAtomSelection(new_sel)
+       return ret
+
     
 
         
@@ -159,7 +237,7 @@ cdef loadPDBfromPythonFileLike(file, CppRigidbody* rigid):
 
       
 
-def c_to_python_string():
+cdef c_to_python_string():
     cdef char * test = "hello world"
     cdef bytes b = test
     return b
