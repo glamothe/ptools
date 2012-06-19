@@ -23,6 +23,7 @@
       parameter (npmax=2000)
       parameter (namax=20000)
       parameter (ngmax=100000)
+
       parameter (boxsize=100.0D0)
       parameter (delgrid=1.2D0)
       parameter (rminex=10.0D0)
@@ -34,17 +35,13 @@
 
       REAL*8    charge(*),radius(*)
       REAL*8    coorx(*),coory(*),coorz(*)
-      REAL*8    cgchg(*),cgrad(*),optch(npmax)
+      REAL*8    cgchg(*),cgrad(*)
       REAL*8    cgcox(*),cgcoy(*),cgcoz(*)
-
-      REAL*8    zcharge(namax),zradius(namax)
-      REAL*8    zcoorx(namax),zcoory(namax),zcoorz(namax)
-      REAL*8    zcgchg(npmax),zcgrad(npmax)
-      REAL*8    zcgcox(npmax),zcgcoy(npmax),zcgcoz(npmax)
 
 *-------------------- LOCAL VARIABLES ----------------------------------
 
       logical   solvent
+      integer   znatom
       integer   ngrid,ii,jj,kk,ll,mm
       integer   npts,npts1,lwa,iflag,info
       integer   iwa(npmax)
@@ -57,14 +54,24 @@
       real*8    xpts(ngmax),ypts(ngmax),zpts(ngmax),dpot(ngmax)
       real*8    wa(ngmax*npmax+5*npmax+ngmax)
 
+      REAL*8    optch(npmax)
+      REAL*8    zcharge(namax),zradius(namax)
+      REAL*8    zcoorx(namax),zcoory(namax),zcoorz(namax)
+      REAL*8    zcgcox(npmax),zcgcoy(npmax),zcgcoz(npmax)
+
 *==================== EXECUTABLE STATEMENTS ============================
 
       common /chgcoo/ zcharge,zcoorx,zcoory,zcoorz,
-     z zcgchg,zcgcox,zcgcoy,zcgcoz,xpts,ypts,zpts,bx,by,bz
+     & zcgcox,zcgcoy,zcgcoz,xpts,ypts,zpts,bx,by,bz,znatom
 
       external diffpot
 
-      do ii=1,namax
+c------------------------------------------verification entree variables
+
+      write(*,*) natom,nbead
+      znatom=natom
+
+      do ii=1,natom
         zcharge(ii)=charge(ii)
         zradius(ii)=radius(ii)
         zcoorx(ii)=coorx(ii)
@@ -72,17 +79,11 @@
         zcoorz(ii)=coorz(ii)
       enddo
 
-      do ii=1,npmax
-        zcgchg(ii)=cgchg(ii)
-        zcgrad(ii)=cgrad(ii)
+      do ii=1,nbead
         zcgcox(ii)=cgcox(ii)
         zcgcoy(ii)=cgcoy(ii)
         zcgcoz(ii)=cgcoz(ii)
       enddo
-
-c------------------------------------------verification entree variables
-
-      write(*,*) natom,nbead
 
       ngrid=int(boxsize/delgrid)+1
 
@@ -231,10 +232,6 @@ c---------------------------------------------------verifications
      &           ' P = ',cgtotpx,cgtotpy,cgtotpz
 27    format(a24,f9.5,a5,3f11.5)
 
-*=======================================================================
-*----- Output ----------------------------------------------------------
-*=======================================================================
-
 *================= END OF EXECUTABLE STATEMENTS ========================
 
       RETURN
@@ -258,46 +255,27 @@ c---------------------------------------------------verifications
 
 *----------------------- INPUT VARIABLES -------------------------------
 
-      INTEGER   natom,nbead,npts1,iflag
-
-      REAL*8    bx,by,bz
-
-      REAL*8    charge(namax),coorx(namax),coory(namax),coorz(namax)
-      REAL*8    cgchg(npmax),cgcox(npmax),cgcoy(npmax),cgcoz(npmax)
-      REAL*8    xpts(ngmax),ypts(ngmax),zpts(ngmax),dpot(ngmax)
-      REAL*8    optch(npmax)
+      INTEGER   nbead,npts1,iflag
 
       REAL*8    zcharge(namax)
       REAL*8    zcoorx(namax),zcoory(namax),zcoorz(namax)
-      REAL*8    zcgchg(npmax)
       REAL*8    zcgcox(npmax),zcgcoy(npmax),zcgcoz(npmax)
+      REAL*8    xpts(ngmax),ypts(ngmax),zpts(ngmax),dpot(ngmax)
+      REAL*8    optch(npmax)
 
 *-------------------- LOCAL VARIABLES ----------------------------------
 
-      integer npts,ii,jj,kk
+      integer   znatom,npts,ii,jj,kk
 
-      real*8  qlambda,plambda,aatotc,cgtotc
-      real*8  aatotpx,aatotpy,aatotpz,cgtotpx,cgtotpy,cgtotpz
-      real*8  rx,ry,rz,rr,xx,yy,zz,potaa,potcg
+      REAL*8    bx,by,bz
+      real*8    qlambda,plambda,aatotc,cgtotc
+      real*8    aatotpx,aatotpy,aatotpz,cgtotpx,cgtotpy,cgtotpz
+      real*8    rx,ry,rz,rr,xx,yy,zz,potaa,potcg
 
 *==================== EXECUTABLE STATEMENTS ============================
 
       common /chgcoo/ zcharge,zcoorx,zcoory,zcoorz,
-     z zcgchg,zcgcox,zcgcoy,zcgcoz,xpts,ypts,zpts,bx,by,bz
-
-      do ii=1,namax
-        charge(ii)=zcharge(ii)
-        coorx(ii)=zcoorx(ii)
-        coory(ii)=zcoory(ii)
-        coorz(ii)=zcoorz(ii)
-      enddo
-
-      do ii=1,npmax
-        cgchg(ii)=zcgchg(ii)
-        cgcox(ii)=zcgcox(ii)
-        cgcoy(ii)=zcgcoy(ii)
-        cgcoz(ii)=zcgcoz(ii)
-      enddo
+     & zcgcox,zcgcoy,zcgcoz,xpts,ypts,zpts,bx,by,bz,znatom
 
 c-------------------------------------------------charge et dipole total
 
@@ -309,11 +287,11 @@ c-------------------------------------------------charge et dipole total
       aatotpy=0.0D0
       aatotpz=0.0D0
 
-      do ii=1,natom
-        aatotc=aatotc+charge(ii)
-        aatotpx=aatotpx+charge(ii)*(coorx(ii)-bx)
-        aatotpy=aatotpy+charge(ii)*(coory(ii)-by)
-        aatotpz=aatotpz+charge(ii)*(coorz(ii)-bz)
+      do ii=1,znatom
+        aatotc=aatotc+zcharge(ii)
+        aatotpx=aatotpx+zcharge(ii)*(zcoorx(ii)-bx)
+        aatotpy=aatotpy+zcharge(ii)*(zcoory(ii)-by)
+        aatotpz=aatotpz+zcharge(ii)*(zcoorz(ii)-bz)
       enddo
 
       cgtotc=0.0D0
@@ -323,9 +301,9 @@ c-------------------------------------------------charge et dipole total
 
       do jj=1,nbead
         cgtotc=cgtotc+optch(jj)
-        cgtotpx=cgtotpx+optch(jj)*(cgcox(jj)-bx)
-        cgtotpy=cgtotpy+optch(jj)*(cgcoy(jj)-by)
-        cgtotpz=cgtotpz+optch(jj)*(cgcoz(jj)-bz)
+        cgtotpx=cgtotpx+optch(jj)*(zcgcox(jj)-bx)
+        cgtotpy=cgtotpy+optch(jj)*(zcgcoy(jj)-by)
+        cgtotpz=cgtotpz+optch(jj)*(zcgcoz(jj)-bz)
       enddo
 
 c-------------------------------------------potentials on a grid
@@ -339,19 +317,19 @@ c-------------------------------------------potentials on a grid
         rz=zpts(kk)
 
         potaa=0.0D0
-        do ii=1,natom
-          xx=rx-coorx(ii)
-          yy=ry-coory(ii)
-          zz=rz-coorz(ii)
+        do ii=1,znatom
+          xx=rx-zcoorx(ii)
+          yy=ry-zcoory(ii)
+          zz=rz-zcoorz(ii)
           rr=dsqrt(xx*xx+yy*yy+zz*zz)
-          potaa=potaa+charge(ii)/rr
+          potaa=potaa+zcharge(ii)/rr
         enddo
 
         potcg=0.0D0
         do jj=1,nbead
-          xx=rx-cgcox(jj)
-          yy=ry-cgcoy(jj)
-          zz=rz-cgcoz(jj)
+          xx=rx-zcgcox(jj)
+          yy=ry-zcgcoy(jj)
+          zz=rz-zcgcoz(jj)
           rr=dsqrt(xx*xx+yy*yy+zz*zz)
           potcg=potcg+optch(jj)/rr
         enddo
