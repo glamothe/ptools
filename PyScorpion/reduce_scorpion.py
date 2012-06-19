@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 
 import sys
@@ -23,18 +24,18 @@ class BeadCreator:
 
             atProp=Atomproperty()
             #print "*******reducedname: ",reducedname
-            atProp.SetType(reducedname)
-            atProp.SetAtomCharge(reducedcharge)
-            atProp.SetChainId('')
+            atProp.atomType = reducedname
+            atProp.atomCharge = reducedcharge
+            atProp.chainId = ''
             self.atProp=atProp
 
       def submit(self, atom):
             "try to add an atom to the bead"
-            atomtype=atom.GetType()
+            atomtype=atom.atomType
             #trick to handle 'OTn' instead of 'O' for last pdb atom:
             if atomtype[:2]=='OT': atomtype='O'
             if atomtype in self._lstofAtoms:
-                  self._CoM+=atom.GetCoords()
+                  self._CoM+=atom.coords
                   self._lstofAtoms.remove(atomtype)
                   self.size+=1
                   #print self.size
@@ -149,7 +150,7 @@ for i in xrange(len(allAtom) ):
 residuMap={}
 residulist=[]
 for at in atoms:
-      residueIdentifier = at.GetResidType() + str(at.GetChainId())  + str(at.GetResidId())
+      residueIdentifier = at.residType + str(at.chainId)  + str(at.residId)
       #residueIdentifier is like "LEU296"
       residuMap.setdefault(residueIdentifier, []).append(at)
       if residueIdentifier not in residulist:
@@ -158,7 +159,7 @@ for at in atoms:
 sys.stderr.write("Number of residues: %i\n" %(len(residuMap)))
 sys.stderr.write("Start atom of each residue:\n")
 orderedresid=[residuMap[i] for i in residulist ]
-startatoms=[lat[0].GetAtomId() for lat in orderedresid ]
+startatoms=[lat[0].atomId for lat in orderedresid ]
 out = ""
 for statom in startatoms:
       out+=(str(statom))+" "
@@ -174,7 +175,7 @@ protein = []
 for residKey, atomList in zip(residulist,orderedresid):
       residType=residKey[:3]
       if (residType)=="HIE": residType="HIS" #fix for an amber output file
-      residNumber=int(residKey[4:])
+      residNumber=int(residKey[3:])
       #print "reducing residue %s of type %s" % (residKey, residType)
       correspList=beadCorresp[residType]
       #print correspList
@@ -194,11 +195,11 @@ for residKey, atomList in zip(residulist,orderedresid):
                   raise 
             totAtoms+=1
             #now we must modify the bead: change the residue type and set the "extra" field correctly
-            bead.SetResidType(residType)
+            bead.residType = residType 
             extra = ('%5i'+'%8.3f'+'%2i'*2) %(atomTypeNumber,atomCharge,0, 0)
-            bead.SetExtra(extra)
-            bead.SetAtomId(totAtoms)
-            bead.SetResidId(residNumber)
+            bead.extra = extra
+            bead.atomId = totAtoms
+            bead.residId = residNumber
             protein.append(bead)
             print bead.ToPdbString(),  # ',' because of the extra \n caracter from the ptools C++ library
 
@@ -225,29 +226,29 @@ for i in range(len(allAtom)):
    atom = allAtom.CopyAtom(i)
   # print dir(atom)
 #   residu_name = atom. 
-   residu_type= atom.GetResidType() 
-   atomtype = atom.GetType()
+   residu_type= atom.residType
+   atomtype = atom.atomType
    key = "%s:%s"%(residu_type, atomtype) 
    radius.append(  allAtomRadius[key] ) 
    charge.append ( allAtomCharges[key]   )
-   cx.append( atom.GetCoords().x)
-   cy.append( atom.GetCoords().y)
-   cz.append( atom.GetCoords().z)
+   cx.append( atom.coords.x)
+   cy.append( atom.coords.y)
+   cz.append( atom.coords.z)
    print  key ,  charge[i], radius[i], cx[i], cy[i], cz[i]
    
   
 for i, atom in enumerate(protein):
    
-   cgch.append( atom.GetAtomCharge() ) 
+   cgch.append( atom.atomCharge ) 
    
-   residu_type= atom.GetResidType() 
-   atomtype = atom.GetType()
+   residu_type= atom.residType
+   atomtype = atom.atomType
    key = "%s:%s"%(residu_type, atomtype) 
 
    cgr.append( beadRadius[key] )  
-   cgx.append( atom.GetCoords().x)
-   cgy.append( atom.GetCoords().y)
-   cgz.append( atom.GetCoords().z)
+   cgx.append( atom.coords.x)
+   cgy.append( atom.coords.y)
+   cgz.append( atom.coords.z)
 
    print key, cgch[i], cgr[i], cgx[i], cgy[i], cgz[i]
 
@@ -257,7 +258,10 @@ print "optimized charges: ", optimized
 #rig = AttractRigidbody()
 
 for i, bead in enumerate(protein):
-    #rig.AddAtom(bead)
-    bead.SetAtomCharge(optimized[i])
+    #ugly hack to set correct charges values due to a bug atom to pdb conversion
+    extra = bead.extra
+    atomTypeNumber = int(extra.split()[0])
+    bead.extra = ('%5i'+'%8.3f'+'%2i'*2) %(atomTypeNumber,optimized[i],0, 0)
+    
     print bead.ToPdbString(),
 
