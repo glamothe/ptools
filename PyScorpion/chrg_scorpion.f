@@ -68,7 +68,6 @@
 
 c------------------------------------------verification entree variables
 
-      write(*,*) natom,nbead
       znatom=natom
 
       do ii=1,natom
@@ -171,10 +170,6 @@ c---------------------------------------------------minimisation
         optch(jj)=cgchg(jj)
       enddo
 
-      write(6,*)
-      write(6,*) ' OPTIMISATION DES ',nbead,' CHARGES GROS GRAIN'
-      write(6,*) ' (NB DE POINTS DE GRILLE = ',npts,')'
-
       lwa=npts1*nbead+5*nbead+npts1
 
       call diffpot(npts1,nbead,optch,dpot,iflag)
@@ -188,19 +183,13 @@ c------------------------------------difference de potentiel maximum
         if (dabs(dpot(kk)).gt.dpotmax) dpotmax=dabs(dpot(kk))
       enddo
 
-      write(6,*) ' dpotmax = ',dpotmax
-
-      if (info.eq.0.or.info.gt.3) then
-        write(6,*) ' warning : info = ',info
-      endif
-
 c------------------------------------retour des charges optimisees
 
       do jj=1,nbead
         cgchg(jj)=optch(jj)
       enddo
 
-c---------------------------------------------------verifications
+c-------------------------------------verifications et output
 
       aatotc=0.0D0
       aatotpx=0.0D0
@@ -226,11 +215,15 @@ c---------------------------------------------------verifications
         cgtotpz=cgtotpz+cgchg(jj)*(cgcoz(jj)-bz)
       enddo
 
-      write(6,27) ' All Atom Model : Q = ',aatotc,
-     &           ' P = ',aatotpx,aatotpy,aatotpz
-      write(6,27) ' Coarse Grained : Q = ',cgtotc,
-     &           ' P = ',cgtotpx,cgtotpy,cgtotpz
-27    format(a24,f9.5,a5,3f11.5)
+      open (unit=1,file='opt_scorpion.out',status='unknown')
+
+      write(1,*) ' WARNING : INFO = ',info
+      write(1,*) ' OPTIMISATION DE ',nbead,' CHARGES GROS GRAIN'
+      write(1,*) ' SUR ',npts,' POINTS DE GRILLE'
+      write(1,*) ' DPOTMAX = ',dpotmax
+      write(1,27) '  QAA = ',aatotc,'  PAA = ',aatotpx,aatotpy,aatotpz
+      write(1,27) '  QCG = ',cgtotc,'  PCG = ',cgtotpx,cgtotpy,cgtotpz
+27    format(a8,f9.3,a8,3f9.3)
 
 *================= END OF EXECUTABLE STATEMENTS ========================
 
