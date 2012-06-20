@@ -260,7 +260,7 @@ if (options.reffile):
     ref=Rigidbody(options.reffile)
     print "Reading reference file: %s with %d particules" %( options.reffile, len(ref) )
     refca = ref.CA()
-    if refca.Size() == 0:  #No C alpha atom, ligand is probably a dna
+    if len(refca) == 0:  #No C alpha atom, ligand is probably a dna
         Rmsd_alias = Rmsd
         print "No Calpha atom found for ligand (DNA?). RMSD will be calculated on all grains"
     else:
