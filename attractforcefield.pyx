@@ -30,7 +30,7 @@ cdef extern from "attractforcefield.h" namespace "PTools":
         void AddLigand(CppAttractRigidbody &)
         double getVdw()
         double getCoulomb()
-        
+        double nonbon8(CppAttractRigidbody& , CppAttractRigidbody& , CppAttractPairList & , int) 
         
         
     
@@ -87,6 +87,7 @@ cdef extern from "attractforcefield.h" namespace "PTools":
        double Function(vector[double]&)
        double getVdw()
        double getCoulomb()
+       
 
 
 cdef class AttractForceField1(BaseAttractForceField):
@@ -118,4 +119,7 @@ cdef class AttractForceField1(BaseAttractForceField):
     
     def getCoulomb(self):
         return self.thisptr.getCoulomb()
+
+    def nonbon8(self, AttractRigidbody rec, AttractRigidbody lig, AttractPairList pl, verbose=False):
+        return self.thisptr.nonbon8(deref(rec.thisptr), deref(lig.thisptr), deref(pl.thisptr), verbose)
 

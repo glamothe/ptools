@@ -17,7 +17,7 @@ def surreal(i):
     return i
 
 def rmsdca(l1,l2):
-    return Rmsd(l1.CA(), l2.CA())
+    return Rmsd(l1.CA().CreateRigid(), l2.CA().CreateRigid())
 
 
 def compress_file(filename):
@@ -162,7 +162,7 @@ def rigidXstd_vector(rigid, mat_std):
         mat.append(line)
 
     out=AttractRigidbody(rigid)
-    for i in range(rigid.Size()):
+    for i in range(len(rigid)):
         coords=rigid.getCoords(i)
         coords2=Coord3D()
         coords2.x = mat[0][0]*coords.x + mat[0][1]*coords.y + mat[0][2]*coords.z + mat[0][3]
@@ -258,9 +258,9 @@ if (options.single):
 if (options.reffile):
     checkFile(options.reffile, "")
     ref=Rigidbody(options.reffile)
-    print "Reading reference file: %s with %d particules" %( options.reffile, ref.Size() )
+    print "Reading reference file: %s with %d particules" %( options.reffile, len(ref) )
     refca = ref.CA()
-    if refca.Size() == 0:  #No C alpha atom, ligand is probably a dna
+    if len(refca) == 0:  #No C alpha atom, ligand is probably a dna
         Rmsd_alias = Rmsd
         print "No Calpha atom found for ligand (DNA?). RMSD will be calculated on all grains"
     else:

@@ -31,6 +31,10 @@ cdef extern from "attractrigidbody.h" namespace "PTools":
         #returns the radius of a Rigidbody (max distance from center)
         double Radius()
 
+        void PrintMatrix()
+
+        CppAtomSelection CA()
+
 
 
 cdef CppAttractRigidbody* _getAttractRigidbody_from_py_name(pyname):
@@ -110,8 +114,21 @@ cdef class AttractRigidbody:
         rig.AttractEulerRotate(phi, ssi, rot)
 
 
+    #these function should be defined only in Rigdibody object and attractrigdbody should inherit from it:œ
+
     def Radius(self):
        return self.thisptr.Radius()
 
     def RadiusGyration(self):
        return self.thisptr.RadiusGyration()      
+
+
+    def PrintMatrix(self):
+       self.thisptr.PrintMatrix()
+
+    def CA(self):
+       ret = AtomSelection()
+       del ret.thisptr
+       cdef CppAtomSelection new_sel =  self.thisptr.CA()
+       ret.thisptr  = new CppAtomSelection(new_sel)
+       return ret
