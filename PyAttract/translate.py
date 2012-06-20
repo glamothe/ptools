@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 ##
 ## translate script
@@ -20,8 +21,8 @@ parser.usage = 'translate.py <receptor_file> <ligand_file> [options]'
 parser.add_option("-d", "--density", action="store", type="float", dest="density",help="distance in angstroem between starting points (the value must be > 1.0), default is 10.0 angstroem")
 (options, args) = parser.parse_args()
 
-rec = AttractRigidbody(sys.argv[1])
-lig = AttractRigidbody(sys.argv[2])
+rec = Rigidbody(sys.argv[1])
+lig = Rigidbody(sys.argv[2])
 
 # search solvation parameters file
 completePath=sys.argv[0]
@@ -52,8 +53,8 @@ outergrid=surf.removeclosest(outergrid,d)
 nb_startingpoint=0
 startingpoint=[]
 
-for i in range(outergrid.Size()):
-	coord=outergrid.GetCoords(i)
+for i in range(len(outergrid)):
+	coord=outergrid.getCoords(i)
 	nb_startingpoint+=1
 	startingpoint.append("%4s %6i %5s %3s %4i    %8.3f%8.3f%8.3f"  %("ATOM",nb_startingpoint, "POSI", "PRO",nb_startingpoint ,float(coord.x),float(coord.y),float(coord.z)))
 

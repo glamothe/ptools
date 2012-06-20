@@ -29,6 +29,12 @@ cdef extern from "rigidbody.h" namespace "PTools":
         void AddAtom(CppAtomproperty& , CppCoord3D )
         void AddAtom(CppAtom&)
         void SetAtom(unsigned int, CppAtom&)
+
+        #returns radius of gyration
+        double RadiusGyration()
+
+        #returns the radius of a Rigidbody (max distance from center)
+        double Radius()
         
         CppAtomproperty & GetAtomProperty(unsigned int)
         void SetAtomProperty(unsigned int, CppAtomproperty& )
@@ -146,6 +152,12 @@ cdef class Rigidbody:
     
     #    void SetAtomProperty(unsigned int, Atomproperty& )
 
+
+    def Radius(self):
+       return self.thisptr.Radius()
+
+    def RadiusGyration(self):
+       return self.thisptr.RadiusGyration()
 
     #AtomSelection:
     def SelectAllAtoms(self):

@@ -25,6 +25,13 @@ cdef extern from "attractrigidbody.h" namespace "PTools":
         unsigned int Size()
 
 
+        #returns radius of gyration
+        double RadiusGyration()
+
+        #returns the radius of a Rigidbody (max distance from center)
+        double Radius()
+
+
 
 cdef CppAttractRigidbody* _getAttractRigidbody_from_py_name(pyname):
     cdef char* name = pyname
@@ -101,4 +108,10 @@ cdef class AttractRigidbody:
     def  AttractEulerRotate(self, double phi, double ssi, double rot):
         cdef CppRigidbody* rig = <CppRigidbody*> self.thisptr
         rig.AttractEulerRotate(phi, ssi, rot)
-        
+
+
+    def Radius(self):
+       return self.thisptr.Radius()
+
+    def RadiusGyration(self):
+       return self.thisptr.RadiusGyration()      
