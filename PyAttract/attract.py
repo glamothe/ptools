@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from ptools import *
 import sys
@@ -16,7 +17,7 @@ def surreal(i):
     return i
 
 def rmsdca(l1,l2):
-    return Rmsd(l1.CA(), l2.CA())
+    return Rmsd(l1.CA().CreateRigid(), l2.CA().CreateRigid())
 
 
 def compress_file(filename):
@@ -89,14 +90,14 @@ class Rotation:
 class Translation:
     def __init__(self):
         self.translation_dat=Rigidbody("translation.dat")
-        print "Reading %i translations from translation.dat"%self.translation_dat.Size()
+        print "Reading %i translations from translation.dat"%len(self.translation_dat)
 
     def __iter__(self):
         self.i=0
         return self
     def next(self):
-        if (self.i == self.translation_dat.Size()): raise StopIteration
-        coord=self.translation_dat.GetCoords(self.i)
+        if (self.i == len(self.translation_dat)): raise StopIteration
+        coord=self.translation_dat.getCoords(self.i)
         self.i+=1
         return [self.i,coord]
         
@@ -161,8 +162,8 @@ def rigidXstd_vector(rigid, mat_std):
         mat.append(line)
 
     out=AttractRigidbody(rigid)
-    for i in range(rigid.Size()):
-        coords=rigid.GetCoords(i)
+    for i in range(len(rigid)):
+        coords=rigid.getCoords(i)
         coords2=Coord3D()
         coords2.x = mat[0][0]*coords.x + mat[0][1]*coords.y + mat[0][2]*coords.z + mat[0][3]
         coords2.y = mat[1][0]*coords.x + mat[1][1]*coords.y + mat[1][2]*coords.z + mat[1][3]
@@ -257,9 +258,9 @@ if (options.single):
 if (options.reffile):
     checkFile(options.reffile, "")
     ref=Rigidbody(options.reffile)
-    print "Reading reference file: %s with %d particules" %( options.reffile, ref.Size() )
+    print "Reading reference file: %s with %d particules" %( options.reffile, len(ref) )
     refca = ref.CA()
-    if refca.Size() == 0:  #No C alpha atom, ligand is probably a dna
+    if len(refca) == 0:  #No C alpha atom, ligand is probably a dna
         Rmsd_alias = Rmsd
         print "No Calpha atom found for ligand (DNA?). RMSD will be calculated on all grains"
     else:
@@ -288,7 +289,7 @@ if (options.transnb!=None):
     checkFile("rotation.dat", "rotation file is required.")
     checkFile("translation.dat", "translation file is required.\nFormer users may rename translat.dat into translation.dat.")
     trans=Rigidbody("translation.dat")
-    co=trans.GetCoords(options.transnb)
+    co=trans.getCoords(options.transnb)
     translations=[[options.transnb+1,co]]
     transnb=options.transnb
     if transnb!=trans.Size()-1:

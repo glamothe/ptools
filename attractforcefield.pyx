@@ -30,7 +30,7 @@ cdef extern from "attractforcefield.h" namespace "PTools":
         void AddLigand(CppAttractRigidbody &)
         double getVdw()
         double getCoulomb()
-        
+        double nonbon8(CppAttractRigidbody& , CppAttractRigidbody& , CppAttractPairList & , int) 
         
         
     
@@ -55,8 +55,8 @@ cdef class AttractForceField2(BaseAttractForceField):
         c_filename = <char*> filename
         cppname = new string(c_filename)
         self.rigidlist = []
-        
         self.thisptr = new CppAttractForceField2(deref(cppname), cutoff)
+        del cppname
 
     def __dealloc__(self):
         del self.thisptr
@@ -87,6 +87,7 @@ cdef extern from "attractforcefield.h" namespace "PTools":
        double Function(vector[double]&)
        double getVdw()
        double getCoulomb()
+       
 
 
 cdef class AttractForceField1(BaseAttractForceField):
@@ -100,8 +101,11 @@ cdef class AttractForceField1(BaseAttractForceField):
 
         c_filename = <char*> filename
         cppname = new string(c_filename)
-        
         self.thisptr = new CppAttractForceField1(deref(cppname), cutoff)
+        del cppname
+
+    def __dealloc__(self):
+        del self.thisptr
 
     def AddLigand(self, AttractRigidbody rig):
         self.thisptr.AddLigand(deref(rig.thisptr))
@@ -118,4 +122,7 @@ cdef class AttractForceField1(BaseAttractForceField):
     
     def getCoulomb(self):
         return self.thisptr.getCoulomb()
+
+    def nonbon8(self, AttractRigidbody rec, AttractRigidbody lig, AttractPairList pl, verbose=False):
+        return self.thisptr.nonbon8(deref(rec.thisptr), deref(lig.thisptr), deref(pl.thisptr), verbose)
 
