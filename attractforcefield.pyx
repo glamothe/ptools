@@ -55,8 +55,8 @@ cdef class AttractForceField2(BaseAttractForceField):
         c_filename = <char*> filename
         cppname = new string(c_filename)
         self.rigidlist = []
-        
         self.thisptr = new CppAttractForceField2(deref(cppname), cutoff)
+        del cppname
 
     def __dealloc__(self):
         del self.thisptr
@@ -101,8 +101,11 @@ cdef class AttractForceField1(BaseAttractForceField):
 
         c_filename = <char*> filename
         cppname = new string(c_filename)
-        
         self.thisptr = new CppAttractForceField1(deref(cppname), cutoff)
+        del cppname
+
+    def __dealloc__(self):
+        del self.thisptr
 
     def AddLigand(self, AttractRigidbody rig):
         self.thisptr.AddLigand(deref(rig.thisptr))
