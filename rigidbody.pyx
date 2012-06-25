@@ -19,6 +19,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         unsigned int Size()
         CppCoord3D GetCoords(unsigned int)
         void unsafeGetCoords(unsigned int, CppCoord3D&)
+        void SetCoords(unsigned int, CppCoord3D &)
         void ABrotate(CppCoord3D&, CppCoord3D&, double)
         void Translate(CppCoord3D&)
         CppCoord3D FindCenter()
@@ -97,7 +98,9 @@ cdef class Rigidbody:
         
     def unsafeGetCoords(self, unsigned int i, Coord3D co):
         self.thisptr.unsafeGetCoords(i, deref(co.thisptr))
-        
+    
+    def setCoords(self, int i, Coord3D co):
+        self.thisptr.SetCoords(i, deref(co.thisptr))    
         
     def Translate(self, Coord3D tr):
         self.thisptr.Translate(deref(tr.thisptr))
