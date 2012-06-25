@@ -23,8 +23,11 @@ cdef class ScorpionForceField:
 
         c_filename = <char*> filename
         cppname = new string(c_filename)
-        
         self.thisptr = new CppScorpionForceField(deref(cppname), cutoff)
+        del cppname
+
+    def __dealloc__(self):
+        del self.thisptr
 
     def AddLigand(self, AttractRigidbody rig):
         self.thisptr.AddLigand(deref(rig.thisptr))
