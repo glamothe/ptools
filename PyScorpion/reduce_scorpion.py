@@ -51,7 +51,7 @@ class BeadCreator:
 
 
 #read parameter file:
-parameters = open("at2cg.scorpion.dat", 'r').readlines()
+parameters = open("at2cg_scorpion.dat", 'r').readlines()
 
 beadCorresp = {}
 
