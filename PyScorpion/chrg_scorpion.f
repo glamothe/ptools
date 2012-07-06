@@ -3,7 +3,7 @@
 
 ************************************************************************
 *                                                                      *
-*     Optimise les charges gros grain                                  *
+*     Optimise les charges gros grain à partir d'un PDB sans H         *
 *                                                                      *
 *     Appelle les subroutines DIFFPOT, LMDIF1, LMDIF                   *
 *                                                                      *
@@ -46,6 +46,10 @@
       integer   npts,npts1,lwa,iflag,info
       integer   iwa(npmax)
 
+      integer   na,nc,no
+      real*8    qo,xca,yca,zca,dca,xco,yco,zco,dco
+      real*8    upx,upy,upz,uqx,uqy,uqz,cob,sib
+
       real*8    bx,by,bz,xmin,ymin,zmin,rx,ry,rz,rr,xx,yy,zz
       real*8    rminsol,dpotmax
       real*8    aatotc,aatotpx,aatotpy,aatotpz
@@ -66,6 +70,93 @@
 
       external diffpot
 
+c----------------------------------------------cas des résidus terminaux
+
+      charge(1)=charge(1)+1.0D0
+      
+      do ii=natom,1,-1
+        if (radius(ii).eq.1.908D0) then
+          if (charge(ii).eq.0.5973D0.or.charge(ii).eq.0.7341D0.or.
+     &        charge(ii).eq.0.5366D0.or.charge(ii).eq.0.5896D0) then
+            nc=ii
+            no=ii+1
+          endif
+        elseif (radius(ii).eq.1.824D0) then
+          if (-charge(ii).eq.0.1438D0.or.-charge(ii).eq.0.0732D0.or.
+     &        -charge(ii).eq.0.2227D0.or.-charge(ii).eq.0.2548D0) then
+            na=ii+1
+            goto 2709
+          endif
+        endif
+      enddo
+
+2709  continue
+
+      qo=charge(nc)+charge(no)-1.0D0
+      charge(no)=qo
+      charge(nc)=-qo
+
+      xco=coorx(no)-coorx(nc)
+      yco=coory(no)-coory(nc)
+      zco=coorz(no)-coorz(nc)
+      dco=dsqrt(xco*xco+yco*yco+zco*zco)
+      xco=xco/dco
+      yco=yco/dco
+      zco=zco/dco
+
+      xca=coorx(nc)-coorx(na)
+      yca=coory(nc)-coory(na)
+      zca=coorz(nc)-coorz(na)
+      dca=dsqrt(xca*xca+yca*yca+zca*zca)
+      xca=xca/dca
+      yca=yca/dca
+      zca=zca/dca
+
+      upx=yca*zco-zca*yco
+      upy=xco*zca-zco*xca
+      upz=xca*yco-yca*xco
+
+      uqx=upy*zca-upz*yca
+      uqy=xca*upz-zca*upx
+      uqz=upx*yca-upy*xca
+      dca=dsqrt(uqx*uqx+uqy*uqy+uqz*uqz)
+      uqx=uqx/dca
+      uqy=uqy/dca
+      uqz=uqz/dca
+
+      natom=natom+1
+      charge(natom)=charge(no)
+      radius(natom)=radius(no)
+
+      dco=1.250D0
+      cob=0.454D0
+      sib=0.891D0
+
+      coorx(no)=dco*(cob*xca+sib*uqx)+coorx(nc)
+      coory(no)=dco*(cob*yca+sib*uqy)+coory(nc)
+      coorz(no)=dco*(cob*zca+sib*uqz)+coorz(nc)
+
+      coorx(natom)=dco*(cob*xca-sib*uqx)+coorx(nc)
+      coory(natom)=dco*(cob*yca-sib*uqy)+coory(nc)
+      coorz(natom)=dco*(cob*zca-sib*uqz)+coorz(nc)
+
+c------test
+
+c      write(6,18) 'ATOM',na,'CA ','CTR',1,
+c     & coorx(na),coory(na),coorz(na),charge(na),radius(na)
+ 
+c      write(6,18) 'ATOM',nc,'C  ','CTR',1,
+c     & coorx(nc),coory(nc),coorz(nc),charge(nc),radius(nc)
+ 
+c      write(6,18) 'ATOM',no,'O  ','CTR',1,
+c     & coorx(no),coory(no),coorz(no),charge(no),radius(no)
+
+c      write(6,18) 'ATOM',natom,'O2 ','CTR',1,
+c     & coorx(natom),coory(natom),coorz(natom),charge(natom),
+c     & radius(natom)
+
+c18    format(a4,2x,i5,2x,a3,1x,a3,3x,i3,4x,3f8.3,2x,2f8.3)
+
 c------------------------------------------verification entree variables
 
       znatom=natom
@@ -83,8 +174,6 @@ c------------------------------------------verification entree variables
         zcgcoy(ii)=cgcoy(ii)
         zcgcoz(ii)=cgcoz(ii)
       enddo
-
-      ngrid=int(boxsize/delgrid)+1
 
 c-----------------------------------------centre de masse de la proteine
 
@@ -109,6 +198,7 @@ c-----------------------------------------centre de masse de la proteine
 c------------------------------------------------interieur du solute ? 
 
       npts=0
+      ngrid=int(boxsize/delgrid)+1
 
       rx=xmin-delgrid
       do kk=1,ngrid
