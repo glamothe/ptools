@@ -13,6 +13,10 @@ DT       T
 DC       C
 DG       G
 
+ADE       A
+CYT       C
+THY       T
+GUA       G
 # 3 columns format: %-10s%-10s%-10s
 #residue_or_base  atom_name_found  atom_name_known
 

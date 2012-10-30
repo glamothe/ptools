@@ -396,7 +396,7 @@ Superpose_t superpose(const Rigidbody& ref, const Rigidbody& mob, int verbosity)
 
     if (ref.Size()!=mob.Size()) {std::cout << "Error in superpose.cpp: \
                                        the two AtomSelection objects must have\
-                                       the same size !" << std::endl;  abort();};
+                                       the same size !"<< ref.Size()<<" "<< mob.Size() << std::endl;  abort();};
 
 
     Mat33 rot;

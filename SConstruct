@@ -3,8 +3,8 @@ import os.path
 
 
 #compilation mode: please choose between debug and release
-compile_mode = "release"
-#compile_mode = "debug"
+#compile_mode = "release"
+compile_mode = "debug"
 
 #users may overide these settings if SCons cannot automatically locate some library:
 
@@ -38,6 +38,11 @@ COMMON_CPP = Split ("""atom.cpp
                        superpose.cpp
                        version.cpp
                        attractforcefield.cpp
+		       BasePair.cpp
+		       Movement.cpp
+		       DNA.cpp
+                       Parameter.cpp
+                       Stacking.cpp
                     """)
 
 

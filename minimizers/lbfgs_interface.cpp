@@ -73,7 +73,7 @@ void Lbfgs::minimize(int maxiter)
 {
 
     int n = objToMinimize.ProblemSize();
-    std::cout  << "number of free variables for the minimizer: " << n << std::endl;
+    //std::cout  << "number of free variables for the minimizer: " << n << std::endl;
 
 
     std::vector<double> l(n);
@@ -189,7 +189,7 @@ void Lbfgs::minimize(int maxiter)
     m_opt->task[59]='\0'; //add a null terminating character to task[]
 
 
-    std::cout << m_opt->task  << " |  " << m_opt->niter << " iterations\n";
+   // std::cout << m_opt->task  << " |  " << m_opt->niter << " iterations\n";
 }
 
 

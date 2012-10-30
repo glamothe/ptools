@@ -171,7 +171,7 @@ AtomSelection Rigidbody::SelectAllAtoms() const
 }
 
 
-AtomSelection Rigidbody::SelectAtomType(std::string atomtype)
+AtomSelection Rigidbody::SelectAtomType(std::string atomtype)const
 {
     AtomSelection newsel;
     newsel.SetRigid(*this);
@@ -200,7 +200,7 @@ AtomSelection Rigidbody::SelectResidType(std::string residtype)
 }
 
 
-AtomSelection Rigidbody::SelectChainId(std::string chainId) {
+AtomSelection Rigidbody::SelectChainId(std::string chainId)const {
     AtomSelection newsel;
     newsel.SetRigid(*this);
     for (uint i=0; i<Size(); i++)
@@ -211,16 +211,16 @@ AtomSelection Rigidbody::SelectChainId(std::string chainId) {
     return newsel;
 }
 
-AtomSelection Rigidbody::SelectResRange(uint start, uint stop)
+AtomSelection Rigidbody::SelectResRange(uint start, uint stop) const
 {
     AtomSelection newsel;
     newsel.SetRigid(*this);
 
     for (uint i=0; i < Size(); i++)
     {
-        Atomproperty& atp ( mAtomProp[i] );
+        const Atomproperty& atp ( mAtomProp[i] );
         if (atp.residId >=start && atp.residId <= stop) newsel.AddAtomIndex(i);
-    }
+     }
     return newsel;
 }
 

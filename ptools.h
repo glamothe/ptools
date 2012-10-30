@@ -23,6 +23,10 @@
 #include "mcopff.h"
 #include "superpose.h"
 #include "version.h"
-
+#include "BasePair.h"
+#include "DNA.h"
+#include "Movement.h"
+#include "Parameter.h"
+#include "Stacking.h"
 
 #endif // PTOOLS_H

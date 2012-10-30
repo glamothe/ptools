@@ -147,7 +147,7 @@ public:
     void ApplyMatrix(const Matrix & mat);
 
    /// get the 4x4 matrix
-   Matrix GetMatrix()
+   Matrix GetMatrix() const
    {
      return CoordsArray::GetMatrix();
    }
@@ -166,16 +166,16 @@ public:
     AtomSelection SelectAllAtoms() const;
 
     /// selection : by atom type
-    AtomSelection SelectAtomType(std::string atomtype);
+    AtomSelection SelectAtomType(std::string atomtype)const;
 
     /// selection by residue type
     AtomSelection SelectResidType(std::string residtype);
 
     /// selection by chain ID
-    AtomSelection SelectChainId(std::string chainid);
+    AtomSelection SelectChainId(std::string chainid)const;
 
     /// selection by range of residue ID
-    AtomSelection SelectResRange(uint start, uint stop);
+    AtomSelection SelectResRange(uint start, uint stop)const;
 
     /// selection shortcut for C-alpha
     AtomSelection CA();

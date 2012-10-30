@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 from pyplusplus import module_builder
 
@@ -138,7 +139,31 @@ Matrix.member_function("id").exclude()
 Version = mb.class_("Version").include()
 
 
+BasePair = mb.class_("BasePair").include()
 
+DNA = mb.class_("DNA").include()
+
+Movement = mb.class_("Movement").include()
+
+Shift = mb.class_("Shift").include()
+Slide = mb.class_("Slide").include()
+Rise = mb.class_("Rise").include()
+
+Twist = mb.class_("Twist").include()
+Roll = mb.class_("Roll").include()
+Tilt = mb.class_("Tilt").include()
+
+BDNA = mb.class_("BDNA").include()
+ADNA = mb.class_("ADNA").include()
+
+Parameter = mb.class_("Parameter").include()
+
+inverseMatrix44 = mb.free_function("inverseMatrix44").include()
+
+MatTrans2screw = mb.free_function("MatTrans2screw").include()
+
+ABrotate = mb.free_function("ABrotate").include()
+Stacking = mb.class_("Stacking").include()
 try:
     surreal = mb.class_("surreal")
     surreal.include()
