@@ -18,11 +18,11 @@ struct Version
 
 //public attributes
 public:
-    int revnb;
-    std::string revstr;
-    std::string revdate;
+//    int revnb;
+//    std::string revstr;
+//    std::string revdate;
     std::string revid;
-    std::string branchnick;
+//    std::string branchnick;
 
 //public methods
 public:
