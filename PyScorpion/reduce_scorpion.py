@@ -137,6 +137,17 @@ print beadCorresp
 
 
 allAtom=Rigidbody(sys.argv[1])
+newallAtom = []
+for i in xrange(len(allAtom)):
+    atom = allAtom.CopyAtom(i)
+    if atom.atomType[0] != 'H' and atom.atomType != 'OXT' and atom.atomType!= 'OT2':
+         newallAtom.append(atom)
+allAtom = Rigidbody()
+for at in newallAtom:
+    allAtom.AddAtom(at)
+
+
+
 sys.stderr.write("Number of atoms: %d\n" %(len(allAtom) ))
 
 #extract all 'atoms' objects
