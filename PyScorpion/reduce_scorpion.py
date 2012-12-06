@@ -2,6 +2,14 @@
 # -*- coding: utf-8 -*-
 
 
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option("--nocgopt", dest="optimizecharges", action="store_false", default=True,
+                  help="don't optimize coarse grained charges")
+
+(options, args) = parser.parse_args()
+
+
 import sys
 import copy
 
@@ -131,7 +139,7 @@ for residname, cgnames in residNames.items():
         descriptions.append(beadDescription)
         beadCorresp[residname] = descriptions
 
-print beadCorresp
+#print beadCorresp
 ####
 
 
@@ -212,7 +220,7 @@ for residKey, atomList in zip(residulist,orderedresid):
             bead.atomId = totAtoms
             bead.residId = residNumber
             protein.append(bead)
-            print bead.ToPdbString(),  # ',' because of the extra \n caracter from the ptools C++ library
+            #print bead.ToPdbString(),  # ',' because of the extra \n caracter from the ptools C++ library
 
 
 
@@ -245,7 +253,7 @@ for i in range(len(allAtom)):
    cx.append( atom.coords.x)
    cy.append( atom.coords.y)
    cz.append( atom.coords.z)
-   print  key ,  charge[i], radius[i], cx[i], cy[i], cz[i]
+#   print  key ,  charge[i], radius[i], cx[i], cy[i], cz[i]
    
   
 for i, atom in enumerate(protein):
@@ -261,11 +269,35 @@ for i, atom in enumerate(protein):
    cgy.append( atom.coords.y)
    cgz.append( atom.coords.z)
 
-   print key, cgch[i], cgr[i], cgx[i], cgy[i], cgz[i]
+#   print key, cgch[i], cgr[i], cgx[i], cgy[i], cgz[i]
 
-optimized = optimize(len(allAtom), charge, radius, cx, cy, cz, len(protein), cgch, cgr, cgx, cgy, cgz )
 
-print "optimized charges: ", optimized
+
+
+first = False
+last = False
+for i, at in enumerate(protein):
+   if at.atomType == 'CA':
+      cgch[i] += 1
+      break
+protein.reverse()
+cgch.reverse()
+
+for i,at in enumerate(protein):
+   if at.atomType == 'CA':
+      cgch[i] -= 1
+      break
+      
+protein.reverse()
+cgch.reverse()  
+
+
+if options.optimizecharges:
+    optimized = optimize(len(allAtom), charge, radius, cx, cy, cz, len(protein), cgch, cgr, cgx, cgy, cgz )
+else:
+    optimized = cgch
+
+#print "optimized charges: ", optimized
 #rig = AttractRigidbody()
 
 for i, bead in enumerate(protein):
