@@ -191,6 +191,7 @@ parser.add_option("-l", "--ligand", action="store", type="string", dest="ligand_
 parser.add_option("-s", "--single", action="store_true", dest="single", default=False, help="single minimization mode")
 parser.add_option("--ref", action="store", type="string", dest="reffile", help="reference ligand for rmsd" )
 parser.add_option("-t", "--translation", action="store", type="int", dest="transnb", help="translation number (distributed mode) starting from 0 for the first one!")
+parser.add_option("--start1", action="store_true", default=False, dest="start1", help="(only useful with -t), use 1 for the first translation point")
 (options, args) = parser.parse_args()
 
 
@@ -289,11 +290,19 @@ if (options.transnb!=None):
     checkFile("rotation.dat", "rotation file is required.")
     checkFile("translation.dat", "translation file is required.\nFormer users may rename translat.dat into translation.dat.")
     trans=Rigidbody("translation.dat")
-    co=trans.getCoords(options.transnb)
-    translations=[[options.transnb+1,co]]
+
     transnb=options.transnb
-    if transnb!=trans.Size()-1:
+
+    if options.start1 is True:
+       transnb -= 1
+
+    co=trans.getCoords(transnb)
+    translations=[[transnb+1,co]]
+
+    if transnb!= len(trans)-1:
         printFiles=False #don't append ligand, receptor, etc. unless this is the last translation point of the simulation
+
+
 
 # core attract algorithm
 for trans in translations:
