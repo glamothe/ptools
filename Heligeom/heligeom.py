@@ -107,15 +107,17 @@ def main():
     rmsd=test(hp,mono1,mono2)
     #print >> sys.stderr,"quality (Rmsd):",rmsd
     #print >> sys.stderr," "
-    print >> sys.stderr,"P:\t"+hp.point.toString()+"omega:\t"+hp.unitVector.toString()+"angle theta:\t radian:"+str(hp.angle)+"\t degree:"+str(math.degrees(hp.angle))+"\ntrans\t"+str(hp.normtranslation)
-    print >> sys.stderr,"monomer per turn:\t", 360./abs(math.degrees(hp.angle))
-    print >> sys.stderr,"pitch:\t",hp.normtranslation*(360./abs(math.degrees(hp.angle)))
+    print >> sys.stderr,""
+    print >> sys.stderr,"P:\t%0.2f\t%0.2f\t%0.2f\n"%(hp.point.x,hp.point.y,hp.point.z)+"omega:\t%0.2f\t%0.2f\t%0.2f\n"%(hp.unitVector.x,hp.unitVector.y,hp.unitVector.z)+"angle theta:\t radian: %0.2f"%(hp.angle)+"\t degree: %0.2f"%(math.degrees(hp.angle))+"\ntrans\t\t\t%0.2f"%(hp.normtranslation)
+    print >> sys.stderr,""
+    print >> sys.stderr,"monomer per turn:\t%0.2f"%( 360./abs(math.degrees(hp.angle)))
+    print >> sys.stderr,"pitch:\t\t\t%0.2f"%(hp.normtranslation*(360./abs(math.degrees(hp.angle))))#"%0.2f"%(43210.1234567)
     
     if hp.angle * hp.normtranslation > 0:
         sens = "right-handed"
     else: sens = "left-handed"
-    print >> sys.stderr,"Helix sense : "+sens
-    
+    print >> sys.stderr,"Helix sense : \t\t"+sens
+    print >> sys.stderr,""
     if nargs >= 4:
         Z=False
         if nargs >= 5:
