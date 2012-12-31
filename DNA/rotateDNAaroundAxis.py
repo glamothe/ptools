@@ -3,8 +3,8 @@ import math
 import sys
 import os
 
-PB_CG = "pb.cg.pdb"
-PB_AA = "pb.aa.pdb"
+PB_CG = "bp.red.pdb"
+PB_AA = "bp.ato.pdb"
 
 def ScalProd(a,b):
     return a.x * b.x + a.y * b.y + a.z * b.z ;
@@ -46,8 +46,8 @@ def nextModel(line,D,pos):
         
 def getAxislist(line):
     segment = DNA(PB_AA ,"AA",BDNA())
-    center0 =Atom(Atomproperty (), segment[0].getRigidBody ().FindCenter ())
-    center1 =Atom(Atomproperty (), segment[1].getRigidBody ().FindCenter ())
+    center0 =Atom(Atomproperty (), segment[0].GetRigidBody ().FindCenter ())
+    center1 =Atom(Atomproperty (), segment[1].GetRigidBody ().FindCenter ())
     D = Dist(center0,center1)
     pos = 0
     
@@ -67,14 +67,14 @@ def getAxislist(line):
 def rotateDNA(dna,axislist,angle):
     new = AttractRigidbody()
     for i,model in enumerate(axislist):
-        bp = dna[i].getRigidBody()
+        bp = dna[i].GetRigidBody()
         
         #rotation
         ABrotate( model.CopyAtom(0).GetCoords(), model.CopyAtom(1).GetCoords(), bp, math.radians(angle) )
         #print bp.PrintPDB()
         new = new + bp
-        #print new.size()
-    bp = dna[dna.size()-1].getRigidBody()
+        #print new.Size()
+    bp = dna[dna.Size()-1].GetRigidBody()
     ABrotate( model.CopyAtom(0).GetCoords(), model.CopyAtom(1).GetCoords(), bp, math.radians(angle) )
     new = new + bp
     return new

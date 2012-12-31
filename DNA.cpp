@@ -19,20 +19,20 @@ using namespace PTools;
 DNA::DNA(string dataBaseFile, string seq, const Movement& mov)
 {
   //if we want to build the dna from a model
-  if(isPdbFile (seq))
+  if(IsPdbFile (seq))
   {
-      buildDNAfromPDB ( dataBaseFile, seq );
+      BuildDNAfromPDB ( dataBaseFile, seq );
   }
   else
   {
-      assembleSeq (dataBaseFile,seq);
-      applyInitialMov(mov);
+      AssembleSeq (dataBaseFile,seq);
+      ApplyInitialMov(mov);
   }
 }
 
 DNA::DNA( const DNA& model )
 {
-    unsigned int modelSize  = model.size();
+    unsigned int modelSize  = model.Size();
     for (uint i =0; i< modelSize; i++)
     {
         strand.push_back(model[i]);
@@ -42,28 +42,28 @@ DNA::DNA( const DNA& model )
 
 DNA::DNA( string dataBaseFile, Rigidbody model)
 {
-    buildDNAfromModel(dataBaseFile,model);
+    BuildDNAfromModel(dataBaseFile,model);
 }
 
 DNA::DNA()
 {
     
 }
-void DNA::buildDNAfromPDB (string dataBaseFile, string pdbFile )
+void DNA::BuildDNAfromPDB (string dataBaseFile, string pdbFile )
 {
     
     Rigidbody model = Rigidbody(pdbFile);
-    buildDNAfromModel(dataBaseFile,model);
+    BuildDNAfromModel(dataBaseFile,model);
 }
 
-void DNA::buildDNAfromModel(string dataBaseFile,Rigidbody model)
+void DNA::BuildDNAfromModel(string dataBaseFile,Rigidbody model)
 {
-    renumberModel (model);
-    model = delSingleBase (model);
-    string seq =getSeq(model);
-    assembleSeq (dataBaseFile,seq);
+    RenumberModel (model);
+    model = DelSingleBase (model);
+    string seq =GetSeq(model);
+    AssembleSeq (dataBaseFile,seq);
 
-    placeBasePairs(model);
+    PlaceBasePairs(model);
 }
 
 DNA::~DNA()
@@ -71,27 +71,27 @@ DNA::~DNA()
 
 }
 
-void DNA::placeBasePairs(const Rigidbody& model)
+void DNA::PlaceBasePairs(const Rigidbody& model)
 {
     unsigned int DNASize  = (strand.size()*2)-1;
     unsigned int strandSize  = strand.size();
     Parameter param =Parameter();
     for ( unsigned int i = 0; i < strandSize; i++ )// strandSize
     {
-        Rigidbody modelOfBasePair = getModelOfBasePair( model, i, DNASize-i);
-        strand[i].apply(getMatBetwenBasePair ( modelOfBasePair,i ));
+        Rigidbody modelOfBasePair = GetModelOfBasePair( model, i, DNASize-i);
+        strand[i].Apply(GetMatBetwenBasePair ( modelOfBasePair,i ));
     }
 }
 
 
-Matrix DNA::getMatBetwenBasePair( const Rigidbody& modelOfBasePair,int pos)const{
+Matrix DNA::GetMatBetwenBasePair( const Rigidbody& modelOfBasePair,int pos)const{
     Parameter param =Parameter();
-    Superpose_t sup =superpose (param.buildAxisCentered(modelOfBasePair),param.buildAxisCentered(strand[pos].getRigidBody()));
+    Superpose_t sup =superpose (param.BuildAxisCentered(modelOfBasePair),param.BuildAxisCentered(strand[pos].GetRigidBody()));
     return sup.matrix;
 }
 
 
-void DNA::renumberModel (Rigidbody& model)const
+void DNA::RenumberModel (Rigidbody& model)const
 {
 
   unsigned int tempId=  model.GetAtomProperty(0).GetResidId();
@@ -108,7 +108,7 @@ void DNA::renumberModel (Rigidbody& model)const
         strandSize = model.SelectAtomType("GS1").Size() / 2;
     }
 
-  bool isjumna = isJumna(model);
+  bool isjumna = IsJumna(model);
   unsigned int modelSize=model.Size();
   chain = "A";
   for (unsigned int i =0; i < modelSize; i++ )
@@ -147,7 +147,7 @@ void DNA::renumberModel (Rigidbody& model)const
   }
 }
 
-bool DNA::isJumna (const Rigidbody& model)const
+bool DNA::IsJumna (const Rigidbody& model)const
 {
    //jumna have an inversed numerotation so on a 10 base dna (strand A: 0,1,2,3,4 and strand B:5,6,7,8,9)
    //the base 0 is associated with 5 instead of 9.
@@ -163,7 +163,7 @@ bool DNA::isJumna (const Rigidbody& model)const
     return (d1>d2);
 }
 
-Rigidbody DNA::delSingleBase (Rigidbody& model)const
+Rigidbody DNA::DelSingleBase (Rigidbody& model)const
 {
     string seq;
     unsigned int strandSize;
@@ -206,7 +206,7 @@ Rigidbody DNA::delSingleBase (Rigidbody& model)const
         else if (seq[l-i-1]=='C')  rseq[i]='G';
     }
     //cout << seq << " " << rseq.length() << endl;
-    if (isAlign(seq,rseq))
+    if (IsAlign(seq,rseq))
     {
         return model;
     }
@@ -301,7 +301,7 @@ Rigidbody DNA::delSingleBase (Rigidbody& model)const
             int diff [end-start];
             for (int j =start;j<end;j++)
             {
-                diff[j-start]= calcPart (solution,j,i,l ); 
+                diff[j-start]= CalcPart (solution,j,i,l );
             }
             int min = diff[0];
             int idx = start;
@@ -334,14 +334,14 @@ Rigidbody DNA::delSingleBase (Rigidbody& model)const
         }
     }
     //cout << newModel.PrintPDB()<< endl;
-    renumberModel (newModel);
+    RenumberModel (newModel);
     
 
     return newModel;
     }
 }
 
-int DNA::calcPart (int solution[],int pos0, int pos1, int l )const
+int DNA::CalcPart (int solution[],int pos0, int pos1, int l )const
 {
     int alt[l];
     for (int j =0; j<l; j++)
@@ -373,12 +373,12 @@ int DNA::calcPart (int solution[],int pos0, int pos1, int l )const
     return abs(firstAlt-secondAlt);
 }
 
-bool DNA::isAlign(std::string s1,std::string s2,int shift)const
+bool DNA::IsAlign(std::string s1,std::string s2,int shift)const
 {
     return (s1.compare(shift,s1.length(), s2, 0,s2.length()-shift)==0);
 }
 
-Rigidbody DNA::getModelOfBasePair(const Rigidbody& model,int posA,int posB)const
+Rigidbody DNA::GetModelOfBasePair(const Rigidbody& model,int posA,int posB)const
 {
         return (model.SelectResRange(posA, posA)|model.SelectResRange(posB, posB)).CreateRigid();
 
@@ -386,20 +386,20 @@ Rigidbody DNA::getModelOfBasePair(const Rigidbody& model,int posA,int posB)const
 }
 
 
-void DNA::assembleSeq (std::string dataBaseFile, std::string seq)
+void DNA::AssembleSeq (std::string dataBaseFile, std::string seq)
 {
       Rigidbody dataBase = Rigidbody(dataBaseFile);      
-      string chainIDs = getChainIDs(dataBase);
+      string chainIDs = GetChainIDs(dataBase);
 
       //"map" for the rigidbody, an iD corespond to its rigidbody
-      vector<Rigidbody> vbase = buildVbase(chainIDs,dataBase);
+      vector<Rigidbody> vbase = BuildVbase(chainIDs,dataBase);
       //build the strand from the seq
-      buildStrand(seq, chainIDs, vbase);
+      BuildStrand(seq, chainIDs, vbase);
       //make sure that every BasePaire have a different id
-      changeFormat();
+      ChangeFormat();
 }
 
-string DNA::getSeq ( const Rigidbody& model)const
+string DNA::GetSeq ( const Rigidbody& model)const
 {
     string seq;
     unsigned int strandSize;
@@ -427,7 +427,7 @@ string DNA::getSeq ( const Rigidbody& model)const
 }
 
 
-vector<Rigidbody> DNA::buildVbase(string chainIDs, Rigidbody& dataBase)const
+vector<Rigidbody> DNA::BuildVbase(string chainIDs, Rigidbody& dataBase)const
 {
   vector<Rigidbody> vbase;
   unsigned int chainIDsSize = chainIDs.size();
@@ -440,7 +440,7 @@ vector<Rigidbody> DNA::buildVbase(string chainIDs, Rigidbody& dataBase)const
 }
 
 
-string DNA::getChainIDs(const Rigidbody& rb)const
+string DNA::GetChainIDs(const Rigidbody& rb)const
 {
   string chainIDs;
   AtomSelection selection = rb.SelectAllAtoms ();
@@ -459,12 +459,12 @@ string DNA::getChainIDs(const Rigidbody& rb)const
   return chainIDs;
 }
 
-bool DNA::isPdbFile (std::string seq) const
+bool DNA::IsPdbFile (std::string seq) const
 {
     return ( (seq.size() >=3) && ((seq.substr(seq.size()-3,seq.size())=="pdb") ||(seq.substr(seq.size()-3,seq.size())=="red")) );
 }
 
-void DNA::buildStrand(std::string seq, std::string chainIDs, const std::vector<Rigidbody>& vbase)
+void DNA::BuildStrand(std::string seq, std::string chainIDs, const std::vector<Rigidbody>& vbase)
 {
   unsigned int seqSize = seq.size();
   unsigned int chainIDsSize = chainIDs.size();
@@ -482,107 +482,107 @@ void DNA::buildStrand(std::string seq, std::string chainIDs, const std::vector<R
 }
 
 
-void DNA::changeFormat()
+void DNA::ChangeFormat()
 {
   unsigned int nbAtom = 0;
   unsigned int strandSize  = strand.size();
   for (unsigned int i =0; i < strandSize; i++ )
   {
     //corect ID chain
-    strand[i].setChainID();
+    strand[i].SetChainID();
     //numerotation residu
-    strand[i].setResID(i,(strandSize + strandSize-1)-i);
+    strand[i].SetResID(i,(strandSize + strandSize-1)-i);
     //numerotation atom (first part)
-    nbAtom = strand[i].setAtomNumberOfBase("A",nbAtom);
+    nbAtom = strand[i].SetAtomNumberOfBase("A",nbAtom);
 
   }
   for (unsigned int i = strandSize-1; i > 0 ; i-- )
   {
     //numerotation atom (second part)
-    nbAtom = strand[i].setAtomNumberOfBase("B",nbAtom);
+    nbAtom = strand[i].SetAtomNumberOfBase("B",nbAtom);
   }
   //last part of atom numerotation (because of error with decreasing unsigned int)
-  strand[0].setAtomNumberOfBase("B",nbAtom);
+  strand[0].SetAtomNumberOfBase("B",nbAtom);
 }
 
 
-void DNA::applyInitialMov(const Movement& mov)
+void DNA::ApplyInitialMov(const Movement& mov)
 {
   unsigned int strandSize  = strand.size();
   for (unsigned int i=1; i <strandSize; i++)
   {
-    strand[i].apply(strand[i-1].getMovement());
-    strand[i].apply(mov);
+    strand[i].Apply(strand[i-1].GetMovement());
+    strand[i].Apply(mov);
   }
 }
 
 
-unsigned int DNA::size()const
+unsigned int DNA::Size()const
 {
   return strand.size();
 }
 
-unsigned int DNA::atomSize() const
+unsigned int DNA::AtomSize() const
 {
     uint tot=0;
-    uint strandSize= this->size();
+    uint strandSize= this->Size();
     for (uint i=0; i<strandSize;i++)
     {
-        tot+=strand[i].size();
+        tot+=strand[i].Size();
     }
     return tot;
 }
 
 
-string DNA::printPDB()const
+string DNA::PrintPDB()const
 {
   string strandA, strandB;
   unsigned int strandSize  = strand.size();
   for ( unsigned int i =0; i < strandSize ; i++ )
   {
-    strandA += strand[i].printPDBofBase("A");
-    strandB += strand[strandSize-1-i].printPDBofBase("B");
+    strandA += strand[i].PrintPDBofBase("A");
+    strandB += strand[strandSize-1-i].PrintPDBofBase("B");
   }
   string out= strandA + strandB;
   return out.substr(0,out.size()-1);
 }
 
-std::string DNA::printPDBofStrand( std::string chain ) const
+std::string DNA::PrintPDBofStrand( std::string chain ) const
 {
   string out;
   unsigned int strandSize  = strand.size();
   for ( unsigned int i =0; i < strandSize ; i++ )
   {
-    out += strand[i].printPDBofBase( chain );
+    out += strand[i].PrintPDBofBase( chain );
   }
   return out.substr(0,out.size()-1);
 }
 
-string DNA::printParam() const
+string DNA::PrintParam() const
 {
   stringstream ss;
   unsigned int strandSize  = strand.size();
   for ( unsigned int i =1; i < strandSize ; i++ )
   {
-    ss << "BasePair "<< i-1 <<"->"<<i<< " : "<<getLocalParameter(i).toFormatedString()+"\n";
+    ss << "BasePair "<< i-1 <<"->"<<i<< " : "<<GetLocalParameter(i).ToFormatedString()+"\n";
   }
   return ss.str().substr(0,ss.str().size()-1);
 }
 
 
-void DNA::writePDB(std::string fileName)const
+void DNA::WritePDB(std::string fileName)const
 {
   ofstream myfile;
   myfile.open(fileName.c_str());
-  myfile << printPDB();
+  myfile << PrintPDB();
   myfile.close();
 }
 
-Rigidbody DNA::createRigid()const
+Rigidbody DNA::CreateRigid()const
 {
   //we use the method createRigidOfStrand() to make sure that the rigidbody returned follow the established format
-  Rigidbody chainA = createRigidOfStrand("A");
-  Rigidbody chainB = createRigidOfStrand("B");
+  Rigidbody chainA = CreateRigidOfStrand("A");
+  Rigidbody chainB = CreateRigidOfStrand("B");
 
   //we add the atoms of the chain B to the chainA
   unsigned int chainBsize  = chainB.Size();
@@ -593,7 +593,7 @@ Rigidbody DNA::createRigid()const
   return chainA;
 }
 
-Rigidbody DNA::createRigidOfStrand(std::string chain)const
+Rigidbody DNA::CreateRigidOfStrand(std::string chain)const
 {
       Rigidbody dna;
   unsigned int strandSize  = strand.size();
@@ -604,11 +604,11 @@ Rigidbody DNA::createRigidOfStrand(std::string chain)const
       Rigidbody basePair;
       if (chain == "B" || chain == "b")
       {
-          basePair = strand[strandSize-1-i].getRigidBodyOfBase(chain);
+          basePair = strand[strandSize-1-i].GetRigidBodyOfBase(chain);
       }
       else
       {
-          basePair = strand[i].getRigidBodyOfBase(chain);
+          basePair = strand[i].GetRigidBodyOfBase(chain);
       }
       unsigned int basePairSize  = basePair.Size();
       for (unsigned int j=0; j <basePairSize ; j++)
@@ -620,127 +620,127 @@ Rigidbody DNA::createRigidOfStrand(std::string chain)const
   return dna;
 }
 
-void DNA::changeRepresentation(std::string dataBaseFile)
+void DNA::ChangeRepresentation(std::string dataBaseFile)
 {
   Rigidbody dataBase = Rigidbody(dataBaseFile);
-  string chainIDs = getChainIDs(dataBase);
+  string chainIDs = GetChainIDs(dataBase);
   
   //"map" for the rigidbody, an iD corespond to its rigidbody
-  vector<Rigidbody> vbase = buildVbase(chainIDs,dataBase);
+  vector<Rigidbody> vbase = BuildVbase(chainIDs,dataBase);
 
     unsigned int chainIDsSize = chainIDs.size();
 
   unsigned int strandSize  = strand.size();
   for (unsigned int i = 0; i < strandSize ; i++)
   {
-    Movement mov = Movement(strand[i].getMatrix());
+    Movement mov = Movement(strand[i].GetMatrix());
 
     for (unsigned int j =0; j < chainIDsSize; j++ )
     {     
-      if ( strand[i].getType()[0] == chainIDs[j])
+      if ( strand[i].GetType()[0] == chainIDs[j])
       {
 	strand[i]=BasePair(vbase[j]);
-	strand[i].apply(mov);
+	strand[i].Apply(mov);
       }
     }
   }
   
-  changeFormat();
+  ChangeFormat();
 }
 
 
-Matrix DNA::getLocalMatrix(int pos)const
+Matrix DNA::GetLocalMatrix(int pos)const
 {
-   if (pos == 0) return strand[0].getMatrix();
+   if (pos == 0) return strand[0].GetMatrix();
   
-   Matrix mtot = strand[pos].getMatrix();
-   Matrix prec = inverseMatrix44(strand[pos-1].getMatrix());
+   Matrix mtot = strand[pos].GetMatrix();
+   Matrix prec = inverseMatrix44(strand[pos-1].GetMatrix());
 
    return matrixMultiply( prec, mtot );
    
 }
 
-Parameter DNA::getLocalParameter(int pos)const
+Parameter DNA::GetLocalParameter(int pos)const
 {
   Parameter param =Parameter();
-  param.MeasureParameters(param.buildAxisCentered(strand[pos-1].getRigidBody()),param.buildAxisCentered(strand[pos].getRigidBody()));
+  param.MeasureParameters(param.BuildAxisCentered(strand[pos-1].GetRigidBody()),param.BuildAxisCentered(strand[pos].GetRigidBody()));
   return param;
 
 }
 
-void DNA::applylocalMov(const Movement& mov,int pos)
+void DNA::ApplylocalMov(const Movement& mov,int pos)
 {
-  Matrix nextlocal = getLocalMatrix(pos+1);
-  strand[pos].apply(mov);
+  Matrix nextlocal = GetLocalMatrix(pos+1);
+  strand[pos].Apply(mov);
 
   unsigned int strandSize  = strand.size();
   for (unsigned int i=pos+1; i <strandSize; i++)
   {
-    nextlocal = reconstruct(i,nextlocal);
+    nextlocal = Reconstruct(i,nextlocal);
   }
 }
 
 
-void DNA::applyglobalMov(const Movement& mov)
+void DNA::ApplyglobalMov(const Movement& mov)
 {
   Matrix nextlocal;
   unsigned int strandSize  = strand.size();
   if (strandSize>1){
-    nextlocal = getLocalMatrix(1);
+    nextlocal = GetLocalMatrix(1);
   }
-  strand[0].apply(mov);
+  strand[0].Apply(mov);
 
   for (unsigned int i=1; i <strandSize; i++)
   {
-    nextlocal = reconstruct(i,nextlocal);
-    strand[i].apply(mov);
+    nextlocal = Reconstruct(i,nextlocal);
+    strand[i].Apply(mov);
   }  
     
 }
 
 
-void DNA::applyLocal(const Movement& mov,int posMov, int posAnchor)
+void DNA::ApplyLocal(const Movement& mov,int posMov, int posAnchor)
 {
   BasePair anchor = strand[posAnchor];
-  applylocalMov(mov,posMov);
-  relocate(anchor,posAnchor);
+  ApplylocalMov(mov,posMov);
+  Relocate(anchor,posAnchor);
 }
 
 
-void DNA::applyLocal(const Matrix&  m,int posMov, int posAnchor)
+void DNA::ApplyLocal(const Matrix&  m,int posMov, int posAnchor)
 {
-  applyLocal ( Movement(m), posMov, posAnchor);
+  ApplyLocal ( Movement(m), posMov, posAnchor);
 }
 
 
-void DNA::applyGlobal(const Movement& mov ,int posAnchor)
+void DNA::ApplyGlobal(const Movement& mov ,int posAnchor)
 {
   BasePair anchor = strand[posAnchor];
-  applyglobalMov(mov);
-  relocate(anchor,posAnchor);
+  ApplyglobalMov(mov);
+  Relocate(anchor,posAnchor);
 }
 
 
-void DNA::applyGlobal(const Matrix& m ,int posAnchor)
+void DNA::ApplyGlobal(const Matrix& m ,int posAnchor)
 {
-  applyLocal ( Movement(m), posAnchor);
+  ApplyLocal ( Movement(m), posAnchor);
 }
 
 
-void DNA::apply(const Movement& mov)
+void DNA::Apply(const Movement& mov)
 {
-    DNA::apply(mov.getMatrix());
+    DNA::Apply(mov.GetMatrix());
 }
 
 
-void DNA::apply(const Matrix& m)
+void DNA::Apply(const Matrix& m)
 {
   unsigned int strandSize  = strand.size();
   for (unsigned int i=0; i <strandSize; i++)
   {
-    Rigidbody rb = strand[i].getRigidBody();
+    Rigidbody rb = strand[i].GetRigidBody();
     rb.ApplyMatrix(m);
-    strand[i].setRigidBody(rb);
+    strand[i].SetRigidBody(rb);
   }
 }
 
@@ -748,17 +748,17 @@ void DNA::apply(const Matrix& m)
 double DNA::Rmsd(const DNA& model)const
 {
 
-    double aSize=atomSize();
-    if (model.atomSize() != aSize)
+    double aSize=AtomSize();
+    if (model.AtomSize() != aSize)
     {
         std::cerr << "Error: trying to superpose two DNA of different sizes" << std::endl ;
         throw std::invalid_argument("RmsdSizesDiffers");
     }
 
     double total = 0.0;
-    uint strandSize = size();
+    uint strandSize = Size();
     for (uint i = 0; i<strandSize;i++){
-        uint pbSize= strand[i].size();
+        uint pbSize= strand[i].Size();
         for (uint j =0; j<pbSize;j++)
         {
                 Atom atom1=model[i][j];
@@ -771,102 +771,102 @@ double DNA::Rmsd(const DNA& model)const
 
 }
 
-void DNA::changeBasePair(const BasePair& bp, int pos)
+void DNA::ChangeBasePair(const BasePair& bp, int pos)
 {
     strand[pos]=bp;
 }
 
-void DNA::relocate(const BasePair& anchor,int posAnchor)
+void DNA::Relocate(const BasePair& anchor,int posAnchor)
 {
-  apply(superpose(anchor.getRigidBody(),strand[posAnchor].getRigidBody(),0).matrix);
+  Apply(superpose(anchor.GetRigidBody(),strand[posAnchor].GetRigidBody(),0).matrix);
 }
 
 
-Matrix DNA::reconstruct(int pos, const Matrix& local)
+Matrix DNA::Reconstruct(int pos, const Matrix& local)
 {
   Matrix nextlocal;
-  if ((unsigned int)pos<strand.size()) nextlocal = getLocalMatrix(pos+1);
+  if ((unsigned int)pos<strand.size()) nextlocal = GetLocalMatrix(pos+1);
   
-  Matrix prec = strand[pos-1].getMatrix();
+  Matrix prec = strand[pos-1].GetMatrix();
   
-  strand[pos].apply(inverseMatrix44(strand[pos].getMatrix()));//erasing the old matrix
+  strand[pos].Apply(inverseMatrix44(strand[pos].GetMatrix()));//erasing the old matrix
   
-  strand[pos].apply(prec);
-  strand[pos].apply(local);
+  strand[pos].Apply(prec);
+  strand[pos].Apply(local);
   
   return nextlocal;
 }
 
 
-void DNA::add(const DNA & d, const Movement & mov)
+void DNA::Add(const DNA & d, const Movement & mov)
 {
-    this->add(d[0], mov);
-    for(uint i =1; i< d.size();i++)
+    this->Add(d[0], mov);
+    for(uint i =1; i< d.Size();i++)
     {
-        this->add(d[i],Movement(d.getLocalMatrix(i)));
+        this->Add(d[i],Movement(d.GetLocalMatrix(i)));
     }
 }
 
 /// add a basepair at the end of the strand of this DNA
-void DNA::add(BasePair bp, const Movement & mov)
+void DNA::Add(BasePair bp, const Movement & mov)
 {
-    Matrix oldmouvement = bp.getMatrix ();
-    bp.apply(inverseMatrix44 (oldmouvement));
+    Matrix oldmouvement = bp.GetMatrix ();
+    bp.Apply(inverseMatrix44 (oldmouvement));
     if (strand.size()>0)
     {
-        bp.apply(matrixMultiply(strand[strand.size()-1].getMatrix(),mov.getMatrix()));
+        bp.Apply(matrixMultiply(strand[strand.size()-1].GetMatrix(),mov.GetMatrix()));
     }
-    else bp.apply(mov.getMatrix());
+    else bp.Apply(mov.GetMatrix());
     strand.push_back(bp);
-    this->changeFormat();
+    this->ChangeFormat();
 }
 
-DNA DNA::subDNA(int start,int end)const
+DNA DNA::SubDNA(int start,int end)const
 {
     DNA newdna = DNA();
 
-    newdna.add(strand[start],Movement(strand[start].getMatrix()));
+    newdna.Add(strand[start],Movement(strand[start].GetMatrix()));
     for (int i=start+1;i<end;i++)
     {
-        newdna.add(strand[i],Movement(this->getLocalMatrix(i)));
+        newdna.Add(strand[i],Movement(this->GetLocalMatrix(i)));
     }
     return newdna;
 }
 
-void DNA::replace(const DNA & d,int start)
+void DNA::Replace(const DNA & d,int start)
 {
-    DNA preDNA = this->subDNA(0,start);
-    DNA postDNA =this->subDNA(start+d.size(),this->size());
+    DNA preDNA = this->SubDNA(0,start);
+    DNA postDNA =this->SubDNA(start+d.Size(),this->Size());
 
-    Movement initMov = Movement(strand[0].getMatrix());
+    Movement initMov = Movement(strand[0].GetMatrix());
     strand.clear();
 
 
-    this->add(preDNA,initMov);
-    this->add(d);
-    this->add(postDNA);
+    this->Add(preDNA,initMov);
+    this->Add(d);
+    this->Add(postDNA);
 
 
 }
 
-void DNA::changeType(int pos, std::string type, std::string filename) {
+void DNA::ChangeType(int pos, std::string type, std::string filename) {
     Rigidbody dataBase = Rigidbody(filename);
-    Movement mov = Movement(strand[pos].getMatrix());
+    Movement mov = Movement(strand[pos].GetMatrix());
 
     strand[pos] = BasePair(dataBase.SelectChainId(type).CreateRigid());
-    strand[pos].apply(mov);
+    strand[pos].Apply(mov);
 
-    changeFormat();
+    ChangeFormat();
 }
 
-void DNA::translate(Coord3D coord)
+void DNA::Translate(Coord3D coord)
 {
   unsigned int strandSize  = strand.size();
   for (unsigned int i=0; i <strandSize; i++)
   {
-    Rigidbody rb = strand[i].getRigidBody();
+    Rigidbody rb = strand[i].GetRigidBody();
     rb.Translate(coord);
-    strand[i].setRigidBody(rb);
+    strand[i].SetRigidBody(rb);
   }
 
 }

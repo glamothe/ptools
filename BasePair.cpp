@@ -30,17 +30,17 @@ BasePair::~BasePair()
 }
 
 
-string BasePair::printPDB()const
+string BasePair::PrintPDB()const
 {
   return rigbody.PrintPDB ();
 }
 
-std::string BasePair::printPDBofBase(std::string chain) const
+std::string BasePair::PrintPDBofBase(std::string chain) const
 {
     return rigbody.SelectChainId(chain).CreateRigid().PrintPDB();
 }
 
-void BasePair::setChainID(){
+void BasePair::SetChainID(){
   unsigned int rigSize=rigbody.Size();
   for(unsigned int i =0; i< rigSize ; i++)
   {
@@ -57,46 +57,46 @@ void BasePair::setChainID(){
   }
 }
 
-void BasePair::apply( const Movement& m)
+void BasePair::Apply( const Movement& m)
 {
-  m.apply(rigbody);
+  m.Apply(rigbody);
 }
 
 
-void BasePair::apply(const Matrix& m)
+void BasePair::Apply(const Matrix& m)
 {
-  apply(Movement (m));
+  Apply(Movement (m));
 }
 
-unsigned int BasePair::size() const{
+unsigned int BasePair::Size() const{
     return rigbody.Size();
 }
 
-Matrix BasePair::getMatrix() const
+Matrix BasePair::GetMatrix() const
 {
   return rigbody.GetMatrix();
 }
 
 
-Movement BasePair::getMovement()const
+Movement BasePair::GetMovement()const
 {
-  return Movement(getMatrix());
+  return Movement(GetMatrix());
 }
 
 
-Rigidbody BasePair::getRigidBody()const
+Rigidbody BasePair::GetRigidBody()const
 {
   return rigbody;
 }
 
 
-Rigidbody BasePair::getRigidBodyOfBase(std::string chain)const
+Rigidbody BasePair::GetRigidBodyOfBase(std::string chain)const
 {
   return rigbody.SelectChainId(chain).CreateRigid();
 }
 
 
-void BasePair::setResID(int idA,int idB)
+void BasePair::SetResID(int idA,int idB)
 {
   unsigned int baseSize=rigbody.Size();
   for(unsigned int i =0; i< baseSize ; i++)
@@ -114,7 +114,7 @@ void BasePair::setResID(int idA,int idB)
   }
 }
 
-uint BasePair::setAtomNumberOfBase(std::string chain,int num)
+uint BasePair::SetAtomNumberOfBase(std::string chain,int num)
 {
   unsigned int baseSize=rigbody.Size();
   for(unsigned int i =0; i< baseSize ; i++)
@@ -130,23 +130,23 @@ uint BasePair::setAtomNumberOfBase(std::string chain,int num)
   return num;
 }
 
-uint BasePair::getResIDofBase(std::string chain)const
+uint BasePair::GetResIDofBase(std::string chain)const
 {
   Atomproperty ap = rigbody.SelectChainId(chain).CreateRigid().GetAtomProperty(0);
   return ap.GetResidId();
 }
 
 
-void  BasePair::setRigidBody(const Rigidbody& rigbody)
+void  BasePair::SetRigidBody(const Rigidbody& rigbody)
 {
   this->rigbody=rigbody;
 }
 
-string BasePair::getType() const {
+string BasePair::GetType() const {
     return type;
 }
 
-void BasePair::setType(string type) {
+void BasePair::SetType(string type) {
     this->type = type;
 }
 //end namespace

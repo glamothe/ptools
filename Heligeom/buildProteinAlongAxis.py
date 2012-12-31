@@ -263,7 +263,7 @@ def buildProt(line,mono1,hp, angle):
         #newMono =  BasePair (changeChain(newMono,string.ascii_uppercase[nbChain%26]))
         newMono = (changeChain(newMono,string.ascii_uppercase[nbChain%26]))
         
-        #newMono.apply(m)
+        #newMono.Apply(m)
         newMono.ApplyMatrix(m)
         nbChain+=1
         print newMono.PrintPDB()
@@ -272,7 +272,7 @@ def buildProt(line,mono1,hp, angle):
         mob= (changeChain(mob,string.ascii_uppercase[nbChain%26]))
         #print mob.PrintPDB()
         
-        #print refModel2.getRigidBody ().PrintPDB()
+        #print refModel2.GetRigidBody ().PrintPDB()
     
 def main():
     nargs = len(sys.argv)
