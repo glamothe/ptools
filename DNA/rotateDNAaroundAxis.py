@@ -60,7 +60,6 @@ def getAxislist(line):
         model,newpos = nextModel(line,D,pos)
         if newpos == pos:
             break
-        print model.PrintPDB()
         axislist.append(model)
     return axislist
      
