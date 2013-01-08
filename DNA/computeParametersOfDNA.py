@@ -2,9 +2,9 @@ from ptools import *
 import sys
 
 nargs = len(sys.argv)
-    if nargs < 2:
-        print "usage: computeParametersOfDNA.py DNA.pdb "
-        raise SystemExit
+if nargs < 2:
+    print "usage: computeParametersOfDNA.py DNA.pdb "
+    raise SystemExit
 
 dna = DNA ("bp.ato.pdb",sys.argv[1])
 
