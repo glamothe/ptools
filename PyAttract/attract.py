@@ -245,8 +245,8 @@ rec=Rigidbody(options.receptor_name)
 lig=Rigidbody(options.ligand_name)
 rec=AttractRigidbody(rec)
 lig=AttractRigidbody(lig)
-print "Reading receptor (fixed): %s with %d particules" %( options.receptor_name, rec.Size() )
-print "Reading  ligand (mobile): %s with %d particules" %( options.ligand_name,   lig.Size() )
+print "Reading receptor (fixed): %s with %d particules" %( options.receptor_name, len(rec) )
+print "Reading  ligand (mobile): %s with %d particules" %( options.ligand_name,   len(lig) )
 
 if (options.single and options.transnb):
     parser.error("options -s and -t are mutually exclusive")
