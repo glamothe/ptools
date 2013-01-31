@@ -5,6 +5,13 @@ import unittest
 
 import math
 
+try:
+    f = open("1F88.pdb", "r")
+except:
+    print "downloading required file 1F88.pdb:"
+    import get1F88
+    print "done"
+
 class TestCoord3D(unittest.TestCase):
         def setUp(self):
                 self.coo1 = Coord3D(3.0, 4.0, 5.0)
