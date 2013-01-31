@@ -195,7 +195,14 @@ class TestRigidbody(unittest.TestCase):
         self.assertEqual(atprop.residType, 'GLU')
         self.assertEqual(atprop.residId, 2)
         self.assertEqual(atprop.atomId, 9)
+
+class TestAttractRigidbody(unittest.TestCase):
+    def setUp(self):
+        rigid = Rigidbody("1FIN_r.pdb")
+        self.attrigid = AttractRigidbody(rigid)
         
+    def testlen(self):
+        self.assertEqual(len(self.attrigid), 2365)
             
 
 class TestBasicMoves(unittest.TestCase):
