@@ -172,14 +172,24 @@ if python_target:
 
 
    if python24dir is None:
-      print "cannot locate python2.4, tying with python2.5:"
+      print "cannot locate python2.4, trying with python2.5:"
       python25dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.5/",
       "/sw/include/python2.5/"])
       if python25dir is None:
-         print "cannot locate Python2.5, the library may not compile..."
+         print "cannot locate Python2.5, trying with python2.6"
          print "trying to locate Python 2.6:"
          python26dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.6/",
       "/sw/include/python2.6/"])
+      
+         if python26dir is None:
+             print "cannot locate Python2.6, trying with python2.7"
+             print "trying to locate Python 2.7:"
+             python27dir = FIND_HEADER(["Python.h"], ["/usr/include/python2.7/",
+      "/sw/include/python2.7/"])
+             if python27dir is not None:
+	        print "Python 2.7 found!"
+	        PYTHON_CPPPATH=[python27dir]
+	        PYTHON_LIBS=["python2.7"]
          if python26dir is not None:
 	     print "Python 2.6 found!"
 	     PYTHON_CPPPATH=[python26dir]
