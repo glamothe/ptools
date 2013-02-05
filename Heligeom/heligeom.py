@@ -116,7 +116,7 @@ def main():
     if hp.angle * hp.normtranslation > 0:
         sens = "right-handed"
     else: sens = "left-handed"
-    print >> sys.stderr,"Helix sense : \t\t"+sens
+    print >> sys.stderr,"Helix direction : \t\t"+sens
     print >> sys.stderr,""
     if nargs >= 4:
         Z=False
