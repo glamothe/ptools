@@ -14,7 +14,13 @@ import sys
 import copy
 
 from ptools import *
-from ordereddict import OrderedDict
+
+try:
+    #Python 2.7+
+    from collections import OrderedDict
+except:
+    #for older Python versions with the 'ordereddict' package installed
+    from ordereddict import OrderedDict
 
 
 class IncompleteBead:
@@ -31,7 +37,6 @@ class BeadCreator:
             self.size=0
 
             atProp=Atomproperty()
-            #print "*******reducedname: ",reducedname
             atProp.atomType = reducedname
             atProp.atomCharge = reducedcharge
             atProp.chainId = ''
@@ -46,7 +51,6 @@ class BeadCreator:
                   self._CoM+=atom.coords
                   self._lstofAtoms.remove(atomtype)
                   self.size+=1
-                  #print self.size
       def create(self):
             "creates a new atom bead"
             if len(self._lstofAtoms)!=0:
@@ -59,7 +63,8 @@ class BeadCreator:
 
 
 #read parameter file:
-parameters = open("at2cg_scorpion.dat", 'r').readlines()
+import os
+parameters = open(os.path.split(sys.argv[0])[0] + "/at2cg_scorpion.dat", 'r').readlines()
 
 beadCorresp = {}
 
@@ -119,9 +124,6 @@ for p in parameters:
     pass
 
 
-#for i,j in grainMap.items():
-#    print i, j
-
 
 beadCorresp = {}
 
@@ -139,15 +141,14 @@ for residname, cgnames in residNames.items():
         descriptions.append(beadDescription)
         beadCorresp[residname] = descriptions
 
-#print beadCorresp
-####
-
 
 
 allAtom=Rigidbody(sys.argv[1])
+
 newallAtom = []
 for i in xrange(len(allAtom)):
     atom = allAtom.CopyAtom(i)
+    if atom.chainId == '': atom.chainId = ' '
     if atom.atomType[0] != 'H' and atom.atomType != 'OXT' and atom.atomType!= 'OT2':
          newallAtom.append(atom)
 allAtom = Rigidbody()
@@ -170,7 +171,7 @@ residuMap={}
 residulist=[]
 for at in atoms:
       residueIdentifier = at.residType + str(at.chainId)  + str(at.residId)
-      #residueIdentifier is like "LEU296"
+      #residueIdentifier is like "LEUA296"
       residuMap.setdefault(residueIdentifier, []).append(at)
       if residueIdentifier not in residulist:
             residulist.append(residueIdentifier)
@@ -194,10 +195,9 @@ protein = []
 for residKey, atomList in zip(residulist,orderedresid):
       residType=residKey[:3]
       if (residType)=="HIE": residType="HIS" #fix for an amber output file
-      residNumber=int(residKey[3:])
-      #print "reducing residue %s of type %s" % (residKey, residType)
+      residNumber=int(residKey[4:])
       correspList=beadCorresp[residType]
-      #print correspList
+
       for correspUnit in correspList:
             atomTypeName=correspUnit[0]
             lstToReduce=correspUnit[1]
@@ -220,7 +220,7 @@ for residKey, atomList in zip(residulist,orderedresid):
             bead.atomId = totAtoms
             bead.residId = residNumber
             protein.append(bead)
-            #print bead.ToPdbString(),  # ',' because of the extra \n caracter from the ptools C++ library
+
 
 
 
@@ -243,8 +243,6 @@ cgz = []
 
 for i in range(len(allAtom)):
    atom = allAtom.CopyAtom(i)
-  # print dir(atom)
-#   residu_name = atom. 
    residu_type= atom.residType
    atomtype = atom.atomType
    key = "%s:%s"%(residu_type, atomtype) 
@@ -253,7 +251,7 @@ for i in range(len(allAtom)):
    cx.append( atom.coords.x)
    cy.append( atom.coords.y)
    cz.append( atom.coords.z)
-#   print  key ,  charge[i], radius[i], cx[i], cy[i], cz[i]
+
    
   
 for i, atom in enumerate(protein):
@@ -269,7 +267,7 @@ for i, atom in enumerate(protein):
    cgy.append( atom.coords.y)
    cgz.append( atom.coords.z)
 
-#   print key, cgch[i], cgr[i], cgx[i], cgy[i], cgz[i]
+
 
 
 
@@ -297,8 +295,6 @@ if options.optimizecharges:
 else:
     optimized = cgch
 
-#print "optimized charges: ", optimized
-#rig = AttractRigidbody()
 
 for i, bead in enumerate(protein):
     #ugly hack to set correct charges values due to a bug atom to pdb conversion
