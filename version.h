@@ -2,7 +2,7 @@
 #define VERSION_H
 
 
-#include "bzrrev.h"
+#include "gitrev.h"
 #include <string>
 
 /*! \brief PTools version class

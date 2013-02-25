@@ -3,11 +3,11 @@
 
 Version::Version()
 {
-this->revnb = BZR_REV;
-this->revstr = BZR_REVSTR;
-this->revdate = BZR_REVDATE;
-this->revid = BZR_REVID;
-this->branchnick = BZR_BRANCHNICK;
+// this->revnb = GIT_REV;
+// this->revstr = GIT_REVSTR;
+// this->revdate = GIT_REVDATE;
+this->revid = GIT_REVID;
+// this->branchnick = GIT_BRANCHNICK;
 }
 
 
