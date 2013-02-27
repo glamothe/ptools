@@ -2,6 +2,11 @@ import unittest
 
 from ptools import *
 
+#deactivate auto-diff for now:
+def surreal(r):
+    return r
+
+
 class TestHeligeom(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)

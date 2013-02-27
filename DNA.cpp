@@ -94,7 +94,7 @@ Matrix DNA::GetMatBetwenBasePair( const Rigidbody& modelOfBasePair,int pos)const
 void DNA::RenumberModel (Rigidbody& model)const
 {
 
-  unsigned int tempId=  model.GetAtomProperty(0).GetResidId();
+  unsigned int tempId = model.GetAtomProperty(0).residId;
   string chain;
   unsigned int nbRes=0;
   unsigned int second = 0;
@@ -114,7 +114,7 @@ void DNA::RenumberModel (Rigidbody& model)const
   for (unsigned int i =0; i < modelSize; i++ )
   {
     Atomproperty ap=model.GetAtomProperty(i);
-    unsigned int Id = ap.GetResidId();
+    unsigned int Id = ap.residId;
     if ( tempId != Id )
     {
         
@@ -141,8 +141,8 @@ void DNA::RenumberModel (Rigidbody& model)const
             nbRes++;
         }
     }
-    ap.SetResidId(nbRes);
-    ap.SetChainId(chain);
+    ap.residId = nbRes;
+    ap.chainId = chain;
     model.SetAtomProperty(i,ap);
   }
 }
@@ -181,7 +181,7 @@ Rigidbody DNA::DelSingleBase (Rigidbody& model)const
     }else {return model;}
     for ( unsigned int i=0 ; i< strandSize ; i++ )
     {
-         string type = model.SelectResRange( i, i)[0].GetResidType();
+         string type = model.SelectResRange( i, i)[0].residType;
          // /!\ the order of the check is important! somme pdb use a CYT description for C, a wrong order could detect this as a T
          if      ( type.find ('G') != string::npos || type.find ('g') != string::npos) seq+='G';
          else if ( type.find ('C') != string::npos || type.find ('c') != string::npos) seq+='C';
@@ -415,7 +415,7 @@ string DNA::GetSeq ( const Rigidbody& model)const
     }else {return "";}
     for ( unsigned int i=0 ; i< strandSize ; i++ )
     {
-         string type = model.SelectResRange( i, i)[0].GetResidType();
+         string type = model.SelectResRange( i, i)[0].residType;
          // /!\ the order of the check is important! somme pdb use a CYT description for C, a wrong order could detect this as a T
          if      ( type.find ('G') != string::npos || type.find ('g') != string::npos) seq+='G';
          else if ( type.find ('C') != string::npos || type.find ('c') != string::npos) seq+='C';
@@ -449,7 +449,7 @@ string DNA::GetChainIDs(const Rigidbody& rb)const
 
   for (unsigned int i=0; i < selectionSize ;i++)
   {
-    string id = selection[i].GetChainId();
+    string id = selection[i].chainId;
     if(id !=tmp)
     {
       tmp=id;

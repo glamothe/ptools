@@ -149,7 +149,7 @@ Rigidbody Stacking::AxisPyrimidine(const Rigidbody& pyr, const Coord3D& centerBa
     //1 get the projection of the center of the first base on the line defines
     //by the center of the second base and the vector of the first base.
     Coord3D vectorBp1Bp2 = centerBase1 - centerBase2;
-    Coord3D vectorBp1pyr2 = (pyr.CopyAtom(1).GetCoords() - centerBase1).Normalize();
+    Coord3D vectorBp1pyr2 = (pyr.CopyAtom(1).coords - centerBase1).Normalize();
 
     double proj=ScalProd(vectorBp1Bp2,vectorBp1pyr2);
 
@@ -183,7 +183,7 @@ Rigidbody Stacking::AxisPurine(const Rigidbody& pur, const Coord3D& center)const
     //1 define two vector of the plan (check the chain to assure a clockwise order)
     Coord3D vectorPlan1 ;
     Coord3D vectorPlan2 ;
-    if (pur.GetAtomProperty(0).GetChainId()=="A"){
+    if (pur.GetAtomProperty(0).chainId=="A"){
         vectorPlan1 = pur.GetCoords(1)-center;
         vectorPlan2 = pur.GetCoords(0)-center;
     }

@@ -13,14 +13,14 @@ using namespace PTools;
 BasePair::BasePair(std::string filename)
 {
   ReadPDB(filename,rigbody);
-  type = rigbody.GetAtomProperty(0).GetResidType();
+  type = rigbody.GetAtomProperty(0).residType;
 }
 
 
 BasePair::BasePair(const Rigidbody& rigbody)
 {
   this->rigbody=rigbody;
-  type = rigbody.GetAtomProperty(0).GetResidType();
+  type = rigbody.GetAtomProperty(0).residType;
 }
 
 
@@ -45,13 +45,13 @@ void BasePair::SetChainID(){
   for(unsigned int i =0; i< rigSize ; i++)
   {
     Atomproperty ap=rigbody.GetAtomProperty(i);
-    if (ap.GetResidType()==type)
+    if (ap.residType == type)
     {
-        ap.SetChainId("A");
+        ap.chainId = "A";
     }
     else
     {
-        ap.SetChainId("B");
+        ap.chainId = "B";
     }
     rigbody.SetAtomProperty(i,ap);
   }
@@ -102,13 +102,13 @@ void BasePair::SetResID(int idA,int idB)
   for(unsigned int i =0; i< baseSize ; i++)
   {
     Atomproperty ap=rigbody.GetAtomProperty(i);
-    if (ap.GetChainId()=="A")
+    if (ap.chainId == "A")
     {
-        ap.SetResidId(idA);
+        ap.residId = idA;
     }
     else
     {
-        ap.SetResidId(idB);
+        ap.residId = idB;
     }     
     rigbody.SetAtomProperty(i,ap);
   }
@@ -120,9 +120,9 @@ uint BasePair::SetAtomNumberOfBase(std::string chain,int num)
   for(unsigned int i =0; i< baseSize ; i++)
   {
     Atomproperty ap=rigbody.GetAtomProperty(i);
-    if (ap.GetChainId()==chain)
+    if (ap.chainId == chain)
     {
-        ap.SetAtomId(num);
+        ap.atomId = num;
         num++;
         rigbody.SetAtomProperty(i,ap);
     }
@@ -133,7 +133,7 @@ uint BasePair::SetAtomNumberOfBase(std::string chain,int num)
 uint BasePair::GetResIDofBase(std::string chain)const
 {
   Atomproperty ap = rigbody.SelectChainId(chain).CreateRigid().GetAtomProperty(0);
-  return ap.GetResidId();
+  return ap.residId;
 }
 
 
