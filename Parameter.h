@@ -23,36 +23,36 @@ namespace PTools
         Parameter();
         Parameter(const BasePair& bp1, const BasePair& bp2);
         ~Parameter();
-        Rigidbody buildAxisCentered(const Rigidbody& bp)const;
-        Rigidbody buildAxisCGGeometricCenter(const Rigidbody& bp)const;
-        Rigidbody buildAxisAAGeometricCenter(const Rigidbody& bp)const;
+        Rigidbody BuildAxisCentered(const Rigidbody& bp)const;
+        Rigidbody BuildAxisCGGeometricCenter(const Rigidbody& bp)const;
+        Rigidbody BuildAxisAAGeometricCenter(const Rigidbody& bp)const;
 
         void MeasureParameters(const Rigidbody& oxyz1, const Rigidbody& oxyz2);
 
-        Movement getMov() const;
+        Movement GetMov() const;
 
         //return the parameter in the following order, twist roll tilt rise slide shift. beware, the angle are in radian
-        std::string toString ()const;
+        std::string ToString ()const;
         //return the parameter in the following order, twist roll tilt rise slide shift in readable arrangement
-        std::string toFormatedString ()const;
+        std::string ToFormatedString ()const;
         
-        double getRise() const ;
-        void setRise(double rise) ;
+        double GetRise() const ;
+        void SetRise(double rise) ;
 
-        double getRoll() const ;
-        void setRoll(double roll);
+        double GetRoll() const ;
+        void SetRoll(double roll);
 
-        double getShift() const ;
-        void setShift(double shift);
+        double GetShift() const ;
+        void SetShift(double shift);
 
-        double getSlide() const ;
-        void setSlide(double slide);
+        double GetSlide() const ;
+        void SetSlide(double slide);
 
-        double getTilt() const ;
-        void setTilt(double tilt);
+        double GetTilt() const ;
+        void SetTilt(double tilt);
 
-        double getTwist() const ;
-        void setTwist(double twist) ;
+        double GetTwist() const ;
+        void SetTwist(double twist) ;
 
         
 

@@ -24,7 +24,7 @@ Stacking::~Stacking()
 
 
 
-Rigidbody Stacking::axis(const Rigidbody& bp1, const Rigidbody& bp2)const
+Rigidbody Stacking::Axis(const Rigidbody& bp1, const Rigidbody& bp2)const
 {
     //1 determine if the considered basePair is a G-C or a A-T
     bool bp1isGC = bp1.SelectAtomType("GG1").Size()>0;
@@ -83,14 +83,14 @@ Rigidbody Stacking::axis(const Rigidbody& bp1, const Rigidbody& bp2)const
     
     if(  Norm(pyrBp1center-pyrBp2center) < Norm(pyrBp1center-purBp2center) )
     {
-       axis = axisPyrimidine( pyrBp1, pyrBp1center, pyrBp2center );
+       axis = AxisPyrimidine( pyrBp1, pyrBp1center, pyrBp2center );
     }
     else
     {
-       axis = axisPyrimidine( pyrBp1, pyrBp1center, purBp2center );
+       axis = AxisPyrimidine( pyrBp1, pyrBp1center, purBp2center );
     }
 
-    axis = axis + axisPurine(purBp1,purBp1center);
+    axis = axis + AxisPurine(purBp1,purBp1center);
  
 
 
@@ -98,7 +98,7 @@ Rigidbody Stacking::axis(const Rigidbody& bp1, const Rigidbody& bp2)const
 
 }
 
-Rigidbody Stacking::axis(const Rigidbody& basePair)const
+Rigidbody Stacking::Axis(const Rigidbody& basePair)const
 {
     //1 determine if the considered basePair is a G-C or a A-T
     bool basePairIsGC = basePair.SelectAtomType("GG1").Size()>0;
@@ -135,15 +135,15 @@ Rigidbody Stacking::axis(const Rigidbody& basePair)const
     Rigidbody axis;
 
 
-    axis = axis + axisPurine(purBp,purBp1center);
-    axis = axis + axisPyrimidineCopyPurine(pyrBp1center, axis);
+    axis = axis + AxisPurine(purBp,purBp1center);
+    axis = axis + AxisPyrimidineCopyPurine(pyrBp1center, axis);
 
 
     return axis;
 
 }
 
-Rigidbody Stacking::axisPyrimidine(const Rigidbody& pyr, const Coord3D& centerBase1, const Coord3D&  centerBase2)const
+Rigidbody Stacking::AxisPyrimidine(const Rigidbody& pyr, const Coord3D& centerBase1, const Coord3D&  centerBase2)const
 {
     //build pyr axis
     //1 get the projection of the center of the first base on the line defines
@@ -168,7 +168,7 @@ Rigidbody Stacking::axisPyrimidine(const Rigidbody& pyr, const Coord3D& centerBa
     return pyrAxis;
 }
 
-Rigidbody Stacking::axisPyrimidineCopyPurine( const Coord3D& centerBase1, const Rigidbody& axisPurine )const
+Rigidbody Stacking::AxisPyrimidineCopyPurine( const Coord3D& centerBase1, const Rigidbody& axisPurine )const
 {
     Coord3D vectorPlanPur = axisPurine.GetCoords(1)-axisPurine.GetCoords(0);
     
@@ -178,7 +178,7 @@ Rigidbody Stacking::axisPyrimidineCopyPurine( const Coord3D& centerBase1, const 
     return pyrAxis;
 }
 
-Rigidbody Stacking::axisPurine(const Rigidbody& pur, const Coord3D& center)const
+Rigidbody Stacking::AxisPurine(const Rigidbody& pur, const Coord3D& center)const
 {
     //1 define two vector of the plan (check the chain to assure a clockwise order)
     Coord3D vectorPlan1 ;
@@ -205,7 +205,7 @@ Rigidbody Stacking::axisPurine(const Rigidbody& pur, const Coord3D& center)const
     return purAxis;
 }
 
-bool Stacking::isStacked(const Rigidbody& axe1, const Rigidbody& axe2,double angleThreshold,double overlapThreshold)const
+bool Stacking::IsStacked(const Rigidbody& axe1, const Rigidbody& axe2,double angleThreshold,double overlapThreshold)const
 {
     Coord3D vector1 =axe1.GetCoords(1)-axe1.GetCoords(0);
     Coord3D vector2 =axe2.GetCoords(1)-axe2.GetCoords(0);

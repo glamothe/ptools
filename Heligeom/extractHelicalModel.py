@@ -81,7 +81,7 @@ rot = sys.argv[4]
 nbturn = 1
 if 5 < nargs < 7:
     nbturn = int(sys.argv[5])
-print nbturn
+
 goodMatrix = False
 
 for ligne in filin :

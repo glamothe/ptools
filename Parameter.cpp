@@ -36,21 +36,21 @@ Parameter::~Parameter()
 }
 
 
-Rigidbody Parameter::buildAxisCentered(const Rigidbody& bp)const
+Rigidbody Parameter::BuildAxisCentered(const Rigidbody& bp)const
 {
     //if it's a coarse grain model
     if (bp.SelectAtomType("GS2").Size()> 0)
     {
-        return buildAxisCGGeometricCenter(bp);
+        return BuildAxisCGGeometricCenter(bp);
     }
     else
     {
-        return buildAxisAAGeometricCenter(bp);
+        return BuildAxisAAGeometricCenter(bp);
     }
 }
 
 ////code "steal" from deformDna.cpp (author: Pierre Poulain), modified to use the geometric center
-Rigidbody Parameter::buildAxisCGGeometricCenter(const Rigidbody& bp)const
+Rigidbody Parameter::BuildAxisCGGeometricCenter(const Rigidbody& bp)const
 {
     AtomSelection selSugar = bp.SelectAtomType("GS2");
     assert(selSugar.Size() == 2);
@@ -110,7 +110,7 @@ Rigidbody Parameter::buildAxisCGGeometricCenter(const Rigidbody& bp)const
 ////code "steal" from deformDna.cpp (author: Pierre Poulain), modified to use the geometric center
 ///the definition of an axis for basis is following the standard stated in
 ///Definitions and Nomenclature of Nucleic Acid Structure Parameters, R. E. Dickerson et alJ. Mol. Biol. (1995) 251, 648–664.
-Rigidbody Parameter::buildAxisAAGeometricCenter(const Rigidbody& bp)const
+Rigidbody Parameter::BuildAxisAAGeometricCenter(const Rigidbody& bp)const
 {
     AtomSelection selSugar = bp.SelectAtomType("C1'");
     if (selSugar.Size() != 2)selSugar = bp.SelectAtomType("C1*");
@@ -198,70 +198,70 @@ void Parameter::MeasureParameters(const Rigidbody& oxyz1, const Rigidbody& oxyz2
 
 }
 
-Movement Parameter::getMov() const
+Movement Parameter::GetMov() const
 {
     return Twist(twist)+Roll(roll)+Tilt(tilt)+Rise(rise)+Slide(slide)+Shift(shift);
 }
 
-string Parameter::toString ()const
+string Parameter::ToString ()const
 {
     stringstream ss;
-    ss << getTwist() <<" "<< getRoll()<<" "<< getTilt() <<" "<< getRise()<<" "<< getSlide() <<" "<< getShift();
+    ss << GetTwist() <<" "<< GetRoll()<<" "<< GetTilt() <<" "<< GetRise()<<" "<< GetSlide() <<" "<< GetShift();
     return ss.str();
 }
 
-string Parameter::toFormatedString ()const
+string Parameter::ToFormatedString ()const
 {
     const float degree=57.2958;
     stringstream ss;
-    ss <<"twist : "<< getTwist()*degree<<" Roll : "<< getRoll()*degree<<" Tilt : "<< getTilt()*degree <<" Rise : "<< getRise()<<" Slide : "<< getSlide() <<" Shift : "<< getShift();
+    ss <<"twist : "<< GetTwist()*degree<<" Roll : "<< GetRoll()*degree<<" Tilt : "<< GetTilt()*degree <<" Rise : "<< GetRise()<<" Slide : "<< GetSlide() <<" Shift : "<< GetShift();
     return ss.str();
 }
-double Parameter::getRise() const {
+double Parameter::GetRise() const {
     return rise;
 }
 
-void Parameter::setRise(double rise) {
+void Parameter::SetRise(double rise) {
     this->rise = rise;
 }
 
-double Parameter::getRoll() const {
+double Parameter::GetRoll() const {
     return roll;
 }
 
-void Parameter::setRoll(double roll) {
+void Parameter::SetRoll(double roll) {
     this->roll = roll;
 }
 
-double Parameter::getShift() const {
+double Parameter::GetShift() const {
     return shift;
 }
 
-void Parameter::setShift(double shift) {
+void Parameter::SetShift(double shift) {
     this->shift = shift;
 }
 
-double Parameter::getSlide() const {
+double Parameter::GetSlide() const {
     return slide;
 }
 
-void Parameter::setSlide(double slide) {
+void Parameter::SetSlide(double slide) {
     this->slide = slide;
 }
 
-double Parameter::getTilt() const {
+double Parameter::GetTilt() const {
     return tilt;
 }
 
-void Parameter::setTilt(double tilt) {
+void Parameter::SetTilt(double tilt) {
     this->tilt = tilt;
 }
 
-double Parameter::getTwist() const {
+double Parameter::GetTwist() const {
     return twist;
 }
 
-void Parameter::setTwist(double twist) {
+void Parameter::SetTwist(double twist) {
     this->twist = twist;
 }
 

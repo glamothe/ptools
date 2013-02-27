@@ -162,7 +162,6 @@ else:
     python_target = False
 
 if python_target:
-    
    python_dirs = {'2.4': ["/usr/include/python2.4", "/sw/include/python2.4"] , 
                   '2.5': ["/usr/include/python2.5", "/sw/include/python2.5"] , 
                   '2.6': ["/usr/include/python2.6", "/sw/include/python2.6"] , 
@@ -170,8 +169,6 @@ if python_target:
                  }
    
    python_versions = ['2.7', '2.6', '2.5', '2.4'] 
-    
-   
    
    for version in python_versions:
        dir = FIND_HEADER(["Python.h"], python_dirs[version])
@@ -179,7 +176,6 @@ if python_target:
            PYTHON_CPPPATH=[dir]
            PYTHON_LIBS=["python%s"%version]
            break
-
 
 
    PYTHON_CPP=[]

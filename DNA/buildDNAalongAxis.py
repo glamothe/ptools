@@ -3,8 +3,8 @@ import math
 import sys
 import os
 
-PB_CG = "pb.cg.pdb"
-PB_AA = "pb.aa.pdb"
+PB_CG = "bp.red.pdb"
+PB_AA = "bp.ato.pdb"
 
 def readline(lineName):
     line=[]
@@ -89,25 +89,25 @@ def nextModel(line,D,pos):
 def buildFirstPB(mobil,D):
     dna = DNA(PB_CG ,"A",BDNA())
     p = Parameter ()
-    axe = p.buildAxisCGGeometricCenter (dna[0].getRigidBody ())
+    axe = p.BuildAxisCGGeometricCenter (dna[0].GetRigidBody ())
     axeZ= Rigidbody()
     axeZ.AddAtom (axe.CopyAtom (0))
 
     axeZ.AddAtom ( Atom(Atomproperty (),axe.CopyAtom (3).GetCoords()*abs(D)))
     m = superpose(mobil,axeZ).matrix
-    #axeZ.apply(m)
+    #axeZ.Apply(m)
     #print axeZ.PrintPDB()
     #print mobil.PrintPDB()
-    #print dna.printPDB()
-    dna.apply(m)
-    #print dna.printPDB()
+    #print dna.PrintPDB()
+    dna.Apply(m)
+    #print dna.PrintPDB()
     return dna
 
 def buildNextPB(dna,mobil,D):
     new = DNA(PB_CG ,"A",BDNA())
     #print mobil.PrintPDB()
     p = Parameter ()
-    axe = p.buildAxisCGGeometricCenter (dna[dna.size()-1].getRigidBody ())
+    axe = p.BuildAxisCGGeometricCenter (dna[dna.Size()-1].GetRigidBody ())
     
     
     model = Rigidbody()
@@ -119,7 +119,7 @@ def buildNextPB(dna,mobil,D):
     m = superpose(model,theo).matrix
     
     mov = Movement (m)+BDNA()
-    dna.add(new,mov)
+    dna.Add(new,mov)
     return dna
 
 def buildDNA(line):
@@ -127,8 +127,8 @@ def buildDNA(line):
     dnaRig = Rigidbody()
 
     segment = DNA(PB_AA ,"AA",BDNA())
-    center0 =Atom(Atomproperty (), segment[0].getRigidBody ().FindCenter ())
-    center1 =Atom(Atomproperty (), segment[1].getRigidBody ().FindCenter ())
+    center0 =Atom(Atomproperty (), segment[0].GetRigidBody ().FindCenter ())
+    center1 =Atom(Atomproperty (), segment[1].GetRigidBody ().FindCenter ())
     D = Dist(center0,center1)
     pos = 0
     mobil=Rigidbody()
@@ -140,17 +140,17 @@ def buildDNA(line):
     m = superpose(model,mobil).matrix
     
     
-    segment.apply(m)
+    segment.Apply(m)
     mobil.ApplyMatrix(m)
     
     dna = buildFirstPB(mobil,D)
     dna = buildNextPB(dna,mobil,D)
-    dna.changeRepresentation(PB_AA)
+    dna.ChangeRepresentation(PB_AA)
 
     segment = DNA(dna)
-    #print dna.createRigid().PrintPDB()
-    dnaRig= dnaRig + segment.createRigid()
-    #dnaRig= dnaRig + dna.createRigid()
+    #print dna.CreateRigid().PrintPDB()
+    dnaRig= dnaRig + segment.CreateRigid()
+    #dnaRig= dnaRig + dna.CreateRigid()
     i=0
     size = 2
     while True :
@@ -162,19 +162,19 @@ def buildDNA(line):
             break
         m = superpose(model,mobil).matrix
         mobil.ApplyMatrix(m)
-        segment.apply(m)
-        m=(Twist( 35.9063052632 )+Roll( -2.66592947368 )+Tilt( -1.80234789474 )+Slide( -1.34487389474 )+Shift( -0.425181378947 )).getMatrix();
+        segment.Apply(m)
+        m=(Twist( 35.9063052632 )+Roll( -2.66592947368 )+Tilt( -1.80234789474 )+Slide( -1.34487389474 )+Shift( -0.425181378947 )).GetMatrix();
         newPB=segment[1]
         
         i+=1
         for i in xrange(0,size-1):
-            newPB.apply(m)
+            newPB.Apply(m)
             
         #dna = buildNextPB(dna,mobil,D)
-        dnaRig= dnaRig + newPB.getRigidBody ()
+        dnaRig= dnaRig + newPB.GetRigidBody ()
         size+=1
 
-    #print dna.printPDB()
+    #print dna.PrintPDB()
     dnaRig=cleanPDB(dnaRig)
     return DNA(PB_AA,dnaRig)
         
@@ -188,7 +188,7 @@ def main():
 
     line = readline(sys.argv[1])
     dna = buildDNA(line)
-    print dna.printPDB()
+    print dna.PrintPDB()
     
 if __name__ == "__main__":
     main()

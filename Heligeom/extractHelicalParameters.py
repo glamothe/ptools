@@ -25,7 +25,7 @@ def rigidXMat44(rigid, mat):
 
 
 nargs = len(sys.argv)
-if nargs < 2:
+if nargs < 3:
     print "usage: exctractHelicoidalParameters.py out.att receptor.red"
     raise SystemExit
 

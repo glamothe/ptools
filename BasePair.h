@@ -23,51 +23,51 @@ namespace PTools
     ~BasePair();
     
     ///return a string containing the atoms data following the PDB format 
-    std::string printPDB() const;
+    std::string PrintPDB() const;
 
     ///return a string containing the atoms data of a base (identified by its chain) following the PDB format
-    std::string printPDBofBase(std::string chain) const;
+    std::string PrintPDBofBase(std::string chain) const;
 
     ///change the chainID of the internal bases to 'A' for the first base (coresponding to the type) and 'B' for the second one
-    void setChainID();
+    void SetChainID();
 
     /// apply a Movement to the BasePair 
-    void apply(const Movement& );
+    void Apply(const Movement& );
     /// apply a Matrix to the BasePair
-    void apply(const Matrix&);
+    void Apply(const Matrix&);
     
     /// return the Matrix of the BasePair
-    Matrix getMatrix()const;
+    Matrix GetMatrix()const;
     
     /// return the Movemeny of the BasePair
-    Movement getMovement()const;
+    Movement GetMovement()const;
     
     /// return the Rigidbody of the BasePair
-    Rigidbody getRigidBody()const;
+    Rigidbody GetRigidBody()const;
     /// return the Rigidbody of the specified base (by chain)
-    Rigidbody getRigidBodyOfBase(std::string chain)const;
+    Rigidbody GetRigidBodyOfBase(std::string chain)const;
     /// define the Rigidbody of the BasePair
-    void setRigidBody(const Rigidbody&);
+    void SetRigidBody(const Rigidbody&);
     
     /// return the Residue ID of the specified base (by chain)
-    uint getResIDofBase(std::string chain)const;
+    uint GetResIDofBase(std::string chain)const;
     /// change the ID of res to idA for base on strand A and idB for the one on strand B
-    void setResID(int idA,int idB);
+    void SetResID(int idA,int idB);
     /// change the atoms numbers of the specified base (by chain) starting at startnum and returning the last atom number
-    uint setAtomNumberOfBase(std::string chain,int);
+    uint SetAtomNumberOfBase(std::string chain,int);
 
     
-    std::string getType() const;
+    std::string GetType() const;
 
-    void setType(std::string type);
+    void SetType(std::string type);
     
     
     ///return the number of Atom
-    unsigned int size() const;
+    unsigned int Size() const;
 
     /// return the i-th Atom of the basePair
     Atom operator[] (uint i) const {
-          if (i>=this->size()) throw std::range_error("DNA: array out of bounds");
+          if (i>=this->Size()) throw std::range_error("DNA: array out of bounds");
           return rigbody.CopyAtom(i);};
 
     private:
