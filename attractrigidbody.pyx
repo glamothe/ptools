@@ -95,6 +95,11 @@ cdef class AttractRigidbody:
     
     def Size(self):
         return self.thisptr.Size()
+
+    #define also the __len__ method:
+    def __len__(self):
+        return self.thisptr.Size()
+
         
     def FindCenter(self):
         cdef CppRigidbody* rig = <CppRigidbody*> self.thisptr
