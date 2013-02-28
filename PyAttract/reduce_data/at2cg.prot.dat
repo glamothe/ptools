@@ -74,6 +74,30 @@ HIS       ND1       1.0       13        CSE
 HIS       CD2       1.0       13        CSE       
 HIS       NE2       1.0       13        CSE       
 HIS       CE1       1.0       13        CSE       
+#=== histidine HSD for CHARMM
+HSD       CB        1.0       12        CSE       
+HSD       CG        1.0       12        CSE       
+
+HSD       ND1       1.0       13        CSE       
+HSD       CD2       1.0       13        CSE       
+HSD       NE2       1.0       13        CSE       
+HSD       CE1       1.0       13        CSE       
+#=== histidine HSE for CHARMM
+HSE       CB        1.0       12        CSE       
+HSE       CG        1.0       12        CSE       
+
+HSE       ND1       1.0       13        CSE       
+HSE       CD2       1.0       13        CSE       
+HSE       NE2       1.0       13        CSE       
+HSE       CE1       1.0       13        CSE       
+#=== histidine HSP for CHARMM
+HSP       CB        1.0       12        CSE       
+HSP       CG        1.0       12        CSE       
+
+HSP       ND1       1.0       13        CSE       
+HSP       CD2       1.0       13        CSE       
+HSP       NE2       1.0       13        CSE       
+HSP       CE1       1.0       13        CSE       
 #=== glycine
 GLY       EMPTY     0.0       0         EMPTY     
 #=== asparagine
