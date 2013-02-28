@@ -130,7 +130,7 @@ class TestRigidbody(unittest.TestCase):
         self.assertAlmostEqual(coords.y, 189.782 )
         self.assertAlmostEqual(coords.z, 106.402)
         self.assertEqual(atom.atomId, 4)
-        self.assertEqual(atom.chainId, '')
+        self.assertEqual(atom.chainId, ' ')
         
     def testGetCoords(self):
         coords = self.r.getCoords(3)
@@ -203,6 +203,17 @@ class TestRigidbody(unittest.TestCase):
         self.assertEqual(atprop.residId, 2)
         self.assertEqual(atprop.atomId, 9)
 
+        
+    def testToPdbString(self):
+        expected = open("1FIN_r.pdb").read()
+        lspl = expected.split("\n")
+        print lspl[0]
+        print self.r.toPdbString().split("\n")[0]
+        for i in range(len(self.r)):
+             
+             print i,expected[i], self.r.toPdbString()[i]
+             self.assertEqual(expected[i], self.r.toPdbString()[i])
+        
 class TestAttractRigidbody(unittest.TestCase):
     def setUp(self):
         rigid = Rigidbody("1FIN_r.pdb")

@@ -160,7 +160,7 @@ public:
     dbl Radius();
 
     /// converts rigidbody to classical PDB-like string
-    std::string PrintPDB() const ;
+    std::string toPdbString() const ;
 
     /// selection : complete
     AtomSelection SelectAllAtoms() const;
@@ -172,7 +172,7 @@ public:
     AtomSelection SelectResidType(std::string residtype);
 
     /// selection by chain ID
-    AtomSelection SelectChainId(std::string chainid);
+    AtomSelection SelectChainId(char chainid);
 
     /// selection by range of residue ID
     AtomSelection SelectResRange(uint start, uint stop);

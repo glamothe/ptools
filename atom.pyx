@@ -6,7 +6,7 @@ cdef extern from "atom.h" namespace "PTools":
         string atomType
         string residType
         double atomCharge
-        string chainId
+        char chainId
         unsigned int residId
         unsigned int atomId
         string extra
@@ -63,11 +63,12 @@ cdef class Atomproperty:
     
     property chainId:
         def __get__(self):
-            return <bytes> self.thisptr.chainId.c_str()
+            return <bytes> self.thisptr.chainId
     
         def __set__(self, bytes chainid):
-            cdef char * c_chainid = chainid
-            self.thisptr.chainId = string(c_chainid)
+            if len(chainid) != 1:
+                 raise "invalid size"
+            self.thisptr.chainId = chainid[0]
     
     property residId:    
         def __get__(self):

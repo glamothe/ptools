@@ -22,11 +22,12 @@ std::string Atom::ToString() const {
 //! convert an atom to a string in PDB format
 std::string Atom::ToPdbString() const
 {
-    char output[81];
+//     char output[81];
+    std::vector<char> output(81, ' ');
     const char* atomname = this->atomType.c_str();
     const char* residName = this->residType.c_str();
     int residnumber = this->residId;
-    const char* chainID = this->chainId.c_str();
+    
 
     int atomnumber = atomId;
 
@@ -34,11 +35,20 @@ std::string Atom::ToPdbString() const
     double y = coords.y;
     double z = coords.z ;
 
-    snprintf(output,80,"ATOM  %5d %-4s %3s %1s%4d    %8.3f%8.3f%8.3f%s\n",
-	     atomnumber,atomname,residName,chainID,residnumber,x,y,z,extra.c_str());
+    snprintf(&output[0],80,"ATOM  %5d %-4s%c%3s %c%4d    %8.3f%8.3f%8.3f%s\n",
+	     atomnumber,
+	     atomname,   
+	     this->altLoc,
+	     residName,
+	     this->chainId,
+	     residnumber,
+	     x,y,z,
+	     extra.c_str());
     output[79]='\n';
     output[80]='\0';
-    return std::string(output);
+    
+    std::string real_output(output.begin(), output.end());
+    return real_output;
 }
 
 //! translate an atom with a Coord3D vector

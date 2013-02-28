@@ -30,6 +30,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         void AddAtom(CppAtomproperty& , CppCoord3D )
         void AddAtom(CppAtom&)
         void SetAtom(unsigned int, CppAtom&)
+        string toPdbString()
 
         #returns radius of gyration
         double RadiusGyration()
@@ -45,7 +46,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         CppAtomSelection SelectAllAtoms()
         CppAtomSelection SelectAtomType(string)
         CppAtomSelection SelectResidType(string)
-        CppAtomSelection SelectChainId(string)
+        CppAtomSelection SelectChainId(char)
         CppAtomSelection SelectResRange(unsigned int, unsigned int)
         CppAtomSelection CA()
         CppAtomSelection Backbone()
@@ -197,10 +198,8 @@ cdef class Rigidbody:
     def SelectChainId(self, bytes b):
        ret = AtomSelection()
        del ret.thisptr
-       cdef char* c_typename = b
-       cdef string* cpp_chainid = new string(c_typename)
-       cdef CppAtomSelection new_sel =  self.thisptr.SelectChainId(deref(cpp_chainid))
-       del cpp_chainid
+       cdef CppAtomSelection new_sel =  self.thisptr.SelectChainId(b[0])
+       
        ret.thisptr  = new CppAtomSelection(new_sel)
        return ret
 
@@ -229,6 +228,10 @@ cdef class Rigidbody:
        return ret
 
     
+    def toPdbString(self):
+       s = self.thisptr.toPdbString()
+       return s
+
 
         
 cdef CppRigidbody* _getRigidbody_from_py_name(pyname):

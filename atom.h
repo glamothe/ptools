@@ -11,12 +11,15 @@ namespace PTools{
 
 
 struct Atomproperty {
-    std::string atomType;  ///< CA, N, HN1, ...
+    uint atomId; ///< atom number (PDB field: atom serial number)
+    std::string atomType;  ///< CA, N, HN1, (PDB field: atom name)
+    char altLoc; ///< alternate location indicator
+    std::string residType; ///< LEU, ARG, ... (PDB field: residue name)
+    char chainId; ///< A, B, etc. (PDB field: chain identifier)
+    uint residId; ///< residue number (PDB field: Residue sequence number)    
+    
     std::string atomElement; ///< C, N, H, O, etc.
-    std::string residType; ///< LEU, ARG, ...
-    std::string chainId; ///< A, B, etc.
-    uint residId; ///< residue number
-    uint atomId; ///< atom number
+    
     dbl atomCharge; ///< charge of the atom
     std::string extra; ///< extra data
 
@@ -26,9 +29,10 @@ struct Atomproperty {
         atomType="X";
         atomElement="X";
         residType="XXX";
-        chainId="X";
+        chainId='X';
         residId=1;
         atomId=1;
+	altLoc = ' ';
         atomCharge=0.0;
     };
 

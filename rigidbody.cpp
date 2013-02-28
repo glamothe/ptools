@@ -200,7 +200,7 @@ AtomSelection Rigidbody::SelectResidType(std::string residtype)
 }
 
 
-AtomSelection Rigidbody::SelectChainId(std::string chainId) {
+AtomSelection Rigidbody::SelectChainId(char chainId) {
     AtomSelection newsel;
     newsel.SetRigid(*this);
     for (uint i=0; i<Size(); i++)
@@ -279,7 +279,7 @@ void Rigidbody::ABrotate(const Coord3D& A, const Coord3D& B, dbl theta)
 
 
 
-std::string Rigidbody::PrintPDB() const
+std::string Rigidbody::toPdbString() const
 {
     uint size=this->Size();
 

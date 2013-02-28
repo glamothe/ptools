@@ -119,12 +119,13 @@ void ReadPDB(istream& file, Rigidbody& protein) {
             Atomproperty a;
             a.atomType = readatomtype(line);
             a.residType = readresidtype(line);
-            std::string chainID = line.substr(21,1);
-            if (chainID == " ") chainID = "";
+	    a.altLoc = line[16];
+            char chainID = line[21];
+//             if (chainID == ' ') chainID = '';
             a.chainId = chainID;
             a.residId = atoi(line.substr(22,4).c_str());
             a.atomId = atoi(line.substr(6,5).c_str());
-            std::string extra = line.substr(54,line.size()-1-54+1); //extracts everything after the position 27 to the end of line
+            std::string extra = line.substr(54); //extracts everything after the position 54 to the end of line
             a.extra = extra ;
 
             protein.AddAtom(a,pos);
@@ -159,13 +160,13 @@ void WritePDB(const Rigidbody& rigid, std::string filename)
     for (uint i=0; i<rigid.Size();i++)
     {
 
-        const char * chainID="A" ;
+//         const char * chainID="A" ;
 
         Atom at = rigid.CopyAtom(i);
         const char* atomname=at.atomType.c_str();
         const char* residName=at.residType.c_str();
         int residnumber = at.residId;
-        chainID = at.chainId.c_str();
+//         chainID = at.chainId;
 
         int atomnumber = at.atomId;
 
@@ -176,7 +177,10 @@ void WritePDB(const Rigidbody& rigid, std::string filename)
 
 
 
-        fprintf(file,"ATOM  %5d %-4s %3s %1s%4d    %8.3f%8.3f%8.3f%s",atomnumber,atomname,residName,chainID,residnumber,real(x),real(y),real(z),at.extra.c_str());    
+        fprintf(file,"ATOM  %5d %-4s %3s %c%4d    %8.3f%8.3f%8.3f%s",
+		 atomnumber,atomname,residName,
+		 at.chainId ,residnumber,real(x),
+		 real(y),real(z),at.extra.c_str());    
         fprintf(file,"\n");
     }
 
