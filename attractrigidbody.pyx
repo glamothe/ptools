@@ -45,52 +45,61 @@ cdef CppAttractRigidbody* _getAttractRigidbody_from_py_name(pyname):
     return newrigid
 
 
-cdef class AttractRigidbody:
-    cdef CppAttractRigidbody* thisptr
+cdef class AttractRigidbody (Rigidbody) :
+    # cdef CppAttractRigidbody* thisptr
 
     def __cinit__(self, arg):
+        
+        # first deallocate the previously allocated Rigidbody
+        del self.thisptr
+        self.thisptr = <CppRigidbody*> 0
+
         if isinstance(arg, Rigidbody):
            rigidbody = <Rigidbody> arg
            rigidbodyptr = <CppRigidbody*> rigidbody.thisptr
-           self.thisptr = new CppAttractRigidbody(deref(rigidbodyptr))
+           self.thisptr = <CppRigidbody*> new CppAttractRigidbody(deref(rigidbodyptr))
            return
         elif isinstance(arg, str):
-           self.thisptr = _getAttractRigidbody_from_py_name(arg)
+           self.thisptr = <CppRigidbody*> _getAttractRigidbody_from_py_name(arg)
            return
         elif isinstance(arg, AttractRigidbody):
            oldrigidbody = <AttractRigidbody> arg
            oldrigidbody_ptr = <CppAttractRigidbody*> oldrigidbody.thisptr
-           self.thisptr = new CppAttractRigidbody(deref(oldrigidbody_ptr) )          
+           self.thisptr = <CppRigidbody*> new CppAttractRigidbody(deref(oldrigidbody_ptr) )          
            return
-        else: 
-           print "Should never reach here(attractrigidbody.pyx:AttractRigidbody:__cinit__)"
+        else:
+           ret =  "Should never reach here(attractrigidbody.pyx:AttractRigidbody:__cinit__)"
+           print ret
            print arg
+           raise ret
 
 
     def __dealloc__(self):
-       del self.thisptr
+       if self.thisptr:
+           del self.thisptr
+           self.thisptr = <CppRigidbody*> 0
 
     
     def getAtomTypeNumber(self, atomid):
-         return self.thisptr.getAtomTypeNumber(atomid)
+         return (<CppAttractRigidbody*>self.thisptr).getAtomTypeNumber(atomid)
 
     def getCharge(self, atomid):
-         return self.thisptr.getCharge(atomid)
+         return (<CppAttractRigidbody*>self.thisptr).getCharge(atomid)
 
     #void setRotation(bool)
     def setRotation(self, flag):
-        self.thisptr.setRotation(flag)
+        (<CppAttractRigidbody*> self.thisptr).setRotation(flag)
 
     #void setTranslation(bool)
     def setTranslation(self, flag):
-        self.thisptr.setTranslation(flag)
+        (<CppAttractRigidbody*> self.thisptr).setTranslation(flag)
 
     def isAtomActive(self, atomid):
-        return self.thisptr.isAtomActive(atomid)
+        return (<CppAttractRigidbody*> self.thisptr).isAtomActive(atomid)
 
     #void resetForces()
     def resetForces(self):
-        self.thisptr.resetForces()
+        (<CppAttractRigidbody*> self.thisptr).resetForces()
 
     
     def Size(self):
@@ -129,7 +138,7 @@ cdef class AttractRigidbody:
 
 
     def PrintMatrix(self):
-       self.thisptr.PrintMatrix()
+       (<CppAttractRigidbody*> self.thisptr).PrintMatrix()
 
     def CA(self):
        ret = AtomSelection()

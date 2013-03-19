@@ -195,12 +195,14 @@ Rigidbody Surface::outergrid(const Rigidbody & rigid1, const Rigidbody & rigid2,
 
 Rigidbody Surface::removeclosest(const Rigidbody & rigid, dbl srad)
 {
-    std::vector<bool> list,list2;
-    int size=rigid.Size();
+    
+    int const size=rigid.Size();
     Rigidbody rigid2;
-    list.clear();
+    
     srad=srad*srad;
-    for (int i=0; i<size; i++) { list.push_back(true); }
+    
+    std::vector<bool> list(size, true);
+
     for (int i=0; i<size; i++)
     {
         Coord3D  xyz1 = rigid.GetCoords(i);
