@@ -66,4 +66,5 @@ T         O4*       O4'
 # C5M atom in thymine 
 T         C7        C5M
 
-
+# CD atoms in isoleucine
+ILE       CD        CD1

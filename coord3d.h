@@ -5,6 +5,8 @@
 #include <math.h>
 #include <string>
 #include <vector>
+#include <ostream>
+
 #include "basetypes.h"
 
 namespace PTools{
@@ -32,6 +34,7 @@ typedef std::vector<Coord3D> VCoord3D;
 /// Define = operator : Coord3D = Coord3D
 inline Coord3D & Coord3D::operator= (const Coord3D & C)
 {
+	//note: this function works in the case of self assignation
     x = C.x;
     y = C.y;
     z = C.z;
@@ -109,6 +112,15 @@ inline std::string PrintCoord(const Coord3D& A) {
     delete[] info;
     return result;
 }
+
+
+inline std::ostream& operator<< (std::ostream& out, const Coord3D& co)
+{
+    out << PrintCoord(co);
+	return out;
+}
+
+
 
 
 inline Coord3D minus(const Coord3D& orig)
