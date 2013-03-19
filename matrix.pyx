@@ -69,7 +69,7 @@ cdef class Superpose_t:
 
 #   property rmsd:
 #     def __get__(self):
-        return self.thisptr.rmsd
+#        return self.thisptr.rmsd
 """
    property matrix:
      def __get__(self):

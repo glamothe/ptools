@@ -443,6 +443,13 @@ class TestForceFields(unittest.TestCase):
         self.assertAlmostEqual(FF.Function(x),-32.9487770656) #energy from ptools 0.3
         self.assertAlmostEqual(FF.Function(x), FF.getVdw() + FF.getCoulomb())
 
+class TestPairlist(unittest.TestCase):
+    def testAtomPair(self):
+        atp = AtomPair()
+        atp.atlig = 23
+        atp.atrec = 45
+        self.assertEqual(atp.atlig, 23)
+        self.assertEqual(atp.atrec, 45)
          
 
 

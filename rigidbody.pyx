@@ -85,7 +85,9 @@ cdef class Rigidbody:
             loadPDBfromPythonFileLike(filename, self.thisptr)
            
     def __dealloc__(self):
-        del self.thisptr
+        if self.thisptr:
+            del self.thisptr
+            self.thisptr = <CppRigidbody*> 0
     def __len__(self):
         return self.thisptr.Size()
     def getCoords(self, unsigned int i):
