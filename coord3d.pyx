@@ -85,7 +85,9 @@ cdef class Coord3D:
          
          cdef CppCoord3D r = cscal*deref(pymyself.thisptr)
          return makeCoord3D(r)
-         
+    
+    def __neg__(self):
+         return makeCoord3D(CppCoord3D()-deref(self.thisptr))     
          
     def __str__(self):
         return "%f %f %f"%(self.x, self.y, self.z)

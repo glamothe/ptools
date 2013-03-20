@@ -33,6 +33,11 @@ class TestCoord3D(unittest.TestCase):
                 self.assertEqual(coo3.x, 4.0)
                 self.assertEqual(coo3.y, 6.0)
                 self.assertEqual(coo3.z, 12.5)
+        def testUnaryMinusOperator(self):
+            coo3 = - self.coo1
+            self.assertEqual(coo3.x, -3.0)
+            self.assertEqual(coo3.y, -4.0)
+            self.assertEqual(coo3.z, -5.0)
 
 class TestAtom(unittest.TestCase):
     def setUp(self):
