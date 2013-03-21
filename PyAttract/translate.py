@@ -33,15 +33,14 @@ solvname = os.path.join(scriptdir,"aminon.par")
 surf=Surface(30,30,solvname)
 center_rec=rec.FindCenter()
 center_lig=lig.FindCenter()
-rad=lig.Radius()
-rad2=rad*rad
-surf.surfpointParams(5000,rad)
+lig_rad=lig.Radius()
+surf.surfpointParams(5000,lig_rad)
 
 # grid points generation
 grid=surf.surfpoint(rec,1.4)
 
 # remove points too close from the receptor
-outergrid=surf.outergrid(grid,rec,rad2)
+outergrid=surf.outergrid(grid,rec,lig_rad)
 
 # remove closest points...
 d=10.0
