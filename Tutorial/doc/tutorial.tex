@@ -22,7 +22,7 @@
 \and S\'ebastien Fiorucci$^{1,4}$
 \and Pierre Poulain$^3$
 \and Chantal Pr\'evost$^2$
- and Martin Zacharias$^1$
+\and Martin Zacharias$^1$
 }
 
 \maketitle
@@ -69,6 +69,7 @@ The basic requirements are:
 
 \item g++ (4.x)
 \item gfortran (4.x) or g77
+\item f2c (fortran to C/C++ translator)
 \item doxygen (optional)
 \item the Boost C++ library
 \item SCons
@@ -119,9 +120,7 @@ You can then install some packages:
 \end{verbatim}
 
 
-After that, you still need to manually install gccxml, pyplusplus and pygccxml (see below).
-
-
+%After that, you still need to manually install gccxml, pyplusplus and pygccxml (see below).
 
 
 \subsection{Compilation}
@@ -149,7 +148,7 @@ the {\tt SConstruct} file.
 
 \subsubsection{The library as a Python module}
 
-From the PTools main directory ({\tt \$HOME/soft/ptools-XX}), type:
+First having installed {\tt python-dev} and {\tt cython} on your system, from the PTools main directory ({\tt \$HOME/soft/ptools-XX}), type:
 
 \begin{verbatim}
 python setup.py build
@@ -171,11 +170,12 @@ type:
 You should get something like this:
 
 \begin{verbatim}
+echo "running C++ tests"
 running C++ tests
 python cxxtestgen.py --error-printer ptoolstest.h > runner.cpp
-g++ runner.cpp -I.. -I. -L.. -lptools -o ptoolstest.bin
+g++ -O2 runner.cpp -I.. -I. -L.. -lptools -o ptoolstest.bin
 ./ptoolstest.bin
-Running 15 tests...............OK!
+Running 17 tests.................OK!
 \end{verbatim}
 
 
