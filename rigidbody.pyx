@@ -13,7 +13,7 @@ cdef extern from "<sstream>" namespace "std":
 
 cdef extern from "rigidbody.h" namespace "PTools":
     cdef cppclass CppRigidbody "PTools::Rigidbody":
-        CppRigidbody(string)
+        CppRigidbody(string) except+
         CppRigidbody()
         CppRigidbody(CppRigidbody&)
         unsigned int Size()
@@ -64,12 +64,26 @@ cdef class Rigidbody:
     def __cinit__(self, filename=''):
         cdef CppRigidbody* oldrigidptr
         cdef Rigidbody  oldrigid
+        cdef char* name
+        cdef string *cppname
+        cdef CppRigidbody* newrigid
+        
         if isinstance(filename, str):
             if filename ==  '':
                 self.thisptr = new CppRigidbody()
             else:
                 # there is a filename, loading the pdb file
-                self.thisptr = _getRigidbody_from_py_name(filename)
+                #self.thisptr = _getRigidbody_from_py_name(filename)
+
+                name = filename
+                cppname = new string(name)
+                newrigid = new CppRigidbody(deref(cppname))
+                del cppname
+                self.thisptr = newrigid
+
+
+
+
         if isinstance(filename, Rigidbody):
             oldrigid = <Rigidbody> filename
             oldrigidptr = <CppRigidbody*> (oldrigid.thisptr)
