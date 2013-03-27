@@ -16,7 +16,7 @@ using namespace PTools;
 
 
 //constructor/destructor
-DNA::DNA(string dataBaseFile, string seq, const Movement& mov)
+DNA::DNA(const string& dataBaseFile, const string& seq, const Movement& mov)
 {
   //if we want to build the dna from a model
   if(IsPdbFile (seq))
@@ -60,7 +60,7 @@ void DNA::BuildDNAfromModel(string dataBaseFile,Rigidbody model)
 {
     RenumberModel (model);
     model = DelSingleBase (model);
-    string seq =GetSeq(model);
+    string seq = GetSeq(model);
     AssembleSeq (dataBaseFile,seq);
 
     PlaceBasePairs(model);
@@ -386,7 +386,7 @@ Rigidbody DNA::GetModelOfBasePair(const Rigidbody& model,int posA,int posB)const
 }
 
 
-void DNA::AssembleSeq (std::string dataBaseFile, std::string seq)
+void DNA::AssembleSeq (const std::string &dataBaseFile, std::string seq)
 {
       Rigidbody dataBase = Rigidbody(dataBaseFile);      
       string chainIDs = GetChainIDs(dataBase);
