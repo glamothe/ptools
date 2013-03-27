@@ -1,11 +1,10 @@
-
 #ifndef DNA_H
 #define DNA_H
 
 #include <vector>  
-#include <BasePair.h>
-#include <Movement.h>
-#include <Parameter.h>
+#include "BasePair.h"
+#include "Movement.h"
+#include "Parameter.h"
 #include "rigidbody.h"
 
 namespace PTools
@@ -16,7 +15,7 @@ namespace PTools
     
     public:
     ///initialize a new object with a sequence and a database of pdb to pick from. an initial movement for the construction of the dna can be precised. 
-    DNA( std::string , std::string , const Movement & mov = BDNA());
+    DNA(const std::string& dataBaseFile , const std::string& seq , const Movement & mov = BDNA());
     ///initialize a dna from another dna.
     DNA( const DNA& model );
     ///initialize a dna from dna in a rigidbody
@@ -139,7 +138,7 @@ namespace PTools
     ///return a vector with an example of each base
     std::vector<Rigidbody> BuildVbase(std::string chainIDs, Rigidbody& dataBase)const;
     ///create the different base in strand following the seq order.
-    void AssembleSeq (std::string dataBaseFile, std::string seq);
+    void AssembleSeq (const std::string & dataBaseFile, const std::string& seq);
 
     ///change the numerotation of the base in the model to conform to the following order
     ///A 1 2 3

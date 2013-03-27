@@ -1,7 +1,10 @@
 #ifndef MOUVEMENT_H
 #define MOUVEMENT_H
   
-
+#include "basetypes.h"
+#include "geometry.h"
+#include "rigidbody.h"  
+  
 namespace PTools
 {
 //base class movement--------------------------------------------------------  
@@ -100,9 +103,7 @@ namespace PTools
     Tilt(double);
   };
   
-  /*! \brief a mouvement describing the local parameter of a B dna
-  *reference : S.Arnott, R.Chandrasekaran, D.L.Birdsall, A.G.W.Leslie and R.L.Ratliff, Nature 283, 743-746 (1980)
-  */
+
 
   /*! \brief a mouvement describing the local parameter of a A dna
   *reference : S.Arnott, R.Chandrasekaran, D.L.Birdsall, A.G.W.Leslie and R.L.Ratliff, Nature 283, 743-746 (1980)
@@ -113,6 +114,9 @@ namespace PTools
     ADNA();
   };
 
+  /*! \brief a mouvement describing the local parameter of a B dna
+  *reference : S.Arnott, R.Chandrasekaran, D.L.Birdsall, A.G.W.Leslie and R.L.Ratliff, Nature 283, 743-746 (1980)
+  */ 
   class BDNA: public Movement
   {
     public:
