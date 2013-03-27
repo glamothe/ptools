@@ -33,6 +33,11 @@ class TestCoord3D(unittest.TestCase):
                 self.assertEqual(coo3.x, 4.0)
                 self.assertEqual(coo3.y, 6.0)
                 self.assertEqual(coo3.z, 12.5)
+        def testUnaryMinusOperator(self):
+            coo3 = - self.coo1
+            self.assertEqual(coo3.x, -3.0)
+            self.assertEqual(coo3.y, -4.0)
+            self.assertEqual(coo3.z, -5.0)
 
 class TestAtom(unittest.TestCase):
     def setUp(self):
@@ -431,10 +436,7 @@ class TestForceFields(unittest.TestCase):
     def testFF2k(self):
         a = AttractRigidbody("pk6a.red")
         c = AttractRigidbody("pk6c.red")
-        #a = AttractRigidbody(a)
-        #c = AttractRigidbody(c)
-        
-        #print "*********** sizes:", a.Size(), '/', c.Size()
+
         a.setRotation(False)
         a.setTranslation(False)
         FF = AttractForceField2("mbest1k.par", 20.0)
@@ -444,8 +446,15 @@ class TestForceFields(unittest.TestCase):
         for i in range(6):
             x.append(0.0)
         self.assertAlmostEqual(FF.Function(x),-32.9487770656) #energy from ptools 0.3
-	self.assertAlmostEqual(FF.Function(x), FF.getVdw() + FF.getCoulomb())
+        self.assertAlmostEqual(FF.Function(x), FF.getVdw() + FF.getCoulomb())
 
+class TestPairlist(unittest.TestCase):
+    def testAtomPair(self):
+        atp = AtomPair()
+        atp.atlig = 23
+        atp.atrec = 45
+        self.assertEqual(atp.atlig, 23)
+        self.assertEqual(atp.atrec, 45)
          
 
 

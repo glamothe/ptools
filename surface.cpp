@@ -173,14 +173,19 @@ Rigidbody Surface::surfpoint(const Rigidbody & rigid, dbl srad)
     return rigidsurf;
 }
 
-Rigidbody Surface::outergrid(const Rigidbody & rigid1, const Rigidbody & rigid2, dbl srad)
+Rigidbody Surface::outergrid(const Rigidbody & grid, const Rigidbody & rigid2, dbl rad)
 {
-    int size1 = rigid1.Size();
+    //used to remove grid points that are too close from the receptor
+    //ie: there is not enough space to put the ligand at a distance < ligand.radius from the receptor
+    
+    int grid_size = grid.Size();
     int size2 = rigid2.Size();
     Rigidbody rigid3;
-    for (int i=0; i<size1; i++)
+    double srad = rad*rad;
+    
+    for (int i=0; i < grid_size; i++)
     {
-        Coord3D xyz1 = rigid1.GetCoords(i);
+        Coord3D xyz1 = grid.GetCoords(i);
         bool select = true;
         for (int j=0; j<size2; j++)
         {
@@ -188,19 +193,21 @@ Rigidbody Surface::outergrid(const Rigidbody & rigid1, const Rigidbody & rigid2,
             dbl dist=Norm2(xyz1-xyz2);
             if (dist < srad) { select = false; }
         }
-        if (select) { rigid3.AddAtom(rigid1.CopyAtom(i)); }
+        if (select) { rigid3.AddAtom(grid.CopyAtom(i)); }
     }
     return rigid3;
 }
 
 Rigidbody Surface::removeclosest(const Rigidbody & rigid, dbl srad)
 {
-    std::vector<bool> list,list2;
-    int size=rigid.Size();
+    
+    int const size=rigid.Size();
     Rigidbody rigid2;
-    list.clear();
+    
     srad=srad*srad;
-    for (int i=0; i<size; i++) { list.push_back(true); }
+    
+    std::vector<bool> list(size, true);
+
     for (int i=0; i<size; i++)
     {
         Coord3D  xyz1 = rigid.GetCoords(i);
