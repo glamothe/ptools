@@ -9,7 +9,8 @@ using namespace std;
 
 namespace PTools {
 
-
+const double RADIAN = 0.01745329251994329; //degree to radian conversion    
+    
 //base class movement--------------------------------------------------------
 Movement::Movement()
 {
@@ -241,7 +242,7 @@ Matrix inverseMatrix44 (const Matrix&  a)
 
 
 //child class--------------------------------------------------------
-const double RADIAN = 0.0175;
+
 Shift::Shift(double alpha)
  :Movement()
 {
