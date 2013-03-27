@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from _ptools import *
 
 def Coord3D_toStr(self):
@@ -18,8 +19,10 @@ def _version_print(self):
 Version.__str__ = _version_print
 
 
-def Rigidbody_remoteLoad(pdbname):
-	import urllib
-
+def getPDB(pdbname):
+    import urllib2
+    pdb = urllib2.urlopen("http://www.rcsb.org/pdb/files/%s.pdb"%pdbname)
+    content = pdb.read()
+    return content
 
 

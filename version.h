@@ -2,7 +2,7 @@
 #define VERSION_H
 
 
-#include "bzrrev.h"
+#include "gitrev.h"
 #include <string>
 
 /*! \brief PTools version class
@@ -18,11 +18,11 @@ struct Version
 
 //public attributes
 public:
-    int revnb;
-    std::string revstr;
-    std::string revdate;
+//    int revnb;
+//    std::string revstr;
+//    std::string revdate;
     std::string revid;
-    std::string branchnick;
+//    std::string branchnick;
 
 //public methods
 public:
