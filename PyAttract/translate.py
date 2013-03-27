@@ -4,10 +4,10 @@
 ##
 ## translate script
 ## generate starting point
-## usage : translate arg1 arg2 [options]
-## arg1 : receptor file in the reduce model
-## arg2 : ligand file in the reduce model
-## to modify the density, use the -d option (the value must be > 1.0), default=100.0
+## usage : translate receptor ligand [options]
+## receptor : receptor file in the reduce model
+## ligand : ligand file in the reduce model
+## to modify the density, use the -d option (the value must be > 1.0), default=10.0
 ##
 
 from ptools import *
@@ -18,7 +18,8 @@ from optparse import OptionParser
 
 parser = OptionParser()
 parser.usage = 'translate.py <receptor_file> <ligand_file> [options]'
-parser.add_option("-d", "--density", action="store", type="float", dest="density",help="distance in angstroem between starting points (the value must be > 1.0), default is 10.0 angstroem")
+parser.add_option("-d", "--density", action="store", type="float", dest="density",help="distance in angstroem between starting points (the value must be > 1.0), default is 10.0 angstroem", default=10.0)
+parser.add_option("--distance-to-receptor", type="float", dest="distance_to_receptor", help="minimum distance (in A) between starting points and the receptor surface, default is the ligand radius")
 (options, args) = parser.parse_args()
 
 rec = Rigidbody(sys.argv[1])
@@ -33,20 +34,19 @@ solvname = os.path.join(scriptdir,"aminon.par")
 surf=Surface(30,30,solvname)
 center_rec=rec.FindCenter()
 center_lig=lig.FindCenter()
-lig_rad=lig.Radius()
-surf.surfpointParams(5000,lig_rad)
+
+distance_to_receptor = options.distance_to_receptor or lig.Radius()
+surf.surfpointParams(5000,distance_to_receptor)
 
 # grid points generation
 grid=surf.surfpoint(rec,1.4)
 
 # remove points too close from the receptor
-outergrid=surf.outergrid(grid,rec,lig_rad)
+
+outergrid=surf.outergrid(grid,rec,distance_to_receptor)
 
 # remove closest points...
-d=10.0
-if (options.density):
-	d=options.density
-outergrid=surf.removeclosest(outergrid,d)
+outergrid=surf.removeclosest(outergrid,options.density)
 
 # output starting positions
 nb_startingpoint=0
