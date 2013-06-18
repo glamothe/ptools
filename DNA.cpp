@@ -1,15 +1,17 @@
-#include <rigidbody.h>
-#include <pdbio.h>
-#include <superpose.h>
-#include <atomselection.h>
+#include "rigidbody.h"
+#include "pdbio.h"
+#include "superpose.h"
+#include "atomselection.h"
+#include "DNA.h"
+#include "Movement.h"
+#include "Parameter.h"
+
 #include <iostream>
-#include <DNA.h>
-#include <Movement.h>
 #include <fstream>
 #include <limits>
 #include <limits.h>
 #include <numeric>
-#include "Parameter.h"
+
 
 using namespace std;
 using namespace PTools;

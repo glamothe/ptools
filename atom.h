@@ -12,9 +12,9 @@ namespace PTools{
 
 struct Atomproperty {
     std::string atomType;  ///< CA, N, HN1, ...
-    std::string atomElement; ///< C, N, H, O, etc.
+    std::string atomElement; ///< C, N, H, O, etc.  --> char ?
     std::string residType; ///< LEU, ARG, ...
-    std::string chainId; ///< A, B, etc.
+    std::string chainId; ///< A, B, etc.   // --> char ? 
     uint residId; ///< residue number
     uint atomId; ///< atom number
     dbl atomCharge; ///< charge of the atom
