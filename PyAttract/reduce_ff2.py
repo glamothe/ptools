@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 #modified reduce_ff2 for mbest1u 
 #Calpha are dummy atom type 32. 
@@ -25,19 +26,18 @@ class BeadCreator:
             self.size=0
 
             atProp=Atomproperty()
-            #print "*******reducedname: ",reducedname
-            atProp.SetType(reducedname)
-            atProp.SetAtomCharge(reducedcharge)
-            atProp.SetChainId('')
+            atProp.atomType = reducedname
+            atProp.atomCharge = reducedcharge
+            atProp.chainId = ''
             self.atProp=atProp
 
       def submit(self, atom):
             "try to add an atom to the bead"
-            atomtype=atom.GetType()
+            atomtype=atom.atomType
             #trick to handle 'OTn' instead of 'O' for last pdb atom:
             if atomtype[:2]=='OT': atomtype='O'
             if atomtype in self._lstofAtoms:
-                  self._CoM+=atom.GetCoords()
+                  self._CoM+=atom.coords
                   self._lstofAtoms.remove(atomtype)
                   self.size+=1
                   #print self.size
@@ -121,11 +121,11 @@ beadCorresp['VAL'] = defaultBB + [  ['CSE',     ['CB', 'CG1', 'CG2']   , 29, 0.]
 
 
 allAtom=Rigidbody(sys.argv[1])
-print "Number of atoms: " ,allAtom.Size()
+print "Number of atoms: " ,len(allAtom)
 
 #extract all 'atoms' objects
 atoms=[]
-for i in xrange(allAtom.Size()):
+for i in xrange(len(allAtom)):
       atoms.append(allAtom.CopyAtom(i))
 
 
@@ -134,8 +134,8 @@ for i in xrange(allAtom.Size()):
 residuMap={}
 residulist=[]
 for at in atoms:
-      residueIdentifier = at.GetResidType() + str(at.GetChainId())  + str(at.GetResidId())
-      #residueIdentifier is like "LEU296"
+      residueIdentifier = at.residType + str(at.chainId)  + str(at.residId)
+      #residueIdentifier is like "LEUA296"
       residuMap.setdefault(residueIdentifier, []).append(at)
       if residueIdentifier not in residulist:
             residulist.append(residueIdentifier)
@@ -143,7 +143,7 @@ for at in atoms:
 sys.stderr.write("Number of residues: %i\n" %(len(residuMap)))
 sys.stderr.write("Start atom of each residue:\n")
 orderedresid=[residuMap[i] for i in residulist ]
-startatoms=[lat[0].GetAtomId() for lat in orderedresid ]
+startatoms=[lat[0].atomId for lat in orderedresid ]
 out = ""
 for statom in startatoms:
       out+=(str(statom))+" "
@@ -156,6 +156,8 @@ totAtoms=0
 
 for residKey, atomList in zip(residulist,orderedresid):
       residType=residKey[:3]
+      if (residType)=="HIE": residType="HIS" #fix for an amber output file
+      #print "key:", residKey
       residNumber=int(residKey[4:])
       #print "reducing residue %s of type %s" % (residKey, residType)
       correspList=beadCorresp[residType]
@@ -176,9 +178,9 @@ for residKey, atomList in zip(residulist,orderedresid):
                   raise 
             totAtoms+=1
             #now we must modify the bead: change the residue type and set the "extra" field correctly
-            bead.SetResidType(residType)
+            bead.residType = residType 
             extra = ('%5i'+'%8.3f'+'%2i'*2) %(atomTypeNumber,atomCharge,0, 0)
-            bead.SetExtra(extra)
-            bead.SetAtomId(totAtoms)
-            bead.SetResidId(residNumber)
+            bead.extra = extra
+            bead.atomId = totAtoms
+            bead.residId = residNumber
             print bead.ToPdbString(),  # ',' because of the extra \n caracter from the ptools C++ library
