@@ -17,7 +17,7 @@ class IncompleteBead:
 
 class BeadCreator:
 
-      def __init__(self, reducedname, reducedtypenb, reducedcharge,lstofAtoms):
+      def __init__(self, reducedname, reducedtypenb, reducedcharge,lstofAtoms, chainId=''):
             self._reducedname=reducedname
             self._reducedtypenb=reducedtypenb
             self._reducedcharge=reducedcharge
@@ -28,7 +28,7 @@ class BeadCreator:
             atProp=Atomproperty()
             atProp.atomType = reducedname
             atProp.atomCharge = reducedcharge
-            atProp.chainId = ''
+            atProp.chainId = chainId
             self.atProp=atProp
 
       def submit(self, atom):
@@ -133,7 +133,14 @@ for i in xrange(len(allAtom)):
 #count residues:
 residuMap={}
 residulist=[]
+
+# chain id for the reduced file:
+outChainId = atoms[0].chainId
+
 for at in atoms:
+      #fix for incorrect pdb: append a chainId when it's missing
+      if at.chainId=='':
+          at.chainId = 'A'
       residueIdentifier = at.residType + str(at.chainId)  + str(at.residId)
       #residueIdentifier is like "LEUA296"
       residuMap.setdefault(residueIdentifier, []).append(at)
@@ -154,6 +161,7 @@ sys.stderr.write(out+"\n")
 
 totAtoms=0
 
+index = 0
 for residKey, atomList in zip(residulist,orderedresid):
       residType=residKey[:3]
       if (residType)=="HIE": residType="HIS" #fix for an amber output file
@@ -167,7 +175,7 @@ for residKey, atomList in zip(residulist,orderedresid):
             lstToReduce=correspUnit[1]
             atomTypeNumber=correspUnit[2]
             atomCharge=correspUnit[3]
-            beadcreator=BeadCreator(atomTypeName,atomTypeNumber, atomCharge, lstToReduce)
+            beadcreator=BeadCreator(atomTypeName,atomTypeNumber, atomCharge, lstToReduce, outChainId )
             for atom in atomList:
                   beadcreator.submit(atom)
             try:
