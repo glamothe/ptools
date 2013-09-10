@@ -36,6 +36,11 @@ class BeadCreator:
             atomtype=atom.atomType
             #trick to handle 'OTn' instead of 'O' for last pdb atom:
             if atomtype[:2]=='OT': atomtype='O'
+            
+            if atom.residType =="ILE" and atomtype == "CD":
+                atomtype = "CD1"
+                atom.atomType = "CD1"
+            
             if atomtype in self._lstofAtoms:
                   self._CoM+=atom.coords
                   self._lstofAtoms.remove(atomtype)
@@ -116,6 +121,10 @@ beadCorresp['SER'] = defaultBB + [  ['CSE',     ['CB', 'OG']           , 23, 0.]
 beadCorresp['THR'] = defaultBB + [  ['CSE',     ['CB', 'OG1', 'CG2']   , 24, 0.]  ]
 beadCorresp['VAL'] = defaultBB + [  ['CSE',     ['CB', 'CG1', 'CG2']   , 29, 0.]  ]
 
+#fix for charmm: add type HSE HSP and HSP
+beadCorresp['HSE'] = beadCorresp['HIS']
+beadCorresp['HSD'] = beadCorresp['HIS']
+beadCorresp['HSP'] = beadCorresp['HIS']
 
 
 
