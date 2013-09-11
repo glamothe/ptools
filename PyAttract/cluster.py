@@ -128,7 +128,7 @@ if (__name__=="__main__"):
     parser.usage = 'cluster.py <out_file> <lig_file> [options]'
     parser.add_option("-e", "--energy_cutoff", action="store", type="float", dest="energy_cutoff", help="Energy cutoff value (default=1000.0)")
     parser.add_option("-r", "--rmsd_cutoff", action="store", type="float", dest="rmsd_cutoff", help="Rmsd cutoff value (default=1.0)")
-    parser.add_option("--nclusters", action="store", type="int", dest="nclusters", help="number of structures to cluster, an increase of this value will increase significantly the time processing (default = 2000)")
+    parser.add_option("--nclusters", action="store", type="int", dest="nclusters", help="number of cluster to output (default=200)", default=200)
     parser.add_option("-m", "--memory", action="store", type="int", dest="cluster_memory",default=50, help="only the latest m clusters are compared during the clustering process, an increase of this value will increase significantly the time processing  (default=50)")
     (options, args) = parser.parse_args()
     
