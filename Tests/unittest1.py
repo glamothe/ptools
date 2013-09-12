@@ -3,6 +3,14 @@ from ptools import *
 import random
 import unittest
 
+import math
+
+try:
+    f = open("1F88.pdb", "r")
+except:
+    print "downloading required file 1F88.pdb:"
+    import get1F88
+    print "done"
 
 class TestCoord3D(unittest.TestCase):
         def setUp(self):
@@ -25,46 +33,189 @@ class TestCoord3D(unittest.TestCase):
                 self.assertEqual(coo3.x, 4.0)
                 self.assertEqual(coo3.y, 6.0)
                 self.assertEqual(coo3.z, 12.5)
+        def testUnaryMinusOperator(self):
+            coo3 = - self.coo1
+            self.assertEqual(coo3.x, -3.0)
+            self.assertEqual(coo3.y, -4.0)
+            self.assertEqual(coo3.z, -5.0)
+
+class TestAtom(unittest.TestCase):
+    def setUp(self):
+        co = Coord3D(1,2,3)
+        atom = Atom(Atomproperty(), co)
+        atom.atomType = 'CA'
+        #atom.atomElement = 'C'
+        atom.residType = 'LEU'
+        atom.residId = 6
+        atom.atomId = 123
+        atom.atomCharge = -1.23456
+        self.atom = atom
+        
+        
+    def testProperties(self):
+        atom = self.atom
+        self.assertEqual(atom.atomType, 'CA')
+        #self.assertEqual(atom.atomElement, 'C')
+        self.assertEqual(atom.residType, "LEU")
+        self.assertEqual(atom.residId, 6)
+        self.assertEqual(atom.atomId, 123)
+        self.assertEqual(atom.atomCharge, -1.23456)
+        
+
+class TestAtomSelection(unittest.TestCase):
+    def setUp(self):
+        self.rig = Rigidbody("1F88.pdb")
+        
+    def testSelectAll(self):
+        allAtoms = self.rig.SelectAllAtoms()
+        self.assertEqual(len(allAtoms), 5067)
+    
+    def testSelectCA(self):
+        CAatoms = self.rig.CA()
+        self.assertEqual(len(CAatoms),643)
+        
+    def testSelectAtomType(self):
+        CAatoms = self.rig.SelectAtomType("CA")
+        self.assertEqual(len(CAatoms), 643)
+        
+    def testSelectBackbone(self):
+        bbAtoms = self.rig.Backbone()
+        self.assertEqual(len(bbAtoms), 2572)
+        
+    def testSelectResRange(self):
+        res_1_35 = self.rig.SelectResRange(1,35)
+        self.assertEqual(len(res_1_35), 566)  # two chains
+    
+    def testAnd(self):
+        res_1_35 = self.rig.SelectResRange(1,35) 
+        CAatoms = self.rig.SelectAtomType("CA")
+        
+        ca_1_35 = res_1_35 & CAatoms
+        self.assertEqual(len(ca_1_35), 70)  #2*35: two chains, A and B
+        
+    def testSelectResidType(self):
+        met1 = self.rig.SelectResidType("MET") & self.rig.SelectResRange(1,5) 
+        self.assertEqual(len(met1), 16)
+        met1A = self.rig.SelectResidType("MET") & self.rig.SelectResRange(1,5) & self.rig.SelectChainId("A")
+        self.assertEqual(len(met1A), 8)
+        
+    def testSelectChainId(self):
+        chainA = self.rig.SelectChainId("A")
+        self.assertEqual(len(chainA), 2638)
+        
+    def testCreateRigid(self):
+        met1A = self.rig.SelectResidType("MET") & self.rig.SelectResRange(1,5) & self.rig.SelectChainId("A")
+        rigid = met1A.CreateRigid()
+        self.assertEqual(len(rigid), 8)
+        
 
 class TestRigidbody(unittest.TestCase):
     def setUp(self):
         self.r = Rigidbody("1FIN_r.pdb")
+        self.r2 = Rigidbody()
+        at = Atom()
+        at.coords = Coord3D(1,0,0)
+        self.r2.AddAtom(at)
+        at.coords = Coord3D(0,1,0)
+        self.r2.AddAtom(at)
+        at.coords = Coord3D(0,0,1)
+        self.r2.AddAtom(at)
+        
+        
     def testCopy(self):
         s = Rigidbody(self.r)
-        self.assertEqual(s.Size(), self.r.Size())
+        self.assertEqual(len(s), len(self.r))
         self.assertEqual(self.r.FindCenter(), s.FindCenter())
     def testSize(self):
-        self.assertEqual(self.r.Size(), 2365)
+        self.assertEqual(len(self.r), 2365)
+    def testCopyAtom(self):
+        atom = self.r.CopyAtom(3)
+        coords = atom.coords
+        self.assertAlmostEqual(coords.x, -16.159)
+        self.assertAlmostEqual(coords.y, 189.782 )
+        self.assertAlmostEqual(coords.z, 106.402)
+        self.assertEqual(atom.atomId, 4)
+        self.assertEqual(atom.chainId, '')
+        
+    def testGetCoords(self):
+        coords = self.r.getCoords(3)
+        self.assertAlmostEqual(coords.x, -16.159)
+        self.assertAlmostEqual(coords.y, 189.782 )
+        self.assertAlmostEqual(coords.z, 106.402)
+        
+    def testTranslate(self):
+        tr = Coord3D(3.2, 2.98, 14.22)
+        s = Rigidbody(self.r)
+        s.Translate(tr)
+        coords = s.getCoords(3)
+        self.assertAlmostEqual(coords.x, -16.159 + 3.2)
+        self.assertAlmostEqual(coords.y, 189.782 + 2.98 )
+        self.assertAlmostEqual(coords.z, 106.402 + 14.22)
+     
+    def testFindCenter(self):
+        cen = self.r.FindCenter()
+        self.assertTrue(abs(cen.x +20.171249) < 1e-6) 
+        self.assertTrue(abs(cen.y - 215.498060) < 1e-6)
+        self.assertTrue(abs(cen.z - 119.427781) < 1e-6)
+        
+        
     def testSetAtom(self):
         atom = self.r.CopyAtom(3)
-        atom.SetCoords(Coord3D(3,4,5))
+        atom.coords = Coord3D(3,4,5)
         self.r.SetAtom(3,atom)
         #test to see if the mofification worked:
         atom2 = self.r.CopyAtom(3)
-        self.assertTrue( Norm2(atom2.GetCoords() - Coord3D(3,4,5) ) < 1e6 )
+        self.assertTrue( norm2(atom2.coords - Coord3D(3,4,5) ) < 1e6 )
+        coords2 = atom2.coords
+        self.assertAlmostEqual(coords2.x, 3)
+        self.assertAlmostEqual(coords2.y, 4)
+        self.assertAlmostEqual(coords2.z, 5)
 
 
     def testUnsafeGetCoords(self):
         """in principle GetCoords(i,co) and unsafeGetCoords(i,co) should
         lead to the exact same coordinates if a sync has been done before
         calling the 'unsafe' version"""
-        self.r2 = Rigidbody("1FIN_r.pdb")
+        r2 = Rigidbody("1FIN_r.pdb")
         A = Coord3D(4.23, 5.72, 99.02)
         B = Coord3D(1.23, 6.33, 1.234)
         self.r.ABrotate(A,B, 2.2345)
-        self.r2.ABrotate(A,B, 2.2345)
+        r2.ABrotate(A,B, 2.2345)
         self.r.Translate(Coord3D(34.23, 123.45,11.972))
-        self.r2.Translate(Coord3D(34.23, 123.45,11.972))
+        r2.Translate(Coord3D(34.23, 123.45,11.972))
 
-        self.r2.syncCoords()
+        r2.syncCoords()
         #same rotation and translation for r and r2: should have exact same coordinates
-        for i in range(self.r.Size()):
+        for i in range(len(self.r)):
             co1 = Coord3D()
             co2 = Coord3D()
-            co1 = self.r.GetCoords(i)
-            self.r2.unsafeGetCoords(i,co2)
+            co1 = self.r.getCoords(i)
+            r2.unsafeGetCoords(i,co2)
             self.assertEqual(co1,co2)
 
+            
+    def testAddAtoms(self):
+         r = Rigidbody()
+         self.assertEqual(len(r), 0)
+         at = Atom()
+         at.coords = Coord3D(2,3,4)
+         r.AddAtom(at)
+         self.assertAlmostEqual(len(r),1)
+         
+    def testGetAtomProperty(self):
+        atprop = self.r.GetAtomProperty(8)
+        self.assertEqual(atprop.residType, 'GLU')
+        self.assertEqual(atprop.residId, 2)
+        self.assertEqual(atprop.atomId, 9)
+
+class TestAttractRigidbody(unittest.TestCase):
+    def setUp(self):
+        rigid = Rigidbody("1FIN_r.pdb")
+        self.attrigid = AttractRigidbody(rigid)
+        
+    def testlen(self):
+        self.assertEqual(len(self.attrigid), 2365)
+            
 
 class TestBasicMoves(unittest.TestCase):
     def setUp(self):
@@ -89,7 +240,7 @@ class TestBasicMoves(unittest.TestCase):
         self.rigid1.Translate(Coord3D(3.0, -55.67, 1))
         CoM2 = self.rigid1.FindCenter()
         diff=CoM2-CoM1
-        self.assertTrue( Norm2(diff + Coord3D(-3.0, 55.67, -1.0)) < 1e-6)
+        self.assertTrue( norm2(diff + Coord3D(-3.0, 55.67, -1.0)) < 1e-6)
         self.rigid1.Translate(Coord3D(-3.0, 55.67, -1.0))   # translate back
         self.assertTrue(Rmsd(self.rigid1, self.rigid2) < 1e-6)
 
@@ -100,6 +251,117 @@ class TestBasicMoves(unittest.TestCase):
         self.rigid2.Translate(vec1-vec2)
         self.rigid2.Translate(Coord3D() - 2*vec1)  #should be a global null translation + round error
         self.assertTrue(Rmsd(self.rigid2, self.rigid3) < 1e-6)
+
+class TestRotations(unittest.TestCase):
+    def setUp(self):
+       
+        at1 = Atom(Atomproperty(),Coord3D(1,0,0))
+        at2 = Atom(Atomproperty(),Coord3D(0,1,0))
+        at3 = Atom(Atomproperty(),Coord3D(0,0,1))
+        at4 = Atom(Atomproperty(),Coord3D(1,1,1))
+        
+        rig = Rigidbody()
+        rig.AddAtom(at1)
+        rig.AddAtom(at2)
+        rig.AddAtom(at3)
+        rig.AddAtom(at4)
+        
+        self.rig = rig
+        
+    def testRotZ(self):
+        
+        
+        self.rig.ABrotate(Coord3D(0,0,0), Coord3D(0,0,1), math.pi/2)
+        # i should now be j
+        co1 = self.rig.CopyAtom(0).coords
+        self.assertAlmostEqual(co1.x, 0)
+        self.assertAlmostEqual(co1.z, 0)
+        self.assertAlmostEqual(co1.y, 1)
+        
+        # j becomes -i
+        co2 = self.rig.CopyAtom(1).coords
+        self.assertAlmostEqual(co2.x, -1)
+        self.assertAlmostEqual(co2.y, 0)
+        self.assertAlmostEqual(co2.z, 0)
+
+        #k is still k:
+        co3 = self.rig.CopyAtom(2).coords
+        self.assertAlmostEqual(co3.x, 0)
+        self.assertAlmostEqual(co3.y, 0)
+        self.assertAlmostEqual(co3.z, 1)
+        
+    def testRotX(self):
+        self.rig.ABrotate(Coord3D(0,0,0), Coord3D(1,0,0), math.pi/2)
+        
+        #i is still i
+        co1 = self.rig.CopyAtom(0).coords
+        self.assertAlmostEqual(co1.x, 1)
+        self.assertAlmostEqual(co1.z, 0)
+        self.assertAlmostEqual(co1.y, 0)
+        
+        # j becomes k
+        co2 = self.rig.CopyAtom(1).coords
+        self.assertAlmostEqual(co2.x, 0)
+        self.assertAlmostEqual(co2.y, 0)
+        self.assertAlmostEqual(co2.z, 1)
+
+        #k becomes -j
+        co3 = self.rig.CopyAtom(2).coords
+        self.assertAlmostEqual(co3.x, 0)
+        self.assertAlmostEqual(co3.y, -1)
+        self.assertAlmostEqual(co3.z, 0)
+        
+
+    def testRotY(self):
+        self.rig.ABrotate(Coord3D(0,0,0), Coord3D(0,1,0), math.pi/2)
+        
+        #i becomes -j
+        co1 = self.rig.CopyAtom(0).coords
+        self.assertAlmostEqual(co1.x, 0)
+        self.assertAlmostEqual(co1.z, -1)
+        self.assertAlmostEqual(co1.y, 0)
+        
+        # j is still j
+        co2 = self.rig.CopyAtom(1).coords
+        self.assertAlmostEqual(co2.x, 0)
+        self.assertAlmostEqual(co2.y, 1)
+        self.assertAlmostEqual(co2.z, 0)
+
+        #k becomes i
+        co3 = self.rig.CopyAtom(2).coords
+        self.assertAlmostEqual(co3.x, 1)
+        self.assertAlmostEqual(co3.y, 0)
+        self.assertAlmostEqual(co3.z, 0)
+        
+        
+    def testRotZ_trans(self):
+        
+        self.rig.ABrotate(Coord3D(1,1,1), Coord3D(1,1,3), math.pi/2)
+        
+        
+        co1 = self.rig.CopyAtom(0).coords
+        self.assertAlmostEqual(co1.x, 2)
+        self.assertAlmostEqual(co1.z, 0)
+        self.assertAlmostEqual(co1.y, 1)
+        
+        
+        co2 = self.rig.CopyAtom(1).coords
+        self.assertAlmostEqual(co2.x, 1)
+        self.assertAlmostEqual(co2.y, 0)
+        self.assertAlmostEqual(co2.z, 0)
+
+        co3 = self.rig.CopyAtom(2).coords
+        self.assertAlmostEqual(co3.x, 2)
+        self.assertAlmostEqual(co3.y, 0)
+        self.assertAlmostEqual(co3.z, 1)
+
+        co4 = self.rig.CopyAtom(3).coords
+        self.assertAlmostEqual(co4.x, 1)
+        self.assertAlmostEqual(co4.y, 1)
+        self.assertAlmostEqual(co4.z, 1)
+        
+        
+        
 
 class TestCoordsArray(unittest.TestCase):
     def setUp(self):
@@ -113,12 +375,12 @@ class TestCoordsArray(unittest.TestCase):
         self.tr = Coord3D(3.0, 4.5, -3.0)
         
     def testSize(self):
-        self.assertTrue(self.c.Size() == 2)
+        self.assertTrue(len(self.c) == 2)
         
     def testGetAtom(self):
         c1 = Coord3D()
         self.c.GetCoords(0, c1)
-        self.assertTrue(  Norm2(c1 - Coord3D(3.0, 4.0, 5.0))<1e-6 )
+        self.assertTrue(  norm2(c1 - Coord3D(3.0, 4.0, 5.0))<1e-6 )
 
     def testBasicTranslation(self):
         self.c.Translate(self.tr)
@@ -140,7 +402,7 @@ class TestCoordsArray(unittest.TestCase):
         self.c.SetCoords(0,co)
         co2=Coord3D()
         self.c.GetCoords(0,co2) #get the coordinates back
-        self.assertTrue(Norm2(co-co2)<1.0e-6)
+        self.assertTrue(norm2(co-co2)<1.0e-6)
 
 
 
@@ -172,21 +434,27 @@ class TestSuperposition(unittest.TestCase):
 class TestForceFields(unittest.TestCase):
     """ test if calculated energies are stable through library versions """
     def testFF2k(self):
-        a = Rigidbody("pk6a.red")
-        c = Rigidbody("pk6c.red")
-        a = AttractRigidbody(a)
-        c = AttractRigidbody(c)
+        a = AttractRigidbody("pk6a.red")
+        c = AttractRigidbody("pk6c.red")
+
         a.setRotation(False)
         a.setTranslation(False)
         FF = AttractForceField2("mbest1k.par", 20.0)
         FF.AddLigand(a)
         FF.AddLigand(c)
-        x = Vdouble()
+        x = []
         for i in range(6):
-            x.append(0)
-        self.assertTrue( (FF.Function(x)+32.9487770656) < 1e-6) #energy from ptools 0.3
-	self.assertEqual(FF.Function(x), FF.getVdw() + FF.getCoulomb())
+            x.append(0.0)
+        self.assertAlmostEqual(FF.Function(x),-32.9487770656) #energy from ptools 0.3
+        self.assertAlmostEqual(FF.Function(x), FF.getVdw() + FF.getCoulomb())
 
+class TestPairlist(unittest.TestCase):
+    def testAtomPair(self):
+        atp = AtomPair()
+        atp.atlig = 23
+        atp.atrec = 45
+        self.assertEqual(atp.atlig, 23)
+        self.assertEqual(atp.atrec, 45)
          
 
 

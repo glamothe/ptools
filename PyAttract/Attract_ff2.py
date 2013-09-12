@@ -4,7 +4,7 @@
 from ptools import *
 import sys
 import os
-#import time
+import time
 import datetime
 import math
 import string
@@ -232,7 +232,7 @@ checkFile(options.ligand_name, "")
 # attract.inp
 checkFile("attract.inp", "parameters file is required.")
 # aminon.par
-checkFile("aminon.par", "forcefield file is required.")
+checkFile("mbest1u.par", "forcefield file is required.")
 
 #==========================
 # read parameter file
@@ -328,7 +328,7 @@ for trans in translations:
 
 
             #performs single minimization on receptor and ligand, given maxiter=niter and restraint constant rstk
-            forcefield=AttractForceField1("aminon.par",surreal(cutoff))
+            forcefield=AttractForceField2("mbest1u.par",surreal(cutoff))
             rec.setTranslation(False)
             rec.setRotation(False)
             
@@ -370,26 +370,26 @@ for trans in translations:
 
         #calculates true energy, and rmsd if possible
         #with the new ligand position
-        forcefield=AttractForceField1("aminon.par", surreal(500))
+        forcefield=AttractForceField2("mbest1u.par", surreal(500))
+        forcefield.AddLigand(rec)
+        forcefield.AddLigand(ligand)
+        X = [0]*6
+        energy=forcefield.Function(X)
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
-        pl = AttractPairList(rec, ligand,surreal(500))
-        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
+        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, energy, str(rms))
         output.PrintMatrix()
+
 
 
 #output compressed ligand and receptor:
 if ( not options.single and printFiles==True): 
     print compress_file(options.receptor_name)
     print compress_file(options.ligand_name)
-    print compress_file("aminon.par")
+    print compress_file("mbest1u.par")
     print compress_file("translation.dat")
     print compress_file("rotation.dat")
     print compress_file("attract.inp")
 
-# close trajectory file for single minimization 
-if (options.single):
-    ftraj.close()
-    print "Saved all minimization variables (translations/rotations) in %s" %(trjname)
 
 # print end and elapsed time
 time_end = datetime.datetime.now()

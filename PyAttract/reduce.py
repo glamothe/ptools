@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import sys
 import copy
@@ -297,31 +298,31 @@ for line in lines:
 # load atomic pdb file into Rigidbody object
 #==========================================================
 allAtom=Rigidbody(atomicName)
-sys.stderr.write("Load atomic file %s with %d atoms \n" %(atomicName, allAtom.Size()))
+sys.stderr.write("Load atomic file %s with %d atoms \n" %(atomicName, len(allAtom)))
 
 #extract all 'atoms' objects
 atomList=[]
-for i in xrange(allAtom.Size()):
+for i in xrange(len(allAtom)):
         atom = allAtom.CopyAtom(i)
         # look for residue or base type conversion
-        resName = atom.GetResidType()
+        resName = atom.residType
         if resName in resConv.keys():
-                atom.SetResidType( resConv[resName] )
+                atom.residType =  resConv[resName] 
         # look for atom type conversion
-        atomTag = atom.GetResidType() + '-' + atom.GetType()
+        atomTag = atom.residType + '-' + atom.atomType
         if atomTag in atomConv.keys():
                 atomName = atomConv[atomTag].split('-')[1] 
-                atom.SetType( atomName )
+                atom.atomType =  atomName 
         atomList.append(atom)
 
 #count residues
 residueTagList=[]
 coarseResList=[]
 for atom in atomList:
-        resName = atom.GetResidType()
+        resName = atom.residType
         # create a unique identifier for every residue
         # resTag is for instance "LEU-296-A"
-        resTag = resName + '-'+ str(atom.GetResidId()) + '-' + atom.GetChainId() 
+        resTag = resName + '-'+ str(atom.residId) + '-' + atom.chainId
         if resTag not in residueTagList:
                 if resBeadAtomModel.has_key(resName):
                         residueTagList.append(resTag)
@@ -339,10 +340,10 @@ sys.stderr.write("Number of residues: %i\n" %(len(residueTagList)))
 sys.stderr.write("Reading all atoms and filling beads:\n")
 for atom in atomList:
         #resTag is like "LEU-296-A"
-        resTag = atom.GetResidType() + '-' + str(atom.GetResidId()) + '-' + atom.GetChainId()
+        resTag = atom.residType + '-' + str(atom.residId) + '-' + atom.chainId
         if resTag in residueTagList:
                 id = residueTagList.index(resTag)
-                coarseResList[id].FillAtom(atom.GetType(), atom.GetCoords().x, atom.GetCoords().y, atom.GetCoords().z)
+                coarseResList[id].FillAtom(atom.atomType, atom.coords.x, atom.coords.y, atom.coords.z)
 #==========================================================
 # reduce beads
 #==========================================================
@@ -365,14 +366,14 @@ for i in range(len(residueTagList)):
                         sys.stderr.write("       : set default charge to 0.0\n")
                         atomCharge = 0.0
                 prop = Atomproperty()
-                prop.SetType(atomName)
+                prop.atomType = atomName
                 atomCnt += 1
-                prop.SetAtomId(atomCnt)
-                prop.SetResidId(resId)
-                prop.SetResidType(resName)
-                prop.SetChainId(' ')
+                prop.atomId = atomCnt
+                prop.residId = resId
+                prop.residType = resName
+                prop.chainId = ' '
                 extra = ('%5i%8.3f%2i%2i') %(atomTypeId,atomCharge,0,0)
-                prop.SetExtra(extra)
+                prop.extra = extra
                 newAtom = Atom(prop, coord)
                 coarsegrainPdb += newAtom.ToPdbString()
 

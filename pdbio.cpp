@@ -2,6 +2,7 @@
 #include <cctype>
 #include <iostream>
 #include <fstream>
+#include <istream>
 
 #include "atom.h"
 #include "stdio.h"
@@ -91,26 +92,24 @@ std::string readresidtype(const std::string &ligne) {
 }
 
 
-void ReadPDB(ifstream& fichier, Rigidbody& protein) {
+void ReadPDB(istream& file, Rigidbody& protein) {
 
-    std::string ligne ;
-    int compteur = 0 , compteur1=0;
-    //std::cout << "file opening  " << nomfich.c_str() << std::endl ;
+    std::string line ;
+    int line_count = 0 , atom_count=0;
 
-
-    while ( std::getline(fichier, ligne))
+    while ( std::getline(file, line))
     {
-        compteur++ ;
-        if (isAtom(ligne))
+        line_count++ ;
+        if (isAtom(line))
         {
-            // cout <<ligne <<endl;
-            compteur1++ ;
+
+            atom_count++ ;
 
             std::string sx,sy,sz;
 
-            sx=ligne.substr(30,8);
-            sy=ligne.substr(38,8);
-            sz=ligne.substr(46,8);
+            sx=line.substr(30,8);
+            sy=line.substr(38,8);
+            sz=line.substr(46,8);
 
             Coord3D pos;
             pos.x=atof(sx.c_str());
@@ -118,21 +117,20 @@ void ReadPDB(ifstream& fichier, Rigidbody& protein) {
             pos.z=atof(sz.c_str());
 
             Atomproperty a;
-            a.SetType( readatomtype(ligne));
-            a.SetResidType(readresidtype(ligne));
-            a.SetChainId(ligne.substr(21,1));
-            a.SetResidId(atoi(ligne.substr(22,4).c_str()));
-            a.SetAtomId(atoi(ligne.substr(6,5).c_str()));
-            std::string extra = ligne.substr(54,ligne.size()-1-54+1); //extracts everything after the position 27 to the end of line
-            a.SetExtra(extra);
+            a.atomType = readatomtype(line);
+            a.residType = readresidtype(line);
+            std::string chainID = line.substr(21,1);
+            if (chainID == " ") chainID = "";
+            a.chainId = chainID;
+            a.residId = atoi(line.substr(22,4).c_str());
+            a.atomId = atoi(line.substr(6,5).c_str());
+            std::string extra = line.substr(54,line.size()-1-54+1); //extracts everything after the position 27 to the end of line
+            a.extra = extra ;
 
             protein.AddAtom(a,pos);
 
         }
-
-
     }
-
 }
 
 
@@ -140,16 +138,15 @@ void ReadPDB(ifstream& fichier, Rigidbody& protein) {
 void ReadPDB(const std::string name,Rigidbody& protein ) {
     std::string nomfich=name ;
 	// pointer toward the filename given in the constructor argument
-    ifstream fichier(nomfich.c_str()); 
-    if (!fichier)
+    ifstream file(nomfich.c_str()); 
+    if (!file)
     {
         std::ostringstream oss;
         throw std::invalid_argument("##### ReadPDB:Could not open file \"" + nomfich + "\" #####") ;
-//        exit(-1);
     }
 
-    ReadPDB(fichier, protein);
-    fichier.close();
+    ReadPDB(file, protein);
+    file.close();
     return;
 
 }
@@ -165,21 +162,21 @@ void WritePDB(const Rigidbody& rigid, std::string filename)
         const char * chainID="A" ;
 
         Atom at = rigid.CopyAtom(i);
-        const char* atomname=at.GetType().c_str();
-        const char* residName=at.GetResidType().c_str();
-        int residnumber = at.GetResidId();
-        chainID=at.GetChainId().c_str();
+        const char* atomname=at.atomType.c_str();
+        const char* residName=at.residType.c_str();
+        int residnumber = at.residId;
+        chainID = at.chainId.c_str();
 
-        int atomnumber = at.GetAtomId();
+        int atomnumber = at.atomId;
 
-        Coord3D coord = at.GetCoords();
+        Coord3D coord = at.coords;
         dbl x = coord.x;
         dbl y = coord.y;
         dbl z = coord.z ;
 
 
 
-        fprintf(file,"ATOM  %5d %-4s %3s %1s%4d    %8.3f%8.3f%8.3f%s",atomnumber,atomname,residName,chainID,residnumber,real(x),real(y),real(z),at.GetExtra().c_str());    
+        fprintf(file,"ATOM  %5d %-4s %3s %1s%4d    %8.3f%8.3f%8.3f%s",atomnumber,atomname,residName,chainID,residnumber,real(x),real(y),real(z),at.extra.c_str());    
         fprintf(file,"\n");
     }
 

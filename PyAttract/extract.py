@@ -51,13 +51,13 @@ class Extractor:
 def rigidXMat44(rigid, mat):
     assert(isinstance(rigid,Rigidbody))
     out=Rigidbody(rigid)
-    for i in range(rigid.Size()):
-        coords=rigid.GetCoords(i)
+    for i in range(len(rigid)):
+        coords=rigid.getCoords(i)
         coords2=Coord3D()
         coords2.x = mat[0][0]*coords.x + mat[0][1]*coords.y + mat[0][2]*coords.z + mat[0][3]
         coords2.y = mat[1][0]*coords.x + mat[1][1]*coords.y + mat[1][2]*coords.z + mat[1][3]
         coords2.z = mat[2][0]*coords.x + mat[2][1]*coords.y + mat[2][2]*coords.z + mat[2][3]
-        out.SetCoords(i, coords2)
+        out.setCoords(i, coords2)
     return out
 
 
@@ -212,7 +212,7 @@ def main():
     #print e.getFile("attract.inp")
 
     pdb=[]
-    for i in range(lig3.Size()):
+    for i in range(len(lig3)):
         atom=lig3.CopyAtom(i)
         pdb.append(atom.ToPdbString())
     print "".join(pdb)

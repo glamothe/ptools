@@ -11,10 +11,10 @@
 ##
 ## if you want to modify the cutoff value when comparing Rmsd or energy, 
 ## specify the -r or -e option (default value for both = 1.0)
-## if you want to increase the number of best solution (according to the energy) that are clustered
-## specify the -s (or --nstruct) option. (default=2000)
+## if you want to set the max number of distinct clusters
+## use the --nclusters option. (default=200)
 ## if you want to increase the number of cluster that are compared to the current structure 
-## during the clustering process, specify the -c (or --cluster_memory) option (default=50)
+## during the clustering process, specify the -m (or --memory) option (default=50)
 ##
 ## for example, to increase the scut and increase the Rmsd cutoff value,
 ## the following command should be used:
@@ -81,7 +81,7 @@ class StructureI:
 
 
 
-def cluster(lig,structures, nstruct, cluster_memory):
+def cluster(lig,structures, nclusters, cluster_memory):
     cluster_memory_= cluster_memory+1
     thecluster = []
 
@@ -90,6 +90,7 @@ def cluster(lig,structures, nstruct, cluster_memory):
     for s in structures[:nstruct]:
         if s.ener>0:
             break
+               
         new=True
         sc = extract.rigidXMat44(lig,s.matrix)
 
@@ -101,6 +102,11 @@ def cluster(lig,structures, nstruct, cluster_memory):
                 #print "stuct added to a cluster"
                 break
         if new==True:
+            if len(thecluster) == nclusters + cluster_memory:
+                #don't create more than nclusters + cluster_memory clusters
+                #so the first nclusters  clusters will be fully filled
+                break
+
             c = Struct()
             c.structure = sc
             c.ext = s
@@ -113,7 +119,7 @@ def cluster(lig,structures, nstruct, cluster_memory):
     for i in thecluster:
         if hasattr(i,"structure"): del i.structure
     thecluster.sort(key=lambda i: i.ext.ener)
-    return thecluster
+    return thecluster[:nclusters]
 
 
 
@@ -122,7 +128,7 @@ if (__name__=="__main__"):
     parser.usage = 'cluster.py <out_file> <lig_file> [options]'
     parser.add_option("-e", "--energy_cutoff", action="store", type="float", dest="energy_cutoff", help="Energy cutoff value (default=1000.0)")
     parser.add_option("-r", "--rmsd_cutoff", action="store", type="float", dest="rmsd_cutoff", help="Rmsd cutoff value (default=1.0)")
-    parser.add_option("-n", "--nstruct", action="store", type="int", dest="nstruct", help="number of structures to cluster, an increase of this value will increase significantly the time processing (default = 2000)")
+    parser.add_option("--nclusters", action="store", type="int", dest="nclusters", help="number of cluster to output (default=200)", default=200)
     parser.add_option("-m", "--memory", action="store", type="int", dest="cluster_memory",default=50, help="only the latest m clusters are compared during the clustering process, an increase of this value will increase significantly the time processing  (default=50)")
     (options, args) = parser.parse_args()
     
@@ -136,8 +142,8 @@ if (__name__=="__main__"):
         limit_ener=options.energy_cutoff
     if (options.rmsd_cutoff):
         limit_rmsd=options.rmsd_cutoff
-    if (options.nstruct):
-        nstruct=options.nstruct
+    if (options.nclusters):
+        nclusters=options.nclusters
     if (options.cluster_memory):
         cluster_memory=options.cluster_memory
 
@@ -154,14 +160,13 @@ if (__name__=="__main__"):
             validkeys.append(k)
 
 
-    #_,structures = readStructures(outputfile)
     structures=[]
     for k in validkeys:
         structures.append(e.d[k])
 
 
     dependencies=[outputfile]
-    args = [lig,structures, nstruct, cluster_memory]
+    args = [lig,structures, nclusters, cluster_memory]
 
 
 

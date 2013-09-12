@@ -27,7 +27,7 @@ void extractExtra( Rigidbody& rig, std::vector<uint>& vCat, std::vector<dbl>& vC
     for (uint i=0; i<rig.Size(); i++)
     {
         const Atomproperty at = rig.GetAtomProperty(i);
-        std::string extra = at.GetExtra();
+        std::string extra = at.extra;
         //std::cout << extra << std::endl;
         std::istringstream iss( extra );
         iss >> atcategory >> atcharge ;
@@ -334,7 +334,11 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
 
     assert(m_centeredligand.size() >=1);
     assert(m_movedligand.size() >=1);
-
+    
+    if (stateVars.size() != this->ProblemSize() )
+    {
+      throw std::runtime_error("error: ProblemSize != size of state vars in BaseAttractForceField::Function");
+    }
 
     uint svptr = 0; //state variable 'pointer'
     const uint nlig = m_movedligand.size();

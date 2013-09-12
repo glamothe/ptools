@@ -5,35 +5,34 @@ import sys
 
 def contact(receptor, ligand):
     "return residues in interaction, use ptools::pairlist"
-    assert(isinstance(receptor,Rigidbody))
-    assert(isinstance(ligand,Rigidbody))
+    
     
     
     resnblig = []
-    for i in range(ligand.Size()):
+    for i in range(len(ligand)):
         at = ligand.CopyAtom(i)
-        resnblig.append(at.GetResidId())
+        resnblig.append(at.residId)
     resnbrec = []
-    for j in range(receptor.Size()):
+    for j in range(len(receptor)):
         at = receptor.CopyAtom(j)
-        resnbrec.append(at.GetResidId())
+        resnbrec.append(at.residId)
     
     
     pl = AttractPairList(receptor,ligand,7)
-    contactnat = {} # residue list in interaction
+    contactnat = set() # residue list in interaction
 
-    for i in range(pl.Size()):
+    for i in range(len(pl)):
         ap = pl[i]
-        contactnat[(resnbrec[ap.atrec], resnblig[ap.atlig])] = True
+        contactnat.add((resnbrec[ap.atrec], resnblig[ap.atlig]))
     
-    return contactnat.keys()
+    return contactnat
 
 def fnat(receptor, ligcrist, ligprobe):
     "return native fraction (fnat)"
     resid= {}  # residue number of the ith atom
     corig = contact(receptor,ligcrist)
     cnew = contact(receptor,ligprobe)
-    intersect  = [ i for i in corig if i in cnew ]
+    intersect  =  corig & cnew 
     f = float(len(intersect))/float(len(corig))
     return f
 
@@ -45,9 +44,9 @@ def main():
     recname = sys.argv[1]
     ligname = sys.argv[2]
     ligname2 = sys.argv[3]
-    lig = Rigidbody(ligname)
-    lig2 = Rigidbody(ligname2)
-    rec = Rigidbody(recname)
+    lig = AttractRigidbody(ligname)
+    lig2 = AttractRigidbody(ligname2)
+    rec = AttractRigidbody(recname)
 
     FNAT=fnat(rec,lig,lig2)
     print FNAT

@@ -75,18 +75,14 @@ The basic requirements are:
 
 The following tools are also necessary in order to use the library as a Python module:
 \begin{itemize}
-\item Python 2.4 or 2.5 and its development library (python2.4-dev or python2.5-dev)
-\item gccxml (may require cmake and cvs if you need to compile it from sources).
-\item pygccxml
-\item py++
-\item the Boost.Python library (which is not part of the main Boost C++ library on some linux distributions)
+\item Python 2.6+, including the development packages (providing Python.h)
+\item Cython (tested with 0.16+)
 \end{itemize}
 
 Software locations and install instructions will be given below.
 
 In the following, we assume the PTools library will be installed in the 
-\verb@$HOME/soft@ directory where \verb@$HOME@ represents the home directory
-(usually {\tt /home/adrien} for the user {\tt adrien}).
+\verb@$HOME/soft@ directory where \verb@$HOME@ represents your home directory.
 
 
 \subsection{Installing prerequisites}
@@ -94,21 +90,14 @@ In the following, we assume the PTools library will be installed in the
 \subsubsection{On Debian or Debian-like systems (Ubuntu)}
 
 \begin{verbatim}
-apt-get install scons libboost-dev libboost-python-dev gccxml
+apt-get install scons libboost-dev
 \end{verbatim}
 %
-See \ref{pyplusplus} for installing necessary tools for building python bindings.
-
-
-\textbf{Note}: some Debian Ubuntu systems have an old version of gccxml that doesn't work well for binding this
-library. If bindings generation or unit tests fail, you should consider installing gccxml manually (see \ref{gccxml})
-
-gccxml version $\le 0.6$ crash during bindings generation. gccxml v. $0.9$ from Debian Lenny contains a bug that prevents some Python unit tests to work (test 16 fails).
-gccxml package on Debian squeeze (future stable) looks fine (at least for version 0.9.0+cvs20100501-2).
 
 
 \subsubsection{On Fedora systems}
 
+%TODO: write fedora section
 \paragraph{SCons (make substitute):}
 The scons package provided by Fedora is not up-to-date enough to link Fortran and C++ together and then rise an
 error. The last version of scons is obtained at the homepage of the project ({\tt  http://www.scons.org/}).
@@ -130,61 +119,6 @@ You can then install some packages:
 
 
 After that, you still need to manually install gccxml, pyplusplus and pygccxml (see below).
-
-
-\subsubsection{gccxml\label{gccxml}}
-
-The homepage of {\tt gccxml} project is {\tt http://www.gccxml.org} and its official 
-CVS repository is {\tt http://www.gccxml.org/HTML/Download.html}.
-
-\begin{verbatim}
-cvs -d :pserver:anoncvs@www.gccxml.org:/cvsroot/GCC_XML login
-\end{verbatim}
-(just press enter when prompted for a password)\\
-Follow this command by checking out the source code:
-\begin{verbatim}
-cvs -d :pserver:anoncvs@www.gccxml.org:/cvsroot/GCC_XML co gccxml
-mkdir gccxml-build
-cd gccxml-build
-cmake ../gccxml -DCMAKE_INSTALL_PREFIX:PATH=/installation/path
-make
-make install
-\end{verbatim}
-The \verb@-DC_MAKE_INSTALL_PREFIX@ option can be left off if you want to use \verb@/usr/local@ as the installation prefix.
-
-
-\subsubsection{Pyplusplus and Pygccxml: \label{pyplusplus}}
-The homepage of {\tt pyplusplus} and {\tt pygccxml} projects is\\ \simplelink{http://www.language-binding.net/pygccxml/download.html}. From the
-download section  \simplelink{http://sourceforge.net/projects/pygccxml/files/},
-get the files {\tt pygccxml-1.0.zip} and {\tt pyplusplus-1.0.0.zip}.
-
-\begin{verbatim}
-unzip pygccxml-1.0.zip
-cd pygccxml-1.0/
-python setup.py build
-python setup.py install --prefix=$HOME/soft
-\end{verbatim}
-
-\begin{verbatim}
-unzip pyplusplus-1.0.0.zip
-cd Py++-1.0/
-python setup.py build
-python setup.py install --prefix=$HOME/soft
-\end{verbatim}
-
-In your {\tt \$HOME/.bashrc} file, then add:
-\begin{verbatim}
-export PATH=$PATH:$HOME/soft/bin/
-export PYTHONPATH=$PYTHONPATH:$HOME/soft/lib/python2.4/site-packages/
-\end{verbatim}
-
-In a Python shell (obtained with the {\tt python} command), test the installation
-of PyPlusPlus:
-\begin{verbatim}
->>> import pyplusplus
-\end{verbatim}
-
-
 
 
 
@@ -214,21 +148,13 @@ the {\tt SConstruct} file.
 
 \subsubsection{The library as a Python module}
 
-From the PTools main directory ({\tt \$HOME/soft/ptools-XX}), 
-first create the Python/C++ interface:
+From the PTools main directory ({\tt \$HOME/soft/ptools-XX}), type:
+
 \begin{verbatim}
-python interface.py
+python setup.py build
 \end{verbatim}
 
-Then compile the library:
-\begin{verbatim}
-scons
-\end{verbatim}
 
-Note that {\tt scons -j2} compiles with two processors in parallel.
-
-If SCons cannot locate a fortran compiler or a library, you can define a search path at the beginning of
-the {\tt SConstruct} file.
 
 
 \subsection{Final test and further documentation}

@@ -4,8 +4,11 @@
 # 2 columns format: %-10s%-10s
 # residue_name_found  residue_name_known
 
-# histidine from Amber output
+# histidine from Amber and Charmm output
 HIE      HIS
+HSE      HIS
+HSD      HIS
+HSP      HIS
 
 # DNA base names
 DA       A
@@ -66,4 +69,5 @@ T         O4*       O4'
 # C5M atom in thymine 
 T         C7        C5M
 
-ILE      CD        CD1
+# CD atoms in isoleucine
+ILE       CD        CD1
