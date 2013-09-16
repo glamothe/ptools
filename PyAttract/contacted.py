@@ -12,7 +12,7 @@ def main(args):
     receptor = AttractRigidbody(args.receptor)
     ligand = AttractRigidbody(args.ligand)
         
-    resnbrec = []
+    resnbrec = []  #resnbrec[i] is the residue id of atom i
     for j in range(len(receptor)):
         at = receptor.CopyAtom(j)
         resnbrec.append(at.residId)
