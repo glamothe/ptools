@@ -483,7 +483,7 @@ class TestPairlist(unittest.TestCase):
         ar = AttractRigidbody(r)
         al = AttractRigidbody(l)
         
-        pl = AttractPairList(ar, al, 2) #using 1.2 for the cutoff
+        pl = AttractPairList(ar, al, 2.01) #using 2.01 A for the cutoff
         self.assertEqual(len(pl), 1)
         
         count=0
