@@ -449,14 +449,8 @@ class TestForceFields(unittest.TestCase):
         self.assertAlmostEqual(FF.Function(x), FF.getVdw() + FF.getCoulomb())
 
 class TestPairlist(unittest.TestCase):
-    def testAtomPair(self):
-        atp = AtomPair()
-        atp.atlig = 23
-        atp.atrec = 45
-        self.assertEqual(atp.atlig, 23)
-        self.assertEqual(atp.atrec, 45)
-        
-    def test_pairs(self):
+    
+    def setUp(self):
         # test that the generated pairlist is correct
         #  
         #  two atoms are created for the receptor (R) and the ligand (L)
@@ -480,10 +474,23 @@ class TestPairlist(unittest.TestCase):
         at.coords = Coord3D(5,0,0)
         l.AddAtom(at)
         
-        ar = AttractRigidbody(r)
-        al = AttractRigidbody(l)
+        self.ar = AttractRigidbody(r)
+        self.al = AttractRigidbody(l)
         
-        pl = AttractPairList(ar, al, 2.01) #using 2.01 A for the cutoff
+        
+    
+    
+    def testAtomPair(self):
+        atp = AtomPair()
+        atp.atlig = 23
+        atp.atrec = 45
+        self.assertEqual(atp.atlig, 23)
+        self.assertEqual(atp.atrec, 45)
+        
+    def test_onepair(self):
+        #use a small cutoff to only get one pair
+        
+        pl = AttractPairList(self.ar, self.al, 2.01) #using 2.01 A for the cutoff
         self.assertEqual(len(pl), 1)
         
         count=0
@@ -491,7 +498,12 @@ class TestPairlist(unittest.TestCase):
             count+=1
         self.assertEqual(count, 1)
         
+    def test_three_pairs(self):
+        #use a slightly bigger cutoff to get 3 pairs:
+        # (1,4) (2,4) and (2,5)
         
+        pl = AttractPairList(self.ar, self.al, 3.01)
+        self.assertEqual(len(pl), 3)
 
 
 unittest.main()
