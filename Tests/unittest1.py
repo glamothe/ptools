@@ -455,8 +455,43 @@ class TestPairlist(unittest.TestCase):
         atp.atrec = 45
         self.assertEqual(atp.atlig, 23)
         self.assertEqual(atp.atrec, 45)
-         
-
+        
+    def test_pairs(self):
+        # test that the generated pairlist is correct
+        #  
+        #  two atoms are created for the receptor (R) and the ligand (L)
+        #  as described below:
+        #  x axis:
+        #  0----1-----2-----3-----4-----5-------------------------------> x
+        #  
+        #       R     R           L     L
+        #
+        
+        r = Rigidbody()
+        at = Atom()
+        at.coords = Coord3D(1,0,0)
+        r.AddAtom(at)
+        at.coords = Coord3D(2,0,0)
+        r.AddAtom(at)
+        
+        l = Rigidbody()
+        at.coords = Coord3D(4,0,0)
+        l.AddAtom(at)
+        at.coords = Coord3D(5,0,0)
+        l.AddAtom(at)
+        
+        ar = AttractRigidbody(r)
+        al = AttractRigidbody(l)
+        
+        pl = AttractPairList(ar, al, 2) #using 1.2 for the cutoff
+        self.assertEqual(len(pl), 1)
+        
+        count=0
+        for p in pl:
+            count+=1
+        self.assertEqual(count, 1)
+        
+        
 
 
 unittest.main()
