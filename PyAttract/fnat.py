@@ -3,10 +3,14 @@
 from ptools import *
 import sys
 
-def contact(receptor, ligand):
+def contact(receptor, ligand, cutoff=7):
     "return residues in interaction, use ptools::pairlist"
     
+    if isinstance(receptor, Rigidbody):
+        receptor = AttractRigidbody(receptor)
     
+    if isinstance(ligand, Rigidbody):
+        ligand = AttractRigidbody(receptor)
     
     resnblig = []
     for i in range(len(ligand)):
@@ -18,7 +22,7 @@ def contact(receptor, ligand):
         resnbrec.append(at.residId)
     
     
-    pl = AttractPairList(receptor,ligand,7)
+    pl = AttractPairList(receptor,ligand, cutoff)
     contactnat = set() # residue list in interaction
 
     for i in range(len(pl)):
