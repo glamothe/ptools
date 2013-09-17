@@ -496,6 +496,7 @@ class TestPairlist(unittest.TestCase):
         count=0
         for p in pl:
             count+=1
+            self.assertTrue(count <2)
         self.assertEqual(count, 1)
         
     def test_three_pairs(self):
