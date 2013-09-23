@@ -192,6 +192,7 @@ parser.add_option("-s", "--single", action="store_true", dest="single", default=
 parser.add_option("--ref", action="store", type="string", dest="reffile", help="reference ligand for rmsd" )
 parser.add_option("-t", "--translation", action="store", type="int", dest="transnb", help="translation number (distributed mode) starting from 0 for the first one!")
 parser.add_option("--start1", action="store_true", default=False, dest="start1", help="(only useful with -t), use 1 for the first translation point")
+parser.add_option("--parameter-file", action="store", type="string", dest="param_file", help="use a custom forcefield parameter file (mbest1u.par otherwise)", default="mbest1u.par")
 (options, args) = parser.parse_args()
 
 
@@ -232,7 +233,7 @@ checkFile(options.ligand_name, "")
 # attract.inp
 checkFile("attract.inp", "parameters file is required.")
 # aminon.par
-checkFile("mbest1u.par", "forcefield file is required.")
+checkFile(options.param_file, "forcefield file is required.")
 
 #==========================
 # read parameter file
@@ -328,7 +329,7 @@ for trans in translations:
 
 
             #performs single minimization on receptor and ligand, given maxiter=niter and restraint constant rstk
-            forcefield=AttractForceField2("mbest1u.par",surreal(cutoff))
+            forcefield=AttractForceField2(options.param_file,surreal(cutoff))
             rec.setTranslation(False)
             rec.setRotation(False)
             
@@ -370,7 +371,7 @@ for trans in translations:
 
         #calculates true energy, and rmsd if possible
         #with the new ligand position
-        forcefield=AttractForceField2("mbest1u.par", surreal(500))
+        forcefield=AttractForceField2(options.param_file, surreal(500))
         forcefield.AddLigand(rec)
         forcefield.AddLigand(ligand)
         X = [0]*6
@@ -385,7 +386,7 @@ for trans in translations:
 if ( not options.single and printFiles==True): 
     print compress_file(options.receptor_name)
     print compress_file(options.ligand_name)
-    print compress_file("mbest1u.par")
+    print compress_file(options.param_file)
     print compress_file("translation.dat")
     print compress_file("rotation.dat")
     print compress_file("attract.inp")
