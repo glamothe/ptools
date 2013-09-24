@@ -30,6 +30,8 @@ def main(args):
         
     
     if args.model:
+        #if we have a reference structure for the ligand, display the fraction of contacted receptor residues
+        #that are still found in the new pose
         model = AttractRigidbody(args.model)
         natcont = contacted(receptor, model)
         
@@ -40,7 +42,7 @@ def main(args):
         
         
     else:
-    
+        #we don't have a reference for the ligand. We can only display the list of contacted residues on the receptor with this pose
         for r in contacted(receptor, ligand):
             print r,
             
@@ -54,7 +56,7 @@ if __name__=="__main__":
     parser.add_argument("-r", "--receptor", dest="receptor")
     parser.add_argument("-l", "--ligand", dest="ligand")
     parser.add_argument("--cutoff", dest="cutoff", type=int, default=7, help="cutoff used to determine if two residues interact. Default to 7A (for coarse grained templates). You should set the cutoff to 5 when working on all atoms molecules")
-    parser.add_argument('-m', '--model', dest="model", default=None, help="ligand model (ie correct bound solution) to calculate the percentage of contacted residues on the receptor")
+    parser.add_argument(, '--reflig', dest="model", default=None, help="ligand model (ie correct bound solution) to calculate the percentage of contacted residues on the receptor")
     
     
     args = parser.parse_args()
