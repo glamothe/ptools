@@ -351,6 +351,15 @@ sel_chainB = pdb.SelectChainId("B")
 sel_res = pdb.SelectResRange(10, 20)
 \end{verbatim}
 
+\paragraph{Select atom types}
+\begin{verbatim}
+sel_res = pdb.SelectAtomType("N")  # select atom type 'N'
+sel_hydrogen = pdb.SelectAtomType("H*")  # select any hydrogen ('H', 'HA', 'HG11')
+\end{verbatim}
+
+Note: the wild card currently only works if the search pattern is one letter followed by the '*' character. 
+Ie you can select any carbon or hydrogen, but you cannot match for example CG1 \emph{and} CG2 atoms with one instruction.
+
 
 \paragraph{Get the number of atomes (the size) of a selection.}
 \begin{verbatim}

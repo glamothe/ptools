@@ -175,7 +175,25 @@ AtomSelection Rigidbody::SelectAtomType(std::string atomtype)
 {
     AtomSelection newsel;
     newsel.SetRigid(*this);
-
+    
+    if (atomtype.size() == 0) return newsel;
+    
+    //check for '*' at the end of atomtype:
+    
+    if (atomtype.size() == 2 && atomtype[1] == '*')
+    { 
+        char c = atomtype[0]; // we will match for this character only
+        
+           for (uint i = 0; i<mAtomProp.size(); ++i)
+           {
+               if (mAtomProp[i].atomType[0] == c) newsel.AddAtomIndex(i);
+               
+           }
+      
+    }
+           
+  
+    else
     for (uint i=0; i<Size(); i++)
     {
         if ( mAtomProp[i].atomType == atomtype)

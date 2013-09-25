@@ -74,9 +74,13 @@ class TestAtomSelection(unittest.TestCase):
         CAatoms = self.rig.CA()
         self.assertEqual(len(CAatoms),643)
         
-    def testSelectAtomType(self):
+    def testSelectAtomType_simple(self):
         CAatoms = self.rig.SelectAtomType("CA")
         self.assertEqual(len(CAatoms), 643)
+        
+    def testSelectAtomType_wildcard(self):
+        CAatoms = self.rig.SelectAtomType("C*")
+        self.assertEqual(len(CAatoms), 3379)    
         
     def testSelectBackbone(self):
         bbAtoms = self.rig.Backbone()
