@@ -84,7 +84,7 @@ cdef class AttractPairList:
     def __len__(self):
         return self.thisptr.Size()
      
-    def __getitem__(self, int i):
+    def __getitem__(self, unsigned int i):
         if i>=self.thisptr.Size():
             raise IndexError
         cdef CppAtomPair * catp = new CppAtomPair(deref(self.thisptr)[i])
