@@ -173,7 +173,11 @@ int lbfgsb_run(lbfgsb_t* opt, double* x, double* f, double* g) {
         opt->niter++;
         if (opt->niter >= opt->max_iter) {
             if (*f > opt->fun_min) {
-                //fprintf(stdout, "(lbfgsb_run) max iter reached but fun val is not minimum, wait for another iteration\n");
+                /* fprintf(stdout, "(lbfgsb_run) max iter reached but fun val is not minimum, wait for another iteration\n"); */
+                if (opt->niter >= opt->max_iter + 10) {
+                /* really too many iterations made. Stopping */
+                strncpy(opt->task, "STOP,ERR: could not converge", 28); 
+                }
             } else {
                 strncpy(opt->task, "STOP, max iterations reached", 28);
             }
