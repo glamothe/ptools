@@ -10,7 +10,9 @@ import os
 import math
 import string
 
-
+#automatic derivation is currently disabled
+def surreal(i):
+    return i
 
 class Rotation:
     
@@ -91,7 +93,7 @@ print "Translation file:", transfile
 print "Rotation file:", rotfile
 
 lig=Rigidbody(ligand_name)
-print "Ligand (mobile partner) %s has %d particules" %(ligand_name,lig.Size())
+print "Ligand (mobile partner) %s has %d particules" %(ligand_name,len(lig))
 
 
 print "Target translation number: %i" %( target_trans_nb )
@@ -100,7 +102,7 @@ print "Target rotation number: %i" %( target_rot_nb )
 # read all translations
 trans=Rigidbody( transfile )
 # extract target translation variables
-target_trans_val=trans.GetCoords(target_trans_nb)
+target_trans_val=trans.getCoords(target_trans_nb)
 
 # read all rotations
 rotations = Rotation()
