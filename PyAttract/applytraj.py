@@ -8,6 +8,16 @@
 import sys
 from ptools import *
 
+surreal = lambda i: i   #automatic differenciation does not currently work
+
+def printPDB(rigid):
+    out = ""
+    for i in range(len(rigid)):
+        at = rigid.CopyAtom(i)
+        out+=at.ToPdbString()
+    return out
+
+
 if len(sys.argv) < 3:
     sys.exit("""ERROR: missing argument
 Usage: applytraj.py trajectory_file ligand_file > ligand_multi_pdb""")
@@ -37,6 +47,6 @@ for l in lines:
         output.Translate(Coord3D(surreal(X[3]),surreal(X[4]),surreal(X[5])))
         output.Translate(center)
         trjpdb += "MODEL %d \n" %(counter)
-        trjpdb += output.PrintPDB()
+        trjpdb += printPDB(output)
         trjpdb += "ENDMDL \n"
 print trjpdb
