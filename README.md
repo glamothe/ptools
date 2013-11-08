@@ -16,7 +16,7 @@ Then look into the html/ directory and find the index.html file generated...
 Very quick setup guide:
 -------------------------
 
-    .. code:: sh
+```        
     git clone https://github.com/ptools/ptools.git
     cd ptools
     virtualenv env
@@ -30,7 +30,7 @@ Very quick setup guide:
     cd ../PyAttract
     ln -s ../_ptools.so
     cd ..
-    
+```    
     
 A more detailed version is in the official tutorial. 
 
