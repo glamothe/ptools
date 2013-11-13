@@ -36,17 +36,20 @@ def irmsd(receptor, ligref, ligprobe, receptorprobe=None,reducedmodel=False):
     #creating list of residues in interaction:
     recResidues={}
     ligResidues={}
+    
+    receptor=AttractRigidbody(receptor)
+    ligref=AttractRigidbody(ligref)
     pairlist = AttractPairList(receptor, ligref, cutoff) #pairlist created on protein backbone + side-chains
-    for i in range(pairlist.Size()):
+    for i in range(len(pairlist)):
         atompair = pairlist[i]
         ligindex = atompair.atlig
 	recindex = atompair.atrec
 	
         atom = ligref.CopyAtom(ligindex)
-        ligResidues[ atom.GetResidId() ]=1
+        ligResidues[ atom.residId ]=1
 
 	atom = receptor.CopyAtom(recindex)
-	recResidues[ atom.GetResidId() ]=1
+	recResidues[ atom.residId ]=1
 
     ligResidues = sorted(ligResidues.keys())  #get a list of the ligand's residues in interaction
     recResidues = sorted(recResidues.keys())
@@ -64,11 +67,11 @@ def irmsd(receptor, ligref, ligprobe, receptorprobe=None,reducedmodel=False):
         super= superpose(ref,pred,0)
         mat=super.matrix
         pred.ApplyMatrix(mat)
-        assert(ligrefBBInterface.Size()==ligBBInterface.Size())
+        assert(len(ligrefBBInterface)==len(ligBBInterface))
         return Rmsd(pred,ref)
     else:
-        assert(ligrefBBInterface.Size()==ligBBInterface.Size())
-        return Rmsd(ligrefBBInterface, ligBBInterface)
+        assert(len(ligrefBBInterface)==len(ligBBInterface))
+        return Rmsd(ligrefBBInterface.CreateRigid(), ligBBInterface.CreateRigid())
 
 
 from optparse import OptionParser
