@@ -25,6 +25,7 @@ cdef extern from "atomselection.h" namespace "PTools":
 cdef class AtomSelection:
 
     cdef CppAtomSelection * thisptr
+    cdef object pyRigid
 
     def __cinit__(self, arg=None):
         cdef AtomSelection atsel
@@ -46,6 +47,7 @@ cdef class AtomSelection:
         if isinstance(Rigidbody, arg):
             rig = <Rigidbody> arg
             rigptr = rig.thisptr
+            self.pyRigid = arg
             self.thisptr = new CppAtomSelection(deref(rigptr))
 
         raise RuntimeError("cannot reach here")
@@ -86,3 +88,7 @@ cdef class AtomSelection:
         cdef CppRigidbody rig = self.thisptr.CreateRigid()
         ret.thisptr = new CppRigidbody(rig)
         return ret
+
+    def SetRigid(self, Rigidbody r):
+        self.pyRigid = r # to increase the refcount of r, preventing bad things if r is destroyed
+        self.thisptr.SetRigid(deref(r.thisptr))
