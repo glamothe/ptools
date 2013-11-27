@@ -1,11 +1,11 @@
 #ifndef LBFGS_H
 #define LBFGS_H
 
-#include "../basetypes.h"
-#include "../forcefield.h"
+#include "basetypes.h"
+#include "forcefield.h"
 
 
-#include "lbfgs_wrapper/lbfgsb.h"
+#include "lbfgsb.h"
 
 
 
