@@ -1,4 +1,4 @@
-#!/usr/bin env python
+#!/usr/bin/env python
 
 #return a list of contacted residues on the receptor
 
