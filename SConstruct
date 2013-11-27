@@ -40,12 +40,13 @@ COMMON_CPP = Split ("""atom.cpp
                        attractforcefield.cpp
                     """)
 
+COMMON_CPP = [os.path.join('src', i) for i in COMMON_CPP]                    
 
 
 COMMON_LIBS=[""]
 #COMMON_LIBS=["gfortran"]
 #COMMON_CPPPATH=['.', '/sw/include/boost-1_33_1']
-COMMON_CPPPATH=['.']
+COMMON_CPPPATH=['headers']
 FFLAGS="-g"
 
 #generates bzrrev.h:
