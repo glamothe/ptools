@@ -90,7 +90,7 @@ In the following, we assume the PTools library will be installed in the
 \subsubsection{On Debian or Debian-like systems (Ubuntu)}
 
 \begin{verbatim}
-apt-get install scons g++ f2c libboost-dev python-dev cython 
+apt-get install scons g++ f2c libboost-dev python-dev python-virtualenv cython 
 \end{verbatim}
 %
 
@@ -140,24 +140,16 @@ the {\tt SConstruct} file.
 
 \subsubsection{The library as a Python module}
 
-
-
-From the PTools main directory ({\tt \$HOME/soft/ptools-XX}), type:
+The recommended way to compile and install PTools as a Python module is to use {\tt virtualenv}. 
 
 \begin{verbatim}
+virtualenv .env
+source .env/bin/activate
 python setup.py build
+python setup.py install
 \end{verbatim}
 
-Now (until a better solution is found and documented) you need to create the following symbolic links:
 
-\begin{verbatim}
-ln -s build/lib.linux-*/_ptools.so
-cd Tests
-ln -s ../_ptools.so
-cd ../PyAttract
-ln -s ../_ptools.so
-cd ..
-\end{verbatim}
 
 
 
@@ -165,8 +157,8 @@ cd ..
 
 \subsubsection{C++ library only}
 
-The PTools library has a new C++ unit test system. To try it move into the {\tt Tests/} directory and
-type: 
+C++ unit tests are located in the {\tt Tests/} directory. Go to that directoy and type:
+
 \begin{verbatim}
  make testcpp
 \end{verbatim}
@@ -183,6 +175,7 @@ Running 17 tests...............OK!
 
 
 \subsubsection{Python module}
+
 In the {\tt Tests} directory, one can test that the compilation worked:
 \begin{verbatim}
 python unittest1.py

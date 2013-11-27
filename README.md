@@ -23,13 +23,8 @@ Very quick setup guide:
     source env/bin/activate
     pip install cython
     python setup.py build
+    python setup.py install
 
-    ln -s build/lib.linux-*/_ptools.so
-    cd Tests
-    ln -s ../_ptools.so
-    cd ../PyAttract
-    ln -s ../_ptools.so
-    cd ..
 ```    
     
 A more detailed version is in the official tutorial. 
