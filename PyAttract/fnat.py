@@ -3,10 +3,14 @@
 from ptools import *
 import sys
 
-def contact(receptor, ligand):
+def contact(receptor, ligand, cutoff=7):
     "return residues in interaction, use ptools::pairlist"
     
+    if isinstance(receptor, Rigidbody):
+        receptor = AttractRigidbody(receptor)
     
+    if isinstance(ligand, Rigidbody):
+        ligand = AttractRigidbody(receptor)
     
     resnblig = []
     for i in range(len(ligand)):
@@ -18,21 +22,21 @@ def contact(receptor, ligand):
         resnbrec.append(at.residId)
     
     
-    pl = AttractPairList(receptor,ligand,7)
-    contactnat = {} # residue list in interaction
+    pl = AttractPairList(receptor,ligand, cutoff)
+    contactnat = set() # residue list in interaction
 
     for i in range(len(pl)):
         ap = pl[i]
-        contactnat[(resnbrec[ap.atrec], resnblig[ap.atlig])] = True
+        contactnat.add((resnbrec[ap.atrec], resnblig[ap.atlig]))
     
-    return contactnat.keys()
+    return contactnat
 
 def fnat(receptor, ligcrist, ligprobe):
     "return native fraction (fnat)"
     resid= {}  # residue number of the ith atom
     corig = contact(receptor,ligcrist)
     cnew = contact(receptor,ligprobe)
-    intersect  = [ i for i in corig if i in cnew ]
+    intersect  =  corig & cnew 
     f = float(len(intersect))/float(len(corig))
     return f
 

@@ -12,10 +12,18 @@ setup(ext_modules=[Extension(
                    "attractforcefield.cpp", 
                    "scorpionforcefield.cpp", 
                    "coord3d.cpp", "geometry.cpp", "pdbio.cpp", "superpose.cpp", "minimizers/lbfgs_interface.cpp", "minimizers/routines.c", "minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp" ], #  our Cython source
-                   language="c++",
+                   language="c++",  # causes Cython to create C++ source
                    #libraries=['f2c'],
                    library_dirs = ['/usr/lib'],
                    extra_objects = ['/usr/lib/libf2c.a'],
                    )
-                     ],  # causes Cython to create C++ source
-      cmdclass={'build_ext': build_ext})
+
+                     ], 
+      cmdclass={'build_ext': build_ext},
+
+      packages = ['.'],
+      name="ptools",
+      version = "1.2"
+      
+      )
+

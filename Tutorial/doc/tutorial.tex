@@ -67,10 +67,10 @@ The basic requirements are:
 \begin{itemize}
 
 \item g++ (4.x)
-\item gfortran (4.x) or g77
 \item doxygen (optional)
 \item the Boost C++ library
 \item SCons
+\item f2c (fortran to C library)
 \end{itemize}
 
 The following tools are also necessary in order to use the library as a Python module:
@@ -90,48 +90,40 @@ In the following, we assume the PTools library will be installed in the
 \subsubsection{On Debian or Debian-like systems (Ubuntu)}
 
 \begin{verbatim}
-apt-get install scons libboost-dev
+apt-get install scons g++ f2c libboost-dev python-dev cython 
 \end{verbatim}
 %
 
 
-\subsubsection{On Fedora systems}
-
-%TODO: write fedora section
-\paragraph{SCons (make substitute):}
-The scons package provided by Fedora is not up-to-date enough to link Fortran and C++ together and then rise an
-error. The last version of scons is obtained at the homepage of the project ({\tt  http://www.scons.org/}).
-From the download section \footnote{\tt http://sourceforge.net/project/showfiles.php?group\_id=30337}, 
-get the stable file {\tt scons-0.98.5-1.noarch.rpm} and install it:
-
-\begin{verbatim}
- rpm -ivh scons-0.98.5-1.noarch.rpm
-\end{verbatim}
-
-\textbf{Note}: SCons 0.98.5 and 1.0.0 were successfully tested
-
-
-You can then install some packages:
-
-\begin{verbatim}
-  yum install boost boost-devel python-devel
-\end{verbatim}
-
-
-After that, you still need to manually install gccxml, pyplusplus and pygccxml (see below).
+% \subsubsection{On Fedora systems}
+% 
+% %TODO: write fedora section
+% \paragraph{SCons (make substitute):}
+% The scons package provided by Fedora is not up-to-date enough to link Fortran and C++ together and then rise an
+% error. The last version of scons is obtained at the homepage of the project ({\tt  http://www.scons.org/}).
+% From the download section \footnote{\tt http://sourceforge.net/project/showfiles.php?group\_id=30337}, 
+% get the stable file {\tt scons-0.98.5-1.noarch.rpm} and install it:
+% 
+% \begin{verbatim}
+%  rpm -ivh scons-0.98.5-1.noarch.rpm
+% \end{verbatim}
+% 
+% \textbf{Note}: SCons 0.98.5 and 1.0.0 were successfully tested
+% 
+% 
+% You can then install some packages:
+% 
+% \begin{verbatim}
+%   yum install boost boost-devel python-devel
+% \end{verbatim}
+% 
+% 
+% After that, you still need to manually install gccxml, pyplusplus and pygccxml (see below).
 
 
 
 
 \subsection{Compilation}
-
-Download the PTools library and untar it:
-
-\begin{verbatim}
-tar zxvf ptools-XX.tar.gz
-\end{verbatim}
-The directory {\tt ptools-XX} should be created.
-
 
 \subsubsection{Static pure C++ library}
 
@@ -148,12 +140,24 @@ the {\tt SConstruct} file.
 
 \subsubsection{The library as a Python module}
 
+
+
 From the PTools main directory ({\tt \$HOME/soft/ptools-XX}), type:
 
 \begin{verbatim}
 python setup.py build
 \end{verbatim}
 
+Now (until a better solution is found and documented) you need to create the following symbolic links:
+
+\begin{verbatim}
+ln -s build/lib.linux-*/_ptools.so
+cd Tests
+ln -s ../_ptools.so
+cd ../PyAttract
+ln -s ../_ptools.so
+cd ..
+\end{verbatim}
 
 
 
@@ -174,7 +178,7 @@ running C++ tests
 python cxxtestgen.py --error-printer ptoolstest.h > runner.cpp
 g++ runner.cpp -I.. -I. -L.. -lptools -o ptoolstest.bin
 ./ptoolstest.bin
-Running 15 tests...............OK!
+Running 17 tests...............OK!
 \end{verbatim}
 
 
@@ -186,9 +190,10 @@ python unittest1.py
 
 The expected output should be similar to:
 \begin{verbatim}
-...............
+python unittest1.py 
+...........................................
 ----------------------------------------------------------------------
-Ran 16 tests in 0.316s
+Ran 43 tests in 0.203s
 
 OK
 \end{verbatim}
@@ -350,6 +355,15 @@ sel_chainB = pdb.SelectChainId("B")
 \begin{verbatim}
 sel_res = pdb.SelectResRange(10, 20)
 \end{verbatim}
+
+\paragraph{Select atom types}
+\begin{verbatim}
+sel_res = pdb.SelectAtomType("N")  # select atom type 'N'
+sel_hydrogen = pdb.SelectAtomType("H*")  # select any hydrogen ('H', 'HA', 'HG11')
+\end{verbatim}
+
+Note: the wild card currently only works if the search pattern is one letter followed by the '*' character. 
+Ie you can select any carbon or hydrogen, but you cannot match for example CG1 \emph{and} CG2 atoms with one instruction.
 
 
 \paragraph{Get the number of atomes (the size) of a selection.}

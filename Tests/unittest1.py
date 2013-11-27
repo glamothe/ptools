@@ -33,6 +33,11 @@ class TestCoord3D(unittest.TestCase):
                 self.assertEqual(coo3.x, 4.0)
                 self.assertEqual(coo3.y, 6.0)
                 self.assertEqual(coo3.z, 12.5)
+        def testUnaryMinusOperator(self):
+            coo3 = - self.coo1
+            self.assertEqual(coo3.x, -3.0)
+            self.assertEqual(coo3.y, -4.0)
+            self.assertEqual(coo3.z, -5.0)
 
 class TestAtom(unittest.TestCase):
     def setUp(self):
@@ -69,9 +74,13 @@ class TestAtomSelection(unittest.TestCase):
         CAatoms = self.rig.CA()
         self.assertEqual(len(CAatoms),643)
         
-    def testSelectAtomType(self):
+    def testSelectAtomType_simple(self):
         CAatoms = self.rig.SelectAtomType("CA")
         self.assertEqual(len(CAatoms), 643)
+        
+    def testSelectAtomType_wildcard(self):
+        CAatoms = self.rig.SelectAtomType("C*")
+        self.assertEqual(len(CAatoms), 3379)    
         
     def testSelectBackbone(self):
         bbAtoms = self.rig.Backbone()
@@ -444,14 +453,62 @@ class TestForceFields(unittest.TestCase):
         self.assertAlmostEqual(FF.Function(x), FF.getVdw() + FF.getCoulomb())
 
 class TestPairlist(unittest.TestCase):
+    
+    def setUp(self):
+        # test that the generated pairlist is correct
+        #  
+        #  two atoms are created for the receptor (R) and the ligand (L)
+        #  as described below:
+        #  x axis:
+        #  0----1-----2-----3-----4-----5-------------------------------> x
+        #  
+        #       R     R           L     L
+        #
+        
+        r = Rigidbody()
+        at = Atom()
+        at.coords = Coord3D(1,0,0)
+        r.AddAtom(at)
+        at.coords = Coord3D(2,0,0)
+        r.AddAtom(at)
+        
+        l = Rigidbody()
+        at.coords = Coord3D(4,0,0)
+        l.AddAtom(at)
+        at.coords = Coord3D(5,0,0)
+        l.AddAtom(at)
+        
+        self.ar = AttractRigidbody(r)
+        self.al = AttractRigidbody(l)
+        
+        
+    
+    
     def testAtomPair(self):
         atp = AtomPair()
         atp.atlig = 23
         atp.atrec = 45
         self.assertEqual(atp.atlig, 23)
         self.assertEqual(atp.atrec, 45)
-         
-
+        
+    def test_onepair(self):
+        #use a small cutoff to only get one pair
+        
+        pl = AttractPairList(self.ar, self.al, 2.01) #using 2.01 A for the cutoff
+        self.assertEqual(len(pl), 1)
+        
+        count=0
+        for p in pl:
+            count+=1
+            self.assertTrue(count <2)
+        self.assertEqual(count, 1)
+        
+    def test_three_pairs(self):
+        #use a slightly bigger cutoff to get 3 pairs:
+        # (1,4) (2,4) and (2,5)
+        
+        pl = AttractPairList(self.ar, self.al, 3.01)
+        self.assertEqual(len(pl), 3)
 
 
 unittest.main()

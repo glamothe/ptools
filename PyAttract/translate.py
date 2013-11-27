@@ -4,10 +4,10 @@
 ##
 ## translate script
 ## generate starting point
-## usage : translate arg1 arg2 [options]
-## arg1 : receptor file in the reduce model
-## arg2 : ligand file in the reduce model
-## to modify the density, use the -d option (the value must be > 1.0), default=100.0
+## usage : translate receptor ligand [options]
+## receptor : receptor file in the reduce model
+## ligand : ligand file in the reduce model
+## to modify the density, use the -d option (the value must be > 1.0), default=10.0
 ##
 
 from ptools import *
@@ -18,7 +18,8 @@ from optparse import OptionParser
 
 parser = OptionParser()
 parser.usage = 'translate.py <receptor_file> <ligand_file> [options]'
-parser.add_option("-d", "--density", action="store", type="float", dest="density",help="distance in angstroem between starting points (the value must be > 1.0), default is 10.0 angstroem")
+parser.add_option("-d", "--density", action="store", type="float", dest="density",help="distance in angstroem between starting points (the value must be > 1.0), default is 10.0 angstroem", default=10.0)
+parser.add_option("--distance-to-receptor", type="str", dest="distance_to_receptor", help="minimum distance (in A) between starting points and the receptor surface, default is the ligand radius. If the distance ends with 'x' then the distance to the receptor will be the ligand radius multiplied by this input value")
 (options, args) = parser.parse_args()
 
 rec = Rigidbody(sys.argv[1])
@@ -33,21 +34,32 @@ solvname = os.path.join(scriptdir,"aminon.par")
 surf=Surface(30,30,solvname)
 center_rec=rec.FindCenter()
 center_lig=lig.FindCenter()
-rad=lig.Radius()
-rad2=rad*rad
-surf.surfpointParams(5000,rad)
+
+odr = options.distance_to_receptor
+if odr:
+    if 'X' in odr[-1] or 'x' in odr[-1]:
+        rad = lig.Radius()
+        mult_factor = odr[:-1]
+        assert('x' not in mult_factor)
+        assert('X' not in mult_factor)
+        mult_factor = float(mult_factor) 
+        distance_to_receptor = mult_factor * rad
+    else:
+        distance_to_receptor = float(odr)
+else:
+    distance_to_receptor = lig.Radius()
+
+surf.surfpointParams(5000,distance_to_receptor)
 
 # grid points generation
 grid=surf.surfpoint(rec,1.4)
 
 # remove points too close from the receptor
-outergrid=surf.outergrid(grid,rec,rad2)
+
+outergrid=surf.outergrid(grid,rec,distance_to_receptor)
 
 # remove closest points...
-d=10.0
-if (options.density):
-	d=options.density
-outergrid=surf.removeclosest(outergrid,d)
+outergrid=surf.removeclosest(outergrid,options.density)
 
 # output starting positions
 nb_startingpoint=0
