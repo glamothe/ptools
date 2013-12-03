@@ -11,6 +11,8 @@ one_letter_residue_dict = {
    "HIS": "H",
    "HIE": "H",
    "HSP": "H",
+   "HSE": "H",
+   "HSD": "H",
    "ILE": "I",
    "LYS": "K",
    "LEU": "L",
