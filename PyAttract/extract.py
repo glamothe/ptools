@@ -139,7 +139,7 @@ def openDatabase(filename):
         statout=os.stat(filename)
         if statdb[ST_MTIME] > statout[ST_MTIME]:  #ok database is more recent, no need to regenerate it
             #we can use the database here :-)
-            d = shelve.open(databasefile)
+            d = shelve.open(databasefile, flag='r')
             return d
 
         else:
