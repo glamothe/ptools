@@ -28,7 +28,7 @@ one_letter_residue_dict = {
 }
 
 
-def pdbToSeq(rigid):
+def rigidToSeq(rigid):
     """use residu names from the structure to extract the sequence
        This function needs CA atoms to be present. A missing CA atom will result in
        a missing letter in the sequence.
@@ -42,8 +42,6 @@ def pdbToSeq(rigid):
     
     return "".join(seq)
     
-
-
 
 
 def getPDB(pdbname):
