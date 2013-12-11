@@ -92,6 +92,48 @@ std::string readresidtype(const std::string &ligne) {
 }
 
 
+
+/** 
+ * parses a PDB-formatted string and updates the given Atom instance
+ * 
+ */
+void readAtom(const std::string& line, Atom& at)
+{
+    //TODO: needs factorization with ReadPDB
+    
+    if (isAtom(line))
+        {
+            std::string sx,sy,sz;
+
+            sx=line.substr(30,8);
+            sy=line.substr(38,8);
+            sz=line.substr(46,8);
+
+
+            at.coords.x=atof(sx.c_str());
+            at.coords.y=atof(sy.c_str());
+            at.coords.z=atof(sz.c_str());
+
+            at.atomType = readatomtype(line);
+            at.residType = readresidtype(line);
+            std::string chainID = line.substr(21,1);
+            if (chainID == " ") chainID = "";
+            at.chainId = chainID;
+            at.residId = atoi(line.substr(22,4).c_str());
+            at.atomId = atoi(line.substr(6,5).c_str());
+            std::string extra = line.substr(54,line.size()-1-54+1); //extracts everything after the position 27 to the end of line
+            at.extra = extra ;
+            
+            return;
+
+        }
+        
+    throw std::runtime_error("in pdbio.readAtom(): input is not an atom\n");
+    
+}
+
+
+
 void ReadPDB(istream& file, Rigidbody& protein) {
 
     std::string line ;
