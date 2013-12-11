@@ -8,14 +8,14 @@ import sys
 import argparse
 
 
-def contacted(receptor, ligand):
+def contacted(receptor, ligand, cutoff):
     resnbrec = []  #resnbrec[i] is the residue id of atom i
     for j in xrange(len(receptor)):
         at = receptor.CopyAtom(j)
         resnbrec.append(at.residId)
     
     
-    pl = AttractPairList(receptor,ligand, args.cutoff)
+    pl = AttractPairList(receptor,ligand, cutoff)
     
     
     atomrec = [i.atrec for i in pl]  #list of contacted atoms on the receptor
@@ -33,9 +33,9 @@ def main(args):
         #if we have a reference structure for the ligand, display the fraction of contacted receptor residues
         #that are still found in the new pose
         model = AttractRigidbody(args.model)
-        natcont = contacted(receptor, model)
+        natcont = contacted(receptor, model, args.cutoff)
         
-        newcont = contacted(receptor, ligand)
+        newcont = contacted(receptor, ligand, args.cutoff)
         
         kept_in_new_pose = [i for i in natcont if i in newcont]  #intersection of the two lists (would be better with sets)
         print float(len(kept_in_new_pose))/float(len(natcont))*100
