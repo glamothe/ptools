@@ -234,10 +234,23 @@ class TestBasicMoves(unittest.TestCase):
         self.assertEqual(Rmsd(rigtmp, self.rigid1), 4)
         
     def testErrorsRmsd(self):
-	rigid1 = Rigidbody()
-	rigid2 = Rigidbody()
-	#Rmsd(rigid1, rigid2)
-	self.assertRaises(ValueError, Rmsd, rigid1, rigid2)
+        rigid1 = Rigidbody()
+        rigid2 = Rigidbody()
+        #Rmsd(rigid1, rigid2)
+        self.assertRaises(ValueError, Rmsd, rigid1, rigid2)
+        
+    def testRmsdAtomSelection1(self):
+        #tests Rmsd with an AtomSelection object
+        atsel = self.rigid1.SelectAllAtoms()
+        self.assertEqual(Rmsd(atsel,self.rigid2), 0)    
+        
+
+    def testRmsdAtomSelection2(self):
+        #tests Rmsd with an AtomSelection object
+        atsel = self.rigid1.SelectAllAtoms()
+        self.assertEqual(Rmsd(self.rigid2, atsel), 0)
+        
+
 
     def testTranslation1(self):
         CoM1 = self.rigid1.FindCenter()
