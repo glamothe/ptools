@@ -112,7 +112,19 @@ class TestAtomSelection(unittest.TestCase):
         rigid = met1A.CreateRigid()
         self.assertEqual(len(rigid), 8)
         
-
+    def testNotOperator(self):
+        sel_ca = self.rig.CA()
+        sel_not_ca = ~ sel_ca  # operator NOT
+        self.assertEqual(len(sel_ca)+len(sel_not_ca), len(self.rig))
+        
+    def testAlternateNotOperator(self):
+        sel_ca = self.rig.CA()
+        sel_not_ca = sel_ca.not_()  # operator NOT
+        self.assertEqual(len(sel_ca)+len(sel_not_ca), len(self.rig))
+        
+        
+        
+        
 class TestRigidbody(unittest.TestCase):
     def setUp(self):
         self.r = Rigidbody("1FIN_r.pdb")
