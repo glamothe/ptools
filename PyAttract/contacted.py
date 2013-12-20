@@ -19,7 +19,7 @@ def contacted(receptor, ligand, cutoff):
     
     
     atomrec = [i.atrec for i in pl]  #list of contacted atoms on the receptor
-    residusrec = sorted(list({resnbrec[i] for i in atomrec})) #list of contacted residues on the receptor
+    residusrec = sorted(list(set([resnbrec[i] for i in atomrec]))) #list of contacted residues on the receptor
     
     return residusrec
 
@@ -43,7 +43,7 @@ def main(args):
         
     else:
         #we don't have a reference for the ligand. We can only display the list of contacted residues on the receptor with this pose
-        for r in contacted(receptor, ligand):
+        for r in contacted(receptor, ligand, args.cutoff):
             print r,
             
         print ""
