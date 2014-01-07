@@ -55,7 +55,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(description="calculate a list of contacted residues on the receptor")
     parser.add_argument("-r", "--receptor", dest="receptor")
     parser.add_argument("-l", "--ligand", dest="ligand")
-    parser.add_argument("--cutoff", dest="cutoff", type=int, default=7, help="cutoff used to determine if two residues interact. Default to 7A (for coarse grained templates). You should set the cutoff to 5 when working on all atoms molecules")
+    parser.add_argument("--cutoff", dest="cutoff", type=float, default=7, help="cutoff used to determine if two residues interact. Default to 7A (for coarse grained templates). You should set the cutoff to 5 when working on all atoms molecules")
     parser.add_argument('--reflig', dest="model", default=None, help="ligand model (ie correct bound solution) to calculate the percentage of contacted residues on the receptor")
     
     
