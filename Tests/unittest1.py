@@ -248,8 +248,13 @@ class TestBasicMoves(unittest.TestCase):
     def testErrorsRmsd(self):
         rigid1 = Rigidbody()
         rigid2 = Rigidbody()
-        #Rmsd(rigid1, rigid2)
+        #cannot calculate an rmsd on an empty object
         self.assertRaises(ValueError, Rmsd, rigid1, rigid2)
+        
+        #check input paramter types:
+        self.assertRaises(RuntimeError, Rmsd, self.rigid1, "hello")
+        self.assertRaises(RuntimeError, Rmsd, "hello",  self.rigid1)
+        
         
     def testRmsdAtomSelection1(self):
         #tests Rmsd with an AtomSelection object
