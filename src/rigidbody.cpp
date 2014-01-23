@@ -229,7 +229,7 @@ AtomSelection Rigidbody::SelectChainId(std::string chainId) {
     return newsel;
 }
 
-AtomSelection Rigidbody::SelectResRange(uint start, uint stop)
+AtomSelection Rigidbody::SelectResRange(int start, int stop)
 {
     AtomSelection newsel;
     newsel.SetRigid(*this);

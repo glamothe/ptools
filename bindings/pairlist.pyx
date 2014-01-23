@@ -6,8 +6,8 @@ cdef extern from "pairlist.h" namespace "PTools":
     cdef cppclass CppAtomPair "PTools::AtomPair":
        CppAtomPair()
        CppAtomPair(CppAtomPair&)
-       unsigned int atlig
-       unsigned int atrec
+       int atlig
+       int atrec
 
 
 cdef class AtomPair:

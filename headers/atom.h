@@ -15,8 +15,8 @@ struct Atomproperty {
     std::string atomElement; ///< C, N, H, O, etc.
     std::string residType; ///< LEU, ARG, ...
     std::string chainId; ///< A, B, etc.
-    uint residId; ///< residue number
-    uint atomId; ///< atom number
+    int residId; ///< residue number
+    int atomId; ///< atom number
     dbl atomCharge; ///< charge of the atom
     std::string extra; ///< extra data
 

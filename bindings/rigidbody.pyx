@@ -46,7 +46,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         CppAtomSelection SelectAtomType(string)
         CppAtomSelection SelectResidType(string)
         CppAtomSelection SelectChainId(string)
-        CppAtomSelection SelectResRange(unsigned int, unsigned int)
+        CppAtomSelection SelectResRange(int, int)
         CppAtomSelection CA()
         CppAtomSelection Backbone()
         
@@ -221,7 +221,7 @@ cdef class Rigidbody:
        return ret
 
 
-    def SelectResRange(self, unsigned int i, unsigned int j):
+    def SelectResRange(self, int i, int j):
        ret = AtomSelection()
        del ret.thisptr
        cdef CppAtomSelection new_sel =  self.thisptr.SelectResRange(i,j)

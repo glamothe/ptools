@@ -7,8 +7,8 @@ cdef extern from "atom.h" namespace "PTools":
         string residType
         double atomCharge
         string chainId
-        unsigned int residId
-        unsigned int atomId
+        int residId
+        int atomId
         string extra
         
     cdef cppclass CppAtom "PTools::Atom"(CppAtomproperty):
@@ -73,14 +73,14 @@ cdef class Atomproperty:
         def __get__(self):
             return self.thisptr.residId
         
-        def __set__(self, unsigned int resid):
+        def __set__(self, int resid):
             self.thisptr.residId = resid 
         
     
     property atomId:
         def __get__(self):
             return self.thisptr.atomId
-        def __set__(self, unsigned int atomid):
+        def __set__(self, int atomid):
             self.thisptr.atomId = atomid
 
     property extra:
