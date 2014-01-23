@@ -60,7 +60,12 @@ class TestAtom(unittest.TestCase):
         self.assertEqual(atom.residId, 6)
         self.assertEqual(atom.atomId, 123)
         self.assertEqual(atom.atomCharge, -1.23456)
-        
+
+    def testNegativeResId(self):
+        atom = self.atom
+        atom.residId = -5
+        self.assertTrue(atom.residId < 0)
+
 
 class TestAtomSelection(unittest.TestCase):
     def setUp(self):
@@ -89,7 +94,12 @@ class TestAtomSelection(unittest.TestCase):
     def testSelectResRange(self):
         res_1_35 = self.rig.SelectResRange(1,35)
         self.assertEqual(len(res_1_35), 566)  # two chains
-    
+
+    def testSelectResRangeNegativeResId(self):
+        rigid = Rigidbody("2AAV.one.pdb")
+        selection = rigid.SelectResRange(-4, -1) & rigid.CA()
+        self.assertEqual(len(selection), 4)
+
     def testAnd(self):
         res_1_35 = self.rig.SelectResRange(1,35) 
         CAatoms = self.rig.SelectAtomType("CA")
@@ -102,7 +112,7 @@ class TestAtomSelection(unittest.TestCase):
         self.assertEqual(len(met1), 16)
         met1A = self.rig.SelectResidType("MET") & self.rig.SelectResRange(1,5) & self.rig.SelectChainId("A")
         self.assertEqual(len(met1A), 8)
-        
+
     def testSelectChainId(self):
         chainA = self.rig.SelectChainId("A")
         self.assertEqual(len(chainA), 2638)
@@ -223,6 +233,14 @@ class TestRigidbody(unittest.TestCase):
         self.assertEqual(atprop.residType, 'GLU')
         self.assertEqual(atprop.residId, 2)
         self.assertEqual(atprop.atomId, 9)
+
+
+    def testNegativeResId(self):
+        rigid = Rigidbody("2AAV.one.pdb")
+        at1 = rigid.CopyAtom(0)
+        self.assertEqual(at1.residId, -4)
+
+
 
 class TestAttractRigidbody(unittest.TestCase):
     def setUp(self):
