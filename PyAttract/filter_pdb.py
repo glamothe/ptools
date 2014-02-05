@@ -24,10 +24,10 @@ if __name__=="__main__":
     #parser.add_argument("--side", dest="side", action="store_true", default=False, help="filter side-chain")
    
     parser.add_argument("--bb", dest="bb", action="store_true", default=False, help="filter backbone")
-
+    parser.add_argument("--atomtype", nargs="*", help="list of atomtype to filter")
+    parser.add_argument("--not", dest="_not", action="store_true", default=False, help="return the inverse of the selection")
     parser.add_argument("filename", help="pdb file to filter. Use '-' for stdin")
 
-    
     args = parser.parse_args()
 
 
@@ -40,20 +40,40 @@ if __name__=="__main__":
     else:
         r = Rigidbody(args.filename)
 
-    
+    select = r.SelectAllAtoms()
+
 
     # filter CA if needed:
     if args.ca:
-        r = r.CA().CreateRigid()
+        select = r.CA() & select
 
-        
+
     # filter heavy atoms if needed:
     if args.heavy:
-        r_sel = ~r.SelectAtomType('H*')  #select not H atoms...
-        r = r_sel.CreateRigid()
+        select =  ~r.SelectAtomType('H*') & select  #select not H atoms...
+
+
 
     #filter backbone:
     if args.bb:
-        r = r.Backbone().CreateRigid()
+        select = r.Backbone() & select
 
-    print toString(r)
+    # atom type selection:
+    # perform a logical OR on all given atom types
+    # and a final AND with the previous selection
+    # this will allow to select atom types with given
+    # residu numbers or ranges
+    if  args.atomtype is not None:
+        newsel = r.SelectAtomType(args.atomtype[0])
+        for at in args.atomtype:
+            newsel = newsel | r.SelectAtomType(at)
+        select = select & newsel
+
+
+    #finally invert the selection if  --not was given
+    if args._not:
+        select = r.SelectAllAtoms() & ~select
+
+    out = select.CreateRigid()
+
+    print toString(out),
