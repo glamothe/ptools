@@ -25,8 +25,7 @@ for line in atoms:
         buggy = False
 
 if buggy is None:
-    print "could not decide if it is a buggy pdb file or not"
-    sys.exit(1)
+    raise RuntimeError("could not decide if it is a buggy pdb file or not")
     
 if not buggy:
     #simply output the file unchanged
