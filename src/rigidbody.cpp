@@ -302,11 +302,15 @@ std::string Rigidbody::PrintPDB() const
     uint size=this->Size();
 
     std::string output;
-    for (uint i=0; i < size ; i++)
+    for (uint i=0; i < size-1 ; i++)
     {
          Atom at(mAtomProp[i], this->GetCoords(i));
-         output = output + at.ToPdbString();
+         output = output + at.ToPdbString() + "\n" ;
     }
+    Atom at(mAtomProp[size-1], this->GetCoords(size-1));
+    output += at.ToPdbString(); // append the last pdb string, without "\n"
+
+
     return output;
 }
 

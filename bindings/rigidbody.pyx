@@ -30,6 +30,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         void AddAtom(CppAtomproperty& , CppCoord3D )
         void AddAtom(CppAtom&)
         void SetAtom(unsigned int, CppAtom&)
+        string PrintPDB()
 
         #returns radius of gyration
         double RadiusGyration()
@@ -104,6 +105,13 @@ cdef class Rigidbody:
             self.thisptr = <CppRigidbody*> 0
     def __len__(self):
         return self.thisptr.Size()
+
+
+    def __str__(self):
+        s = self.thisptr.PrintPDB()
+        return s
+
+
     def getCoords(self, unsigned int i):
         cdef Coord3D c = Coord3D () 
         cdef CppCoord3D cpp = self.thisptr.GetCoords(i)
