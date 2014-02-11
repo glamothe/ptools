@@ -195,7 +195,28 @@ def getAllStruct(outputfilename):
 
 def main():
     nargs = len(sys.argv)
-    if nargs < 5:
+    
+    if "--all" in sys.argv and len(sys.argv)==4:
+        #extract all structures
+        e = Extractor(sys.argv[1])
+        lig = Rigidbody(sys.argv[2])
+        
+        validkeys = []
+        regexp = re.compile("[0-9]+:[0-9]+")  #filter keys of the form "23:356"
+        for k in e.d.keys():
+            if regexp.match(k):
+                validkeys.append(k)
+        
+        for k in validkeys:
+            structure = e.getStructure(lig, k)
+            print structure
+            print "TER"
+            
+        sys.exit(0)
+        
+        
+    
+    elif nargs < 5:
         print "usage: Extract 'outputfile' LigOriginalCoordinates translationNumber RotationNumber"
         raise SystemExit
 
