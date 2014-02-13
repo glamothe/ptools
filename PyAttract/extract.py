@@ -35,8 +35,18 @@ class Extractor:
         
     def getMatrix(self, key):
         return self.d[key].matrix
+
     def getStructure(self, lig, key):
-        return rigidXMat44(lig ,self.d[key].matrix)
+        newlig = rigidXMat44(lig ,self.d[key].matrix)
+        trans, rot = key.split(":")
+        template = "REMARK 999 TRANSLATION ROTATION  %(translation)s %(rotation)s\n%(pdb)s" % { 
+                             "translation": trans,
+                             "rotation": rot,
+                             "pdb": str(newlig),
+                             }
+        return template
+        
+
     def getFile(self, filename):
         f=self.d[filename]
         compressed=base64.b64decode(f)
@@ -233,11 +243,7 @@ def main():
     #print e.getFile("attract.inp")
 
     pdb=[]
-    for i in range(len(lig3)):
-        atom=lig3.CopyAtom(i)
-        pdb.append(atom.ToPdbString())
-    print "".join(pdb)
-
+    print lig3
 
 
 
