@@ -210,4 +210,4 @@ for residKey, atomList in zip(residulist,orderedresid):
             bead.extra = extra
             bead.atomId = totAtoms
             bead.residId = residNumber
-            print bead.ToPdbString(),  # ',' because of the extra \n caracter from the ptools C++ library
+            print bead.ToPdbString()

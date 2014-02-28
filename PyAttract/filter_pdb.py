@@ -10,7 +10,7 @@ def toString(rigid):
     out = []
     for i in range(len(rigid)):
        at = rigid.CopyAtom(i)
-       out.append(at.ToPdbString())
+       out.append(at.ToPdbString()+"\n")
 
     return "".join(out)
 
