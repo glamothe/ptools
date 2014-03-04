@@ -102,7 +102,7 @@ print "Target rotation number: %i" %( target_rot_nb )
 # read all translations
 trans=Rigidbody( transfile )
 # extract target translation variables
-target_trans_val=trans.getCoords(target_trans_nb)
+target_trans_val=trans.getCoords(target_trans_nb-1)
 
 # read all rotations
 rotations = Rotation()
