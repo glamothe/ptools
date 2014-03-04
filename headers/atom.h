@@ -12,6 +12,10 @@ namespace PTools{
 
 struct Atomproperty {
     std::string atomType;  ///< CA, N, HN1, ...
+    void setAtomType(const std::string &ty); ///< attempts to set a pdbAtomType from a string
+
+    std::string _pdbAtomType; ///<  PDB atomType field is not really user-friendly ( " CA ", ...) 
+
     std::string atomElement; ///< C, N, H, O, etc.
     std::string residType; ///< LEU, ARG, ...
     std::string chainId; ///< A, B, etc.
@@ -25,6 +29,7 @@ struct Atomproperty {
     {
         atomType="X";
         atomElement="X";
+        _pdbAtomType="?";
         residType="XXX";
         chainId="X";
         residId=1;

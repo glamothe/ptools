@@ -48,5 +48,52 @@ void Atom::Translate(const Coord3D& tr)
 }
 
 
+/**
+ * Attempts to set a pdbAtomType from a string
+ * 
+ * The PDB atomType field (CA, N, HN1, ...) is delicate to set in
+ * a user-friendly way. This field is represented with 4 chars but
+ * the alignment of shorter names is not free. 
+ * Indeed " CA " will represent Calpha atoms for aminoacids residus
+ * while "CA  " will represent calcium atoms, normally written as 
+ * HETATM in the PDB format. 
+ * 
+ * This method takes a "user-friendly" representation of atom types
+ * and tries to set the correct alignment for the public field "pdbAtomType".
+ * 
+ * "CA" will represent Calpha atoms. use "\<CA" to respresent Calcium if you really need to
+ * 
+ * 
+ * At some point in the future atomType might need to become an accessor function
+ * and call this setAtomType function implicitely.
+ 
+ */
+void Atomproperty::setAtomType(const std::string& ty)
+{
+    if (ty.size() == 0) return; //don't do anything. TODO: raise an exception?
+    
+    this->atomType = ty; //first set the atomType
+    
+    //and update the _pdbAtomType as well:
+
+       if (ty.size() == 4) this->_pdbAtomType = ty; //no really other choices
+       else 
+           if (ty[0] == '<')  //user wants the atom type to be left-aligned
+           {
+            for(int i=1; i<ty.size(); i++)
+                this->_pdbAtomType[i-1]=ty[i];  //left-shift ty into _pdbAtomType
+           }
+               
+           else 
+               this->_pdbAtomType = " " + ty; //in most other cases there is a leading space in the atom type
+}
+
+
+
+
+
 } // namespace PTools
+
+
+
 
