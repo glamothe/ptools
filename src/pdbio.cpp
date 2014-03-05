@@ -114,12 +114,9 @@ void readAtom(const std::string& line, Atom& at)
             at.coords.y=atof(sy.c_str());
             at.coords.z=atof(sz.c_str());
 
-//             at.atomType = readatomtype(line);
-            at.atomType = line.substr(12,4);
-            std::transform(at.atomType.begin(),at.atomType.end(),
-                   at.atomType.begin(), //destination
-                   (int(*)(int)) toupper //to upper: convert to upper case
-                  );
+            at.atomType = readatomtype(line);
+            at._pdbAtomType = line.substr(12,4);
+            
 
 
             at.residType = readresidtype(line);
@@ -166,12 +163,8 @@ void ReadPDB(istream& file, Rigidbody& protein) {
             pos.z=atof(sz.c_str());
 
             Atomproperty a;
-//             a.atomType = readatomtype(line);
-            a.atomType = line.substr(12,4);
-            std::transform(a.atomType.begin(),a.atomType.end(),
-                   a.atomType.begin(), //destination
-                   (int(*)(int)) toupper //to upper: convert to upper case
-                  );
+            a.atomType = readatomtype(line);
+            a._pdbAtomType = line.substr(12,4);
             
             
             a.residType = readresidtype(line);
@@ -218,7 +211,7 @@ void WritePDB(const Rigidbody& rigid, std::string filename)
         const char * chainID="A" ;
 
         Atom at = rigid.CopyAtom(i);
-        const char* atomname=at.atomType.c_str();
+        const char* atomname=at._pdbAtomType.c_str();
         const char* residName=at.residType.c_str();
         int residnumber = at.residId;
         chainID = at.chainId.c_str();
@@ -230,15 +223,9 @@ void WritePDB(const Rigidbody& rigid, std::string filename)
         dbl y = coord.y;
         dbl z = coord.z ;
 
-
-
-//      fprintf(file, "ATOM  %5d %-4s %3s %1s%4d    %8.3f%8.3f%8.3f%s",atomnumber,atomname,residName,chainID,residnumber,real(x),real(y),real(z),at.extra.c_str());
-//      fprintf(file, "ATOM  %5d  %-4s%3s %1s%4d    %8.3f%8.3f%8.3f%s", atomnumber,atomname,residName,chainID,residnumber,real(x),real(y),real(z),at.extra.c_str());
-//      fprintf(file, "ATOM  %5d %-4s %3s %1s%4d    %8.3f%8.3f%8.3f%s", atomnumber,atomname,residName,chainID,residnumber,real(x),real(y),real(z),at.extra.c_str());
         fprintf(file, "ATOM  %5d %-4s %3s %1s%4d    %8.3f%8.3f%8.3f%s", atomnumber,atomname,residName,chainID,residnumber,real(x),real(y),real(z),at.extra.c_str());
         
-        
-//         fprintf(file, "ATOM  %5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s")
+
         fprintf(file,"\n");
     }
 

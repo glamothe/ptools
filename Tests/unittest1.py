@@ -2,7 +2,7 @@
 from ptools import *
 import random
 import unittest
-
+import sys
 import math
 
 try:
@@ -10,7 +10,18 @@ try:
 except:
     print "downloading required file 1F88.pdb:"
     import get1F88
+    
+    
     print "done"
+
+#test that the content of 1F88.pdb is correct
+f = open("1F88.pdb")
+line1 = f.readline()
+if line1 != "ATOM      1  N   MET A   1      43.958  -5.980 -27.758  1.00 54.29           N  \n":
+        print "1F88.pdb is incorrect, please remove this file and launch tests again"
+        sys.exit(1)
+        
+
 
 class TestCoord3D(unittest.TestCase):
         def setUp(self):
