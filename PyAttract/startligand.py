@@ -31,7 +31,7 @@ class Rotation:
         self.theta=[]
         self.nphi=[]
         # read theta,phi,rot data
-        rotdat=open( rotfile ,'r')
+        rotdat=open( self.rotfile ,'r')
         line=rotdat.readline().split()
         self.ntheta=int(line[0])
         self.nrot=int(line[1])
@@ -58,7 +58,8 @@ class Rotation:
                     self._rot.append((phiii, ssii, roti))
 
 
-    def __init__(self):
+    def __init__(self,rotfile):
+        self.rotfile=rotfile
         self.read_rotdat()
     
     def __iter__(self):
@@ -72,8 +73,8 @@ class Rotation:
 ###########################
 from optparse import OptionParser
 parser = OptionParser()
-parser.add_option("-t", "--translationfile", action="store", type="string", dest="transfile", help="translation file")
-parser.add_option("-r", "--rotationfile", action="store", type="string", dest="rotfile", help="rotation file")
+parser.add_option("-t", "--translationfile", action="store", type="string", dest="transfile", default="translation.dat", help="translation file [translation.dat]")
+parser.add_option("-r", "--rotationfile", action="store", type="string", dest="rotfile", default="rotation.dat", help="rotation file [rotation.dat]")
 (options, args) = parser.parse_args()
 
 if len(args) == 3:
@@ -84,13 +85,9 @@ else:
     sys.exit("""ERROR: missing argument
 Usage: startligand.py ligand_file translation_number rotation_number """)
 
-if (not options.transfile):
-    transfile = "translation.dat"
-if (not options.rotfile):
-    rotfile = "rotation.dat"
 
-print "Translation file:", transfile
-print "Rotation file:", rotfile
+print "Translation file:", options.transfile
+print "Rotation file:", options.rotfile
 
 lig=Rigidbody(ligand_name)
 print "Ligand (mobile partner) %s has %d particules" %(ligand_name,len(lig))
@@ -100,12 +97,12 @@ print "Target translation number: %i" %( target_trans_nb )
 print "Target rotation number: %i" %( target_rot_nb )
 
 # read all translations
-trans=Rigidbody( transfile )
+trans=Rigidbody( options.transfile )
 # extract target translation variables
-target_trans_val=trans.getCoords(target_trans_nb)
+target_trans_val=trans.getCoords(target_trans_nb-1)
 
 # read all rotations
-rotations = Rotation()
+rotations = Rotation(options.rotfile)
 # extract target rotation variables
 rot_tmp = [rot_val for rot_idx, rot_val in enumerate(rotations) if rot_idx == (target_rot_nb-1)]
 target_rot_val = rot_tmp[0]
