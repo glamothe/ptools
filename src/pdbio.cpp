@@ -125,7 +125,7 @@ void readAtom(const std::string& line, Atom& at)
             at.chainId = chainID;
             at.residId = atoi(line.substr(22,4).c_str());
             at.atomId = atoi(line.substr(6,5).c_str());
-            std::string extra = line.substr(54,line.size()-1-54+1); //extracts everything after the position 27 to the end of line
+            std::string extra = line.substr(54); //extracts everything after the position 54 to the end of line
             at.extra = extra ;
             
             return;
