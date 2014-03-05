@@ -2,8 +2,11 @@ cdef extern from "atom.h" namespace "PTools":
     cdef cppclass CppAtomproperty "PTools::Atomproperty":
         CppAtomproperty()
         CppAtomproperty(CppAtomproperty&)
+
+        void setAtomType(string &)
         
         string atomType
+        string _pdbAtomType
         string residType
         double atomCharge
         string chainId
@@ -37,14 +40,26 @@ cdef class Atomproperty:
         if self.thisptr:
             del self.thisptr
     
+
     property atomType:
         def __get__(self):
             return <bytes> self.thisptr.atomType.c_str()
         def __set__(self, bytes b):
             cdef char* c = b
             cdef string cppname = string(c)
-            self.thisptr.atomType = cppname
-            
+            self.thisptr.setAtomType(cppname)
+    
+
+    property _pdbAtomType:
+        def __get__(self):
+            return <bytes> self.thisptr._pdbAtomType.c_str()
+        def __set__(self, bytes b):
+            cdef char* c = b
+            cdef string cppname = string(c)
+            self.thisptr._pdbAtomType = cppname
+
+
+        
     property residType:
         def __get__(self):   
             return <bytes> self.thisptr.residType.c_str()
