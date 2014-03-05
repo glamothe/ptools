@@ -93,43 +93,65 @@ std::string readresidtype(const std::string &ligne) {
 
 
 
+/**
+ * returns Coord3D from a PDB-like string
+ */
+Coord3D pdbToCoords(const std::string & line)
+{
+ double x,y,z;
+ std::string sx,sy,sz;
+ 
+ sx=line.substr(30,8);
+ sy=line.substr(38,8);
+ sz=line.substr(46,8);
+ 
+ x=atof(sx.c_str());
+ y=atof(sy.c_str());
+ z=atof(sz.c_str());
+ 
+ return Coord3D(x,y,z);
+ 
+    
+}
+
+
+/**
+ * Set Atomproperty from a PDB-like string
+ * 
+ */
+void pdbToAtomproperty(const std::string & line, Atomproperty& atp)
+{
+    
+    atp.atomType = readatomtype(line);
+    atp._pdbAtomType = line.substr(12,4);
+    
+    
+    atp.residType = readresidtype(line);
+    std::string chainID = line.substr(21,1);
+    if (chainID == " ") chainID = "";
+    atp.chainId = chainID;
+    atp.residId = atoi(line.substr(22,4).c_str());
+    atp.atomId = atoi(line.substr(6,5).c_str());
+    std::string extra = line.substr(54); //extracts everything after the position 54 to the end of line
+    atp.extra = extra ;
+
+}
+
+
+
 /** 
  * parses a PDB-formatted string and updates the given Atom instance
  * 
  */
 void readAtom(const std::string& line, Atom& at)
 {
-    //TODO: needs factorization with ReadPDB
-    
+
     if (isAtom(line))
         {
-            std::string sx,sy,sz;
-
-            sx=line.substr(30,8);
-            sy=line.substr(38,8);
-            sz=line.substr(46,8);
-
-
-            at.coords.x=atof(sx.c_str());
-            at.coords.y=atof(sy.c_str());
-            at.coords.z=atof(sz.c_str());
-
-            at.atomType = readatomtype(line);
-            at._pdbAtomType = line.substr(12,4);
-            
-
-
-            at.residType = readresidtype(line);
-            std::string chainID = line.substr(21,1);
-            if (chainID == " ") chainID = "";
-            at.chainId = chainID;
-            at.residId = atoi(line.substr(22,4).c_str());
-            at.atomId = atoi(line.substr(6,5).c_str());
-            std::string extra = line.substr(54); //extracts everything after the position 54 to the end of line
-            at.extra = extra ;
-            
+            pdbToAtomproperty(line, at);
+            at.coords = pdbToCoords(line);
+             
             return;
-
         }
         
     throw std::runtime_error("in pdbio.readAtom(): input is not an atom\n");
@@ -141,41 +163,15 @@ void readAtom(const std::string& line, Atom& at)
 void ReadPDB(istream& file, Rigidbody& protein) {
 
     std::string line ;
-    int line_count = 0 , atom_count=0;
 
     while ( std::getline(file, line))
     {
-        line_count++ ;
         if (isAtom(line))
         {
-
-            atom_count++ ;
-
-            std::string sx,sy,sz;
-
-            sx=line.substr(30,8);
-            sy=line.substr(38,8);
-            sz=line.substr(46,8);
-
-            Coord3D pos;
-            pos.x=atof(sx.c_str());
-            pos.y=atof(sy.c_str());
-            pos.z=atof(sz.c_str());
-
+            
+            Coord3D pos = pdbToCoords(line);
             Atomproperty a;
-            a.atomType = readatomtype(line);
-            a._pdbAtomType = line.substr(12,4);
-            
-            
-            a.residType = readresidtype(line);
-            std::string chainID = line.substr(21,1);
-            if (chainID == " ") chainID = "";
-            a.chainId = chainID;
-            a.residId = atoi(line.substr(22,4).c_str());
-            a.atomId = atoi(line.substr(6,5).c_str());
-            std::string extra = line.substr(54,line.size()-1-54+1); //extracts everything after the position 27 to the end of line
-            a.extra = extra ;
-
+            pdbToAtomproperty(line, a);
             protein.AddAtom(a,pos);
 
         }
