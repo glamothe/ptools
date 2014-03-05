@@ -85,7 +85,7 @@ cdef class Rigidbody:
 
 
 
-        if isinstance(filename, Rigidbody):
+        elif isinstance(filename, Rigidbody):
             oldrigid = <Rigidbody> filename
             oldrigidptr = <CppRigidbody*> (oldrigid.thisptr)
             
@@ -93,12 +93,15 @@ cdef class Rigidbody:
             if not self.thisptr:
                 print "FATAL: this should never happen"
 
-        if hasattr(filename, "read"):
+        elif hasattr(filename, "read"):
             #we consider filename as a file-like object
             #print "reading rigidbody from file-like"
             self.thisptr = new CppRigidbody()
             loadPDBfromPythonFileLike(filename, self.thisptr)
-           
+        else:
+            raise RuntimeError("invalid argument in Rigidbody()")
+
+   
     def __dealloc__(self):
         if self.thisptr:
             del self.thisptr
