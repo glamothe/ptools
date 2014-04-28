@@ -1,7 +1,7 @@
 from cython.operator cimport dereference as dereference
 from libcpp.string cimport string
 
-cdef extern from "minimizers/lbfgs_interface.h" namespace "PTools":
+cdef extern from "lbfgs_interface.h" namespace "PTools":
     cdef cppclass CppScorpionLbfgs "PTools::Lbfgs":
         CppScorpionLbfgs(CppScorpionForceField&)
         void minimize(int)

@@ -27,6 +27,7 @@ sources =   [
                "geometry.cpp",
                "pdbio.cpp",
                "superpose.cpp",
+               "scorpionforcefield.cpp",
                "minimizers/lbfgs_interface.cpp",
                "minimizers/routines.c",
                "minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp",
