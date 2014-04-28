@@ -12,6 +12,16 @@ from ptools import *
 
 
 
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option("--ignore-missing", dest="ignoremissing", action="store_true", default=False,
+                  help="ignore missing heavy atoms (which will result in missing beads)" )
+
+(options, args) = parser.parse_args()
+
+
+
+
 class IncompleteBead:
       pass
 
@@ -190,9 +200,9 @@ for residKey, atomList in zip(residulist,orderedresid):
             try:
                   bead = beadcreator.create()
             except IncompleteBead:
-                  print "The bead %i of residue %s is incomplete. Please check your pdb!"\
-                      %(totAtoms+1,residKey)
-                  raise 
+                  sys.stderr.write("The bead %i of residue %s is incomplete. Please check your pdb!\n"\
+                      %(totAtoms+1,residKey) )
+                  if not options.ignoremissing: raise 
             totAtoms+=1
             #now we must modify the bead: change the residue type and set the "extra" field correctly
             bead.residType = residType 
@@ -200,4 +210,4 @@ for residKey, atomList in zip(residulist,orderedresid):
             bead.extra = extra
             bead.atomId = totAtoms
             bead.residId = residNumber
-            print bead.ToPdbString(),  # ',' because of the extra \n caracter from the ptools C++ library
+            print bead.ToPdbString()

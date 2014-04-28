@@ -1,4 +1,4 @@
-/* routines.f -- translated by f2c (version 20090411).
+/* lbfgsb.f -- translated by f2c (version 20100827).
    You must link the resulting object file with libf2c:
 	on Microsoft Windows system, link with libf2c.lib;
 	on Linux or Unix systems, link with .../path/to/libf2c.a -lm
@@ -19,12 +19,12 @@ static integer c__1 = 1;
 static integer c__9 = 9;
 static integer c__11 = 11;
 static integer c__3 = 3;
-static doublereal c_b275 = .001;
-static doublereal c_b276 = .9;
-static doublereal c_b277 = .1;
+static doublereal c_b274 = .001;
+static doublereal c_b275 = .9;
+static doublereal c_b276 = .1;
 static integer c__5 = 5;
 
-/* ================    L-BFGS-B (version 2.1)   ========================== */
+/* ================    L-BFGS-B (version 2.4)   ========================== */
 /* Subroutine */ int setulb_(integer *n, integer *m, doublereal *x, 
 	doublereal *l, doublereal *u, integer *nbd, doublereal *f, doublereal 
 	*g, doublereal *factr, doublereal *pgtol, doublereal *wa, integer *
@@ -38,17 +38,16 @@ static integer c__5 = 5;
     integer s_cmp(char *, char *, ftnlen, ftnlen);
 
     /* Local variables */
-    static integer l1, l2, l3, ld, lr, lt, lz, lwa, lsg, lyg, lwn, lss, lws, 
-	    lwt, lsy, lwy, lyy, lsnd, lsgo, lygo;
+    static integer l1, l2, l3, ld, lr, lt, lz, lwa, lwn, lss, lws, lwt, lsy, 
+	    lwy, lsnd;
     extern /* Subroutine */ int mainlb_(integer *, integer *, doublereal *, 
 	    doublereal *, doublereal *, integer *, doublereal *, doublereal *,
 	     doublereal *, doublereal *, doublereal *, doublereal *, 
 	    doublereal *, doublereal *, doublereal *, doublereal *, 
 	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
-	    integer *, char *, integer *, char *, logical *, integer *, 
-	    doublereal *, ftnlen, ftnlen);
+	    doublereal *, doublereal *, integer *, integer *, integer *, char 
+	    *, integer *, char *, logical *, integer *, doublereal *, ftnlen, 
+	    ftnlen);
 
 /*     ************ */
 
@@ -119,7 +118,7 @@ static integer c__5 = 5;
 /*       On exit pgtol is unchanged. */
 
 /*     wa is a double precision working array of length */
-/*       (2mmax + 4)nmax + 12mmax^2 + 12mmax. */
+/*       (2mmax + 4)nmax + 11mmax^2 + 8mmax. */
 
 /*     iwa is an integer working array of length 3nmax. */
 
@@ -142,11 +141,11 @@ static integer c__5 = 5;
 /*     lsave is a logical working array of dimension 4. */
 /*       On exit with 'task' = NEW_X, the following information is */
 /*                                                             available: */
-/*         If lsave(1) = .true.  then  the initial X has been replaced by */
-/*                                     its projection in the feasible set; */
-/*         If lsave(2) = .true.  then  the problem is constrained; */
-/*         If lsave(3) = .true.  then  each variable has upper and lower */
-/*                                     bounds; */
+/*         If lsave(1) = .true. then  the initial X has been replaced by */
+/*                                    its projection in the feasible set; */
+/*         If lsave(2) = .true. then  the problem is constrained; */
+/*         If lsave(3) = .true. then  each variable has upper and lower */
+/*                                    bounds; */
 
 /*     isave is an integer working array of dimension 44. */
 /*       On exit with 'task' = NEW_X, the following information is */
@@ -163,7 +162,7 @@ static integer c__5 = 5;
 /*         isave(34) = the total number of function and gradient */
 /*                         evaluations; */
 /*         isave(36) = the number of function value or gradient */
-/*                                  evaluations in the current iteration; */
+/*                         evaluations in the current iteration; */
 /*         if isave(37) = 0  then the subspace argmin is within the box; */
 /*         if isave(37) = 1  then the subspace argmin is beyond the box; */
 /*         isave(38) = the number of free variables in the current */
@@ -216,11 +215,11 @@ static integer c__5 = 5;
 /*       Northwestern University, 1994. */
 
 /*       (Postscript files of these papers are available via anonymous */
-/*        ftp to eecs.nwu.edu in the directory pub/lbfgs/lbfgs_bcm.) */
+/*        ftp to ece.nwu.edu in the directory pub/lbfgs/lbfgs_bcm.) */
 
 /*                           *  *  * */
 
-/*     NEOS, November 1994. (Latest revision June 1996.) */
+/*     NEOS, November 1994. (Latest revision April 1997.) */
 /*     Optimization Technology Center. */
 /*     Argonne National Laboratory and Northwestern University. */
 /*     Written by */
@@ -229,7 +228,6 @@ static integer c__5 = 5;
 
 
 /*     ************ */
-/* a    if (task .eq. 'START') then */
     /* Parameter adjustments */
     --iwa;
     --g;
@@ -243,7 +241,7 @@ static integer c__5 = 5;
     --dsave;
 
     /* Function Body */
-    if (s_cmp(task, "START", (ftnlen)5, (ftnlen)5) == 0) {
+    if (s_cmp(task, "START", (ftnlen)60, (ftnlen)5) == 0) {
 	isave[1] = *m * *n;
 /* Computing 2nd power */
 	i__1 = *m;
@@ -256,7 +254,7 @@ static integer c__5 = 5;
 	isave[6] = isave[5] + isave[1];
 	isave[7] = isave[6] + isave[2];
 	isave[8] = isave[7] + isave[2];
-	isave[9] = isave[8] + isave[2];
+	isave[9] = isave[8];
 	isave[10] = isave[9] + isave[2];
 	isave[11] = isave[10] + isave[3];
 	isave[12] = isave[11] + isave[3];
@@ -264,10 +262,6 @@ static integer c__5 = 5;
 	isave[14] = isave[13] + *n;
 	isave[15] = isave[14] + *n;
 	isave[16] = isave[15] + *n;
-	isave[17] = isave[16] + (*m << 3);
-	isave[18] = isave[17] + *m;
-	isave[19] = isave[18] + *m;
-	isave[20] = isave[19] + *m;
     }
     l1 = isave[1];
     l2 = isave[2];
@@ -276,7 +270,6 @@ static integer c__5 = 5;
     lwy = isave[5];
     lsy = isave[6];
     lss = isave[7];
-    lyy = isave[8];
     lwt = isave[9];
     lwn = isave[10];
     lsnd = isave[11];
@@ -285,16 +278,11 @@ static integer c__5 = 5;
     ld = isave[14];
     lt = isave[15];
     lwa = isave[16];
-    lsg = isave[17];
-    lsgo = isave[18];
-    lyg = isave[19];
-    lygo = isave[20];
     mainlb_(n, m, &x[1], &l[1], &u[1], &nbd[1], f, &g[1], factr, pgtol, &wa[
-	    lws], &wa[lwy], &wa[lsy], &wa[lss], &wa[lyy], &wa[lwt], &wa[lwn], 
-	    &wa[lsnd], &wa[lz], &wa[lr], &wa[ld], &wa[lt], &wa[lwa], &wa[lsg],
-	     &wa[lsgo], &wa[lyg], &wa[lygo], &iwa[1], &iwa[*n + 1], &iwa[(*n 
-	    << 1) + 1], task, iprint, csave, &lsave[1], &isave[22], &dsave[1],
-	     (ftnlen)60, (ftnlen)60);
+	    lws], &wa[lwy], &wa[lsy], &wa[lss], &wa[lwt], &wa[lwn], &wa[lsnd],
+	     &wa[lz], &wa[lr], &wa[ld], &wa[lt], &wa[lwa], &iwa[1], &iwa[*n + 
+	    1], &iwa[(*n << 1) + 1], task, iprint, csave, &lsave[1], &isave[
+	    22], &dsave[1], (ftnlen)60, (ftnlen)60);
     return 0;
 } /* setulb_ */
 
@@ -302,13 +290,12 @@ static integer c__5 = 5;
 /* Subroutine */ int mainlb_(integer *n, integer *m, doublereal *x, 
 	doublereal *l, doublereal *u, integer *nbd, doublereal *f, doublereal 
 	*g, doublereal *factr, doublereal *pgtol, doublereal *ws, doublereal *
-	wy, doublereal *sy, doublereal *ss, doublereal *yy, doublereal *wt, 
-	doublereal *wn, doublereal *snd, doublereal *z__, doublereal *r__, 
-	doublereal *d__, doublereal *t, doublereal *wa, doublereal *sg, 
-	doublereal *sgo, doublereal *yg, doublereal *ygo, integer *index, 
-	integer *iwhere, integer *indx2, char *task, integer *iprint, char *
-	csave, logical *lsave, integer *isave, doublereal *dsave, ftnlen 
-	task_len, ftnlen csave_len)
+	wy, doublereal *sy, doublereal *ss, doublereal *wt, doublereal *wn, 
+	doublereal *snd, doublereal *z__, doublereal *r__, doublereal *d__, 
+	doublereal *t, doublereal *wa, integer *index, integer *iwhere, 
+	integer *indx2, char *task, integer *iprint, char *csave, logical *
+	lsave, integer *isave, doublereal *dsave, ftnlen task_len, ftnlen 
+	csave_len)
 {
     /* Format strings */
     static char fmt_1002[] = "(/,\002At iterate\002,i5,4x,\002f= \002,1p,d12"
@@ -333,8 +320,8 @@ static integer c__5 = 5;
 
     /* System generated locals */
     integer ws_dim1, ws_offset, wy_dim1, wy_offset, sy_dim1, sy_offset, 
-	    ss_dim1, ss_offset, yy_dim1, yy_offset, wt_dim1, wt_offset, 
-	    wn_dim1, wn_offset, snd_dim1, snd_offset, i__1;
+	    ss_dim1, ss_offset, wt_dim1, wt_offset, wn_dim1, wn_offset, 
+	    snd_dim1, snd_offset, i__1;
     doublereal d__1, d__2;
     olist o__1;
 
@@ -412,8 +399,8 @@ static integer c__5 = 5;
 	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
 	    doublereal *, doublereal *, doublereal *, doublereal *, 
 	    doublereal *, integer *, integer *, doublereal *, doublereal *, 
-	    doublereal *, doublereal *, integer *, doublereal *, doublereal *,
-	     integer *, doublereal *, integer *, doublereal *);
+	    doublereal *, doublereal *, integer *, integer *, doublereal *, 
+	    integer *, doublereal *);
     static doublereal epsmch;
     extern /* Subroutine */ int cmprlb_(integer *, integer *, doublereal *, 
 	    doublereal *, doublereal *, doublereal *, doublereal *, 
@@ -445,15 +432,15 @@ static integer c__5 = 5;
 	     integer *, doublereal *, doublereal *, doublereal *);
 
     /* Fortran I/O blocks */
-    static cilist io___62 = { 0, 6, 0, fmt_1002, 0 };
-    static cilist io___63 = { 0, 0, 0, fmt_1003, 0 };
-    static cilist io___64 = { 0, 6, 0, fmt_1001, 0 };
-    static cilist io___66 = { 0, 6, 0, fmt_1005, 0 };
-    static cilist io___68 = { 0, 6, 0, fmt_1006, 0 };
-    static cilist io___69 = { 0, 6, 0, fmt_1005, 0 };
-    static cilist io___71 = { 0, 6, 0, fmt_1008, 0 };
-    static cilist io___75 = { 0, 6, 0, fmt_1004, 0 };
-    static cilist io___76 = { 0, 6, 0, fmt_1007, 0 };
+    static cilist io___57 = { 0, 6, 0, fmt_1002, 0 };
+    static cilist io___58 = { 0, 0, 0, fmt_1003, 0 };
+    static cilist io___59 = { 0, 6, 0, fmt_1001, 0 };
+    static cilist io___61 = { 0, 6, 0, fmt_1005, 0 };
+    static cilist io___63 = { 0, 6, 0, fmt_1006, 0 };
+    static cilist io___64 = { 0, 6, 0, fmt_1005, 0 };
+    static cilist io___66 = { 0, 6, 0, fmt_1008, 0 };
+    static cilist io___70 = { 0, 6, 0, fmt_1004, 0 };
+    static cilist io___71 = { 0, 6, 0, fmt_1007, 0 };
 
 
 /*     ************ */
@@ -527,7 +514,6 @@ static integer c__5 = 5;
 /*          wy, of dimension n x m, stores Y, the matrix of y-vectors; */
 /*          sy, of dimension m x m, stores S'Y; */
 /*          ss, of dimension m x m, stores S'S; */
-/* 	   yy, of dimension m x m, stores Y'Y; */
 /*          wt, of dimension m x m, stores the Cholesky factorization */
 /*                                  of (theta*S'S+LD^(-1)L'); see eq. */
 /*                                  (2.26) in [3]. */
@@ -549,7 +535,6 @@ static integer c__5 = 5;
 /*       z is used at different times to store the Cauchy point and */
 /*       the Newton point. */
 
-/*     sg(m),sgo(m),yg(m),ygo(m) are double precision working arrays. */
 
 /*     index is an integer working array of dimension n. */
 /*       In subroutine freev, index is used to store the free and fixed */
@@ -621,11 +606,11 @@ static integer c__5 = 5;
 /*       Mathematical Programming 63 (1994), no. 4, pp. 129-156. */
 
 /*       (Postscript files of these papers are available via anonymous */
-/*        ftp to eecs.nwu.edu in the directory pub/lbfgs/lbfgs_bcm.) */
+/*        ftp to ece.nwu.edu in the directory pub/lbfgs/lbfgs_bcm.) */
 
 /*                           *  *  * */
 
-/*     NEOS, November 1994. (Latest revision June 1996.) */
+/*     NEOS, November 1994. (Latest revision April 1997.) */
 /*     Optimization Technology Center. */
 /*     Argonne National Laboratory and Northwestern University. */
 /*     Written by */
@@ -647,10 +632,6 @@ static integer c__5 = 5;
     --u;
     --l;
     --x;
-    --ygo;
-    --yg;
-    --sgo;
-    --sg;
     --wa;
     snd_dim1 = 2 * *m;
     snd_offset = 1 + snd_dim1;
@@ -661,9 +642,6 @@ static integer c__5 = 5;
     wt_dim1 = *m;
     wt_offset = 1 + wt_dim1;
     wt -= wt_offset;
-    yy_dim1 = *m;
-    yy_offset = 1 + yy_dim1;
-    yy -= yy_offset;
     ss_dim1 = *m;
     ss_offset = 1 + ss_dim1;
     ss -= ss_offset;
@@ -681,10 +659,19 @@ static integer c__5 = 5;
     --dsave;
 
     /* Function Body */
-    if (s_cmp(task, "START", (ftnlen)5, (ftnlen)5) == 0) {
+    if (s_cmp(task, "START", (ftnlen)60, (ftnlen)5) == 0) {
 	timer_(&time1);
 /*        Generate the current machine precision. */
 	epsmch = dpmeps_();
+	fold = 0.;
+	dnorm = 0.;
+	cpu1 = 0.;
+	gd = 0.;
+	sbgnrm = 0.;
+	stp = 0.;
+	stpmx = 0.;
+	gdold = 0.;
+	dtd = 0.;
 /*        Initialize counters and scalars when task='START'. */
 /*           for the limited memory BFGS matrices: */
 	col = 0;
@@ -692,6 +679,13 @@ static integer c__5 = 5;
 	theta = 1.;
 	iupdat = 0;
 	updatd = FALSE_;
+	iback = 0;
+	itail = 0;
+	ifun = 0;
+	iword = 0;
+	nact = 0;
+	ileave = 0;
+	nenter = 0;
 /*           for operation counts: */
 	iter = 0;
 	nfgv = 0;
@@ -709,6 +703,7 @@ static integer c__5 = 5;
 	s_copy(word, "---", (ftnlen)3, (ftnlen)3);
 /*           'info' records the termination information. */
 	info = 0;
+	itfile = 0;
 	if (*iprint >= 1) {
 /*                                open a summary file 'iterate.dat' */
 	    o__1.oerr = 0;
@@ -808,13 +803,13 @@ L111:
 /*     Compute the infinity norm of the (-) projected gradient. */
     projgr_(n, &l[1], &u[1], &nbd[1], &x[1], &g[1], &sbgnrm);
     if (*iprint >= 1) {
-	s_wsfe(&io___62);
+	s_wsfe(&io___57);
 	do_fio(&c__1, (char *)&iter, (ftnlen)sizeof(integer));
 	do_fio(&c__1, (char *)&(*f), (ftnlen)sizeof(doublereal));
 	do_fio(&c__1, (char *)&sbgnrm, (ftnlen)sizeof(doublereal));
 	e_wsfe();
-	io___63.ciunit = itfile;
-	s_wsfe(&io___63);
+	io___58.ciunit = itfile;
+	s_wsfe(&io___58);
 	do_fio(&c__1, (char *)&iter, (ftnlen)sizeof(integer));
 	do_fio(&c__1, (char *)&nfgv, (ftnlen)sizeof(integer));
 	do_fio(&c__1, (char *)&sbgnrm, (ftnlen)sizeof(doublereal));
@@ -830,7 +825,7 @@ L111:
 /* ----------------- the beginning of the loop -------------------------- */
 L222:
     if (*iprint >= 99) {
-	s_wsfe(&io___64);
+	s_wsfe(&io___59);
 	i__1 = iter + 1;
 	do_fio(&c__1, (char *)&i__1, (ftnlen)sizeof(integer));
 	e_wsfe();
@@ -853,12 +848,12 @@ L222:
     cauchy_(n, &x[1], &l[1], &u[1], &nbd[1], &g[1], &indx2[1], &iwhere[1], &t[
 	    1], &d__[1], &z__[1], m, &wy[wy_offset], &ws[ws_offset], &sy[
 	    sy_offset], &wt[wt_offset], &theta, &col, &head, &wa[1], &wa[(*m 
-	    << 1) + 1], &wa[(*m << 2) + 1], &wa[*m * 6 + 1], &nint, &sg[1], &
-	    yg[1], iprint, &sbgnrm, &info, &epsmch);
+	    << 1) + 1], &wa[(*m << 2) + 1], &wa[*m * 6 + 1], &nint, iprint, &
+	    sbgnrm, &info, &epsmch);
     if (info != 0) {
 /*         singular triangular system detected; refresh the lbfgs memory. */
 	if (*iprint >= 1) {
-	    s_wsfe(&io___66);
+	    s_wsfe(&io___61);
 	    e_wsfe();
 	}
 	info = 0;
@@ -905,7 +900,7 @@ L333:
 /*          nonpositive definiteness in Cholesky factorization; */
 /*          refresh the lbfgs memory and restart the iteration. */
 	if (*iprint >= 1) {
-	    s_wsfe(&io___68);
+	    s_wsfe(&io___63);
 	    e_wsfe();
 	}
 	info = 0;
@@ -935,7 +930,7 @@ L444:
 /*          singular triangular system detected; */
 /*          refresh the lbfgs memory and restart the iteration. */
 	if (*iprint >= 1) {
-	    s_wsfe(&io___69);
+	    s_wsfe(&io___64);
 	    e_wsfe();
 	}
 	info = 0;
@@ -989,7 +984,7 @@ L666:
 	} else {
 /*             refresh the lbfgs memory and restart the iteration. */
 	    if (*iprint >= 1) {
-		s_wsfe(&io___71);
+		s_wsfe(&io___66);
 		e_wsfe();
 	    }
 	    if (info == 0) {
@@ -1062,7 +1057,7 @@ L777:
 	++nskip;
 	updatd = FALSE_;
 	if (*iprint >= 1) {
-	    s_wsfe(&io___75);
+	    s_wsfe(&io___70);
 	    do_fio(&c__1, (char *)&dr, (ftnlen)sizeof(doublereal));
 	    do_fio(&c__1, (char *)&ddum, (ftnlen)sizeof(doublereal));
 	    e_wsfe();
@@ -1090,7 +1085,7 @@ L777:
 /*          nonpositive definiteness in Cholesky factorization; */
 /*          refresh the lbfgs memory and restart the iteration. */
 	if (*iprint >= 1) {
-	    s_wsfe(&io___76);
+	    s_wsfe(&io___71);
 	    e_wsfe();
 	}
 	info = 0;
@@ -1177,9 +1172,9 @@ L1000:
     static integer i__, nbdd;
 
     /* Fortran I/O blocks */
-    static cilist io___81 = { 0, 6, 0, 0, 0 };
-    static cilist io___82 = { 0, 6, 0, 0, 0 };
-    static cilist io___83 = { 0, 6, 0, fmt_1001, 0 };
+    static cilist io___76 = { 0, 6, 0, 0, 0 };
+    static cilist io___77 = { 0, 6, 0, 0, 0 };
+    static cilist io___78 = { 0, 6, 0, fmt_1001, 0 };
 
 
 /*     ************ */
@@ -1264,20 +1259,20 @@ L1000:
     }
     if (*iprint >= 0) {
 	if (*prjctd) {
-	    s_wsle(&io___81);
+	    s_wsle(&io___76);
 	    do_lio(&c__9, &c__1, "The initial X is infeasible.  Restart with"
 		    " its projection.", (ftnlen)58);
 	    e_wsle();
 	}
 	if (! (*cnstnd)) {
-	    s_wsle(&io___82);
+	    s_wsle(&io___77);
 	    do_lio(&c__9, &c__1, "This problem is unconstrained.", (ftnlen)30)
 		    ;
 	    e_wsle();
 	}
     }
     if (*iprint > 0) {
-	s_wsfe(&io___83);
+	s_wsfe(&io___78);
 	do_fio(&c__1, (char *)&nbdd, (ftnlen)sizeof(integer));
 	e_wsfe();
     }
@@ -1291,9 +1286,6 @@ L1000:
     /* System generated locals */
     integer sy_dim1, sy_offset, wt_dim1, wt_offset, i__1, i__2;
 
-    /* Builtin functions */
-    double sqrt(doublereal);
-
     /* Local variables */
     static integer i__, k, i2;
     static doublereal sum;
@@ -1305,8 +1297,8 @@ L1000:
 /*     Subroutine bmv */
 
 /*     This subroutine computes the product of the 2m x 2m middle matrix */
-/* 	in the compact L-BFGS formula of B and a 2m vector v; */
-/* 	it returns the product in p. */
+/*       in the compact L-BFGS formula of B and a 2m vector v; */
+/*       it returns the product in p. */
 
 /*     m is an integer variable. */
 /*       On entry m is the maximum number of variable metric corrections */
@@ -1373,7 +1365,7 @@ L1000:
     }
 /*     PART I: solve [  D^(1/2)      O ] [ p1 ] = [ v1 ] */
 /*                   [ -L*D^(-1/2)   J ] [ p2 ]   [ v2 ]. */
-/* 	solve Jp2=v2+LD^(-1)v1. */
+/*       solve Jp2=v2+LD^(-1)v1. */
     p[*col + 1] = v[*col + 1];
     i__1 = *col;
     for (i__ = 2; i__ <= i__1; ++i__) {
@@ -1392,12 +1384,10 @@ L1000:
     if (*info != 0) {
 	return 0;
     }
-/*     	solve D^(1/2)p1=v1. */
-    i__1 = *col;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-	p[i__] = v[i__] / sqrt(sy[i__ + i__ * sy_dim1]);
-/* L30: */
-    }
+/*       solve D^(1/2)p1=v1. */
+/* c    do 30 i = 1, col */
+/* c       p(i) = v(i)/sqrt(sy(i,i)) */
+/* c30  continue */
 /*     PART II: solve [ -D^(1/2)   D^(-1/2)*L'  ] [ p1 ] = [ p1 ] */
 /*                    [  0         J'           ] [ p2 ]   [ p2 ]. */
 /*       solve J^Tp2=p2. */
@@ -1409,7 +1399,9 @@ L1000:
 /*                 =-D^(-1/2)p1+D^(-1)L'p2. */
     i__1 = *col;
     for (i__ = 1; i__ <= i__1; ++i__) {
-	p[i__] = -p[i__] / sqrt(sy[i__ + i__ * sy_dim1]);
+/* c       p(i) = -p(i)/sqrt(sy(i,i))  combined with do 30 loop */
+/* c                                   into the next line */
+	p[i__] = -v[i__] / sy[i__ + i__ * sy_dim1];
 /* L40: */
     }
     i__1 = *col;
@@ -1434,8 +1426,8 @@ L1000:
 	doublereal *wy, doublereal *ws, doublereal *sy, doublereal *wt, 
 	doublereal *theta, integer *col, integer *head, doublereal *p, 
 	doublereal *c__, doublereal *wbp, doublereal *v, integer *nint, 
-	doublereal *sg, doublereal *yg, integer *iprint, doublereal *sbgnrm, 
-	integer *info, doublereal *epsmch)
+	integer *iprint, doublereal *sbgnrm, integer *info, doublereal *
+	epsmch)
 {
     /* Format strings */
     static char fmt_3010[] = "(/,\002---------------- CAUCHY entered--------"
@@ -1494,20 +1486,20 @@ L1000:
     static logical xlower, xupper;
 
     /* Fortran I/O blocks */
-    static cilist io___88 = { 0, 6, 0, 0, 0 };
-    static cilist io___96 = { 0, 6, 0, fmt_3010, 0 };
-    static cilist io___105 = { 0, 6, 0, fmt_1010, 0 };
-    static cilist io___110 = { 0, 6, 0, 0, 0 };
-    static cilist io___117 = { 0, 6, 0, fmt_4011, 0 };
-    static cilist io___118 = { 0, 6, 0, fmt_5010, 0 };
-    static cilist io___119 = { 0, 6, 0, fmt_6010, 0 };
+    static cilist io___83 = { 0, 6, 0, 0, 0 };
+    static cilist io___91 = { 0, 6, 0, fmt_3010, 0 };
+    static cilist io___100 = { 0, 6, 0, fmt_1010, 0 };
+    static cilist io___105 = { 0, 6, 0, 0, 0 };
+    static cilist io___112 = { 0, 6, 0, fmt_4011, 0 };
+    static cilist io___113 = { 0, 6, 0, fmt_5010, 0 };
+    static cilist io___114 = { 0, 6, 0, fmt_6010, 0 };
+    static cilist io___117 = { 0, 6, 0, 0, 0 };
     static cilist io___122 = { 0, 6, 0, 0, 0 };
-    static cilist io___127 = { 0, 6, 0, 0, 0 };
-    static cilist io___128 = { 0, 6, 0, 0, 0 };
-    static cilist io___129 = { 0, 6, 0, fmt_4010, 0 };
-    static cilist io___130 = { 0, 6, 0, fmt_6010, 0 };
-    static cilist io___131 = { 0, 6, 0, fmt_1010, 0 };
-    static cilist io___132 = { 0, 6, 0, fmt_2010, 0 };
+    static cilist io___123 = { 0, 6, 0, 0, 0 };
+    static cilist io___124 = { 0, 6, 0, fmt_4010, 0 };
+    static cilist io___125 = { 0, 6, 0, fmt_6010, 0 };
+    static cilist io___126 = { 0, 6, 0, fmt_1010, 0 };
+    static cilist io___127 = { 0, 6, 0, fmt_2010, 0 };
 
 
 /*     ************ */
@@ -1609,8 +1601,8 @@ L1000:
 /*       On exit col is unchanged. */
 
 /*     head is an integer variable. */
-/*       On entry head is the location of the first s-vector (or y-vector) */
-/*         in S (or Y). */
+/*       On entry head is the location of the first s-vector */
+/*         (or y-vector) in S (or Y). */
 /*       On exit col is unchanged. */
 
 /*     p is a double precision working array of dimension 2m. */
@@ -1628,10 +1620,6 @@ L1000:
 /*     nint is an integer variable. */
 /*       On exit nint records the number of quadratic segments explored */
 /*         in searching for the GCP. */
-
-/*     sg and yg are double precision arrays of dimension m. */
-/*       On entry sg  and yg store S'g and Y'g correspondingly. */
-/*       On exit they are unchanged. */
 
 /*     iprint is an INTEGER variable that must be set by the user. */
 /*       It controls the frequency and type of output generated: */
@@ -1673,11 +1661,11 @@ L1000:
 /*       1994. */
 
 /*       (Postscript files of these papers are available via anonymous */
-/*        ftp to eecs.nwu.edu in the directory pub/lbfgs/lbfgs_bcm.) */
+/*        ftp to ece.nwu.edu in the directory pub/lbfgs/lbfgs_bcm.) */
 
 /*                           *  *  * */
 
-/*     NEOS, November 1994. (Latest revision June 1996.) */
+/*     NEOS, November 1994. (Latest revision April 1997.) */
 /*     Optimization Technology Center. */
 /*     Argonne National Laboratory and Northwestern University. */
 /*     Written by */
@@ -1700,8 +1688,6 @@ L1000:
     --u;
     --l;
     --x;
-    --yg;
-    --sg;
     --v;
     --wbp;
     --c__;
@@ -1722,7 +1708,7 @@ L1000:
     /* Function Body */
     if (*sbgnrm <= 0.) {
 	if (*iprint >= 0) {
-	    s_wsle(&io___88);
+	    s_wsle(&io___83);
 	    do_lio(&c__9, &c__1, "Subgnorm = 0.  GCP = X.", (ftnlen)23);
 	    e_wsle();
 	}
@@ -1737,7 +1723,7 @@ L1000:
     col2 = *col << 1;
     f1 = 0.;
     if (*iprint >= 99) {
-	s_wsfe(&io___96);
+	s_wsfe(&io___91);
 	e_wsfe();
     }
 /*     We set p to zero and build it up as we determine d. */
@@ -1836,7 +1822,7 @@ L1000:
     if (nbreak == 0 && nfree == *n + 1) {
 /*                  is a zero vector, return with the initial xcp as GCP. */
 	if (*iprint > 100) {
-	    s_wsfe(&io___105);
+	    s_wsfe(&io___100);
 	    i__1 = *n;
 	    for (i__ = 1; i__ <= i__1; ++i__) {
 		do_fio(&c__1, (char *)&xcp[i__], (ftnlen)sizeof(doublereal));
@@ -1865,7 +1851,7 @@ L1000:
     tsum = 0.;
     *nint = 1;
     if (*iprint >= 99) {
-	s_wsle(&io___110);
+	s_wsle(&io___105);
 	do_lio(&c__9, &c__1, "There are ", (ftnlen)10);
 	do_lio(&c__3, &c__1, (char *)&nbreak, (ftnlen)sizeof(integer));
 	do_lio(&c__9, &c__1, "  breakpoints ", (ftnlen)14);
@@ -1907,19 +1893,20 @@ L777:
     }
     dt = tj - tj0;
     if (dt != 0. && *iprint >= 100) {
-	s_wsfe(&io___117);
+	s_wsfe(&io___112);
 	do_fio(&c__1, (char *)&(*nint), (ftnlen)sizeof(integer));
 	do_fio(&c__1, (char *)&f1, (ftnlen)sizeof(doublereal));
 	do_fio(&c__1, (char *)&f2, (ftnlen)sizeof(doublereal));
 	e_wsfe();
-	s_wsfe(&io___118);
+	s_wsfe(&io___113);
 	do_fio(&c__1, (char *)&dt, (ftnlen)sizeof(doublereal));
 	e_wsfe();
-	s_wsfe(&io___119);
+	s_wsfe(&io___114);
 	do_fio(&c__1, (char *)&dtm, (ftnlen)sizeof(doublereal));
 	e_wsfe();
     }
-/*     If a minimizer is within this interval, locate the GCP and return. */
+/*     If a minimizer is within this interval, */
+/*       locate the GCP and return. */
     if (dtm < dt) {
 	goto L888;
     }
@@ -1940,7 +1927,7 @@ L777:
 	iwhere[ibp] = 1;
     }
     if (*iprint >= 100) {
-	s_wsle(&io___122);
+	s_wsle(&io___117);
 	do_lio(&c__9, &c__1, "Variable  ", (ftnlen)10);
 	do_lio(&c__3, &c__1, (char *)&ibp, (ftnlen)sizeof(integer));
 	do_lio(&c__9, &c__1, "  is fixed.", (ftnlen)11);
@@ -2006,17 +1993,17 @@ L777:
 /* ------------------- the end of the loop ------------------------------- */
 L888:
     if (*iprint >= 99) {
-	s_wsle(&io___127);
+	s_wsle(&io___122);
 	e_wsle();
-	s_wsle(&io___128);
+	s_wsle(&io___123);
 	do_lio(&c__9, &c__1, "GCP found in this segment", (ftnlen)25);
 	e_wsle();
-	s_wsfe(&io___129);
+	s_wsfe(&io___124);
 	do_fio(&c__1, (char *)&(*nint), (ftnlen)sizeof(integer));
 	do_fio(&c__1, (char *)&f1, (ftnlen)sizeof(doublereal));
 	do_fio(&c__1, (char *)&f2, (ftnlen)sizeof(doublereal));
 	e_wsfe();
-	s_wsfe(&io___130);
+	s_wsfe(&io___125);
 	do_fio(&c__1, (char *)&dtm, (ftnlen)sizeof(doublereal));
 	e_wsfe();
     }
@@ -2034,7 +2021,7 @@ L999:
 	daxpy_(&col2, &dtm, &p[1], &c__1, &c__[1], &c__1);
     }
     if (*iprint > 100) {
-	s_wsfe(&io___131);
+	s_wsfe(&io___126);
 	i__1 = *n;
 	for (i__ = 1; i__ <= i__1; ++i__) {
 	    do_fio(&c__1, (char *)&xcp[i__], (ftnlen)sizeof(doublereal));
@@ -2042,7 +2029,7 @@ L999:
 	e_wsfe();
     }
     if (*iprint >= 99) {
-	s_wsfe(&io___132);
+	s_wsfe(&io___127);
 	e_wsfe();
     }
     return 0;
@@ -2171,7 +2158,7 @@ L999:
 
 /*                           *  *  * */
 
-/*     NEOS, November 1994. (Latest revision June 1996.) */
+/*     NEOS, November 1994. (Latest revision April 1997.) */
 /*     Optimization Technology Center. */
 /*     Argonne National Laboratory and Northwestern University. */
 /*     Written by */
@@ -2351,11 +2338,11 @@ L999:
 /*       Northwestern University, 1994. */
 
 /*       (Postscript files of these papers are available via anonymous */
-/*        ftp to eecs.nwu.edu in the directory pub/lbfgs/lbfgs_bcm.) */
+/*        ftp to ece.nwu.edu in the directory pub/lbfgs/lbfgs_bcm.) */
 
 /*                           *  *  * */
 
-/*     NEOS, November 1994. (Latest revision June 1996.) */
+/*     NEOS, November 1994. (Latest revision April 1997.) */
 /*     Optimization Technology Center. */
 /*     Argonne National Laboratory and Northwestern University. */
 /*     Written by */
@@ -2570,8 +2557,9 @@ L999:
 	wn[iy + iy * wn_dim1] += sy[iy + iy * sy_dim1];
 /* L70: */
     }
-/*     Form the upper triangle of WN= [  LL'            L^-1(-L_a'+R_z')] */
-/*                                    [(-L_a +R_z)L'^-1   S'AA'S*theta  ] */
+/*     Form the upper triangle of */
+/*          WN= [  LL'            L^-1(-L_a'+R_z')] */
+/*              [(-L_a +R_z)L'^-1   S'AA'S*theta  ] */
 /*        first Cholesky factor (1,1) block of wn to get LL' */
 /*                          with L' stored in the upper triangle of wn. */
     dpofa_(&wn[wn_offset], &m2, col, info);
@@ -2708,10 +2696,10 @@ L999:
     static integer i__, k, iact;
 
     /* Fortran I/O blocks */
-    static cilist io___169 = { 0, 6, 0, 0, 0 };
-    static cilist io___170 = { 0, 6, 0, 0, 0 };
-    static cilist io___171 = { 0, 6, 0, 0, 0 };
-    static cilist io___173 = { 0, 6, 0, 0, 0 };
+    static cilist io___164 = { 0, 6, 0, 0, 0 };
+    static cilist io___165 = { 0, 6, 0, 0, 0 };
+    static cilist io___166 = { 0, 6, 0, 0, 0 };
+    static cilist io___168 = { 0, 6, 0, 0, 0 };
 
 
 /*     ************ */
@@ -2768,7 +2756,7 @@ L999:
 		--(*ileave);
 		indx2[*ileave] = k;
 		if (*iprint >= 100) {
-		    s_wsle(&io___169);
+		    s_wsle(&io___164);
 		    do_lio(&c__9, &c__1, "Variable ", (ftnlen)9);
 		    do_lio(&c__3, &c__1, (char *)&k, (ftnlen)sizeof(integer));
 		    do_lio(&c__9, &c__1, " leaves the set of free variables", 
@@ -2785,7 +2773,7 @@ L999:
 		++(*nenter);
 		indx2[*nenter] = k;
 		if (*iprint >= 100) {
-		    s_wsle(&io___170);
+		    s_wsle(&io___165);
 		    do_lio(&c__9, &c__1, "Variable ", (ftnlen)9);
 		    do_lio(&c__3, &c__1, (char *)&k, (ftnlen)sizeof(integer));
 		    do_lio(&c__9, &c__1, " enters the set of free variables", 
@@ -2796,7 +2784,7 @@ L999:
 /* L22: */
 	}
 	if (*iprint >= 99) {
-	    s_wsle(&io___171);
+	    s_wsle(&io___166);
 	    i__1 = *n + 1 - *ileave;
 	    do_lio(&c__3, &c__1, (char *)&i__1, (ftnlen)sizeof(integer));
 	    do_lio(&c__9, &c__1, " variables leave; ", (ftnlen)18);
@@ -2821,7 +2809,7 @@ L999:
 /* L24: */
     }
     if (*iprint >= 99) {
-	s_wsle(&io___173);
+	s_wsle(&io___168);
 	do_lio(&c__3, &c__1, (char *)&(*nfree), (ftnlen)sizeof(integer));
 	do_lio(&c__9, &c__1, " variables are free at GCP ", (ftnlen)27);
 	i__1 = *iter + 1;
@@ -3074,7 +3062,7 @@ L556:
 	    return 0;
 	}
     }
-    dcsrch_(f, gd, stp, &c_b275, &c_b276, &c_b277, &c_b9, stpmx, csave, &
+    dcsrch_(f, gd, stp, &c_b274, &c_b275, &c_b276, &c_b9, stpmx, csave, &
 	    isave[1], &dsave[1], (ftnlen)60);
     *xstep = *stp * *dnorm;
     if (s_cmp(csave, "CONV", (ftnlen)4, (ftnlen)4) != 0 && s_cmp(csave, "WARN"
@@ -3243,14 +3231,14 @@ L556:
     static integer i__;
 
     /* Fortran I/O blocks */
-    static cilist io___186 = { 0, 6, 0, fmt_7001, 0 };
-    static cilist io___187 = { 0, 6, 0, 0, 0 };
-    static cilist io___188 = { 0, 0, 0, fmt_2001, 0 };
-    static cilist io___189 = { 0, 0, 0, 0, 0 };
-    static cilist io___190 = { 0, 0, 0, fmt_9001, 0 };
-    static cilist io___191 = { 0, 6, 0, fmt_1004, 0 };
-    static cilist io___193 = { 0, 6, 0, fmt_1004, 0 };
-    static cilist io___194 = { 0, 6, 0, fmt_1004, 0 };
+    static cilist io___181 = { 0, 6, 0, fmt_7001, 0 };
+    static cilist io___182 = { 0, 6, 0, 0, 0 };
+    static cilist io___183 = { 0, 0, 0, fmt_2001, 0 };
+    static cilist io___184 = { 0, 0, 0, 0, 0 };
+    static cilist io___185 = { 0, 0, 0, fmt_9001, 0 };
+    static cilist io___186 = { 0, 6, 0, fmt_1004, 0 };
+    static cilist io___188 = { 0, 6, 0, fmt_1004, 0 };
+    static cilist io___189 = { 0, 6, 0, fmt_1004, 0 };
 
 
 /*     ************ */
@@ -3280,32 +3268,32 @@ L556:
 
     /* Function Body */
     if (*iprint >= 0) {
-	s_wsfe(&io___186);
+	s_wsfe(&io___181);
 	do_fio(&c__1, (char *)&(*epsmch), (ftnlen)sizeof(doublereal));
 	e_wsfe();
-	s_wsle(&io___187);
+	s_wsle(&io___182);
 	do_lio(&c__9, &c__1, "N = ", (ftnlen)4);
 	do_lio(&c__3, &c__1, (char *)&(*n), (ftnlen)sizeof(integer));
 	do_lio(&c__9, &c__1, "    M = ", (ftnlen)8);
 	do_lio(&c__3, &c__1, (char *)&(*m), (ftnlen)sizeof(integer));
 	e_wsle();
 	if (*iprint >= 1) {
-	    io___188.ciunit = *itfile;
-	    s_wsfe(&io___188);
+	    io___183.ciunit = *itfile;
+	    s_wsfe(&io___183);
 	    do_fio(&c__1, (char *)&(*epsmch), (ftnlen)sizeof(doublereal));
 	    e_wsfe();
-	    io___189.ciunit = *itfile;
-	    s_wsle(&io___189);
+	    io___184.ciunit = *itfile;
+	    s_wsle(&io___184);
 	    do_lio(&c__9, &c__1, "N = ", (ftnlen)4);
 	    do_lio(&c__3, &c__1, (char *)&(*n), (ftnlen)sizeof(integer));
 	    do_lio(&c__9, &c__1, "    M = ", (ftnlen)8);
 	    do_lio(&c__3, &c__1, (char *)&(*m), (ftnlen)sizeof(integer));
 	    e_wsle();
-	    io___190.ciunit = *itfile;
-	    s_wsfe(&io___190);
+	    io___185.ciunit = *itfile;
+	    s_wsfe(&io___185);
 	    e_wsfe();
 	    if (*iprint > 100) {
-		s_wsfe(&io___191);
+		s_wsfe(&io___186);
 		do_fio(&c__1, "L =", (ftnlen)3);
 		i__1 = *n;
 		for (i__ = 1; i__ <= i__1; ++i__) {
@@ -3313,7 +3301,7 @@ L556:
 			    ;
 		}
 		e_wsfe();
-		s_wsfe(&io___193);
+		s_wsfe(&io___188);
 		do_fio(&c__1, "X0 =", (ftnlen)4);
 		i__1 = *n;
 		for (i__ = 1; i__ <= i__1; ++i__) {
@@ -3321,7 +3309,7 @@ L556:
 			    ;
 		}
 		e_wsfe();
-		s_wsfe(&io___194);
+		s_wsfe(&io___189);
 		do_fio(&c__1, "U =", (ftnlen)3);
 		i__1 = *n;
 		for (i__ = 1; i__ <= i__1; ++i__) {
@@ -3362,12 +3350,12 @@ L556:
     static integer i__, imod;
 
     /* Fortran I/O blocks */
-    static cilist io___195 = { 0, 6, 0, 0, 0 };
+    static cilist io___190 = { 0, 6, 0, 0, 0 };
+    static cilist io___191 = { 0, 6, 0, fmt_2001, 0 };
+    static cilist io___192 = { 0, 6, 0, fmt_1004, 0 };
+    static cilist io___194 = { 0, 6, 0, fmt_1004, 0 };
     static cilist io___196 = { 0, 6, 0, fmt_2001, 0 };
-    static cilist io___197 = { 0, 6, 0, fmt_1004, 0 };
-    static cilist io___199 = { 0, 6, 0, fmt_1004, 0 };
-    static cilist io___201 = { 0, 6, 0, fmt_2001, 0 };
-    static cilist io___202 = { 0, 0, 0, fmt_3001, 0 };
+    static cilist io___197 = { 0, 0, 0, fmt_3001, 0 };
 
 
 /*     ************ */
@@ -3408,26 +3396,26 @@ L556:
 	s_copy(word, "---", (ftnlen)3, (ftnlen)3);
     }
     if (*iprint >= 99) {
-	s_wsle(&io___195);
+	s_wsle(&io___190);
 	do_lio(&c__9, &c__1, "LINE SEARCH", (ftnlen)11);
 	do_lio(&c__3, &c__1, (char *)&(*iback), (ftnlen)sizeof(integer));
 	do_lio(&c__9, &c__1, " times; norm of step = ", (ftnlen)23);
 	do_lio(&c__5, &c__1, (char *)&(*xstep), (ftnlen)sizeof(doublereal));
 	e_wsle();
-	s_wsfe(&io___196);
+	s_wsfe(&io___191);
 	do_fio(&c__1, (char *)&(*iter), (ftnlen)sizeof(integer));
 	do_fio(&c__1, (char *)&(*f), (ftnlen)sizeof(doublereal));
 	do_fio(&c__1, (char *)&(*sbgnrm), (ftnlen)sizeof(doublereal));
 	e_wsfe();
 	if (*iprint > 100) {
-	    s_wsfe(&io___197);
+	    s_wsfe(&io___192);
 	    do_fio(&c__1, "X =", (ftnlen)3);
 	    i__1 = *n;
 	    for (i__ = 1; i__ <= i__1; ++i__) {
 		do_fio(&c__1, (char *)&x[i__], (ftnlen)sizeof(doublereal));
 	    }
 	    e_wsfe();
-	    s_wsfe(&io___199);
+	    s_wsfe(&io___194);
 	    do_fio(&c__1, "G =", (ftnlen)3);
 	    i__1 = *n;
 	    for (i__ = 1; i__ <= i__1; ++i__) {
@@ -3438,7 +3426,7 @@ L556:
     } else if (*iprint > 0) {
 	imod = *iter % *iprint;
 	if (imod == 0) {
-	    s_wsfe(&io___201);
+	    s_wsfe(&io___196);
 	    do_fio(&c__1, (char *)&(*iter), (ftnlen)sizeof(integer));
 	    do_fio(&c__1, (char *)&(*f), (ftnlen)sizeof(doublereal));
 	    do_fio(&c__1, (char *)&(*sbgnrm), (ftnlen)sizeof(doublereal));
@@ -3446,8 +3434,8 @@ L556:
 	}
     }
     if (*iprint >= 1) {
-	io___202.ciunit = *itfile;
-	s_wsfe(&io___202);
+	io___197.ciunit = *itfile;
+	s_wsfe(&io___197);
 	do_fio(&c__1, (char *)&(*iter), (ftnlen)sizeof(integer));
 	do_fio(&c__1, (char *)&(*nfgv), (ftnlen)sizeof(integer));
 	do_fio(&c__1, (char *)&(*nint), (ftnlen)sizeof(integer));
@@ -3531,33 +3519,33 @@ L556:
     static integer i__;
 
     /* Fortran I/O blocks */
-    static cilist io___203 = { 0, 6, 0, fmt_3003, 0 };
-    static cilist io___204 = { 0, 6, 0, fmt_3004, 0 };
-    static cilist io___205 = { 0, 6, 0, fmt_3005, 0 };
-    static cilist io___206 = { 0, 6, 0, fmt_1004, 0 };
-    static cilist io___208 = { 0, 6, 0, 0, 0 };
-    static cilist io___209 = { 0, 6, 0, fmt_3009, 0 };
-    static cilist io___210 = { 0, 6, 0, fmt_9011, 0 };
-    static cilist io___211 = { 0, 6, 0, fmt_9012, 0 };
-    static cilist io___212 = { 0, 6, 0, fmt_9013, 0 };
-    static cilist io___213 = { 0, 6, 0, fmt_9014, 0 };
-    static cilist io___214 = { 0, 6, 0, fmt_9015, 0 };
-    static cilist io___215 = { 0, 6, 0, 0, 0 };
-    static cilist io___216 = { 0, 6, 0, 0, 0 };
-    static cilist io___217 = { 0, 6, 0, fmt_9018, 0 };
-    static cilist io___218 = { 0, 6, 0, fmt_9019, 0 };
-    static cilist io___219 = { 0, 6, 0, fmt_3007, 0 };
-    static cilist io___220 = { 0, 6, 0, fmt_3008, 0 };
-    static cilist io___221 = { 0, 0, 0, fmt_3002, 0 };
-    static cilist io___222 = { 0, 0, 0, fmt_3009, 0 };
-    static cilist io___223 = { 0, 0, 0, fmt_9011, 0 };
-    static cilist io___224 = { 0, 0, 0, fmt_9012, 0 };
-    static cilist io___225 = { 0, 0, 0, fmt_9013, 0 };
-    static cilist io___226 = { 0, 0, 0, fmt_9014, 0 };
-    static cilist io___227 = { 0, 0, 0, fmt_9015, 0 };
-    static cilist io___228 = { 0, 0, 0, fmt_9018, 0 };
-    static cilist io___229 = { 0, 0, 0, fmt_9019, 0 };
-    static cilist io___230 = { 0, 0, 0, fmt_3008, 0 };
+    static cilist io___198 = { 0, 6, 0, fmt_3003, 0 };
+    static cilist io___199 = { 0, 6, 0, fmt_3004, 0 };
+    static cilist io___200 = { 0, 6, 0, fmt_3005, 0 };
+    static cilist io___201 = { 0, 6, 0, fmt_1004, 0 };
+    static cilist io___203 = { 0, 6, 0, 0, 0 };
+    static cilist io___204 = { 0, 6, 0, fmt_3009, 0 };
+    static cilist io___205 = { 0, 6, 0, fmt_9011, 0 };
+    static cilist io___206 = { 0, 6, 0, fmt_9012, 0 };
+    static cilist io___207 = { 0, 6, 0, fmt_9013, 0 };
+    static cilist io___208 = { 0, 6, 0, fmt_9014, 0 };
+    static cilist io___209 = { 0, 6, 0, fmt_9015, 0 };
+    static cilist io___210 = { 0, 6, 0, 0, 0 };
+    static cilist io___211 = { 0, 6, 0, 0, 0 };
+    static cilist io___212 = { 0, 6, 0, fmt_9018, 0 };
+    static cilist io___213 = { 0, 6, 0, fmt_9019, 0 };
+    static cilist io___214 = { 0, 6, 0, fmt_3007, 0 };
+    static cilist io___215 = { 0, 6, 0, fmt_3008, 0 };
+    static cilist io___216 = { 0, 0, 0, fmt_3002, 0 };
+    static cilist io___217 = { 0, 0, 0, fmt_3009, 0 };
+    static cilist io___218 = { 0, 0, 0, fmt_9011, 0 };
+    static cilist io___219 = { 0, 0, 0, fmt_9012, 0 };
+    static cilist io___220 = { 0, 0, 0, fmt_9013, 0 };
+    static cilist io___221 = { 0, 0, 0, fmt_9014, 0 };
+    static cilist io___222 = { 0, 0, 0, fmt_9015, 0 };
+    static cilist io___223 = { 0, 0, 0, fmt_9018, 0 };
+    static cilist io___224 = { 0, 0, 0, fmt_9019, 0 };
+    static cilist io___225 = { 0, 0, 0, fmt_3008, 0 };
 
 
 /*     ************ */
@@ -3571,7 +3559,7 @@ L556:
 
 /*                           *  *  * */
 
-/*     NEOS, November 1994. (Latest revision June 1996.) */
+/*     NEOS, November 1994. (Latest revision April 1997.) */
 /*     Optimization Technology Center. */
 /*     Argonne National Laboratory and Northwestern University. */
 /*     Written by */
@@ -3588,11 +3576,11 @@ L556:
 	goto L999;
     }
     if (*iprint >= 0) {
-	s_wsfe(&io___203);
+	s_wsfe(&io___198);
 	e_wsfe();
-	s_wsfe(&io___204);
+	s_wsfe(&io___199);
 	e_wsfe();
-	s_wsfe(&io___205);
+	s_wsfe(&io___200);
 	do_fio(&c__1, (char *)&(*n), (ftnlen)sizeof(integer));
 	do_fio(&c__1, (char *)&(*iter), (ftnlen)sizeof(integer));
 	do_fio(&c__1, (char *)&(*nfgv), (ftnlen)sizeof(integer));
@@ -3603,7 +3591,7 @@ L556:
 	do_fio(&c__1, (char *)&(*f), (ftnlen)sizeof(doublereal));
 	e_wsfe();
 	if (*iprint >= 100) {
-	    s_wsfe(&io___206);
+	    s_wsfe(&io___201);
 	    do_fio(&c__1, "X =", (ftnlen)3);
 	    i__1 = *n;
 	    for (i__ = 1; i__ <= i__1; ++i__) {
@@ -3612,7 +3600,7 @@ L556:
 	    e_wsfe();
 	}
 	if (*iprint >= 1) {
-	    s_wsle(&io___208);
+	    s_wsle(&io___203);
 	    do_lio(&c__9, &c__1, " F =", (ftnlen)4);
 	    do_lio(&c__5, &c__1, (char *)&(*f), (ftnlen)sizeof(doublereal));
 	    e_wsle();
@@ -3620,39 +3608,39 @@ L556:
     }
 L999:
     if (*iprint >= 0) {
-	s_wsfe(&io___209);
+	s_wsfe(&io___204);
 	do_fio(&c__1, task, (ftnlen)60);
 	e_wsfe();
 	if (*info != 0) {
 	    if (*info == -1) {
-		s_wsfe(&io___210);
+		s_wsfe(&io___205);
 		e_wsfe();
 	    }
 	    if (*info == -2) {
-		s_wsfe(&io___211);
+		s_wsfe(&io___206);
 		e_wsfe();
 	    }
 	    if (*info == -3) {
-		s_wsfe(&io___212);
+		s_wsfe(&io___207);
 		e_wsfe();
 	    }
 	    if (*info == -4) {
-		s_wsfe(&io___213);
+		s_wsfe(&io___208);
 		e_wsfe();
 	    }
 	    if (*info == -5) {
-		s_wsfe(&io___214);
+		s_wsfe(&io___209);
 		e_wsfe();
 	    }
 	    if (*info == -6) {
-		s_wsle(&io___215);
+		s_wsle(&io___210);
 		do_lio(&c__9, &c__1, " Input nbd(", (ftnlen)11);
 		do_lio(&c__3, &c__1, (char *)&(*k), (ftnlen)sizeof(integer));
 		do_lio(&c__9, &c__1, ") is invalid.", (ftnlen)13);
 		e_wsle();
 	    }
 	    if (*info == -7) {
-		s_wsle(&io___216);
+		s_wsle(&io___211);
 		do_lio(&c__9, &c__1, " l(", (ftnlen)3);
 		do_lio(&c__3, &c__1, (char *)&(*k), (ftnlen)sizeof(integer));
 		do_lio(&c__9, &c__1, ") > u(", (ftnlen)6);
@@ -3661,28 +3649,28 @@ L999:
 		e_wsle();
 	    }
 	    if (*info == -8) {
-		s_wsfe(&io___217);
+		s_wsfe(&io___212);
 		e_wsfe();
 	    }
 	    if (*info == -9) {
-		s_wsfe(&io___218);
+		s_wsfe(&io___213);
 		e_wsfe();
 	    }
 	}
 	if (*iprint >= 1) {
-	    s_wsfe(&io___219);
+	    s_wsfe(&io___214);
 	    do_fio(&c__1, (char *)&(*cachyt), (ftnlen)sizeof(doublereal));
 	    do_fio(&c__1, (char *)&(*sbtime), (ftnlen)sizeof(doublereal));
 	    do_fio(&c__1, (char *)&(*lnscht), (ftnlen)sizeof(doublereal));
 	    e_wsfe();
 	}
-	s_wsfe(&io___220);
+	s_wsfe(&io___215);
 	do_fio(&c__1, (char *)&(*time), (ftnlen)sizeof(doublereal));
 	e_wsfe();
 	if (*iprint >= 1) {
 	    if (*info == -4 || *info == -9) {
-		io___221.ciunit = *itfile;
-		s_wsfe(&io___221);
+		io___216.ciunit = *itfile;
+		s_wsfe(&io___216);
 		do_fio(&c__1, (char *)&(*iter), (ftnlen)sizeof(integer));
 		do_fio(&c__1, (char *)&(*nfgv), (ftnlen)sizeof(integer));
 		do_fio(&c__1, (char *)&(*nint), (ftnlen)sizeof(integer));
@@ -3693,54 +3681,53 @@ L999:
 		do_fio(&c__1, (char *)&(*xstep), (ftnlen)sizeof(doublereal));
 		e_wsfe();
 	    }
-	    io___222.ciunit = *itfile;
-	    s_wsfe(&io___222);
+	    io___217.ciunit = *itfile;
+	    s_wsfe(&io___217);
 	    do_fio(&c__1, task, (ftnlen)60);
 	    e_wsfe();
 	    if (*info != 0) {
 		if (*info == -1) {
+		    io___218.ciunit = *itfile;
+		    s_wsfe(&io___218);
+		    e_wsfe();
+		}
+		if (*info == -2) {
+		    io___219.ciunit = *itfile;
+		    s_wsfe(&io___219);
+		    e_wsfe();
+		}
+		if (*info == -3) {
+		    io___220.ciunit = *itfile;
+		    s_wsfe(&io___220);
+		    e_wsfe();
+		}
+		if (*info == -4) {
+		    io___221.ciunit = *itfile;
+		    s_wsfe(&io___221);
+		    e_wsfe();
+		}
+		if (*info == -5) {
+		    io___222.ciunit = *itfile;
+		    s_wsfe(&io___222);
+		    e_wsfe();
+		}
+		if (*info == -8) {
 		    io___223.ciunit = *itfile;
 		    s_wsfe(&io___223);
 		    e_wsfe();
 		}
-		if (*info == -2) {
+		if (*info == -9) {
 		    io___224.ciunit = *itfile;
 		    s_wsfe(&io___224);
 		    e_wsfe();
 		}
-		if (*info == -3) {
-		    io___225.ciunit = *itfile;
-		    s_wsfe(&io___225);
-		    e_wsfe();
-		}
-		if (*info == -4) {
-		    io___226.ciunit = *itfile;
-		    s_wsfe(&io___226);
-		    e_wsfe();
-		}
-		if (*info == -5) {
-		    io___227.ciunit = *itfile;
-		    s_wsfe(&io___227);
-		    e_wsfe();
-		}
-		if (*info == -8) {
-		    io___228.ciunit = *itfile;
-		    s_wsfe(&io___228);
-		    e_wsfe();
-		}
-		if (*info == -9) {
-		    io___229.ciunit = *itfile;
-		    s_wsfe(&io___229);
-		    e_wsfe();
-		}
 	    }
-	    io___230.ciunit = *itfile;
-	    s_wsfe(&io___230);
+	    io___225.ciunit = *itfile;
+	    s_wsfe(&io___225);
 	    do_fio(&c__1, (char *)&(*time), (ftnlen)sizeof(doublereal));
 	    e_wsfe();
 	}
     }
-/* L3006: */
     return 0;
 } /* prn3lb_ */
 
@@ -3766,7 +3753,7 @@ L999:
 
 /*                           *  *  * */
 
-/*     NEOS, November 1994. (Latest revision June 1996.) */
+/*     NEOS, November 1994. (Latest revision April 1997.) */
 /*     Optimization Technology Center. */
 /*     Argonne National Laboratory and Northwestern University. */
 /*     Written by */
@@ -3841,16 +3828,17 @@ L999:
     static doublereal dk;
     static integer js, jy, ibd, col2;
     static doublereal temp1, temp2, alpha;
+    static logical temp1_updated__;
     extern /* Subroutine */ int dtrsl_(doublereal *, integer *, integer *, 
 	    doublereal *, integer *, integer *);
     static integer pointr;
 
     /* Fortran I/O blocks */
-    static cilist io___233 = { 0, 6, 0, fmt_1001, 0 };
-    static cilist io___247 = { 0, 6, 0, fmt_1002, 0 };
-    static cilist io___248 = { 0, 6, 0, 0, 0 };
-    static cilist io___249 = { 0, 6, 0, fmt_1003, 0 };
-    static cilist io___250 = { 0, 6, 0, fmt_1004, 0 };
+    static cilist io___228 = { 0, 6, 0, fmt_1001, 0 };
+    static cilist io___243 = { 0, 6, 0, fmt_1002, 0 };
+    static cilist io___244 = { 0, 6, 0, 0, 0 };
+    static cilist io___245 = { 0, 6, 0, fmt_1003, 0 };
+    static cilist io___246 = { 0, 6, 0, fmt_1004, 0 };
 
 
 /*     ************ */
@@ -3858,24 +3846,24 @@ L999:
 /*     Subroutine subsm */
 
 /*     Given xcp, l, u, r, an index set that specifies */
-/* 	the active set at xcp, and an l-BFGS matrix B */
-/* 	(in terms of WY, WS, SY, WT, head, col, and theta), */
-/* 	this subroutine computes an approximate solution */
-/* 	of the subspace problem */
+/*       the active set at xcp, and an l-BFGS matrix B */
+/*       (in terms of WY, WS, SY, WT, head, col, and theta), */
+/*       this subroutine computes an approximate solution */
+/*       of the subspace problem */
 
-/*     	(P)   min Q(x) = r'(x-xcp) + 1/2 (x-xcp)' B (x-xcp) */
+/*       (P)   min Q(x) = r'(x-xcp) + 1/2 (x-xcp)' B (x-xcp) */
 
 /*             subject to l<=x<=u */
-/* 	  	        x_i=xcp_i for all i in A(xcp) */
+/*                       x_i=xcp_i for all i in A(xcp) */
 
-/* 	along the subspace unconstrained Newton direction */
+/*       along the subspace unconstrained Newton direction */
 
-/* 	   d = -(Z'BZ)^(-1) r. */
+/*          d = -(Z'BZ)^(-1) r. */
 
 /*       The formula for the Newton direction, given the L-BFGS matrix */
 /*       and the Sherman-Morrison formula, is */
 
-/* 	   d = (1/theta)r + (1/theta*2) Z'WK^(-1)W'Z r. */
+/*          d = (1/theta)r + (1/theta*2) Z'WK^(-1)W'Z r. */
 
 /*       where */
 /*                 K = [-D -Y'ZZ'Y/theta     L_a'-R_z'  ] */
@@ -3922,7 +3910,7 @@ L999:
 /*     x is a double precision array of dimension n. */
 /*       On entry x specifies the Cauchy point xcp. */
 /*       On exit x(i) is the minimizer of Q over the subspace of */
-/*                                                        free variables. */
+/*                  free variables. */
 
 /*     d is a double precision array of dimension n. */
 /*       On entry d is the reduced gradient of Q at xcp. */
@@ -4023,7 +4011,7 @@ L999:
 	return 0;
     }
     if (*iprint >= 99) {
-	s_wsfe(&io___233);
+	s_wsfe(&io___228);
 	e_wsfe();
     }
 /*     Compute wv = W'Zd. */
@@ -4088,22 +4076,30 @@ L999:
 	k = ind[i__];
 	dk = d__[i__];
 	if (nbd[k] != 0) {
+	    temp1_updated__ = FALSE_;
 	    if (dk < 0. && nbd[k] <= 2) {
 		temp2 = l[k] - x[k];
 		if (temp2 >= 0.) {
 		    temp1 = 0.;
+		    temp1_updated__ = TRUE_;
 		} else if (dk * alpha < temp2) {
 		    temp1 = temp2 / dk;
+		    temp1_updated__ = TRUE_;
 		}
 	    } else if (dk > 0. && nbd[k] >= 2) {
 		temp2 = u[k] - x[k];
 		if (temp2 <= 0.) {
 		    temp1 = 0.;
+		    temp1_updated__ = TRUE_;
 		} else if (dk * alpha > temp2) {
 		    temp1 = temp2 / dk;
+		    temp1_updated__ = TRUE_;
 		}
 	    }
-	    if (temp1 < alpha) {
+/* c    logical variable temp1_updated added to eliminate unexpected */
+/* c    trigger of the if statement due to possible difference between */
+/* c    hardware precision and double precision. */
+	    if (temp1_updated__ && temp1 < alpha) {
 		alpha = temp1;
 		ibd = i__;
 	    }
@@ -4129,16 +4125,16 @@ L999:
     }
     if (*iprint >= 99) {
 	if (alpha < 1.) {
-	    s_wsfe(&io___247);
+	    s_wsfe(&io___243);
 	    do_fio(&c__1, (char *)&alpha, (ftnlen)sizeof(doublereal));
 	    e_wsfe();
 	} else {
-	    s_wsle(&io___248);
+	    s_wsle(&io___244);
 	    do_lio(&c__9, &c__1, "SM solution inside the box", (ftnlen)26);
 	    e_wsle();
 	}
 	if (*iprint > 100) {
-	    s_wsfe(&io___249);
+	    s_wsfe(&io___245);
 	    i__1 = *n;
 	    for (i__ = 1; i__ <= i__1; ++i__) {
 		do_fio(&c__1, (char *)&x[i__], (ftnlen)sizeof(doublereal));
@@ -4152,7 +4148,7 @@ L999:
 	*iword = 0;
     }
     if (*iprint >= 99) {
-	s_wsfe(&io___250);
+	s_wsfe(&io___246);
 	e_wsfe();
     }
     return 0;
@@ -4238,13 +4234,13 @@ L999:
 /*            function at stp. */
 /*         On exit f is the value of the function at stp. */
 
-/* 	g is a double precision variable. */
+/*       g is a double precision variable. */
 /*         On initial entry g is the derivative of the function at 0. */
 /*            On subsequent entries g is the derivative of the */
 /*            function at stp. */
 /*         On exit g is the derivative of the function at stp. */
 
-/* 	stp is a double precision variable. */
+/*       stp is a double precision variable. */
 /*         On entry stp is the current estimate of a satisfactory */
 /*            step. On initial entry, a positive initial estimate */
 /*            must be provided. */
@@ -4262,18 +4258,18 @@ L999:
 /*            curvature condition. */
 /*         On exit gtol is unchanged. */
 
-/* 	xtol is a double precision variable. */
+/*       xtol is a double precision variable. */
 /*         On entry xtol specifies a nonnegative relative tolerance */
 /*            for an acceptable step. The subroutine exits with a */
 /*            warning if the relative difference between sty and stx */
 /*            is less than xtol. */
 /*         On exit xtol is unchanged. */
 
-/* 	stpmin is a double precision variable. */
+/*       stpmin is a double precision variable. */
 /*         On entry stpmin is a nonnegative lower bound for the step. */
 /*         On exit stpmin is unchanged. */
 
-/* 	stpmax is a double precision variable. */
+/*       stpmax is a double precision variable. */
 /*         On entry stpmax is a nonnegative upper bound for the step. */
 /*         On exit stpmax is unchanged. */
 
@@ -4302,7 +4298,7 @@ L999:
 
 /*     Subprograms called */
 
-/* 	MINPACK-2 ... dcstep */
+/*       MINPACK-2 ... dcstep */
 
 /*     MINPACK-1 Project. June 1983. */
 /*     Argonne National Laboratory. */
@@ -4414,6 +4410,12 @@ L999:
     }
     if (*stp == *stpmin && (*f > ftest || *g >= gtest)) {
 	s_copy(task, "WARNING: STP = STPMIN", task_len, (ftnlen)21);
+    }
+/* c    New warning statement added to eliminate the unexpected case */
+/* c    of stp=stx due to possible difference between hardware precision */
+/* c    and double precision. */
+    if (*stp == stx) {
+	s_copy(task, "WARNING: STP = STX", task_len, (ftnlen)18);
     }
 /*     Test for convergence. */
     if (*f <= ftest && abs(*g) <= *gtol * (-ginit)) {
@@ -4729,10 +4731,10 @@ L1000:
 	    stpf = min(*stpmax,stpf);
 	    stpf = max(*stpmin,stpf);
 	}
-/*     Fourth case: A lower function value, derivatives of the same sign, */
-/*     and the magnitude of the derivative does not decrease. If the */
-/*     minimum is not bracketed, the step is either stpmin or stpmax, */
-/*     otherwise the cubic step is taken. */
+/*     Fourth case: A lower function value, derivatives of the */
+/*     same sign, and the magnitude of the derivative does not */
+/*     decrease. If the minimum is not bracketed, the step is either */
+/*     stpmin or stpmax, otherwise the cubic step is taken. */
     } else {
 	if (*brackt) {
 	    theta = (*fp - *fy) * 3. / (*sty - *stp) + *dy + *dp;
@@ -4920,7 +4922,7 @@ doublereal dpmeps_(void)
 
 /*     W. J. Cody, */
 /*     MACHAR: A subroutine to dynamically determine machine parameters, */
-/*     ACM Transactions on Mathematical Software, 14, 1988, pages 303-311. */
+/*     ACM Trans. Math. Soft., 14, 1988, pages 303-311. */
 
 /*     The subroutine statement is: */
 

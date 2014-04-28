@@ -175,18 +175,21 @@ AtomSelection Rigidbody::SelectAtomType(std::string atomtype)
 {
     AtomSelection newsel;
     newsel.SetRigid(*this);
-    
+
     if (atomtype.size() == 0) return newsel;
-    
-    //check for '*' at the end of atomtype:
-    
-    if (atomtype.size() == 2 && atomtype[1] == '*')
+
+
+    if (atomtype.size() >= 2 && *atomtype.rbegin() == '*')  //check for '*' at the end of atomtype:
     { 
-        char c = atomtype[0]; // we will match for this character only
-        
+
+        std::string sub = atomtype.substr(0, atomtype.size()-1); //keep size -1 chars from first char (ie everything except final '*')
+
            for (uint i = 0; i<mAtomProp.size(); ++i)
            {
-               if (mAtomProp[i].atomType[0] == c) newsel.AddAtomIndex(i);
+               std::string & at2 = mAtomProp[i].atomType ; 
+
+               if (at2.substr(0, sub.size()) == sub)  //compare sub to the beginning of mAtomProp[i].atomType
+                   newsel.AddAtomIndex(i);
                
            }
       
@@ -229,7 +232,7 @@ AtomSelection Rigidbody::SelectChainId(std::string chainId) {
     return newsel;
 }
 
-AtomSelection Rigidbody::SelectResRange(uint start, uint stop)
+AtomSelection Rigidbody::SelectResRange(int start, int stop)
 {
     AtomSelection newsel;
     newsel.SetRigid(*this);
@@ -302,11 +305,15 @@ std::string Rigidbody::PrintPDB() const
     uint size=this->Size();
 
     std::string output;
-    for (uint i=0; i < size ; i++)
+    for (uint i=0; i < size-1 ; i++)
     {
          Atom at(mAtomProp[i], this->GetCoords(i));
-         output = output + at.ToPdbString();
+         output = output + at.ToPdbString() + "\n" ;
     }
+    Atom at(mAtomProp[size-1], this->GetCoords(size-1));
+    output += at.ToPdbString(); // append the last pdb string, without "\n"
+
+
     return output;
 }
 

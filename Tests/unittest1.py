@@ -2,7 +2,7 @@
 from ptools import *
 import random
 import unittest
-
+import sys
 import math
 
 try:
@@ -10,7 +10,18 @@ try:
 except:
     print "downloading required file 1F88.pdb:"
     import get1F88
+    
+    
     print "done"
+
+#test that the content of 1F88.pdb is correct
+f = open("1F88.pdb")
+line1 = f.readline()
+if line1 != "ATOM      1  N   MET A   1      43.958  -5.980 -27.758  1.00 54.29           N  \n":
+        print "1F88.pdb is incorrect, please remove this file and launch tests again"
+        sys.exit(1)
+        
+
 
 class TestCoord3D(unittest.TestCase):
         def setUp(self):
@@ -60,7 +71,12 @@ class TestAtom(unittest.TestCase):
         self.assertEqual(atom.residId, 6)
         self.assertEqual(atom.atomId, 123)
         self.assertEqual(atom.atomCharge, -1.23456)
-        
+
+    def testNegativeResId(self):
+        atom = self.atom
+        atom.residId = -5
+        self.assertTrue(atom.residId < 0)
+
 
 class TestAtomSelection(unittest.TestCase):
     def setUp(self):
@@ -89,7 +105,12 @@ class TestAtomSelection(unittest.TestCase):
     def testSelectResRange(self):
         res_1_35 = self.rig.SelectResRange(1,35)
         self.assertEqual(len(res_1_35), 566)  # two chains
-    
+
+    def testSelectResRangeNegativeResId(self):
+        rigid = Rigidbody("2AAV.one.pdb")
+        selection = rigid.SelectResRange(-4, -1) & rigid.CA()
+        self.assertEqual(len(selection), 4)
+
     def testAnd(self):
         res_1_35 = self.rig.SelectResRange(1,35) 
         CAatoms = self.rig.SelectAtomType("CA")
@@ -102,7 +123,7 @@ class TestAtomSelection(unittest.TestCase):
         self.assertEqual(len(met1), 16)
         met1A = self.rig.SelectResidType("MET") & self.rig.SelectResRange(1,5) & self.rig.SelectChainId("A")
         self.assertEqual(len(met1A), 8)
-        
+
     def testSelectChainId(self):
         chainA = self.rig.SelectChainId("A")
         self.assertEqual(len(chainA), 2638)
@@ -112,7 +133,19 @@ class TestAtomSelection(unittest.TestCase):
         rigid = met1A.CreateRigid()
         self.assertEqual(len(rigid), 8)
         
-
+    def testNotOperator(self):
+        sel_ca = self.rig.CA()
+        sel_not_ca = ~ sel_ca  # operator NOT
+        self.assertEqual(len(sel_ca)+len(sel_not_ca), len(self.rig))
+        
+    def testAlternateNotOperator(self):
+        sel_ca = self.rig.CA()
+        sel_not_ca = sel_ca.not_()  # operator NOT
+        self.assertEqual(len(sel_ca)+len(sel_not_ca), len(self.rig))
+        
+        
+        
+        
 class TestRigidbody(unittest.TestCase):
     def setUp(self):
         self.r = Rigidbody("1FIN_r.pdb")
@@ -212,6 +245,14 @@ class TestRigidbody(unittest.TestCase):
         self.assertEqual(atprop.residId, 2)
         self.assertEqual(atprop.atomId, 9)
 
+
+    def testNegativeResId(self):
+        rigid = Rigidbody("2AAV.one.pdb")
+        at1 = rigid.CopyAtom(0)
+        self.assertEqual(at1.residId, -4)
+
+
+
 class TestAttractRigidbody(unittest.TestCase):
     def setUp(self):
         rigid = Rigidbody("1FIN_r.pdb")
@@ -234,10 +275,28 @@ class TestBasicMoves(unittest.TestCase):
         self.assertEqual(Rmsd(rigtmp, self.rigid1), 4)
         
     def testErrorsRmsd(self):
-	rigid1 = Rigidbody()
-	rigid2 = Rigidbody()
-	#Rmsd(rigid1, rigid2)
-	self.assertRaises(ValueError, Rmsd, rigid1, rigid2)
+        rigid1 = Rigidbody()
+        rigid2 = Rigidbody()
+        #cannot calculate an rmsd on an empty object
+        self.assertRaises(ValueError, Rmsd, rigid1, rigid2)
+        
+        #check input paramter types:
+        self.assertRaises(RuntimeError, Rmsd, self.rigid1, "hello")
+        self.assertRaises(RuntimeError, Rmsd, "hello",  self.rigid1)
+        
+        
+    def testRmsdAtomSelection1(self):
+        #tests Rmsd with an AtomSelection object
+        atsel = self.rigid1.SelectAllAtoms()
+        self.assertEqual(Rmsd(atsel,self.rigid2), 0)    
+        
+
+    def testRmsdAtomSelection2(self):
+        #tests Rmsd with an AtomSelection object
+        atsel = self.rigid1.SelectAllAtoms()
+        self.assertEqual(Rmsd(self.rigid2, atsel), 0)
+        
+
 
     def testTranslation1(self):
         CoM1 = self.rigid1.FindCenter()

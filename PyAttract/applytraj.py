@@ -14,7 +14,7 @@ def printPDB(rigid):
     out = ""
     for i in range(len(rigid)):
         at = rigid.CopyAtom(i)
-        out+=at.ToPdbString()
+        out+=at.ToPdbString() + "\n"
     return out
 
 

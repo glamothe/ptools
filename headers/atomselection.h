@@ -18,7 +18,7 @@ class AtomSelection{
 private:
     //private data
     const Rigidbody* m_rigid;
-    std::vector<uint> m_list;
+    std::vector<int> m_list;
 
     //private methods
 
@@ -39,7 +39,7 @@ public:
           return m_rigid->CopyAtom(m_list[i]);}; 
 
     Atom CopyAtom(uint i) const {return m_rigid->CopyAtom(m_list[i]);}
-    void AddAtomIndex(uint i) {m_list.push_back(i);}; ///< adds an Atom index
+    void AddAtomIndex(int i) {m_list.push_back(i);}; ///< adds an Atom index
     Rigidbody CreateRigid(); ///< makes a new rigidcopy (independant copy) from an AtomsSlection object.
 
     AtomSelection non(const AtomSelection& atsel);

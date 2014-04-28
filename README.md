@@ -1,6 +1,21 @@
 The PTools library
 =======================
 
+About:
+--------
+
+The PTools library is a toolbox for macromolecular modeling and docking.
+
+A more detailed introduction can be found here: http://www.biomedcentral.com/1472-6807/9/27
+
+PTools: an opensource molecular docking library
+
+Adrien Saladin, Sébastien Fiorucci, Pierre Poulain, Chantal Prévost and Martin Zacharias
+BMC Structural Biology. 2009;9:27. 
+
+doi: 10.1186/1472-6807-9-27
+
+
 
 Documentation:
 --------------
@@ -23,13 +38,8 @@ Very quick setup guide:
     source env/bin/activate
     pip install cython
     python setup.py build
+    python setup.py install
 
-    ln -s build/lib.linux-*/_ptools.so
-    cd Tests
-    ln -s ../_ptools.so
-    cd ../PyAttract
-    ln -s ../_ptools.so
-    cd ..
 ```    
     
 A more detailed version is in the official tutorial. 

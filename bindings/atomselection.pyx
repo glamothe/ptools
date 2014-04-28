@@ -19,8 +19,8 @@ cdef extern from "atomselection.h" namespace "PTools":
 
     cdef CppAtomSelection operator& (CppAtomSelection&, CppAtomSelection&)
     cdef CppAtomSelection operator| (CppAtomSelection&, CppAtomSelection&)
-#    cdef CppAtomSelection operator! (CppAtomSelection&) 
-    cdef CppAtomSelection op_not (CppAtomSelection&)
+    cdef CppAtomSelection operator! (CppAtomSelection&) 
+#    cdef CppAtomSelection op_not (CppAtomSelection&)
 
 cdef class AtomSelection:
 
@@ -74,13 +74,17 @@ cdef class AtomSelection:
         return ret
 
 
-    def __not__(AtomSelection self):
+    def __invert__(AtomSelection self):
         ret = AtomSelection()
         del ret.thisptr
-        cdef CppAtomSelection new_sel =   op_not(deref(self.thisptr))
+        cdef CppAtomSelection new_sel =   not (deref(self.thisptr))  #uses C++ 'operator!'
         ret.thisptr  = new CppAtomSelection(new_sel)
         return ret
 
+    def not_(self):
+        return self.__invert__()
+    
+    
     def CreateRigid(self):
         ret = Rigidbody()
         if ret.thisptr:

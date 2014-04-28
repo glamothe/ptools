@@ -10,7 +10,7 @@ def contact(receptor, ligand, cutoff=7):
         receptor = AttractRigidbody(receptor)
     
     if isinstance(ligand, Rigidbody):
-        ligand = AttractRigidbody(receptor)
+        ligand = AttractRigidbody(ligand)
     
     resnblig = []
     for i in range(len(ligand)):

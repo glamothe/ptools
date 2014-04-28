@@ -35,8 +35,18 @@ class Extractor:
         
     def getMatrix(self, key):
         return self.d[key].matrix
+
     def getStructure(self, lig, key):
-        return rigidXMat44(lig ,self.d[key].matrix)
+        newlig = rigidXMat44(lig ,self.d[key].matrix)
+        trans, rot = key.split(":")
+        template = "REMARK 999 TRANSLATION ROTATION  %(translation)s %(rotation)s\n%(pdb)s" % { 
+                             "translation": trans,
+                             "rotation": rot,
+                             "pdb": str(newlig),
+                             }
+        return template
+        
+
     def getFile(self, filename):
         f=self.d[filename]
         compressed=base64.b64decode(f)
@@ -139,7 +149,7 @@ def openDatabase(filename):
         statout=os.stat(filename)
         if statdb[ST_MTIME] > statout[ST_MTIME]:  #ok database is more recent, no need to regenerate it
             #we can use the database here :-)
-            d = shelve.open(databasefile)
+            d = shelve.open(databasefile, flag='r')
             return d
 
         else:
@@ -195,7 +205,28 @@ def getAllStruct(outputfilename):
 
 def main():
     nargs = len(sys.argv)
-    if nargs < 5:
+    
+    if "--all" in sys.argv and len(sys.argv)==4:
+        #extract all structures
+        e = Extractor(sys.argv[1])
+        lig = Rigidbody(sys.argv[2])
+        
+        validkeys = []
+        regexp = re.compile("[0-9]+:[0-9]+")  #filter keys of the form "23:356"
+        for k in e.d.keys():
+            if regexp.match(k):
+                validkeys.append(k)
+        
+        for k in validkeys:
+            structure = e.getStructure(lig, k)
+            print structure
+            print "TER"
+            
+        sys.exit(0)
+        
+        
+    
+    elif nargs < 5:
         print "usage: Extract 'outputfile' LigOriginalCoordinates translationNumber RotationNumber"
         raise SystemExit
 
@@ -212,11 +243,7 @@ def main():
     #print e.getFile("attract.inp")
 
     pdb=[]
-    for i in range(len(lig3)):
-        atom=lig3.CopyAtom(i)
-        pdb.append(atom.ToPdbString())
-    print "".join(pdb)
-
+    print lig3
 
 
 

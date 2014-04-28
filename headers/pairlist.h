@@ -13,8 +13,8 @@ namespace PTools
 
 struct AtomPair
 {
-    uint atlig;
-    uint atrec;
+    int atlig;
+    int atrec;
 };
 
 
@@ -66,8 +66,8 @@ private:
 
     bool no_update; ///< if true the pairlist is never updated
 
-    std::vector <uint> vectl ; ///< index of ligands atoms
-    std::vector <uint> vectr ; ///< index of receptor atoms
+    std::vector <int> vectl ; ///< index of ligands atoms
+    std::vector <int> vectr ; ///< index of receptor atoms
 
 };
 

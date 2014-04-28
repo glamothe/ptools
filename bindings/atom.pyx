@@ -2,13 +2,16 @@ cdef extern from "atom.h" namespace "PTools":
     cdef cppclass CppAtomproperty "PTools::Atomproperty":
         CppAtomproperty()
         CppAtomproperty(CppAtomproperty&)
+
+        void setAtomType(string &)
         
         string atomType
+        string _pdbAtomType
         string residType
         double atomCharge
         string chainId
-        unsigned int residId
-        unsigned int atomId
+        int residId
+        int atomId
         string extra
         
     cdef cppclass CppAtom "PTools::Atom"(CppAtomproperty):
@@ -37,14 +40,26 @@ cdef class Atomproperty:
         if self.thisptr:
             del self.thisptr
     
+
     property atomType:
         def __get__(self):
             return <bytes> self.thisptr.atomType.c_str()
         def __set__(self, bytes b):
             cdef char* c = b
             cdef string cppname = string(c)
-            self.thisptr.atomType = cppname
-            
+            self.thisptr.setAtomType(cppname)
+    
+
+    property _pdbAtomType:
+        def __get__(self):
+            return <bytes> self.thisptr._pdbAtomType.c_str()
+        def __set__(self, bytes b):
+            cdef char* c = b
+            cdef string cppname = string(c)
+            self.thisptr._pdbAtomType = cppname
+
+
+        
     property residType:
         def __get__(self):   
             return <bytes> self.thisptr.residType.c_str()
@@ -73,14 +88,14 @@ cdef class Atomproperty:
         def __get__(self):
             return self.thisptr.residId
         
-        def __set__(self, unsigned int resid):
+        def __set__(self, int resid):
             self.thisptr.residId = resid 
         
     
     property atomId:
         def __get__(self):
             return self.thisptr.atomId
-        def __set__(self, unsigned int atomid):
+        def __set__(self, int atomid):
             self.thisptr.atomId = atomid
 
     property extra:

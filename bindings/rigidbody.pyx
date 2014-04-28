@@ -30,6 +30,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         void AddAtom(CppAtomproperty& , CppCoord3D )
         void AddAtom(CppAtom&)
         void SetAtom(unsigned int, CppAtom&)
+        string PrintPDB()
 
         #returns radius of gyration
         double RadiusGyration()
@@ -46,7 +47,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         CppAtomSelection SelectAtomType(string)
         CppAtomSelection SelectResidType(string)
         CppAtomSelection SelectChainId(string)
-        CppAtomSelection SelectResRange(unsigned int, unsigned int)
+        CppAtomSelection SelectResRange(int, int)
         CppAtomSelection CA()
         CppAtomSelection Backbone()
         
@@ -84,7 +85,7 @@ cdef class Rigidbody:
 
 
 
-        if isinstance(filename, Rigidbody):
+        elif isinstance(filename, Rigidbody):
             oldrigid = <Rigidbody> filename
             oldrigidptr = <CppRigidbody*> (oldrigid.thisptr)
             
@@ -92,18 +93,28 @@ cdef class Rigidbody:
             if not self.thisptr:
                 print "FATAL: this should never happen"
 
-        if hasattr(filename, "read"):
+        elif hasattr(filename, "read"):
             #we consider filename as a file-like object
             #print "reading rigidbody from file-like"
             self.thisptr = new CppRigidbody()
             loadPDBfromPythonFileLike(filename, self.thisptr)
-           
+        else:
+            raise RuntimeError("invalid argument in Rigidbody()")
+
+   
     def __dealloc__(self):
         if self.thisptr:
             del self.thisptr
             self.thisptr = <CppRigidbody*> 0
     def __len__(self):
         return self.thisptr.Size()
+
+
+    def __str__(self):
+        s = self.thisptr.PrintPDB()
+        return s
+
+
     def getCoords(self, unsigned int i):
         cdef Coord3D c = Coord3D () 
         cdef CppCoord3D cpp = self.thisptr.GetCoords(i)
@@ -221,7 +232,7 @@ cdef class Rigidbody:
        return ret
 
 
-    def SelectResRange(self, unsigned int i, unsigned int j):
+    def SelectResRange(self, int i, int j):
        ret = AtomSelection()
        del ret.thisptr
        cdef CppAtomSelection new_sel =  self.thisptr.SelectResRange(i,j)

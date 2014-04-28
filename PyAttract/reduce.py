@@ -375,7 +375,7 @@ for i in range(len(residueTagList)):
                 extra = ('%5i%8.3f%2i%2i') %(atomTypeId,atomCharge,0,0)
                 prop.extra = extra
                 newAtom = Atom(prop, coord)
-                coarsegrainPdb += newAtom.ToPdbString()
+                coarsegrainPdb += newAtom.ToPdbString() + "\n"
 
 #==========================================================
 # output coarse grain (reduced) pdb file

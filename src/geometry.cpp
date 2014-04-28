@@ -48,7 +48,7 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     dbl mat1[ 4 ][ 4 ] ;
 
     
-    MakeTranslationMat44( Coord3D() -A , mat1 );
+    MakeTranslationMat44( Coord3D() - A , mat1 );
     
 
     dbl cost = cos( theta );
@@ -61,9 +61,7 @@ void MakeRotationMatrix( Coord3D A, Coord3D B, dbl theta, dbl out[ 4 ][ 4 ] )
     x = dx / L;
     y = dy / L;
     z = dz / L;
-    
-    dbl V = sqrt(x*x+y*y) ; //shortcut
-    
+   
     dbl rodrig[4][4];
     
     //Rodrigues' rotation matrix:

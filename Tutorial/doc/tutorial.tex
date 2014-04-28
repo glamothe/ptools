@@ -90,7 +90,7 @@ In the following, we assume the PTools library will be installed in the
 \subsubsection{On Debian or Debian-like systems (Ubuntu)}
 
 \begin{verbatim}
-apt-get install scons g++ f2c libboost-dev python-dev cython 
+apt-get install scons g++ f2c libboost-dev python-dev python-virtualenv cython 
 \end{verbatim}
 %
 
@@ -140,24 +140,16 @@ the {\tt SConstruct} file.
 
 \subsubsection{The library as a Python module}
 
-
-
-From the PTools main directory ({\tt \$HOME/soft/ptools-XX}), type:
+The recommended way to compile and install PTools as a Python module is to use {\tt virtualenv}. 
 
 \begin{verbatim}
+virtualenv .env
+source .env/bin/activate
 python setup.py build
+python setup.py install
 \end{verbatim}
 
-Now (until a better solution is found and documented) you need to create the following symbolic links:
 
-\begin{verbatim}
-ln -s build/lib.linux-*/_ptools.so
-cd Tests
-ln -s ../_ptools.so
-cd ../PyAttract
-ln -s ../_ptools.so
-cd ..
-\end{verbatim}
 
 
 
@@ -165,8 +157,8 @@ cd ..
 
 \subsubsection{C++ library only}
 
-The PTools library has a new C++ unit test system. To try it move into the {\tt Tests/} directory and
-type: 
+C++ unit tests are located in the {\tt Tests/} directory. Go to that directoy and type:
+
 \begin{verbatim}
  make testcpp
 \end{verbatim}
@@ -183,6 +175,7 @@ Running 17 tests...............OK!
 
 
 \subsubsection{Python module}
+
 In the {\tt Tests} directory, one can test that the compilation worked:
 \begin{verbatim}
 python unittest1.py
@@ -245,7 +238,7 @@ pdb = Rigidbody("1BTA.pdb")
 
 \paragraph{Number of atoms.}
 \begin{verbatim}
-pdb.Size()
+len(pdb)
 \end{verbatim}
 
 
@@ -368,7 +361,7 @@ Ie you can select any carbon or hydrogen, but you cannot match for example CG1 \
 
 \paragraph{Get the number of atomes (the size) of a selection.}
 \begin{verbatim}
-sel_res.Size()
+len(sel_res)
 \end{verbatim}
 
 
@@ -382,6 +375,38 @@ or directly
 sel_chainAB = pdb.SelectChainId("A") | pdb.SelectChainId("B")
 \end{verbatim}
 
+\paragraph{Intersection between two selections.}
+\begin{verbatim}
+sel_chain_AandB = sel_chainA & sel_chainB
+\end{verbatim}
+or directly
+\begin{verbatim}
+sel_chain_AandB = pdb.SelectChainId("A") & pdb.SelectChainId("B")
+\end{verbatim}
+
+\paragraph{Inverse of a selection}
+The logical NOT operator is implemented in Python with the .not\_() method:
+\begin{verbatim}
+notA = sel_chainA.not_()
+\end{verbatim}
+It is also possible to use the \verb!~! operator:
+\begin{verbatim}
+notA = ~sel_chainA
+\end{verbatim}    
+
+\paragraph{Example of more complex operations on selections}
+It is possible to combine \verb!&!, \verb!|!, \verb!~! operator in more complex operations. 
+For example, the following command selects Calpha atoms for residues 3-14 together with side chains atoms
+for residues 6-22:
+\begin{verbatim}
+complex_sel = (pdb.SelectResRange(3,14) & pdb.CA()) |   \
+                  (pdb.SelectResRange(6,22) & ~pdb.Backbone() )
+\end{verbatim}
+
+
+
+
+
 
 \paragraph{Convert selection to rigidbody object.}
 \begin{verbatim}
@@ -390,10 +415,13 @@ ca_trace = sel_ca.CreateRigid()
 
 \subsubsection{atom objects}
 
-\paragraph{Copy atom from rigidbody object.} In this example, the third atom (indexed as 2 since the first atom in numberered 0) is copied.
+\paragraph{Copy atom from rigidbody object.} 
+In this example, the third atom (indexed as 2 since the first atom in numberered 0) is copied. 
 \begin{verbatim}
 at = pdb.CopyAtom(2)
 \end{verbatim}
+You should note that any operation affecting the newly created Atom at will not affect the \verb!pdb! instance.
+
 
 \paragraph{Set new coordinates}
 \begin{verbatim}
@@ -413,26 +441,17 @@ at.Translate(vector)
 at.ToPdbString()
 \end{verbatim}
 
-\paragraph{Get atom properties}
+\paragraph{Atom properties}
+One can read and write atom properties. Here is a list of accessible properties:
 \begin{verbatim}
-at.GetType()
-at.GetResidType()
-at.GetAtomCharge()
-at.GetChainId()
-at.GetResidId()
-at.GetAtomId()
-at.GetExtra()
-\end{verbatim}
-
-\paragraph{Set atom properties}
-\begin{verbatim}
-at.SetType()
-at.SetResidType()
-at.SetAtomCharge()
-at.SetChainId()
-at.SetResidId()
-at.SetAtomId()
-at.SetExtra()
+atomType # CA, N, HN1, ...
+atomElement # C, N, H, O, etc.
+residType # LEU, ARG, ...
+chainId # A, B, etc.
+residId # residue number
+atomId # atom number
+atomCharge #charge of the atom
+extra #extra data
 \end{verbatim}
 
 \section{Docking with PTools: ATTRACT}

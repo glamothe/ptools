@@ -89,7 +89,7 @@ AtomSelection operator| (const AtomSelection& atsel1,const AtomSelection& atsel2
     set_union(cpatsel1.m_list.begin(), cpatsel1.m_list.end(),
               cpatsel2.m_list.begin(), cpatsel2.m_list.end(), back_inserter(selout.m_list));
 
-    std::vector<uint> list2;
+    std::vector<int> list2;
     unique_copy(selout.m_list.begin(),selout.m_list.end(),back_inserter(list2));
     swap(selout.m_list, list2);
 
