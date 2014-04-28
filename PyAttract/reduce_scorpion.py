@@ -4,8 +4,11 @@
 
 from optparse import OptionParser
 parser = OptionParser()
-parser.add_option("--nocgopt", dest="optimizecharges", action="store_false", default=True,
-                  help="don't optimize coarse grained charges")
+parser.add_option("--cgopt", dest="optimizecharges", action="store_true", default=False,
+                  help="optimize SCORPION coarse grained charges")
+
+parser.add_option("--dgrid", type="float",dest="delgrid", default=1.5,
+                  help="grid spacing (A) for charge optimization (default is 1.5), works only with -cgopt option")
 
 (options, args) = parser.parse_args()
 
@@ -149,7 +152,7 @@ for residname, cgnames in residNames.items():
 
 
 
-allAtom=Rigidbody(sys.argv[1])
+allAtom=Rigidbody(args[0])
 
 newallAtom = []
 for i in xrange(len(allAtom)):
@@ -297,7 +300,7 @@ cgch.reverse()
 
 
 if options.optimizecharges:
-    optimized = optimize(len(allAtom), charge, radius, cx, cy, cz, len(protein), cgch, cgr, cgx, cgy, cgz )
+    optimized = optimize(len(allAtom), charge, radius, cx, cy, cz, len(protein), cgch, cgr, cgx, cgy, cgz, options.delgrid )
 else:
     optimized = cgch
 

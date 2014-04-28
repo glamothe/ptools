@@ -36,7 +36,8 @@ static integer c__2 = 2;
 /* Subroutine */ int chrg_scorpion__(integer *natom, doublereal *charge, 
 	doublereal *radius, doublereal *coorx, doublereal *coory, doublereal *
 	coorz, integer *nbead, doublereal *cgchg, doublereal *cgrad, 
-	doublereal *cgcox, doublereal *cgcoy, doublereal *cgcoz)
+	doublereal *cgcox, doublereal *cgcoy, doublereal *cgcoz, doublereal *
+	delgrid)
 {
     /* Format strings */
     static char fmt_27[] = "(a8,f9.3,a8,3f9.3)";
@@ -213,19 +214,19 @@ L2709:
     zmin = chgcoo_1.bz - 75.;
 /* ------------------------------------------------interieur du solute ? */
     npts = 0;
-    ngrid = 101;
-    rx = xmin - 1.5;
+    ngrid = (integer) (150. / *delgrid) + 1;
+    rx = xmin - *delgrid;
     i__1 = ngrid;
     for (kk = 1; kk <= i__1; ++kk) {
-	rx += 1.5;
-	ry = ymin - 1.5;
+	rx += *delgrid;
+	ry = ymin - *delgrid;
 	i__2 = ngrid;
 	for (ll = 1; ll <= i__2; ++ll) {
-	    ry += 1.5;
-	    rz = zmin - 1.5;
+	    ry += *delgrid;
+	    rz = zmin - *delgrid;
 	    i__3 = ngrid;
 	    for (mm = 1; mm <= i__3; ++mm) {
-		rz += 1.5;
+		rz += *delgrid;
 		solvent = TRUE_;
 		rminsol = 150.;
 		i__4 = *natom;

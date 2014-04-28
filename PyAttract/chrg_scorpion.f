@@ -1,5 +1,5 @@
       SUBROUTINE chrg_scorpion(natom,charge,radius,coorx,coory,coorz,
-     &           nbead,cgchg,cgrad,cgcox,cgcoy,cgcoz)
+     &           nbead,cgchg,cgrad,cgcox,cgcoy,cgcoz,delgrid)
 
 ************************************************************************
 *                                                                      *
@@ -25,7 +25,6 @@
       parameter (ngmax=100000)
 
       parameter (boxsize=150.0D0)
-      parameter (delgrid=1.5D0)
       parameter (rminex=10.0D0)
       parameter (tol=1.0D-3)
 
@@ -37,6 +36,7 @@
       REAL*8    coorx(*),coory(*),coorz(*)
       REAL*8    cgchg(*),cgrad(*)
       REAL*8    cgcox(*),cgcoy(*),cgcoz(*)
+      REAL*8    delgrid
 
 *-------------------- LOCAL VARIABLES ----------------------------------
 
@@ -73,7 +73,7 @@
 c----------------------------------------------cas des résidus terminaux
 
       charge(1)=charge(1)+1.0D0
-      
+     
       do ii=natom,1,-1
         if (radius(ii).eq.1.908D0) then
           if (charge(ii).eq.0.5973D0.or.charge(ii).eq.0.7341D0.or.

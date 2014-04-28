@@ -24,4 +24,4 @@ static integer c__2 = 2;
 /* Subroutine */ int chrg_scorpion__(integer *natom, doublereal *charge, 
 	doublereal *radius, doublereal *coorx, doublereal *coory, doublereal *
 	coorz, integer *nbead, doublereal *cgchg, doublereal *cgrad, 
-	doublereal *cgcox, doublereal *cgcoy, doublereal *cgcoz);
+	doublereal *cgcox, doublereal *cgcoy, doublereal *cgcoz, doublereal *delgrid);
