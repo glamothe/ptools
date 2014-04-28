@@ -1,4 +1,4 @@
-/* chrg_scorpion.f -- translated by f2c (version 20090411).
+/* chrg_scorpion.f -- translated by f2c (version 20100827).
    You must link the resulting object file with libf2c:
 	on Microsoft Windows system, link with libf2c.lib;
 	on Linux or Unix systems, link with .../path/to/libf2c.a -lm
@@ -25,10 +25,10 @@ struct {
 
 /* Table of constant values */
 
-static integer c__3 = 3;
-static integer c__1 = 1;
+static doublereal c_b4 = .001;
 static integer c__9 = 9;
-static doublereal c_b23 = .001;
+static integer c__1 = 1;
+static integer c__3 = 3;
 static integer c__5 = 5;
 static logical c_true = TRUE_;
 static integer c__2 = 2;
@@ -39,24 +39,28 @@ static integer c__2 = 2;
 	doublereal *cgcox, doublereal *cgcoy, doublereal *cgcoz)
 {
     /* Format strings */
-    static char fmt_27[] = "(a24,f9.5,a5,3f11.5)";
+    static char fmt_27[] = "(a8,f9.3,a8,3f9.3)";
 
     /* System generated locals */
     integer i__1, i__2, i__3, i__4;
     doublereal d__1, d__2;
+    olist o__1;
 
     /* Builtin functions */
-    integer s_wsle(cilist *), do_lio(integer *, integer *, char *, ftnlen), 
-	    e_wsle(void);
     double sqrt(doublereal);
-    integer s_wsfe(cilist *), do_fio(integer *, char *, ftnlen), e_wsfe(void);
+    integer f_open(olist *), s_wsle(cilist *), do_lio(integer *, integer *, 
+	    char *, ftnlen), e_wsle(void), s_wsfe(cilist *), do_fio(integer *,
+	     char *, ftnlen), e_wsfe(void);
 
     /* Local variables */
-    static integer ii, jj, kk, ll;
+    static integer na, nc, ii, jj, kk, ll;
     static doublereal wa[200110000];
-    static integer mm;
-    static doublereal rr, rx, ry, rz, xx, yy, zz;
-    static integer iwa[2000], lwa, info;
+    static integer mm, no;
+    static doublereal qo, rr, rx, ry, rz, xx, yy, zz, dca, cob, dco, xca, yca,
+	     zca, sib;
+    static integer iwa[2000], lwa;
+    static doublereal xco, yco, zco, upx, upy, upz, uqx, uqy, uqz;
+    static integer info;
     static doublereal dpot[100000], xmin, ymin, zmin;
     static integer npts, npts1, iflag, ngrid;
     static doublereal optch[2000];
@@ -72,19 +76,17 @@ static integer c__2 = 2;
     static doublereal cgtotpz;
 
     /* Fortran I/O blocks */
-    static cilist io___1 = { 0, 6, 0, 0, 0 };
-    static cilist io___24 = { 0, 6, 0, 0, 0 };
-    static cilist io___25 = { 0, 6, 0, 0, 0 };
-    static cilist io___26 = { 0, 6, 0, 0, 0 };
-    static cilist io___34 = { 0, 6, 0, 0, 0 };
-    static cilist io___35 = { 0, 6, 0, 0, 0 };
-    static cilist io___44 = { 0, 6, 0, fmt_27, 0 };
-    static cilist io___45 = { 0, 6, 0, fmt_27, 0 };
+    static cilist io___58 = { 0, 1, 0, 0, 0 };
+    static cilist io___59 = { 0, 1, 0, 0, 0 };
+    static cilist io___60 = { 0, 1, 0, 0, 0 };
+    static cilist io___61 = { 0, 1, 0, 0, 0 };
+    static cilist io___62 = { 0, 1, 0, fmt_27, 0 };
+    static cilist io___63 = { 0, 1, 0, fmt_27, 0 };
 
 
 /* *********************************************************************** */
 /*                                                                      * */
-/*     Optimise les charges gros grain                                  * */
+/*     Optimise les charges gros grain à partir d'un PDB sans H         * */
 /*                                                                      * */
 /*     Appelle les subroutines DIFFPOT, LMDIF1, LMDIF                   * */
 /*                                                                      * */
@@ -96,7 +98,7 @@ static integer c__2 = 2;
 /* ----------------------- INPUT VARIABLES ------------------------------- */
 /* -------------------- LOCAL VARIABLES ---------------------------------- */
 /* ==================== EXECUTABLE STATEMENTS ============================ */
-/* ------------------------------------------verification entree variables */
+/* ----------------------------------------------cas des résidus terminaux */
     /* Parameter adjustments */
     --cgcoz;
     --cgcoy;
@@ -110,10 +112,74 @@ static integer c__2 = 2;
     --charge;
 
     /* Function Body */
-    s_wsle(&io___1);
-    do_lio(&c__3, &c__1, (char *)&(*natom), (ftnlen)sizeof(integer));
-    do_lio(&c__3, &c__1, (char *)&(*nbead), (ftnlen)sizeof(integer));
-    e_wsle();
+    charge[1] += 1.;
+    for (ii = *natom; ii >= 1; --ii) {
+	if (radius[ii] == 1.908) {
+	    if (charge[ii] == .5973 || charge[ii] == .7341 || charge[ii] == 
+		    .5366 || charge[ii] == .5896) {
+		nc = ii;
+		no = ii + 1;
+	    }
+	} else if (radius[ii] == 1.824) {
+	    if (-charge[ii] == .1438 || -charge[ii] == .0732 || -charge[ii] ==
+		     .2227 || -charge[ii] == .2548) {
+		na = ii + 1;
+		goto L2709;
+	    }
+	}
+    }
+L2709:
+    qo = charge[nc] + charge[no] - 1.;
+    charge[no] = qo;
+    charge[nc] = -qo;
+    xco = coorx[no] - coorx[nc];
+    yco = coory[no] - coory[nc];
+    zco = coorz[no] - coorz[nc];
+    dco = sqrt(xco * xco + yco * yco + zco * zco);
+    xco /= dco;
+    yco /= dco;
+    zco /= dco;
+    xca = coorx[nc] - coorx[na];
+    yca = coory[nc] - coory[na];
+    zca = coorz[nc] - coorz[na];
+    dca = sqrt(xca * xca + yca * yca + zca * zca);
+    xca /= dca;
+    yca /= dca;
+    zca /= dca;
+    upx = yca * zco - zca * yco;
+    upy = xco * zca - zco * xca;
+    upz = xca * yco - yca * xco;
+    uqx = upy * zca - upz * yca;
+    uqy = xca * upz - zca * upx;
+    uqz = upx * yca - upy * xca;
+    dca = sqrt(uqx * uqx + uqy * uqy + uqz * uqz);
+    uqx /= dca;
+    uqy /= dca;
+    uqz /= dca;
+    ++(*natom);
+    charge[*natom] = charge[no];
+    radius[*natom] = radius[no];
+    dco = 1.25;
+    cob = .454;
+    sib = .891;
+    coorx[no] = dco * (cob * xca + sib * uqx) + coorx[nc];
+    coory[no] = dco * (cob * yca + sib * uqy) + coory[nc];
+    coorz[no] = dco * (cob * zca + sib * uqz) + coorz[nc];
+    coorx[*natom] = dco * (cob * xca - sib * uqx) + coorx[nc];
+    coory[*natom] = dco * (cob * yca - sib * uqy) + coory[nc];
+    coorz[*natom] = dco * (cob * zca - sib * uqz) + coorz[nc];
+/* ------test */
+/*      write(6,18) 'ATOM',na,'CA ','CTR',1, */
+/*     & coorx(na),coory(na),coorz(na),charge(na),radius(na) */
+/*      write(6,18) 'ATOM',nc,'C  ','CTR',1, */
+/*     & coorx(nc),coory(nc),coorz(nc),charge(nc),radius(nc) */
+/*      write(6,18) 'ATOM',no,'O  ','CTR',1, */
+/*     & coorx(no),coory(no),coorz(no),charge(no),radius(no) */
+/*      write(6,18) 'ATOM',natom,'O2 ','CTR',1, */
+/*     & coorx(natom),coory(natom),coorz(natom),charge(natom), */
+/*     & radius(natom) */
+/* 18    format(a4,2x,i5,2x,a3,1x,a3,3x,i3,4x,3f8.3,2x,2f8.3) */
+/* ------------------------------------------verification entree variables */
     chgcoo_1.znatom = *natom;
     i__1 = *natom;
     for (ii = 1; ii <= i__1; ++ii) {
@@ -129,7 +195,6 @@ static integer c__2 = 2;
 	chgcoo_1.zcgcoy[ii - 1] = cgcoy[ii];
 	chgcoo_1.zcgcoz[ii - 1] = cgcoz[ii];
     }
-    ngrid = 84;
 /* -----------------------------------------centre de masse de la proteine */
     chgcoo_1.bx = 0.;
     chgcoo_1.by = 0.;
@@ -143,25 +208,26 @@ static integer c__2 = 2;
     chgcoo_1.bx /= (real) (*natom);
     chgcoo_1.by /= (real) (*natom);
     chgcoo_1.bz /= (real) (*natom);
-    xmin = chgcoo_1.bx - 50.;
-    ymin = chgcoo_1.by - 50.;
-    zmin = chgcoo_1.bz - 50.;
+    xmin = chgcoo_1.bx - 75.;
+    ymin = chgcoo_1.by - 75.;
+    zmin = chgcoo_1.bz - 75.;
 /* ------------------------------------------------interieur du solute ? */
     npts = 0;
-    rx = xmin - 1.2;
+    ngrid = 101;
+    rx = xmin - 1.5;
     i__1 = ngrid;
     for (kk = 1; kk <= i__1; ++kk) {
-	rx += 1.2;
-	ry = ymin - 1.2;
+	rx += 1.5;
+	ry = ymin - 1.5;
 	i__2 = ngrid;
 	for (ll = 1; ll <= i__2; ++ll) {
-	    ry += 1.2;
-	    rz = zmin - 1.2;
+	    ry += 1.5;
+	    rz = zmin - 1.5;
 	    i__3 = ngrid;
 	    for (mm = 1; mm <= i__3; ++mm) {
-		rz += 1.2;
+		rz += 1.5;
 		solvent = TRUE_;
-		rminsol = 100.;
+		rminsol = 150.;
 		i__4 = *natom;
 		for (ii = 1; ii <= i__4; ++ii) {
 		    xx = rx - coorx[ii];
@@ -209,22 +275,10 @@ L2101:
     for (jj = 1; jj <= i__1; ++jj) {
 	optch[jj - 1] = cgchg[jj];
     }
-    s_wsle(&io___24);
-    e_wsle();
-    s_wsle(&io___25);
-    do_lio(&c__9, &c__1, " OPTIMISATION DES ", (ftnlen)18);
-    do_lio(&c__3, &c__1, (char *)&(*nbead), (ftnlen)sizeof(integer));
-    do_lio(&c__9, &c__1, " CHARGES GROS GRAIN", (ftnlen)19);
-    e_wsle();
-    s_wsle(&io___26);
-    do_lio(&c__9, &c__1, " (NB DE POINTS DE GRILLE = ", (ftnlen)27);
-    do_lio(&c__3, &c__1, (char *)&npts, (ftnlen)sizeof(integer));
-    do_lio(&c__9, &c__1, ")", (ftnlen)1);
-    e_wsle();
     lwa = npts1 * *nbead + *nbead * 5 + npts1;
     diffpot_(&npts1, nbead, optch, dpot, &iflag);
-    lmdif1_((S_fp)diffpot_, &npts1, nbead, optch, dpot, &c_b23, &info, iwa, 
-	    wa, &lwa);
+    lmdif1_((S_fp)diffpot_, &npts1, nbead, optch, dpot, &c_b4, &info, iwa, wa,
+	     &lwa);
 /* ------------------------------------difference de potentiel maximum */
     dpotmax = 0.;
     i__1 = npts1;
@@ -233,22 +287,12 @@ L2101:
 	    dpotmax = (d__2 = dpot[kk - 1], abs(d__2));
 	}
     }
-    s_wsle(&io___34);
-    do_lio(&c__9, &c__1, " dpotmax = ", (ftnlen)11);
-    do_lio(&c__5, &c__1, (char *)&dpotmax, (ftnlen)sizeof(doublereal));
-    e_wsle();
-    if (info == 0 || info > 3) {
-	s_wsle(&io___35);
-	do_lio(&c__9, &c__1, " warning : info = ", (ftnlen)18);
-	do_lio(&c__3, &c__1, (char *)&info, (ftnlen)sizeof(integer));
-	e_wsle();
-    }
 /* ------------------------------------retour des charges optimisees */
     i__1 = *nbead;
     for (jj = 1; jj <= i__1; ++jj) {
 	cgchg[jj] = optch[jj - 1];
     }
-/* ---------------------------------------------------verifications */
+/* -------------------------------------verifications et output */
     aatotc = 0.;
     aatotpx = 0.;
     aatotpy = 0.;
@@ -271,18 +315,46 @@ L2101:
 	cgtotpy += cgchg[jj] * (cgcoy[jj] - chgcoo_1.by);
 	cgtotpz += cgchg[jj] * (cgcoz[jj] - chgcoo_1.bz);
     }
-    s_wsfe(&io___44);
-    do_fio(&c__1, " All Atom Model : Q = ", (ftnlen)22);
+    o__1.oerr = 0;
+    o__1.ounit = 1;
+    o__1.ofnmlen = 16;
+    o__1.ofnm = "opt_scorpion.out";
+    o__1.orl = 0;
+    o__1.osta = "unknown";
+    o__1.oacc = 0;
+    o__1.ofm = 0;
+    o__1.oblnk = 0;
+    f_open(&o__1);
+    s_wsle(&io___58);
+    do_lio(&c__9, &c__1, " WARNING : INFO = ", (ftnlen)18);
+    do_lio(&c__3, &c__1, (char *)&info, (ftnlen)sizeof(integer));
+    e_wsle();
+    s_wsle(&io___59);
+    do_lio(&c__9, &c__1, " OPTIMISATION DE ", (ftnlen)17);
+    do_lio(&c__3, &c__1, (char *)&(*nbead), (ftnlen)sizeof(integer));
+    do_lio(&c__9, &c__1, " CHARGES GROS GRAIN", (ftnlen)19);
+    e_wsle();
+    s_wsle(&io___60);
+    do_lio(&c__9, &c__1, " SUR ", (ftnlen)5);
+    do_lio(&c__3, &c__1, (char *)&npts, (ftnlen)sizeof(integer));
+    do_lio(&c__9, &c__1, " POINTS DE GRILLE", (ftnlen)17);
+    e_wsle();
+    s_wsle(&io___61);
+    do_lio(&c__9, &c__1, " DPOTMAX = ", (ftnlen)11);
+    do_lio(&c__5, &c__1, (char *)&dpotmax, (ftnlen)sizeof(doublereal));
+    e_wsle();
+    s_wsfe(&io___62);
+    do_fio(&c__1, "  QAA = ", (ftnlen)8);
     do_fio(&c__1, (char *)&aatotc, (ftnlen)sizeof(doublereal));
-    do_fio(&c__1, " P = ", (ftnlen)5);
+    do_fio(&c__1, "  PAA = ", (ftnlen)8);
     do_fio(&c__1, (char *)&aatotpx, (ftnlen)sizeof(doublereal));
     do_fio(&c__1, (char *)&aatotpy, (ftnlen)sizeof(doublereal));
     do_fio(&c__1, (char *)&aatotpz, (ftnlen)sizeof(doublereal));
     e_wsfe();
-    s_wsfe(&io___45);
-    do_fio(&c__1, " Coarse Grained : Q = ", (ftnlen)22);
+    s_wsfe(&io___63);
+    do_fio(&c__1, "  QCG = ", (ftnlen)8);
     do_fio(&c__1, (char *)&cgtotc, (ftnlen)sizeof(doublereal));
-    do_fio(&c__1, " P = ", (ftnlen)5);
+    do_fio(&c__1, "  PCG = ", (ftnlen)8);
     do_fio(&c__1, (char *)&cgtotpx, (ftnlen)sizeof(doublereal));
     do_fio(&c__1, (char *)&cgtotpy, (ftnlen)sizeof(doublereal));
     do_fio(&c__1, (char *)&cgtotpz, (ftnlen)sizeof(doublereal));
@@ -556,13 +628,13 @@ L10:
 {
     /* Initialized data */
 
-    static doublereal one = 1.;
-    static doublereal p1 = .1;
     static doublereal p5 = .5;
     static doublereal p25 = .25;
     static doublereal p75 = .75;
     static doublereal p0001 = 1e-4;
     static doublereal zero = 0.;
+    static doublereal one = 1.;
+    static doublereal p1 = .1;
 
     /* System generated locals */
     integer fjac_dim1, fjac_offset, i__1, i__2;

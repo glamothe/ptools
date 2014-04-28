@@ -82,7 +82,13 @@ initalBeadCharge= {
       'ASP:CB': -1,
       'GLU:CG': -1,
       'ARG:CG': +1, 
-      'LYS:CG': 1
+      'LYS:CG': 1,
+      'GTP:CL': -1,
+      'GTP:CM': -1,
+      'GTP:CN': -2,
+      'GDP:CL': -1,
+      'GDP:CM': -2,
+      'MG2:CB': +2
 }
 
 

@@ -24,8 +24,8 @@
       parameter (namax=20000)
       parameter (ngmax=100000)
 
-      parameter (boxsize=100.0D0)
-      parameter (delgrid=1.2D0)
+      parameter (boxsize=150.0D0)
+      parameter (delgrid=1.5D0)
       parameter (rminex=10.0D0)
       parameter (tol=1.0D-3)
 
