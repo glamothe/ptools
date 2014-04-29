@@ -50,4 +50,4 @@ About Git branches:
 
 This git repository contains few branches. "master" is the latest "stable" version. 
 "develop" contains the current development version. Other branches are features branches, 
-wich are eventually merged into develop.
+which are eventually merged into develop.
