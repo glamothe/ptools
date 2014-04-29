@@ -34,6 +34,7 @@ COMMON_CPP = Split ("""atom.cpp
                        minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp
                        mcopff.cpp
                        surface.cpp
+                       scorpionforcefield.cpp
                        coordsarray.cpp
                        superpose.cpp
                        version.cpp
