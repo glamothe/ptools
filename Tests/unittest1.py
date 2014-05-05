@@ -284,7 +284,15 @@ class TestRigidbody(unittest.TestCase):
         sel_hie = self.r.SelectResidType("HIE")
         self.assertEqual(len(sel_hie), 100)
         
+    def test_removeSelection(self):
+        sz = len(self.r)
+        sel_his = self.r.SelectResidType("HIS")
         
+        self.r.removeSelection(sel_his)
+        self.assertEqual( len(self.r) , sz - len(sel_his) )
+        
+        sel_his = self.r.SelectResidType("HIS")
+        self.assertEqual(len(sel_his), 0)
         
         
         

@@ -46,6 +46,7 @@ cdef extern from "rigidbody.h" namespace "PTools":
         void setAtomType(CppAtomSelection&, string&)
         void setAtomCharge(CppAtomSelection&, double)
         void setResidType(CppAtomSelection&, string&)
+        void removeSelection(CppAtomSelection& atsel)
 
 
 
@@ -203,7 +204,8 @@ cdef class Rigidbody:
         self.thisptr.setResidType(deref(atsel.thisptr), s2)
     
 
-
+    def removeSelection(self, AtomSelection atsel):
+        self.thisptr.removeSelection(deref(atsel.thisptr))
     #    void SetAtomProperty(unsigned int, Atomproperty& )
 
 

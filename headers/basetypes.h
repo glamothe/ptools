@@ -102,7 +102,7 @@ template<size_t N> dbl pow(dbl x)
 *  The size of the array cannot be modified after creation.
 *  It should be compatible with functions that needs raw pointers (with few modifications of the object).
 *  WARNING: the assignemnt like 'Array2D array2=array1;' or 'Array2D array2(array1)' leads to two objects
-*  sharing the same memory (this reduce the cost of copying and transmission by value,
+*  sharing the same memory (this reduces the cost of copying and transmission by value,
 *  like for Python objects). To make array2 independant of array1 (deep copy), use: array2.detach() after the
 *  copy.
 *  It should be reasonably fast for most usages

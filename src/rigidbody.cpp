@@ -136,6 +136,50 @@ void Rigidbody::setResidType(const AtomSelection& atsel, const std::string & res
 
 
 
+void Rigidbody::removeSelection(const AtomSelection& atsel)
+{
+   // to remove a list of indexes this methods creates a new 
+   // rigidbody objects, insert atoms that are not in the deletion list
+   // and replaces *this by the new object
+   
+   
+   std::vector<int> lst = atsel.getList(); //makes a copy
+   std::sort(lst.begin(), lst.end()); //sort indexes
+   
+   Rigidbody newrigid;
+   
+   uint index_rig = 0;
+   std::vector<int>::iterator to_remove = lst.begin();
+   
+   while(index_rig < this->Size() )
+   {
+    
+       if( index_rig != *to_remove )
+       {
+          Atom at = this->CopyAtom(index_rig);
+          newrigid.AddAtom(at);
+       }
+       
+       else
+       {
+         ++to_remove;   
+         if (to_remove == lst.end())
+         {
+           --to_remove;   
+         }
+       }
+    
+       index_rig++;
+       
+   }
+    
+    
+    *this = newrigid;
+    
+    
+}
+
+
 
 void Rigidbody::SetAtom(uint pos, const Atom& atom)
     {
