@@ -93,10 +93,16 @@ public:
     }
 	
 	/// define atom properties
-    void SetAtomProperty(uint pos, const Atomproperty& atprop)
+    void setAtomProperty(uint pos, const Atomproperty& atprop)
     {
        mAtomProp[pos] = atprop;
     }
+    
+    
+    void setAtomProperty(const AtomSelection& atsel, const Atomproperty& atprop); 
+    void setAtomType(const AtomSelection& atsel, const std::string& attype);
+    void setAtomCharge(const AtomSelection& atsel, dbl charge); 
+    
 
 	/// define atom pos
     void SetAtom(uint pos, const Atom& atom);

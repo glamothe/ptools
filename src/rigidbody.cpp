@@ -72,7 +72,57 @@ Atom Rigidbody::CopyAtom(uint i) const
     return at;
 }
 
-    void Rigidbody::SetAtom(uint pos, const Atom& atom)
+
+
+void Rigidbody::setAtomProperty(const AtomSelection& atsel, const Atomproperty& atprop)
+{
+   const std::vector<int> & list = atsel.getList(); 
+    
+   for (uint i=0; i<list.size(); i++)
+   {
+      this->setAtomProperty(list[i], atprop);   
+       
+   }
+    
+}
+
+
+
+void Rigidbody::setAtomType(const AtomSelection& atsel, const std::string & attype)
+{
+   const std::vector<int> & list = atsel.getList(); 
+    
+   for (uint i=0; i<list.size(); i++)
+   {
+      Atomproperty atprop = this->GetAtomProperty(list[i]);
+      atprop.setAtomType(attype);
+      this->setAtomProperty(list[i], atprop);
+      
+   }
+    
+}
+
+
+void Rigidbody::setAtomCharge(const AtomSelection& atsel, dbl charge)
+{
+   const std::vector<int> & list = atsel.getList();  
+   
+   for (uint i=0; i<list.size(); i++)
+   {
+       Atomproperty atprop = this->GetAtomProperty(list[i]);
+       atprop.atomCharge = charge;
+       this->setAtomProperty(list[i], atprop);
+       
+       
+   }
+   
+    
+}
+
+
+
+
+void Rigidbody::SetAtom(uint pos, const Atom& atom)
     {
 
        if (pos<0  || pos >= this->Size())
@@ -84,7 +134,7 @@ Atom Rigidbody::CopyAtom(uint i) const
        }
        Atomproperty atp(atom);
        Coord3D co(atom.coords);
-       SetAtomProperty(pos, atp);
+       setAtomProperty(pos, atp);
        SetCoords(pos,co);
     }
 

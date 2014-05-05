@@ -40,6 +40,9 @@ public:
 
     Atom CopyAtom(uint i) const {return m_rigid->CopyAtom(m_list[i]);}
     void AddAtomIndex(int i) {m_list.push_back(i);}; ///< adds an Atom index
+    
+    const std::vector<int> & getList() const {return m_list;}
+    
     Rigidbody CreateRigid(); ///< makes a new rigid copy (independant copy) from an AtomsSelection object.
 
     AtomSelection non(const AtomSelection& atsel);
