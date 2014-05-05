@@ -102,6 +102,7 @@ public:
     void setAtomProperty(const AtomSelection& atsel, const Atomproperty& atprop); 
     void setAtomType(const AtomSelection& atsel, const std::string& attype);
     void setAtomCharge(const AtomSelection& atsel, dbl charge); 
+    void setResidType(const AtomSelection& atsel, const std::string& residtype); 
     
 
 	/// define atom pos
