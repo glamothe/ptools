@@ -39,7 +39,13 @@ cdef extern from "rigidbody.h" namespace "PTools":
         double Radius()
         
         CppAtomproperty & GetAtomProperty(unsigned int)
-        void SetAtomProperty(unsigned int, CppAtomproperty& )
+
+
+        void setAtomProperty(unsigned int, CppAtomproperty& )
+        void setAtomProperty(CppAtomSelection&, CppAtomproperty&)
+        void setAtomType(CppAtomSelection&, string&)
+        void setAtomCharge(CppAtomSelection&, double)
+
 
 
         #AtomSelection:
@@ -179,7 +185,19 @@ cdef class Rigidbody:
         return pyAtprop
         
     
-    
+    def setAtomProperty(self, AtomSelection atsel, Atomproperty atprop):
+        self.thisptr.setAtomProperty(deref(atsel.thisptr), deref(atprop.thisptr))
+
+
+    def setAtomType(self, AtomSelection atsel, bytes s):
+        cdef string s2 = <string?> s
+        self.thisptr.setAtomType(deref(atsel.thisptr), s2) 
+
+
+    def setAtomCharge(self, AtomSelection atsel, double charge):
+        self.thisptr.setAtomCharge(deref(atsel.thisptr), charge)
+
+
     #    void SetAtomProperty(unsigned int, Atomproperty& )
 
 

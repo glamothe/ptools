@@ -251,7 +251,31 @@ class TestRigidbody(unittest.TestCase):
         at1 = rigid.CopyAtom(0)
         self.assertEqual(at1.residId, -4)
 
+    def test_setAtomType(self):
+        
+        #we should have 16 'CD' atoms for ILE
+        ile = self.r.SelectResidType('ILE') & self.r.SelectAtomType("CD")
+        self.assertEqual(len(ile), 16)
+        
+        #but 0 of type CD1
+        ile2 = self.r.SelectResidType('ILE') & self.r.SelectAtomType("CD1")
+        self.assertEqual(len(ile2), 0)
+        
+        #change ILE CD atoms to CD1 atoms:
+        self.r.setAtomType(ile, "CD1")
 
+        #check that we now have 16 atoms of type CD1
+        ile3 = self.r.SelectResidType('ILE') & self.r.SelectAtomType("CD1")
+        self.assertEqual(len(ile3), 16)
+        
+        #and 0 of type CD:
+        ile = self.r.SelectAtomType("CD") & self.r.SelectResidType("ILE")
+        self.assertEqual(len(ile), 0)
+        
+        
+        
+        
+        
 
 class TestAttractRigidbody(unittest.TestCase):
     def setUp(self):
