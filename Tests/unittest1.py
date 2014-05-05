@@ -272,6 +272,19 @@ class TestRigidbody(unittest.TestCase):
         ile = self.r.SelectAtomType("CD") & self.r.SelectResidType("ILE")
         self.assertEqual(len(ile), 0)
         
+    def test_setResidType(self):
+        sel_his = self.r.SelectResidType("HIS")
+
+        self.assertEqual(len(sel_his), 100)
+        self.r.setResidType(sel_his, "HIE")
+        
+        sel_his = self.r.SelectResidType("HIS")
+        self.assertEqual(len(sel_his), 0)
+        
+        sel_hie = self.r.SelectResidType("HIE")
+        self.assertEqual(len(sel_hie), 100)
+        
+        
         
         
         
