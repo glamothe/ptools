@@ -98,14 +98,21 @@ public:
        mAtomProp[pos] = atprop;
     }
     
-    
+    /// set multiple atom properties in one operation
     void setAtomProperty(const AtomSelection& atsel, const Atomproperty& atprop); 
+    
+    /// set multiple atom types in one operation
     void setAtomType(const AtomSelection& atsel, const std::string& attype);
+    
+    /// set multiple atom charges in one operation
     void setAtomCharge(const AtomSelection& atsel, dbl charge); 
+    
+    /// set multiple residue types in one operation
     void setResidType(const AtomSelection& atsel, const std::string& residtype); 
+    
+    /// remove multiples atomes in one operation. This will invalidate all existing AtomSelection instances
     void removeSelection(const AtomSelection& atsel);
     
-
 	/// define atom pos
     void SetAtom(uint pos, const Atom& atom);
 
