@@ -144,7 +144,12 @@ void Rigidbody::removeSelection(const AtomSelection& atsel)
    
    
    std::vector<int> lst = atsel.getList(); //makes a copy
+   if (lst.size()==0) return;
+   
+   
    std::sort(lst.begin(), lst.end()); //sort indexes
+   
+   
    
    Rigidbody newrigid;
    
