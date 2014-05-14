@@ -31,34 +31,10 @@ from ptools import *
 from calculateonce import NoRecalc
 
 
-limit_rmsd = 1.0 
 limit_ener = 1.0e30
-
-
-
-class Clusterize(NoRecalc):
-    def generate(self, db, dep, args):
-        retval = cluster(args[0],args[1],args[2],args[3])
-        d = shelve.open(db)
-        d['data']=retval
-        d['args']=args[2:4]
-        d.close()
-        return retval
-
-    def load(self, db):
-        d = shelve.open(db)
-        return d['data']
-
-    def checkArgs(self, dbf, args):
-        d = shelve.open(dbf)
-        return d['args']== args[2:4]
-
-
 
 class Struct:
     pass
-    #structure = None
-    #count = 0
 
 
 ########################
@@ -75,13 +51,11 @@ class StructureI:
 
 
 
-
-
 ######################
 
 
 
-def cluster(lig,structures, nclusters, cluster_memory):
+def cluster(lig,structures, nclusters, cluster_memory, limit_rmsd):
     cluster_memory_= cluster_memory+1
     thecluster = []
 
@@ -90,17 +64,16 @@ def cluster(lig,structures, nclusters, cluster_memory):
     for s in structures[:nstruct]:
         if s.ener>0:
             break
-               
+
         new=True
         sc = extract.rigidXMat44(lig,s.matrix)
 
         for c in reversed(thecluster[-cluster_memory:]):
             if ( ( c.ext.ener-s.ener < limit_ener ) and ( Rmsd(sc,c.structure) < limit_rmsd ) ):
-            #if Rmsd(sc,c.structure)< limit_rmsd:
                 c.count += 1
                 new=False
-                #print "stuct added to a cluster"
                 break
+
         if new==True:
             if len(thecluster) == nclusters + cluster_memory:
                 #don't create more than nclusters + cluster_memory clusters
@@ -127,7 +100,7 @@ if (__name__=="__main__"):
     parser = OptionParser()
     parser.usage = 'cluster.py <out_file> <lig_file> [options]'
     parser.add_option("-e", "--energy_cutoff", action="store", type="float", dest="energy_cutoff", help="Energy cutoff value (default=1000.0)")
-    parser.add_option("-r", "--rmsd_cutoff", action="store", type="float", dest="rmsd_cutoff", help="Rmsd cutoff value (default=1.0)")
+    parser.add_option("-r", "--rmsd_cutoff", action="store", type="float", dest="rmsd_cutoff", help="Rmsd cutoff value (default=1.0)", default=1.0)
     parser.add_option("--nclusters", action="store", type="int", dest="nclusters", help="number of cluster to output (default=200)", default=200)
     parser.add_option("-m", "--memory", action="store", type="int", dest="cluster_memory",default=50, help="only the latest m clusters are compared during the clustering process, an increase of this value will increase significantly the time processing  (default=50)")
     (options, args) = parser.parse_args()
@@ -165,12 +138,7 @@ if (__name__=="__main__"):
         structures.append(e.d[k])
 
 
-    dependencies=[outputfile]
-    args = [lig,structures, nclusters, cluster_memory]
-
-
-
-    thecluster=Clusterize("%s.cluster.db"%outputfile,dependencies,args,info_output=sys.stderr.write, error_output=sys.stderr.write).db
+    thecluster = cluster(lig,structures, nclusters, cluster_memory, limit_rmsd)
 
 
     print "%-4s %6s %6s %13s %13s %6s %8s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref","Rank", "Weight")
