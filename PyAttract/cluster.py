@@ -86,6 +86,8 @@ if (__name__=="__main__"):
     parser.add_option("-r", "--rmsd_cutoff", action="store", type="float", dest="rmsd_cutoff", help="Rmsd cutoff value (default=1.0)", default=1.0)
     parser.add_option("--nclusters", action="store", type="int", dest="nclusters", help="number of cluster to output (default=200)", default=200)
     parser.add_option("-m", "--memory", action="store", type="int", dest="cluster_memory",default=50, help="only the latest m clusters are compared during the clustering process, an increase of this value will increase significantly the time processing  (default=50)")
+    parser.add_option("--extract", action="store", dest="extractTo", default=None, help="Extract the [nclusters] to files named 'prefix_rank_trans_rot.pdb'")
+
     (options, args) = parser.parse_args()
 
 
@@ -116,4 +118,11 @@ if (__name__=="__main__"):
     print "%-4s %6s %6s %13s %13s %6s %8s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref","Rank", "Weight")
     for i in range(len(thecluster)):
              print "%-4s %6s %6s %13.7f %s %6i %8s" %("==", str(thecluster[i].ext.trans), str(thecluster[i].ext.rot), float(thecluster[i].ext.ener), thecluster[i].ext.rmsd, i+1, str(thecluster[i].count))
+
+
+    if options.extractTo is not None:
+        for i,s in enumerate(thecluster):
+            structure = extract.rigidXMat44(lig,s.ext.matrix)
+            WritePDB(structure, "%s_%i_%i_%i.pdb"%(options.extractTo, i, s.ext.trans, s.ext.rot))
+
 
