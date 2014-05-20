@@ -44,7 +44,7 @@ def cluster(lig,structures, nclusters, cluster_memory, rmsd_cutoff, energy_cutof
 
     structures.sort(key=lambda i: i.ener)
 
-    for s in structures[:nstruct]:
+    for s in structures:
         if s.ener>0:
             break
 
@@ -89,9 +89,6 @@ if (__name__=="__main__"):
     parser.add_option("--extract", action="store", dest="extractTo", default=None, help="Extract the [nclusters] to files named 'prefix_rank_trans_rot.pdb'")
 
     (options, args) = parser.parse_args()
-
-
-    nstruct=2000
 
 
     outputfile = sys.argv[1]
