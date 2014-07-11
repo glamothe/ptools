@@ -44,8 +44,8 @@ setup(ext_modules=[Extension(
                    language="c++",   # causes Cython to create C++ source
                    #libraries=['f2c'],
                    library_dirs = ['/usr/lib'],
-                   extra_objects = ['/usr/lib/libf2c.a'],
-                   include_dirs = ['headers']
+                   extra_objects = ['dependencies/f2c/libf2c.a'],
+                   include_dirs = ['headers', "dependencies/f2c/", "dependencies/boost_1_55_0"],
                    )
                    ], 
       packages = ['.'],
