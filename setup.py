@@ -65,11 +65,11 @@ def find_header(names, paths, useEnvPath=False):
 
 
 print "Trying to locate the boost libraries, modify setup.py to change de default search path"
-boostdir=find_header(["boost/shared_array.hpp"], [user_path_boost,"./ptools_dep/", "/usr/include", \
+boostdir=find_header(["boost/shared_array.hpp"], [user_path_boost,"./ptools_dep/boost_1_55_0", "/usr/include", \
 "/opt/local/include"] )
 
 print "Trying to locate libf2c.a static library"
-f2clib = find_file("libf2c.a", [user_path_libf2c, "./ptools_dep/", "/usr/lib/", "/usr/local/lib/", "/usr/lib64/"])
+f2clib = find_file("libf2c.a", [user_path_libf2c, "./ptools_dep/f2c", "/usr/lib/", "/usr/local/lib/", "/usr/lib64/"])
 f2c_header = find_header(["f2c.h"], [user_path_f2c_h, "./ptools_dep/f2c", "/usr/include", "/usr/local/f2c/"])
 
 not_found_message = """Note: You can add a custom search path by editing this file (setup.py).
@@ -91,7 +91,7 @@ print "using f2clib from", f2clib
 
 sources =   [
                "cython_wrappers.cpp", 
-               "atom.cpp" , 
+               "atom.cpp", 
                "attractrigidbody.cpp", 
                "coordsarray.cpp", 
                "mcopff.cpp", 
