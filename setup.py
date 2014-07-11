@@ -4,7 +4,7 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 import os
-
+import sys
 import bzrrev
 
 
@@ -70,7 +70,7 @@ boostdir=find_header(["boost/shared_array.hpp"], [user_path_boost,"./ptools_dep/
 
 print "Trying to locate libf2c.a static library"
 f2clib = find_file("libf2c.a", [user_path_libf2c, "./ptools_dep/", "/usr/lib/", "/usr/local/lib/", "/usr/lib64/"])
-f2c_header = find_header(["f2c.h"], [user_path_f2c_h, "./ptoold_dep/f2c", "/usr/include", "/usr/local/f2c/"])
+f2c_header = find_header(["f2c.h"], [user_path_f2c_h, "./ptools_dep/f2c", "/usr/include", "/usr/local/f2c/"])
 
 not_found_message = """Note: You can add a custom search path by editing this file (setup.py).
 You can also install locally the missing dependencies by running: sh ./install-deps.sh"""
