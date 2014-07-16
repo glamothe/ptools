@@ -311,6 +311,7 @@ if options.optimizecharges:
 else:
     optimized = cgch
 
+print "HEADER    SCORPION REDUCED PDB FILE"
 
 for i, bead in enumerate(protein):
     #ugly hack to set correct charges values due to a bug atom to pdb conversion

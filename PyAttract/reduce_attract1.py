@@ -380,6 +380,7 @@ for i in range(len(residueTagList)):
 #==========================================================
 # output coarse grain (reduced) pdb file
 #==========================================================
+sys.stdout.write("HEADER    ATTRACT1 REDUCED PDB FILE\n")
 sys.stdout.write(coarsegrainPdb)
 sys.stderr.write("Coarse grain (reduced) output")
 sys.stderr.write(": %d beads \n" %(atomCnt))

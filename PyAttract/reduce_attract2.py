@@ -140,7 +140,7 @@ beadCorresp['HSP'] = beadCorresp['HIS']
 
 
 allAtom=Rigidbody(sys.argv[1])
-print "Number of atoms: " ,len(allAtom)
+sys.stderr.write("Number of atoms:%i \n" %len(allAtom) )
 
 #extract all 'atoms' objects
 atoms=[]
@@ -180,6 +180,7 @@ sys.stderr.write(out+"\n")
 
 totAtoms=0
 
+print "HEADER    ATTRACT2 REDUCED PDB FILE" 
 index = 0
 for residKey, atomList in zip(residulist,orderedresid):
       residType=residKey[:3]
