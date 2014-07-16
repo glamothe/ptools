@@ -50,6 +50,9 @@ class BeadCreator:
             atomtype=atom.atomType
             #trick to handle 'OTn' instead of 'O' for last pdb atom:
             if atomtype[:2]=='OT': atomtype='O'
+            if atom.residType =="ILE" and atomtype == "CD":
+                atomtype = "CD1"
+                atom.atomType = "CD1"
             if atomtype in self._lstofAtoms:
                   self._CoM+=atom.coords
                   self._lstofAtoms.remove(atomtype)
@@ -218,9 +221,9 @@ for residKey, atomList in zip(residulist,orderedresid):
             try:
                   bead = beadcreator.create()
             except IncompleteBead:
-                  print "The bead %i of residue %s is incomplete. Please check your pdb!"\
-                      %(totAtoms+1,residKey)
-                  raise 
+                  sys.stderr.write("The bead %i of residue %s is incomplete. Please check your pdb!\n"\
+                      %(totAtoms+1,residKey) )
+                  sys.exit(1)
             totAtoms+=1
             #now we must modify the bead: change the residue type and set the "extra" field correctly
             bead.residType = residType 
@@ -254,6 +257,8 @@ for i in range(len(allAtom)):
    atom = allAtom.CopyAtom(i)
    residu_type= atom.residType
    atomtype = atom.atomType
+   if residu_type =="ILE" and atomtype == "CD":
+       atomtype = "CD1"
    key = "%s:%s"%(residu_type, atomtype) 
    radius.append(  allAtomRadius[key] ) 
    charge.append ( allAtomCharges[key]   )
@@ -269,6 +274,8 @@ for i, atom in enumerate(protein):
    
    residu_type= atom.residType
    atomtype = atom.atomType
+   if residu_type =="ILE" and atomtype == "CD":
+       atomtype = "CD1"
    key = "%s:%s"%(residu_type, atomtype) 
 
    cgr.append( beadRadius[key] )  
@@ -311,5 +318,5 @@ for i, bead in enumerate(protein):
     atomTypeNumber = int(extra.split()[0])
     bead.extra = ('%5i'+'%8.3f'+'%2i'*2) %(atomTypeNumber,optimized[i],0, 0)
     
-    print bead.ToPdbString(),
+    print bead.ToPdbString()
 
