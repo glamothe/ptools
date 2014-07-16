@@ -10,11 +10,11 @@ cdef extern from "pdbio.h" namespace "PTools":
 
 
 def WritePDB(Rigidbody rig, bytes filename):
-    cdef char* c_filename = <char *> filename
-    cdef string* cpp_filename = new string(c_filename)
-    cdef CppRigidbody* rigptr = rig.thisptr
-    CppWritePDB(deref(rigptr),  deref(cpp_filename) )
-    del cpp_filename
+    """writes a rigidbody object to a PDB file"""
+    if rig is None:
+       raise RuntimeError("expected Rigidbody, None given")
+    cdef string cpp_filename = <string?> filename
+    CppWritePDB(deref(rig.thisptr),  cpp_filename)
 
 
 def strToAtom(bytes line):
