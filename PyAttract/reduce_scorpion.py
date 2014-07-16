@@ -70,7 +70,7 @@ class BeadCreator:
 
 #read parameter file:
 import os
-parameters = open(os.path.split(sys.argv[0])[0] + "/at2cg_scorpion.dat", 'r').readlines()
+parameters = open(os.path.split(sys.argv[0])[0] + "/reduce_data/at2cg_scorpion.dat", 'r').readlines()
 
 beadCorresp = {}
 
