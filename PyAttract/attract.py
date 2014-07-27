@@ -216,6 +216,57 @@ time_start = datetime.datetime.now()
 #print now,"(",now.strftime("%A %B %d %Y, %H:%M"),")"
 print "Start time:", time_start
 
+
+
+#==========================
+# read parameter file
+#==========================
+
+print "Reading parameters file: attract.inp"
+(nbminim,lignames,minimlist,rstk) = readParams("attract.inp")
+print "rstk = ",rstk
+
+
+#open receptor and ligand files and check for the reduce format
+def check_ffversion(reduced):
+    header = open(reduced, 'r').readline()
+    if not 'HEADER' in header:
+         sys.stderr.write("ERROR: reduced PDB file must contain a HEADER line specifying the chosen forcefield (scorpion, attract1, attract2)\n")
+         sys.exit(1)
+
+    #read cg format:
+    return header.split()[1]
+    
+rec_ff = check_ffversion(options.receptor_name)
+lig_ff = check_ffversion(options.ligand_name)
+
+if rec_ff != lig_ff:
+    sys.stderr.write("ERROR: reduction method differs between receptor and ligand\n")
+
+
+
+allff_specs = {
+             'SCORPION': {'ff_file': 'scorpion.par', 
+                          'ff_class': ScorpionForceField,
+                          'minimizer_class': ScorpionLbfgs
+                          },
+
+             'ATTRACT1': {'ff_file': 'aminon.par', 
+                          'ff_class': AttractForceField1,
+                          'minimizer_class': Lbfgs
+                          },
+
+             'ATTRACT2': {'ff_file': 'mbest1u.par', 
+                          'ff_class': AttractForceField2,
+                          'minimizer_class': Lbfgs
+                          },
+
+           }
+
+
+ff_specs = allff_specs[rec_ff]
+
+
 #==========================
 # check required files
 #==========================
@@ -231,16 +282,13 @@ if not options.ligand_name:
 checkFile(options.ligand_name, "")
 # attract.inp
 checkFile("attract.inp", "parameters file is required.")
-# aminon.par
-checkFile("aminon.par", "forcefield file is required.")
+# check if forcefield parameters file is present
+checkFile(ff_specs['ff_file'], "forcefield file is required.")
 
-#==========================
-# read parameter file
-#==========================
 
-print "Reading parameters file: attract.inp"
-(nbminim,lignames,minimlist,rstk) = readParams("attract.inp")
-print "rstk = ",rstk
+
+
+#load receptor and ligand:
 rec=Rigidbody(options.receptor_name)
 lig=Rigidbody(options.ligand_name)
 rec=AttractRigidbody(rec)
@@ -328,7 +376,7 @@ for trans in translations:
 
 
             #performs single minimization on receptor and ligand, given maxiter=niter and restraint constant rstk
-            forcefield=AttractForceField1("aminon.par",surreal(cutoff))
+            forcefield=ff_specs['ff_class'](ff_specs['ff_file'], surreal(cutoff)   )
             rec.setTranslation(False)
             rec.setRotation(False)
             
@@ -337,7 +385,7 @@ for trans in translations:
             rstk=minim['rstk']  #restraint force
             #if rstk>0.0:
                 #forcefield.SetRestraint(rstk)
-            lbfgs_minimizer=Lbfgs(forcefield)
+            lbfgs_minimizer=ff_specs['minimizer_class'](forcefield)
             lbfgs_minimizer.minimize(niter)
             X=lbfgs_minimizer.GetMinimizedVars()  #optimized freedom variables after minimization
 
@@ -370,7 +418,7 @@ for trans in translations:
 
         #calculates true energy, and rmsd if possible
         #with the new ligand position
-        forcefield=AttractForceField1("aminon.par", surreal(500))
+        forcefield=ff_specs['ff_class'](ff_specs['ff_file'],  surreal(500))
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
         pl = AttractPairList(rec, ligand,surreal(500))
         print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
@@ -381,7 +429,7 @@ for trans in translations:
 if ( not options.single and printFiles==True): 
     print compress_file(options.receptor_name)
     print compress_file(options.ligand_name)
-    print compress_file("aminon.par")
+    print compress_file(ff_specs['ff_file'])
     print compress_file("translation.dat")
     print compress_file("rotation.dat")
     print compress_file("attract.inp")

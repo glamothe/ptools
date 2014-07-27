@@ -14,7 +14,7 @@ from ptools import *
 
 from optparse import OptionParser
 parser = OptionParser()
-parser.add_option("--ignore-missing", dest="ignoremissing", action="store_true", default=False,
+parser.add_option("--allow_missing", dest="ignoremissing", action="store_true", default=False,
                   help="ignore missing heavy atoms (which will result in missing beads)" )
 
 (options, args) = parser.parse_args()
@@ -140,7 +140,7 @@ beadCorresp['HSP'] = beadCorresp['HIS']
 
 
 allAtom=Rigidbody(sys.argv[1])
-print "Number of atoms: " ,len(allAtom)
+sys.stderr.write("Number of atoms:%i \n" %len(allAtom) )
 
 #extract all 'atoms' objects
 atoms=[]
@@ -180,6 +180,7 @@ sys.stderr.write(out+"\n")
 
 totAtoms=0
 
+print "HEADER    ATTRACT2 REDUCED PDB FILE" 
 index = 0
 for residKey, atomList in zip(residulist,orderedresid):
       residType=residKey[:3]

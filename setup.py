@@ -108,6 +108,7 @@ sources =   [
                "geometry.cpp",
                "pdbio.cpp",
                "superpose.cpp",
+               "scorpionforcefield.cpp",
                "minimizers/lbfgs_interface.cpp",
                "minimizers/routines.c",
                "minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp",
@@ -121,19 +122,21 @@ sources.append("bindings/_ptools.pyx")
 
 setup(ext_modules=[Extension(
                    "_ptools",                 # name of extension
-                   sources = sources,
+                  sources = sources,
                    language="c++",   # causes Cython to create C++ source
                    #libraries=['f2c'],
                    library_dirs = [boostdir],
                    extra_objects = [f2clib],
                    include_dirs = ['headers', f2c_header, boostdir],
                    )
-                   ], 
+
+                     ], 
+      cmdclass={'build_ext': build_ext},
+
       packages = ['.'],
       name="ptools",
-      cmdclass={'build_ext': build_ext},
       version = "1.2"
       
-      
+
       
       )
