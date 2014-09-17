@@ -23,7 +23,20 @@ if [ $? -ne 0 ]
   
 fi
 
-cd ptools_dep/f2c && make
+cd ptools_dep/libf2c2-20090411 && make -f makefile.u CFLAGS="-ansi -g -O2 -fomit-frame-pointer -D_GNU_SOURCE  -fPIC -DNON_UNIX_STDIO -Df2c"
+make -f makefile.u CFLAGS="-ansi -g -O2 -fomit-frame-pointer -D_GNU_SOURCE  -fPIC -DNON_UNIX_STDIO -Df2c" libf2c.a
+if [ $? -ne 0 ]
+   then
+     echo "compilation failed, please modify compilation flags"
+     exit 1
+   fi
+
+cd ..
+mkdir f2c
+cp libf2c2-20090411/f2c.h f2c
+cp libf2c2-20090411/libf2c.a f2c
+
+
 if [ $? -eq 0 ]
   then
      echo "the last make command succeeded, you can now try to run 'python setup.py build'"
