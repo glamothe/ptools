@@ -11,7 +11,7 @@ version = "%prog 1.0"
 parser = OptionParser(usage)
 
 # --ff option: choice of forcefield
-parser.add_option("--ff",type="str",dest="ffversion",help="choice of CG force field: attract1, attract2 or scorpion") 
+parser.add_option("--ff",type="str",dest="ffversion",help="choice of CG force field: attract1, attract2 or scorpion")
 
 # --cgopt option: choice of charge optimization with SCORPION
 parser.add_option("--cgopt", dest="optimizecharges", action="store_true", default=False,
@@ -32,6 +32,10 @@ parser.add_option("--allow_missing", action="store_true", dest="warning",default
 # check options
 #==========================================================
 
+#get the location of this script:
+thisscript=os.path.realpath(__file__)
+thispath = os.path.split(thisscript)[0]
+print "thispath is: ", thispath
 
 # define other parameter files
 cmd_options=[]
@@ -49,29 +53,22 @@ if options.ffversion=="scorpion":
     if options.delgrid:
        cmd_options.append("--dgrid %f"%options.delgrid)
     cmd_options.append(args[0])
-    os.system("reduce_scorpion.py %s"%" ".join(cmd_options))
+    prgname = os.path.join(thispath, "reduce_scorpion.py")
+
+    os.system(prgname + " " + " ".join(cmd_options))
+
 if options.ffversion=="attract1":
     if options.molDna:
        cmd_options.append("--dna")
-    else: 
+    else:
        cmd_options.append("--prot")
     cmd_options.append(args[0])
-    os.system("reduce_attract1.py %s"%" ".join(cmd_options))
+    prgname = os.path.join(thispath, "reduce_attract1.py")
+
+    os.system(prgname +  " %s"%" ".join(cmd_options))
+
 if options.ffversion=="attract2":
     cmd_options.append(args[0])
-    os.system("reduce_attract2.py %s"%" ".join(cmd_options))
+    prgname = os.path.join(thispath, "reduce_attract2.py")
 
-#==========================================================
-# check files
-#==========================================================
-# check if a required file is found
-#def checkFile(name):
-#        flag = os.path.exists(name)
-#        if  not flag :
-#                sys.stderr.write("ERROR: cannot find %s \n" %(name))
-#                exit(2)	
-#checkFile(atomicName)
-#checkFile(redName)
-#checkFile(ffName)
-#checkFile(convName)
-
+    os.system(prgname +  " %s"%" ".join(cmd_options))
