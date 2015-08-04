@@ -1,6 +1,8 @@
 The PTools library
 =======================
 
+![build status](https://travis-ci.org/ptools/ptools.svg?branch=develop "travis-ci build status")
+
 About:
 --------
 
