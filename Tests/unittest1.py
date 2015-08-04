@@ -569,5 +569,9 @@ class TestPairlist(unittest.TestCase):
         pl = AttractPairList(self.ar, self.al, 3.01)
         self.assertEqual(len(pl), 3)
 
+    def test_travis_failure(self):
+       """temporary test to see if a failing test will trigger a failing travis build"""
+       self.assertTrue(False)
+
 
 unittest.main()
