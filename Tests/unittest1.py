@@ -569,5 +569,4 @@ class TestPairlist(unittest.TestCase):
         pl = AttractPairList(self.ar, self.al, 3.01)
         self.assertEqual(len(pl), 3)
 
-
 unittest.main()
