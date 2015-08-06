@@ -108,6 +108,7 @@ sources =   [
                "geometry.cpp",
                "pdbio.cpp",
                "superpose.cpp",
+               "Movement.cpp",
                "scorpionforcefield.cpp",
                "minimizers/lbfgs_interface.cpp",
                "minimizers/routines.c",
