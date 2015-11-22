@@ -1,7 +1,7 @@
 #ifndef DNA_H
 #define DNA_H
 
-#include <vector>  
+#include <vector>
 #include "BasePair.h"
 #include "Movement.h"
 #include "Parameter.h"
@@ -9,12 +9,12 @@
 
 namespace PTools
 {
-  
-  class DNA 
+
+  class DNA
   {
-    
+
     public:
-    ///initialize a new object with a sequence and a database of pdb to pick from. an initial movement for the construction of the dna can be precised. 
+    ///initialize a new object with a sequence and a database of pdb to pick from. an initial movement for the construction of the dna can be precised.
     DNA(const std::string& dataBaseFile , const std::string& seq , const Movement & mov = BDNA());
     ///initialize a dna from another dna.
     DNA( const DNA& model );
@@ -27,7 +27,7 @@ namespace PTools
 
     ///return the number of BasePair
     unsigned int Size() const;
-    
+
     ///return the number of Atom
     unsigned int AtomSize() const;
 
@@ -42,18 +42,18 @@ namespace PTools
 
     ///write in a file the atoms data following the PDB format
     void WritePDB(std::string);
-    
+
     ///change the database use for the BasePair. the new database must contain the same names for pdb that the old one.
     void ChangeRepresentation(std::string);
-    
-    ///apply a Movement to a specified BasePair. you can specify an anchor 
+
+    ///apply a Movement to a specified BasePair. you can specify an anchor
     void ApplyLocal(const Movement&,int posMov, int posAnchor = 0);
     ///apply a Movement to all the BasePairs and reposition the DNA according to the anchor
     void ApplyGlobal(const Movement&,int posAnchor);
     ///apply a Movement to the DNA as a rigidbody
     void Apply(const Movement&);
 
-    ///apply a Matrix to a specified BasePair. you can specify an anchor 
+    ///apply a Matrix to a specified BasePair. you can specify an anchor
     void ApplyLocal(const Matrix&,int posMov, int posAnchor = 0);
     ///apply a Matrix to all the BasePairs and reposition the DNA according to the anchor
     void ApplyGlobal(const Matrix&,int posAnchor);
@@ -62,7 +62,7 @@ namespace PTools
 
     ///apply a vector to the DNA as a rigidbody
     void Translate(Coord3D coord);
-    
+
     ///return the local Matrix of the specified BasePair (for the position i the Matrix to go from i-1 to i)
     Matrix GetLocalMatrix(int pos)const;
     ///return the local Parameter of the specified BasePair (for the position i the Matrix to go from i-1 to i)
@@ -73,7 +73,7 @@ namespace PTools
     ///return a Rigidbody of the strand
     Rigidbody CreateRigidOfStrand(std::string chain);
 
-    
+
     //replace the base pair at the indicated position by the new base pair
     void ChangeBasePair(const BasePair& bp, int pos);
 
@@ -94,7 +94,7 @@ namespace PTools
     void Add(BasePair bp, const Movement & mov = BDNA());
 
     ///return the specified subDNA
-    DNA SubDNA(int start,int end)const;
+    DNA SubDNA(uint start, uint end)const;
 
     ///replace the basePair of this DNA by the basePair of a given DNA starting from a given position to the end of one of the DNAs
     void Replace(const DNA & d,int start);
@@ -109,7 +109,7 @@ namespace PTools
 
     //attribut
     std::vector<BasePair> strand;
-    
+
     //methods
     ///return a string with the seq of all the diferent chain ID of a Rigidbody.
     std::string GetChainIDs(const Rigidbody&)const;
@@ -137,7 +137,7 @@ namespace PTools
     std::string GetSeq ( Rigidbody& model);
     ///return a vector with an example of each base
     std::vector<Rigidbody> BuildVbase(std::string chainIDs, Rigidbody& dataBase)const;
-    
+
     ///create the different base in strand following the seq order.
     void AssembleSeq (const std::string & dataBaseFile, const std::string& seq);
 
@@ -145,7 +145,7 @@ namespace PTools
     ///A 1 2 3
     ///B 6 5 4
     void RenumberModel (Rigidbody& model);
-   
+
 
     // test if the model follow the jumna convention
     //A 1 2 3
@@ -160,7 +160,7 @@ namespace PTools
 
     //detect if two string are aligned. a shift can be precised
     bool IsAlign(std::string s1,std::string s2,int shift = 0)const;
-    
+
     ///place the base in the same position as the model
     void PlaceBasePairs( Rigidbody& model);
 
@@ -172,7 +172,7 @@ namespace PTools
 
 
   };
-  
+
 }//end namespace
 
-#endif // DNA_H 
+#endif // DNA_H
