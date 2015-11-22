@@ -33,7 +33,7 @@ user_path_boost = ""
 def find_file(name,path, useEnvPath=False):
     """finds a file named 'name' in a serie of directories
     given in 'path' """
-    
+
     if useEnvPath:
         additional_path = os.environ['PATH'].split(':')
         path.extend(additional_path)
@@ -49,17 +49,17 @@ def find_file(name,path, useEnvPath=False):
 
 def find_header(names, paths, useEnvPath=False):
    #find a library in a given set of directories
-   
+
    if useEnvPath:
       additional_path = os.environ['PATH'].split(':')
       paths.extend(additional_path)
-   
+
    for p in paths:
       if os.path.exists(p):
          for n in names:
             if os.path.exists(os.path.join(p,n)):
                return p
-                       
+
    return None
 
 
@@ -90,14 +90,14 @@ print "using f2clib from", f2clib
 
 
 sources =   [
-               "cython_wrappers.cpp", 
-               "atom.cpp", 
-               "attractrigidbody.cpp", 
-               "coordsarray.cpp", 
-               "mcopff.cpp", 
-               "rigidbody.cpp", 
+               "cython_wrappers.cpp",
+               "atom.cpp",
+               "attractrigidbody.cpp",
+               "coordsarray.cpp",
+               "mcopff.cpp",
+               "rigidbody.cpp",
                "surface.cpp",
-               "atomselection.cpp", 
+               "atomselection.cpp",
                "basetypes.cpp",
                "forcefield.cpp",
                "pairlist.cpp",
@@ -113,9 +113,11 @@ sources =   [
                "minimizers/lbfgs_interface.cpp",
                "minimizers/routines.c",
                "minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp",
-               
+               "DNA.cpp",
+               "BasePair.cpp",
+               "Parameter.cpp"
              ]
-             
+
 sources = [os.path.join('src', i) for i in sources ]  #append the 'src' prefix to all files
 
 sources.append("bindings/_ptools.pyx")
@@ -131,13 +133,13 @@ setup(ext_modules=[Extension(
                    include_dirs = ['headers', f2c_header, boostdir],
                    )
 
-                     ], 
+                     ],
       cmdclass={'build_ext': build_ext},
 
       packages = ['.'],
       name="ptools",
       version = "1.2"
-      
 
-      
+
+
       )
