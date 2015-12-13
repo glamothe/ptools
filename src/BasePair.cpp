@@ -1,6 +1,9 @@
+#include <iostream>
+#include <stdexcept>
+
+
 #include <rigidbody.h>
 #include <pdbio.h>
-#include <iostream>
 #include <BasePair.h>
 #include <Movement.h>
 
@@ -12,15 +15,20 @@ using namespace PTools;
 
 BasePair::BasePair(std::string filename)
 {
+  cout << "opening : " << filename << endl;
   ReadPDB(filename,rigbody);
-  type = rigbody.GetAtomProperty(0).residType;
+  this->type = rigbody.GetAtomProperty(0).residType;
 }
 
 
 BasePair::BasePair(const Rigidbody& rigbody)
 {
+  if (rigbody.Size()==0)
+  {
+    throw std::runtime_error("cannot initialize a BasePair with an empty Rigidbody");
+  }
   this->rigbody=rigbody;
-  type = rigbody.GetAtomProperty(0).residType;
+  this->type = rigbody.GetAtomProperty(0).residType;
 }
 
 
