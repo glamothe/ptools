@@ -115,7 +115,8 @@ sources =   [
                "minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp",
                "DNA.cpp",
                "BasePair.cpp",
-               "Parameter.cpp"
+               "Parameter.cpp",
+               "backward.cpp",
              ]
 
 sources = [os.path.join('src', i) for i in sources ]  #append the 'src' prefix to all files
@@ -128,6 +129,7 @@ setup(ext_modules=[Extension(
                   sources = sources,
                    language="c++",   # causes Cython to create C++ source
                    #libraries=['f2c'],
+                   libraries = ['dw'],
                    library_dirs = [boostdir],
                    extra_objects = [f2clib],
                    include_dirs = ['headers', f2c_header, boostdir],

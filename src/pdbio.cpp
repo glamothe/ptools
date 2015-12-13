@@ -8,6 +8,11 @@
 #include "stdio.h"
 #include "pdbio.h"
 
+#include "backward.hpp"
+using namespace backward;
+
+
+
 using namespace std;
 
 namespace PTools{
@@ -186,6 +191,9 @@ void ReadPDB(const std::string name,Rigidbody& protein ) {
     ifstream file(nomfich.c_str()); 
     if (!file)
     {
+        StackTrace st; st.load_here(64);
+        Printer p; p.print(st);
+
         std::ostringstream oss;
         throw std::invalid_argument("##### ReadPDB:Could not open file \"" + nomfich + "\" #####") ;
     }
