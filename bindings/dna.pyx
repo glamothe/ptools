@@ -22,7 +22,8 @@ cdef class DNA:
                 mov = <Movement?> arg3
                 self.thisptr = new CppDNA(<string>arg1,<string> arg2, deref(mov.thisptr))
             else:
-                self.thisptr = new CppDNA(<string> arg2, <string> arg2)
+                self.thisptr = new CppDNA(<string> arg1, <string> arg2)
+        else: raise RuntimeError("invalid parameters during DNA creation")
 
 
     def __dealloc__(self):
