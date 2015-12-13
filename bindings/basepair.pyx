@@ -9,11 +9,18 @@ cdef extern from "BasePair.h" namespace "PTools":
 cdef class BasePair:
     cdef CppBasePair* thisptr
 
-    def __cinit__(self,filename=None):
+    def __cinit__(self,arg=None):
         cdef string fn
-        if filename is not None:
-            fn = <string?> fn
-            self.thisptr = new CppBasePair(fn)
+
+        if arg is not None:
+            if isinstance(arg, str):
+                fn = <string?> arg
+                self.thisptr = new CppBasePair(fn)
+            elif isinstance(arg, Rigidbody):
+                rb = <Rigidbody> arg
+                self.thisptr = new CppBasePair(deref(rb.thisptr))
+            else:
+                raise RuntimeError("unknown arg type")
 
     def __dealloc__(self):
         if self.thisptr:
