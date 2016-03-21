@@ -120,23 +120,23 @@ sources = [os.path.join('src', i) for i in sources ]  #append the 'src' prefix t
 sources.append("bindings/_ptools.pyx")
 
 
-setup(ext_modules=[Extension(
-                   "_ptools",                 # name of extension
-                  sources = sources,
-                   language="c++",   # causes Cython to create C++ source
-                   #libraries=['f2c'],
-                   library_dirs = [boostdir],
-                   extra_objects = [f2clib],
-                   include_dirs = ['headers', f2c_header, boostdir],
-                   )
+ptools = Extension("_ptools",
+                   sources=sources,
+                   language="c++",
+                   library_dirs=[boostdir],
+                   include_dirs=['headers', f2c_header, boostdir],
+                   extra_objects=[f2clib])
 
-                     ], 
+cgopt = Extension("cgopt",
+                  sources=["PyAttract/cgopt.pyx", "PyAttract/chrg_scorpion.c"],
+                  language="c",
+                  include_dirs=[f2c_header, 'PyAttract'],  
+                  extra_objects = [f2clib])
+
+
+setup(ext_modules=[ptools, cgopt],
       cmdclass={'build_ext': build_ext},
-
       packages = ['.'],
       name="ptools",
       version = "1.2"
-      
-
-      
       )
