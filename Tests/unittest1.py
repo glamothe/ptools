@@ -494,7 +494,7 @@ class TestSuperposition(unittest.TestCase):
             prot2.ApplyMatrix(matrix)
             self.assertTrue(Rmsd(prot2,self.prot1)<1e-6)
 
-class TestForceFields(unittest.TestCase):
+class TestAttractForceField2(unittest.TestCase):
     """ test if calculated energies are stable through library versions """
     def testFF2k(self):
         a = AttractRigidbody("pk6a.red")
@@ -510,6 +510,10 @@ class TestForceFields(unittest.TestCase):
             x.append(0.0)
         self.assertAlmostEqual(FF.Function(x),-32.9487770656) #energy from ptools 0.3
         self.assertAlmostEqual(FF.Function(x), FF.getVdw() + FF.getCoulomb())
+
+    def testNonbon8Present(self):
+        self.assertTrue(hasattr(AttractForceField2, 'nonbon8') )
+
 
 class TestPairlist(unittest.TestCase):
     
