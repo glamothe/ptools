@@ -78,6 +78,8 @@ cdef class AttractForceField2(BaseAttractForceField):
     def getCoulomb(self):
         return self.thisptr.getCoulomb()
 
+    def nonbon8(self, AttractRigidbody rec, AttractRigidbody lig, AttractPairList pl, verbose=False):
+        return self.thisptr.nonbon8(deref(<CppAttractRigidbody*>rec.thisptr), deref(<CppAttractRigidbody*>lig.thisptr), deref(pl.thisptr), verbose)
 
 
 cdef extern from "attractforcefield.h" namespace "PTools":
