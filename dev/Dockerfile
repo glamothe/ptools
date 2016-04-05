@@ -6,23 +6,20 @@
 #
 # Usage:
 #     $ # Docker container creation (first time only).
-#     $ docker build -t ptools:dev -f dev.dockerfile .
+#     $ docker build -t ptools:dev /path/to/ptools/dev
 #     $
 #     $ # Work in docker environment (from ptools local repository).
-#     $ docker run -it --rm -v $(pwd):/src/ptools ptools:dev /bin/bash
+#     $ docker run --rm -v $(pwd):/src/ptools ptools:dev
 
 FROM debian:latest
 
-# Install dependecies.
-RUN apt-get update && apt-get install -y \
-    g++ \
-    git \
-    libboost-dev \
-    python-dev \
-    python-pip
+# Install system dependecies.
+COPY requirements_system.txt /opt/
+RUN apt-get update && cat /opt/requirements_system.txt | xargs apt-get install -y
 
-# Install Cython
-RUN pip install cython
+# Install python dependencies
+COPY requirements_python.txt /opt/
+RUN pip install --upgrade pip && pip install -r /opt/requirements_python.txt
 
 
 # Set working directory.
@@ -37,5 +34,5 @@ RUN git clone http://github.com/ptools/ptools_dep && \
     cp f2c.h    /usr/include && \
     cp libf2c.a /usr/lib
 
-COPY docker-entrypoint.sh /
-ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]

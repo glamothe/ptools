@@ -1,0 +1,5 @@
+g++
+git
+libboost-dev
+python-dev
+python-pip
