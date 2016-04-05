@@ -1,10 +1,11 @@
 #include "mcopff.h"
 #include <cassert>
-
+#include <iostream>
 
 namespace PTools
 {
 
+/////////////////// -- Class McopRigid -- ////////////////////
 
 Mcoprigid::Mcoprigid()
 {
@@ -15,9 +16,9 @@ Mcoprigid::Mcoprigid()
 
 
 
-void Mcoprigid::setMain(AttractRigidbody& main) {
-    _main=main;
-    _center = _main.FindCenter();
+void Mcoprigid::setCore(AttractRigidbody& core) {
+    _core=core;
+    _center = _core.FindCenter();
 
 };
 
@@ -28,8 +29,8 @@ void Mcoprigid::AttractEulerRotate(const dbl& phi, const dbl& ssi, const dbl& ro
 //the Mcoprigid object must be centered
 
 
-//rotates the main body:
-    _main.AttractEulerRotate(phi, ssi, rot);
+//rotates the core body:
+    _core.AttractEulerRotate(phi, ssi, rot);
 
 
 //for each multicopy region, rotates the copy:
@@ -42,12 +43,12 @@ void Mcoprigid::AttractEulerRotate(const dbl& phi, const dbl& ssi, const dbl& ro
 
 void Mcoprigid::Translate(const Coord3D& c)
 {
-//translates the main body:
-    _main.Translate(c);
+//translates the core body:
+    _core.Translate(c);
 
 //for each multicopy region, translates the copy:
     for (uint i=0; i < _vregion.size(); i++)
-        for (uint j=0; j<_vregion[i].size(); j++)
+        for (uint j=0; j < _vregion[i].size(); j++)
             _vregion[i][j].Translate(c);
 
 }
@@ -68,8 +69,94 @@ void Mcoprigid::PrintWeights()
 }
 
 
+/////////////////// -- Class Mcop -- ////////////////////
+
+Mcop::Mcop(std::string filename){
+    ReadmcopPDB(filename);
+}
 
 
+void Mcop::ReadmcopPDB(const std::string name) {
+
+    std::string nomfich = name ;
+	// pointer toward the filename given in the constructor argument
+    std::ifstream file(nomfich.c_str()); 
+    if (!file)
+    {
+        std::ostringstream oss;
+        throw std::invalid_argument("##### ReadPDB:Could not open file \"" + nomfich + "\" #####") ;
+    }
+
+    ReadmcopPDB(file, _copies);
+    file.close();
+
+}
+
+void Mcop::ReadmcopPDB(std::istream& file, std::vector<Rigidbody>& protein) {
+    
+    ReadModelsPDB(file, protein);
+
+}
+
+void Mcop::ReadModelsPDB(std::istream& file, std::vector<Rigidbody>& protein){
+
+    std::string line;
+    while(std::getline(file, line)){
+        if(isNewModel(line)){
+            // The line is a new model
+            Rigidbody model;
+            while(std::getline(file,line)){
+                if(isAtom(line)){
+                    // The line is an atom
+                    Coord3D pos = pdbToCoords(line);
+                    Atomproperty a;
+                    pdbToAtomproperty(line, a);
+                    model.AddAtom(a,pos);
+                }
+                else{
+                    protein.push_back(model);
+                    //Just finished writing a model
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+
+bool Mcop::isNewModel(const std::string & line){
+
+    if(line.substr(0,5)==(std::string)"MODEL") return true;
+    else return false;
+}
+
+
+/////////////////// -- Class AttractMcop -- ////////////////////
+AttractMcop::AttractMcop(std::string filename){
+    
+    Mcop copies(filename);
+    for(int i=0; i < copies.size(); i++){
+        Rigidbody copy = copies.getCopy(i);
+        AttractRigidbody attcopy = AttractRigidbody(copy);
+        attract_copies.push_back(attcopy);
+    }
+    copies.clear();
+}
+
+AttractMcop::AttractMcop(const Mcop& mcop){
+    
+    Mcop copies = mcop;
+    for(int i=0; i < copies.size(); i++){
+        Rigidbody copy = copies.getCopy(i);
+        AttractRigidbody attcopy = AttractRigidbody(copy);
+        attract_copies.push_back(attcopy);
+    }
+    copies.clear();
+}
+
+
+/////////////////// -- Class McopForceField -- ////////////////////
 
 ///////////////////////////////////////////////////
 //     Forcefield implementation
@@ -94,8 +181,8 @@ void McopForceField::calculate_weights(Mcoprigid& lig, bool print)
 
         for (uint copy = 0; copy < _receptor._vregion[loopregion].size(); copy++)
         {
-            AttractPairList cpl ( lig._main, _receptor._vregion[loopregion][copy], _cutoff );
-            dbl e = _ff.nonbon8( lig._main, _receptor._vregion[loopregion][copy] , cpl );
+            AttractPairList cpl ( lig._core, _receptor._vregion[loopregion][copy], _cutoff );
+            dbl e = _ff.nonbon8( lig._core, _receptor._vregion[loopregion][copy] , cpl );
             Eik.push_back(e);
         }
 
@@ -163,13 +250,13 @@ dbl McopForceField::Function(const Vdouble & v)
 //2) calculates the energy
 
 
-    //2.1) main ligand body with main receptor
+    //2.1) core ligand body with core receptor
 
-    AttractPairList pl (_receptor._main,   lig._main, _cutoff );
-    ener += _ff.nonbon8(_receptor._main, lig._main, pl );
+    AttractPairList pl (_receptor._core,   lig._core, _cutoff );
+    ener += _ff.nonbon8(_receptor._core, lig._core, pl );
 
 
-    //2.2) main lignd with receptor copies:
+    //2.2) core lignd with receptor copies:
     assert(_receptor._vregion.size() == _receptor._weights.size());
         
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++)
@@ -179,7 +266,7 @@ dbl McopForceField::Function(const Vdouble & v)
 //         std::vector<dbl> Eik;
 
 
-        Region& ref_ensemble = _receptor._vregion[loopregion];
+        AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
         std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
 
         assert( ref_ensemble.size() == ref_weights.size());
@@ -190,24 +277,24 @@ dbl McopForceField::Function(const Vdouble & v)
             dbl& weight = ref_weights[copynb];
             AttractRigidbody& copy = ref_ensemble[copynb];
 
-            AttractPairList cpl ( lig._main, copy, _cutoff );
+            AttractPairList cpl ( lig._core, copy, _cutoff );
             std::vector<Coord3D> copyforce(copy.Size());
-            std::vector<Coord3D> mainforce(lig._main.Size());
+            std::vector<Coord3D> coreforce(lig._core.Size());
 
-//             dbl e = _ff.nonbon8( lig._main, _receptor._vregion[loopregion][copy] , cpl );
-            dbl e = _ff.nonbon8_forces(lig._main, copy, cpl, mainforce, copyforce);
+//             dbl e = _ff.nonbon8( lig._core, _receptor._vregion[loopregion][copy] , cpl );
+            dbl e = _ff.nonbon8_forces(lig._core, copy, cpl, coreforce, copyforce);
             enercopy += e * weight;//lig._weights[loopregion][copy];
 
             //multiply forces by copy weight:
             for(uint i=0; i<copyforce.size(); i++)
             { copyforce[i] = weight*copyforce[i]; }
-            for(uint i=0; i<mainforce.size(); i++)
-            { mainforce[i] = weight*mainforce[i]; }
+            for(uint i=0; i<coreforce.size(); i++)
+            { coreforce[i] = weight*coreforce[i]; }
 
-            //add force to main ligand and receptor copy
-            assert(lig._main.Size() == mainforce.size());
-            for (uint i=0; i<lig._main.Size(); i++)
-               lig._main.m_forces[i]+=mainforce[i];
+            //add force to core ligand and receptor copy
+            assert(lig._core.Size() == coreforce.size());
+            for (uint i=0; i<lig._core.Size(); i++)
+               lig._core.m_forces[i]+=coreforce[i];
 
             assert(copy.Size()==copyforce.size());
             for(uint i=0; i<copyforce.size(); i++)
@@ -230,22 +317,22 @@ void McopForceField::Derivatives(const Vdouble& v, Vdouble & g )
 //sum the forces over x, y and z:
 
 Coord3D ligtransForces; //translational forces for the ligand:
-for(uint i=0; i<_moved_ligand._main.Size(); i++)
+for(uint i=0; i<_moved_ligand._core.Size(); i++)
  {
-     ligtransForces += _moved_ligand._main.m_forces[i];
+     ligtransForces += _moved_ligand._core.m_forces[i];
  }
 
 
 Coord3D receptortransForces;
-for(uint i=0; i<_receptor._main.Size(); i++)
+for(uint i=0; i<_receptor._core.Size(); i++)
 {
-receptortransForces+= _receptor._main.m_forces[i];
+receptortransForces+= _receptor._core.m_forces[i];
 }
 
 
 for (uint i=0; i <_receptor._vregion.size(); i++)
  {
-   Region& ens = _receptor._vregion[i];
+   AttractMcop& ens = _receptor._vregion[i];
    std::vector<dbl> & weights =  _receptor._weights[i];
 
    for(uint j=0; j<ens.size(); j++)
@@ -270,7 +357,9 @@ std::cout << "differences between the two forces: " <<  (ligtransForces - recept
 }
 
 
-
-
-
 } // namespace PTools
+
+
+
+
+
