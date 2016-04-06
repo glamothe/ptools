@@ -33,15 +33,17 @@ Then look into the html/ directory and find the index.html file generated...
 Very quick setup guide:
 -------------------------
 
-```        
+```
     git clone https://github.com/ptools/ptools.git
     cd ptools
+    sudo apt-get update
+    cat dev/requirements_system.txt | sudo xargs apt-get install -y
+    pip install virtualenv
     virtualenv env
     source env/bin/activate
-    pip install cython
+    pip install -r dev/requirements_python.txt
     python setup.py build
-    python setup.py install
-
+    sudo python setup.py install
 ```    
     
 A more detailed version is in the official tutorial. 
