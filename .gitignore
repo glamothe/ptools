@@ -32,7 +32,7 @@ sdist/
 
 # Build generated version files
 version.tmp
-gitrev.h
+headers/gitrev.h
 
 # LaTeX temporary files
 Tutorial/doc/tutorial.aux
