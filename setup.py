@@ -4,8 +4,35 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 import os
+from string import Template
+from subprocess import Popen, PIPE
 import sys
-import bzrrev
+
+
+
+def write_gitrev_h():
+    """Write gitrev.h: a header with the current git revision hash."""
+    version_info = {}
+    if os.path.exists('.git'):
+       print "generating gitrev.h"
+       os.system("git show -s --format='%h %ci' HEAD > version.tmp")
+       version_info['revision_id'] = open('version.tmp').read().strip()
+    else:
+       print "WARNING: it seems that you don't have a git directory. While the library will compile correcly, informations about the current ptools version will be missing. Please use git to download PTools and get reliable versioning informations."
+       version_info['revision_id'] = "Unknown version. Please use git to download PTools and get reliable versioning informations"
+       
+    
+       
+    with open('headers/gitrev.h', 'w') as f:
+        template=Template("""/* This file was generated automatically.
+ * You should not modify it manually, as it may be re-generated.
+ */
+#ifndef GITREV_H
+#define GITREV_H
+#define GIT_REVID   "$revision_id"
+#endif /* GITREV_H */
+""")
+        f.write(template.substitute(version_info))
 
 
 
@@ -24,7 +51,6 @@ user_path_boost = ""
 
 
 ############################
-
 
 
 
@@ -83,6 +109,9 @@ if f2clib is None:
     print "Cannot locate libf2c", not_found_message
     sys.exit(1)
 
+
+
+write_gitrev_h()
 
 print "using boost from", boostdir
 print "using f2clib from", f2clib
