@@ -24,32 +24,40 @@ user_path_boost = ""
 
 # =============================================================================
 
+def git_version():
+    """Return the git revision as a string."""
+    cmd = ['git', 'show', '-s', '--format=%h %ci', 'HEAD']
+    try:
+        git_revision = subprocess.check_output(cmd).strip()
+    except OSError:
+        git_revision = 'Unknown version. Please use git to download PTools '\
+                       'and get reliable versioning informations'
+    return git_revision
+
+
 def write_version_h(filename):
     """Write a header file with the current git revision hash."""
-    revision_id = ''
-    if os.path.exists('.git'):
-        print "generating gitrev.h"
-        cmd = ['git', 'show', '-s', '--format=%h %ci', 'HEAD']
-        revision_id = subprocess.check_output(cmd).strip()
-    else:
+    git_revision = git_version()
+    if git_revision.startswith('Unknown'):
         s = "WARNING: it seems that you don't have a git directory."\
             "While the library will compile correcly, informations about"\
             "the current ptools version will be missing. Please use git to"\
             "download PTools and get reliable versioning informations."
         print textwrap.fill(s)
-        revision_id = 'Unknown version. Please use git to download PTools '\
-                      'and get reliable versioning informations'
 
-    with open(filename, 'w') as f:
-        s = """/* This file was generated automatically.
+    content = """
+/*
+ * This file was generated automatically.
  * You should not modify it manually, as it may be re-generated.
  */
+
 #ifndef GITREV_H
 #define GITREV_H
-#define GIT_REVID   "${}"
+#define GIT_REVID   "%(git_revision)s"
 #endif /* GITREV_H */
 """
-        f.write(s.format(revision_id))
+    with open(filename, 'w') as f:
+        f.write(content % {'git_revision': git_revision})
 
 
 # == Methods to locate headers and libraries ==
@@ -141,21 +149,21 @@ sources = [os.path.join('src', i) for i in sources]
 sources.append("bindings/_ptools.pyx")
 
 
-ptools = Extension("_ptools",
+ptools = Extension('_ptools',
                    sources=sources,
-                   language="c++",
+                   language='c++',
                    library_dirs=[boostdir],
                    include_dirs=['headers', f2c_header, boostdir],
                    extra_objects=[f2clib])
 
-cgopt = Extension("cgopt",
-                  sources=["PyAttract/cgopt.pyx", "PyAttract/chrg_scorpion.c"],
-                  language="c",
+cgopt = Extension('cgopt',
+                  sources=['PyAttract/cgopt.pyx', 'PyAttract/chrg_scorpion.c'],
+                  language='c',
                   include_dirs=[f2c_header, 'PyAttract'],
                   extra_objects=[f2clib])
 
 setup(ext_modules=[ptools, cgopt],
       cmdclass={'build_ext': build_ext},
       packages=['.'],
-      name="ptools",
-      version="1.2")
+      name='ptools',
+      version='1.2')
