@@ -31,7 +31,6 @@ sdist/
 
 
 # Build generated version files
-version.tmp
 headers/gitrev.h
 
 # LaTeX temporary files
