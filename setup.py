@@ -9,6 +9,15 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 
+# For compatibility with Python 2.6.
+if sys.version_info >= (2, 7):
+    check_output = subprocess.check_output
+else:
+    def _check_output(args):
+        return subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
+    check_output = _check_output
+
+
 # !!! PLEASE override the following two variables
 # !!! to define a custom path to required dependencies:
 
@@ -33,7 +42,7 @@ def git_version():
     """Return the git revision as a string."""
     cmd = ['git', 'show', '-s', '--format=%h %ci', 'HEAD']
     try:
-        git_revision = subprocess.check_output(cmd).strip()
+        git_revision = check_output(cmd).strip()
     except OSError:
         git_revision = 'Unknown version. Please use git to download PTools '\
                        'and get reliable versioning informations'
@@ -75,8 +84,9 @@ def find_file(name, paths):
         paths(list[str]): directories to scan.
 
     Return:
-        str: the first directory in which one file has been found
-            or an empty string if no file has been found.
+        str: the absolute path to the file in which directory is the first
+            directory where the file has been found.
+            An empty string if no file has been found.
     """
     for p in paths:
         fullfilepath = os.path.join(p, name)
