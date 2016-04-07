@@ -24,6 +24,11 @@ user_path_boost = ""
 
 # =============================================================================
 
+NOT_FOUND_MESSAGE = 'Note: You can add a custom search path by editing this '\
+                    'file (setup.py).\nYou can also install locally the '\
+                    'missing dependencies by running: sh ./install-deps.sh'
+
+
 def git_version():
     """Return the git revision as a string."""
     cmd = ['git', 'show', '-s', '--format=%h %ci', 'HEAD']
@@ -62,108 +67,125 @@ def write_version_h(filename):
 
 # == Methods to locate headers and libraries ==
 
-def find_file(name, path, useEnvPath=False):
-    """finds a file named 'name' in a serie of directories
-    given in 'path' """
-    if useEnvPath:
-        additional_path = os.environ['PATH'].split(':')
-        path.extend(additional_path)
-    for p in path:
+def find_file(name, paths):
+    """Try to locate a file in a given set of directories.
+
+    Args:
+        name(str): file to look for.
+        paths(list[str]): directories to scan.
+
+    Return:
+        str: the first directory in which one file has been found
+            or an empty string if no file has been found.
+    """
+    for p in paths:
         fullfilepath = os.path.join(p, name)
         if os.path.exists(fullfilepath):
             return fullfilepath
-    return None  # no file found
+    return ''
 
 
 def find_header(names, paths, useEnvPath=False):
-    """Find a header in a given set of directories."""
-    if useEnvPath:
-        additional_path = os.environ['PATH'].split(':')
-        paths.extend(additional_path)
+    """Try to locate a file in a given set of directories.
+
+    Args:
+        names(list[str]): files to look for.
+        paths(list[str]): directories to scan.
+
+    Return:
+        str: the first directory in which one file has been found
+            or an empty string if no file has been found.
+    """
     for p in paths:
         if os.path.exists(p):
             for n in names:
                 if os.path.exists(os.path.join(p, n)):
                     return p
-    return None
+    return ''
 
 
-print "Trying to locate the boost libraries, modify setup.py to change the "\
-      " default search path"
-boostdir = find_header(["boost/shared_array.hpp"],
-                       [user_path_boost, "./ptools_dep/boost_1_55_0",
-                        "/usr/include", "/opt/local/include"])
-
-print "Trying to locate libf2c.a static library"
-f2clib = find_file("libf2c.a",
-                   [user_path_libf2c, "./ptools_dep/f2c", "/usr/lib/",
-                    "/usr/local/lib/", "/usr/lib64/"])
-f2c_header = find_header(["f2c.h"],
-                         [user_path_f2c_h, "./ptools_dep/f2c", "/usr/include",
-                          "/usr/local/f2c/"])
-
-not_found_message = 'Note: You can add a custom search path by editing this '\
-                    'file (setup.py).\nYou can also install locally the '\
-                    'missing dependencies by running: sh ./install-deps.sh'
+def find_boost():
+    """Try to locate the boost libraries (actually just look for
+    the shared_array.hpp header file."""
+    print "Trying to locate the boost libraries."
+    boostdir = find_header(["boost/shared_array.hpp"],
+                           [user_path_boost, "./ptools_dep/boost_1_55_0",
+                            "/usr/include", "/opt/local/include"])
+    if not boostdir:
+        print "Cannot locate boost library", NOT_FOUND_MESSAGE
+        sys.exit(1)
+    return boostdir
 
 
-if boostdir is None:
-    print "Cannot locate boost library", not_found_message
-    sys.exit(1)
-if f2clib is None:
-    print "Cannot locate libf2c", not_found_message
-    sys.exit(1)
+def find_f2c():
+    """Try to locate the f2c library and header."""
+    print "Trying to locate the libf2c.a static library and f2c.h header."
+    f2clib = find_file("libf2c.a",
+                       [user_path_libf2c, "./ptools_dep/f2c", "/usr/lib/",
+                        "/usr/local/lib/", "/usr/lib64/"])
+    f2c_header = find_header(["f2c.h"],
+                             [user_path_f2c_h, "./ptools_dep/f2c",
+                              "/usr/include", "/usr/local/f2c/"])
+    if not f2clib:
+        print "Cannot locate libf2c", NOT_FOUND_MESSAGE
+        sys.exit(1)
+    return f2clib, f2c_header
 
 
-write_version_h('headers/gitrev.h')
+def setup_package():
+    boost_include_dir = find_boost()
+    f2clib, f2c_include_dir = find_f2c()
+    print "using boost from", boost_include_dir
+    print "using f2clib from", f2clib
 
-print "using boost from", boostdir
-print "using f2clib from", f2clib
+    write_version_h('headers/gitrev.h')
 
-sources = ["cython_wrappers.cpp",
-           "atom.cpp",
-           "attractrigidbody.cpp",
-           "coordsarray.cpp",
-           "mcopff.cpp",
-           "rigidbody.cpp",
-           "surface.cpp",
-           "atomselection.cpp",
-           "basetypes.cpp",
-           "forcefield.cpp",
-           "pairlist.cpp",
-           "rmsd.cpp",
-           "version.cpp",
-           "attractforcefield.cpp",
-           "coord3d.cpp",
-           "geometry.cpp",
-           "pdbio.cpp",
-           "superpose.cpp",
-           "scorpionforcefield.cpp",
-           "minimizers/lbfgs_interface.cpp",
-           "minimizers/routines.c",
-           "minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp"]
+    sources = ['src/cython_wrappers.cpp',
+               'src/atom.cpp',
+               'src/attractrigidbody.cpp',
+               'src/coordsarray.cpp',
+               'src/mcopff.cpp',
+               'src/rigidbody.cpp',
+               'src/surface.cpp',
+               'src/atomselection.cpp',
+               'src/basetypes.cpp',
+               'src/forcefield.cpp',
+               'src/pairlist.cpp',
+               'src/rmsd.cpp',
+               'src/version.cpp',
+               'src/attractforcefield.cpp',
+               'src/coord3d.cpp',
+               'src/geometry.cpp',
+               'src/pdbio.cpp',
+               'src/superpose.cpp',
+               'src/scorpionforcefield.cpp',
+               'src/minimizers/lbfgs_interface.cpp',
+               'src/minimizers/routines.c',
+               'src/minimizers/lbfgs_wrapper/lbfgsb_wrapper.cpp']
 
-# Append the 'src' prefix to all files
-sources = [os.path.join('src', i) for i in sources]
+    sources.append("bindings/_ptools.pyx")
 
-sources.append("bindings/_ptools.pyx")
+    ptools = Extension('_ptools',
+                       sources=sources,
+                       language='c++',
+                       library_dirs=[boost_include_dir],
+                       include_dirs=['headers',
+                                     f2c_include_dir, boost_include_dir],
+                       extra_objects=[f2clib])
+
+    cgopt = Extension('cgopt',
+                      sources=['PyAttract/cgopt.pyx',
+                               'PyAttract/chrg_scorpion.c'],
+                      language='c',
+                      include_dirs=[f2c_include_dir, 'PyAttract'],
+                      extra_objects=[f2clib])
+
+    setup(ext_modules=[ptools, cgopt],
+          cmdclass={'build_ext': build_ext},
+          packages=['.'],
+          name='ptools',
+          version='1.2')
 
 
-ptools = Extension('_ptools',
-                   sources=sources,
-                   language='c++',
-                   library_dirs=[boostdir],
-                   include_dirs=['headers', f2c_header, boostdir],
-                   extra_objects=[f2clib])
-
-cgopt = Extension('cgopt',
-                  sources=['PyAttract/cgopt.pyx', 'PyAttract/chrg_scorpion.c'],
-                  language='c',
-                  include_dirs=[f2c_header, 'PyAttract'],
-                  extra_objects=[f2clib])
-
-setup(ext_modules=[ptools, cgopt],
-      cmdclass={'build_ext': build_ext},
-      packages=['.'],
-      name='ptools',
-      version='1.2')
+if __name__ == '__main__':
+    setup_package()
