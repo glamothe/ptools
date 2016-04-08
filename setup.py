@@ -1,12 +1,27 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import print_function
+
 import os
+import tarfile
+import urllib2
+import shutil
 import subprocess
+import StringIO
 import sys
 import textwrap
 
 from distutils.core import setup
 from distutils.extension import Extension
-from Cython.Distutils import build_ext
+
+
+# Directory where legacy f2c library will be downloaded and compiled if
+# required.
+LEGACY_F2C_DIR = 'f2c_sources'
+
+# URL for downloading a tarball containing ptools dependencies.
+PTOOLS_DEP_URL = 'https://codeload.github.com/ptools/ptools_dep/legacy.tar.gz'\
+                 '/master'
 
 
 # For compatibility with Python 2.6.
@@ -18,24 +33,23 @@ else:
     check_output = _check_output
 
 
-# !!! PLEASE override the following two variables
-# !!! to define a custom path to required dependencies:
-
-# user-defined path to libf2c.a
-user_path_libf2c = ""
-
-# user-defined path to f2c.h
-user_path_f2c_h = ""
-
-# user-defined path to boost library:
-user_path_boost = ""
+def info(s, prefix='--', file=sys.stderr, width=80):
+    s = textwrap.fill(s, width)
+    print(prefix, s, file=file)
+    file.flush()
 
 
-# =============================================================================
+def fatal(s, prefix='ERROR:', file=sys.stderr, width=80, status=1):
+    s = textwrap.fill(s, width)
+    print(prefix, s, file=file)
+    file.flush()
+    exit(status)
 
-NOT_FOUND_MESSAGE = 'Note: You can add a custom search path by editing this '\
-                    'file (setup.py).\nYou can also install locally the '\
-                    'missing dependencies by running: sh ./install-deps.sh'
+
+def warning(s, prefix='WARNING:', file=sys.stderr, width=80):
+    s = textwrap.fill(s, width)
+    print(prefix, s, file=file)
+    file.flush()
 
 
 def git_version():
@@ -53,11 +67,11 @@ def write_version_h(filename):
     """Write a header file with the current git revision hash."""
     git_revision = git_version()
     if git_revision.startswith('Unknown'):
-        s = "WARNING: it seems that you don't have a git directory."\
+        s = "it seems that you don't have a git directory. "\
             "While the library will compile correcly, informations about"\
             "the current ptools version will be missing. Please use git to"\
             "download PTools and get reliable versioning informations."
-        print textwrap.fill(s)
+        warning(s)
 
     content = """
 /*
@@ -74,13 +88,17 @@ def write_version_h(filename):
         f.write(content % {'git_revision': git_revision})
 
 
-# == Methods to locate headers and libraries ==
+def get_environ(s):
+    """Return the value of environment variable `s` if present, else
+    an empty string."""
+    return os.environ[s] if s in os.environ else ''
 
-def find_file(name, paths):
+
+def find_file(filename, paths):
     """Try to locate a file in a given set of directories.
 
     Args:
-        name(str): file to look for.
+        filename(str): file to look for.
         paths(list[str]): directories to scan.
 
     Return:
@@ -88,65 +106,157 @@ def find_file(name, paths):
             directory where the file has been found.
             An empty string if no file has been found.
     """
-    for p in paths:
-        fullfilepath = os.path.join(p, name)
-        if os.path.exists(fullfilepath):
-            return fullfilepath
+    for dirname in paths:
+        abspath = os.path.abspath(os.path.join(dirname, filename))
+        if os.path.exists(abspath):
+            return abspath
     return ''
 
 
-def find_header(names, paths, useEnvPath=False):
+def find_directory(filename, paths):
     """Try to locate a file in a given set of directories.
 
     Args:
-        names(list[str]): files to look for.
+        filename(str): file to look for.
         paths(list[str]): directories to scan.
 
-    Return:
-        str: the first directory in which one file has been found
-            or an empty string if no file has been found.
+    Returns:
+        str: the absolute path to the directory in which the file
+            has been found. An empty string if no file has been found.
     """
-    for p in paths:
-        if os.path.exists(p):
-            for n in names:
-                if os.path.exists(os.path.join(p, n)):
-                    return p
+    for dirname in paths:
+        abspath = os.path.join(dirname, filename)
+        if os.path.exists(abspath):
+            return os.path.abspath(dirname)
     return ''
 
 
+def find_executable(filename):
+    """Try to locate a program in the PATH environment variable.
+
+    Args:
+        filename(str): program to look for.
+
+    Returns:
+        str: absolute path to `filename` if in the path, else
+            an empty string.
+    """
+    return find_file(filename, os.environ['PATH'].split(':'))
+
+
+def pip_install(package):
+    try:
+        import pip
+    except ImportError:
+        fatal('pip not found, cannot install Cython')
+    else:
+        pip.main(['install', package])
+
+
+def install_cython():
+    try:
+        import Cython
+    except ImportError:
+        info('Cython not found, trying to install it with pip')
+        pip_install('Cython')
+
+
+def install_legacy_f2c():
+    def f2c_files(members):
+        for tarinfo in members:
+            if 'libf2c2-20090411' in tarinfo.name:
+                yield tarinfo
+
+    def download_legacy_f2c():
+        url = PTOOLS_DEP_URL
+        tarball_f2c_dir = 'ptools-ptools_dep-66b145b/libf2c2-20090411'
+        info("Downloading f2c")
+        response = urllib2.urlopen(url)
+        compressed = StringIO.StringIO(response.read())
+        tar = tarfile.open(fileobj=compressed, mode='r:gz')
+        tar.extractall(members=f2c_files(tar))
+        tar.close()
+        shutil.move(tarball_f2c_dir, LEGACY_F2C_DIR)
+        shutil.rmtree(tarball_f2c_dir.split('/')[0])
+        info("Downloading f2c done")
+
+    if not os.path.exists(LEGACY_F2C_DIR):
+        download_legacy_f2c()
+
+    info("Compiling f2c")
+    cflags = 'CFLAGS=-ansi -g -O2 -fomit-frame-pointer -D_GNU_SOURCE '\
+             '-fPIC -DNON_UNIX_STDIO -Df2c'
+
+    # First compilation.
+    args = ['make', '-C', LEGACY_F2C_DIR, '-f', 'makefile.u', cflags]
+    subprocess.call(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    # Library compilation (write log).
+    args = ['make', '-C', LEGACY_F2C_DIR, '-f', 'makefile.u', cflags,
+            'libf2c.a']
+    log = os.path.join(LEGACY_F2C_DIR, 'compile.log')
+    with open(log, 'wt') as logfile:
+        subprocess.call(args, stdout=logfile, stderr=subprocess.STDOUT)
+
+    libf2c = os.path.join(LEGACY_F2C_DIR, 'libf2c.a')
+    if not os.path.exists(libf2c):
+        fatal("error occured during f2c compilation. "
+              "Please check {}.".format(log))
+    info("Compiling f2c done")
+
+
 def find_boost():
-    """Try to locate the boost libraries (actually just look for
-    the shared_array.hpp header file."""
-    print "Trying to locate the boost libraries."
-    boostdir = find_header(["boost/shared_array.hpp"],
-                           [user_path_boost, "./ptools_dep/boost_1_55_0",
-                            "/usr/include", "/opt/local/include"])
+    """Try to locate the boost include directory (look for
+    the shared_array.hpp header file)."""
+    boostdir = find_directory('boost/shared_array.hpp',
+                              [get_environ('BOOST_INCLUDE_DIR'),
+                               '/usr/include', '/usr/local/include',
+                               '/opt/local/include'])
     if not boostdir:
-        print "Cannot locate boost library", NOT_FOUND_MESSAGE
-        sys.exit(1)
+        fatal("Boost not found. Specify headers location by using the "
+              "BOOST_INCLUDE_DIR environment variable. If it is not "
+              "installed, you can either install a recent version "
+              "or use the --with-legagy-boost option.")
+    else:
+        info("Boost include directory found at {}".format(boostdir))
     return boostdir
 
 
 def find_f2c():
-    """Try to locate the f2c library and header."""
-    print "Trying to locate the libf2c.a static library and f2c.h header."
-    f2clib = find_file("libf2c.a",
-                       [user_path_libf2c, "./ptools_dep/f2c", "/usr/lib/",
-                        "/usr/local/lib/", "/usr/lib64/"])
-    f2c_header = find_header(["f2c.h"],
-                             [user_path_f2c_h, "./ptools_dep/f2c",
-                              "/usr/include", "/usr/local/f2c/"])
+    """Try to locate the libf2c include directory and libf2c.a library."""
+    # Search f2c.h.
+    f2cdir = find_directory('f2c.h',
+                            [get_environ('F2C_INCLUDE_DIR'),
+                             LEGACY_F2C_DIR,
+                             '/usr/include', '/usr/local/include',
+                             '/opt/local/include'])
+    if not f2cdir:
+        fatal("f2c.h not found. Specify headers location by using the "
+              "F2C_INCLUDE_DIR environment variable. If it is not "
+              "installed, you can either install a recent version "
+              "or use the --with-legagy-f2c option.")
+    else:
+        info("f2c.h found at {}".format(f2cdir))
+
+    # Search libf2c.a.
+    f2clib = find_file('libf2c.a',
+                       [get_environ('F2C_LIBRARY'),
+                        LEGACY_F2C_DIR,
+                        '/usr/lib', '/usr/local/lib', '/opt/local/lib',
+                        '/usr/lib64', '/usr/local/lib64'])
     if not f2clib:
-        print "Cannot locate libf2c", NOT_FOUND_MESSAGE
-        sys.exit(1)
-    return f2clib, f2c_header
+        fatal("libf2c.a not found. Specify its location by using the "
+              "F2C_LIBRARY environment variable. If it is not "
+              "installed, you can either install a recent version "
+              "or use the --with-legagy-f2c option.")
+    else:
+        info("libf2c.a found at {}".format(f2clib))
+    return f2cdir, f2clib
 
 
 def setup_package():
     boost_include_dir = find_boost()
-    f2clib, f2c_include_dir = find_f2c()
-    print "using boost from", boost_include_dir
-    print "using f2clib from", f2clib
+    f2c_include_dir, f2clib = find_f2c()
 
     write_version_h('headers/gitrev.h')
 
@@ -190,6 +300,8 @@ def setup_package():
                       include_dirs=[f2c_include_dir, 'PyAttract'],
                       extra_objects=[f2clib])
 
+    # At this stage, Cython should have been installed.
+    from Cython.Distutils import build_ext
     setup(ext_modules=[ptools, cgopt],
           cmdclass={'build_ext': build_ext},
           packages=['.'],
