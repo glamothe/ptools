@@ -11,8 +11,10 @@ import StringIO
 import sys
 import textwrap
 
-from distutils.core import setup
+from distutils.core import setup, Command
 from distutils.extension import Extension
+from distutils.command.build import build
+from distutils.errors import DistutilsOptionError
 
 
 # Directory where legacy f2c library will be downloaded and compiled if
@@ -22,6 +24,51 @@ LEGACY_F2C_DIR = 'f2c_sources'
 # URL for downloading a tarball containing ptools dependencies.
 PTOOLS_DEP_URL = 'https://codeload.github.com/ptools/ptools_dep/legacy.tar.gz'\
                  '/master'
+
+
+class CheckDeps(Command):
+    description = "check if dependencies are present "\
+                  "(optionnaly install them)."
+
+    user_options = [
+          ('use-legacy-boost', None, "download an old version "
+                                     "of boost headers"),
+          ('use-legacy-f2c', None, "download and compile an old version "
+                                   "of libf2c"),
+          ('with-boost-include-dir=', None, 'location of boost headers'),
+          ('with-f2c-include-dir=', None, 'location of libf2c headers'),
+          ('with-f2c-library=', None, 'location of libf2c.a'),
+    ]
+
+    def initialize_options(self):
+          self.use_legacy_f2c = False
+          self.use_legacy_boost = False
+          self.with_boost_include_dir = ''
+          self.with_f2c_include_dir = ''
+          self.with_f2c_library = ''
+
+    def finalize_options(self):
+          if self.use_legacy_f2c and self.with_f2c_include_dir:
+              msg = "must supply either --use-legacy-f2c either "\
+                    "--with-f2c-include-dir -- not both"
+              raise DistutilsOptionError(msg)
+
+          if self.use_legacy_f2c and self.with_f2c_library:
+              msg = "must supply either --use-legacy-f2c either "\
+                    "--with-f2c-library -- not both"
+              raise DistutilsOptionError(msg)
+
+          if self.use_legacy_boost and self.with_boost_include_dir:
+              msg = "must supply either --use-legacy-boost either "\
+                    "--with-boost-include-dir -- not both"
+              raise DistutilsOptionError(msg)
+
+          # if self.use_legacy_f2c:
+          #     install_legacy_f2c()
+
+    def run(self):
+        print('coucou')
+
 
 
 # For compatibility with Python 2.6.
@@ -216,7 +263,7 @@ def find_boost():
         fatal("Boost not found. Specify headers location by using the "
               "BOOST_INCLUDE_DIR environment variable. If it is not "
               "installed, you can either install a recent version "
-              "or use the --with-legagy-boost option.")
+              "or use the --use-legagy-boost option.")
     else:
         info("Boost include directory found at {}".format(boostdir))
     return boostdir
@@ -234,7 +281,7 @@ def find_f2c():
         fatal("f2c.h not found. Specify headers location by using the "
               "F2C_INCLUDE_DIR environment variable. If it is not "
               "installed, you can either install a recent version "
-              "or use the --with-legagy-f2c option.")
+              "or use the --use-legagy-f2c option.")
     else:
         info("f2c.h found at {}".format(f2cdir))
 
@@ -248,13 +295,15 @@ def find_f2c():
         fatal("libf2c.a not found. Specify its location by using the "
               "F2C_LIBRARY environment variable. If it is not "
               "installed, you can either install a recent version "
-              "or use the --with-legagy-f2c option.")
+              "or use the --use-legagy-f2c option.")
     else:
         info("libf2c.a found at {}".format(f2clib))
     return f2cdir, f2clib
 
 
 def setup_package():
+    setup(cmdclass={'check_deps': CheckDeps})
+    exit()
     boost_include_dir = find_boost()
     f2c_include_dir, f2clib = find_f2c()
 
