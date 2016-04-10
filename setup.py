@@ -26,49 +26,54 @@ PTOOLS_DEP_URL = 'https://codeload.github.com/ptools/ptools_dep/legacy.tar.gz'\
                  '/master'
 
 
-class CheckDeps(Command):
-    description = "check if dependencies are present "\
-                  "(optionnaly install them)."
-
-    user_options = [
-          ('use-legacy-boost', None, "download an old version "
-                                     "of boost headers"),
-          ('use-legacy-f2c', None, "download and compile an old version "
-                                   "of libf2c"),
-          ('with-boost-include-dir=', None, 'location of boost headers'),
-          ('with-f2c-include-dir=', None, 'location of libf2c headers'),
-          ('with-f2c-library=', None, 'location of libf2c.a'),
+class CustomBuild(build):
+    
+    user_options = build.user_options + [
+        ('use-legacy-boost', None, "download an old version "
+                                   "of boost headers"),
+        ('use-legacy-f2c', None, "download and compile an old version "
+                                 "of libf2c"),
+        ('with-boost-include-dir=', None, 'location of boost headers'),
+        ('with-f2c-include-dir=', None, 'location of libf2c headers'),
+        ('with-f2c-library=', None, 'location of libf2c.a'),
     ]
 
     def initialize_options(self):
-          self.use_legacy_f2c = False
-          self.use_legacy_boost = False
-          self.with_boost_include_dir = ''
-          self.with_f2c_include_dir = ''
-          self.with_f2c_library = ''
+        build.initialize_options(self)
+        self.use_legacy_f2c = False
+        self.use_legacy_boost = False
+        self.with_boost_include_dir = ''
+        self.with_f2c_include_dir = ''
+        self.with_f2c_library = ''
 
     def finalize_options(self):
-          if self.use_legacy_f2c and self.with_f2c_include_dir:
-              msg = "must supply either --use-legacy-f2c either "\
-                    "--with-f2c-include-dir -- not both"
-              raise DistutilsOptionError(msg)
+        build.finalize_options(self)
 
-          if self.use_legacy_f2c and self.with_f2c_library:
-              msg = "must supply either --use-legacy-f2c either "\
-                    "--with-f2c-library -- not both"
-              raise DistutilsOptionError(msg)
+        # Cannot use '--use-legacy-f2c' with '--with-f2c-include-dir'
+        if self.use_legacy_f2c and self.with_f2c_include_dir:
+            msg = "must supply either --use-legacy-f2c either "\
+                  "--with-f2c-include-dir -- not both"
+            raise DistutilsOptionError(msg)
 
-          if self.use_legacy_boost and self.with_boost_include_dir:
-              msg = "must supply either --use-legacy-boost either "\
-                    "--with-boost-include-dir -- not both"
-              raise DistutilsOptionError(msg)
+        # Cannot use '--use-legacy-f2c' with '--with-f2c-library'
+        if self.use_legacy_f2c and self.with_f2c_library:
+            msg = "must supply either --use-legacy-f2c either "\
+                  "--with-f2c-library -- not both"
+            raise DistutilsOptionError(msg)
 
-          # if self.use_legacy_f2c:
-          #     install_legacy_f2c()
+        # Cannot use '--use-legacy-boost' with '--with-boost-include-dir'
+        if self.use_legacy_boost and self.with_boost_include_dir:
+            msg = "must supply either --use-legacy-boost either "\
+                  "--with-boost-include-dir -- not both"
+            raise DistutilsOptionError(msg)
 
-    def run(self):
-        print('coucou')
-
+        # '--with-f2c-include-dir' and 'with-f2c-library' need to be both
+        # empty or filled.
+        if any((self.with_f2c_library, self.with_f2c_include_dir)) and not\
+             all((self.with_f2c_library, self.with_f2c_include_dir)):
+            msg = '--with-f2c-include-dir and --with-f2c-library need to be '\
+                  'both empty or both informed'
+            raise DistutilsOptionError(msg)
 
 
 # For compatibility with Python 2.6.
@@ -120,17 +125,17 @@ def write_version_h(filename):
             "download PTools and get reliable versioning informations."
         warning(s)
 
-    content = """
-/*
- * This file was generated automatically.
- * You should not modify it manually, as it may be re-generated.
- */
+    content = textwrap.dedent("""
+        /*
+         * This file was generated automatically.
+         * You should not modify it manually, as it may be re-generated.
+         */
 
-#ifndef GITREV_H
-#define GITREV_H
-#define GIT_REVID   "%(git_revision)s"
-#endif /* GITREV_H */
-"""
+        #ifndef GITREV_H
+        #define GITREV_H
+        #define GIT_REVID   "%(git_revision)s"
+        #endif /* GITREV_H */
+        """)
     with open(filename, 'w') as f:
         f.write(content % {'git_revision': git_revision})
 
@@ -264,8 +269,6 @@ def find_boost():
               "BOOST_INCLUDE_DIR environment variable. If it is not "
               "installed, you can either install a recent version "
               "or use the --use-legagy-boost option.")
-    else:
-        info("Boost include directory found at {}".format(boostdir))
     return boostdir
 
 
@@ -282,8 +285,6 @@ def find_f2c():
               "F2C_INCLUDE_DIR environment variable. If it is not "
               "installed, you can either install a recent version "
               "or use the --use-legagy-f2c option.")
-    else:
-        info("f2c.h found at {}".format(f2cdir))
 
     # Search libf2c.a.
     f2clib = find_file('libf2c.a',
@@ -296,16 +297,33 @@ def find_f2c():
               "F2C_LIBRARY environment variable. If it is not "
               "installed, you can either install a recent version "
               "or use the --use-legagy-f2c option.")
-    else:
-        info("libf2c.a found at {}".format(f2clib))
     return f2cdir, f2clib
 
 
 def setup_package():
-    setup(cmdclass={'check_deps': CheckDeps})
-    exit()
-    boost_include_dir = find_boost()
-    f2c_include_dir, f2clib = find_f2c()
+    a = setup(cmdclass={'build': CustomBuild})
+    options = a.get_option_dict('build')
+
+    if options:
+        print(options)
+        if 'with_boost_include_dir' in options:
+            boost_include_dir = options['with_boost_include_dir'][1]
+        else:
+            boost_include_dir = find_boost()
+        if 'with_f2c_include_dir' in options:
+            f2c_include_dir = options['with_boost_include_dir']
+            f2clib = options['with_f2c_library']
+        if 'use_legagy_f2c' in options:
+            install_legacy_f2c()
+        if 'use_legacy_boost' in options:
+            raise NotImplementedError('not implemented yet')
+    else:
+        boost_include_dir = find_boost()
+        f2c_include_dir, f2clib = find_f2c()
+
+    info("Boost headers found at {}".format(boost_include_dir))
+    info("f2c.h found at {}".format(f2c_include_dir))
+    info("libf2c.a found at {}".format(f2clib))
 
     write_version_h('headers/gitrev.h')
 
@@ -352,7 +370,7 @@ def setup_package():
     # At this stage, Cython should have been installed.
     from Cython.Distutils import build_ext
     setup(ext_modules=[ptools, cgopt],
-          cmdclass={'build_ext': build_ext},
+          cmdclass={'build_ext': build_ext, 'build': CustomBuild},
           packages=['.'],
           name='ptools',
           version='1.2')
