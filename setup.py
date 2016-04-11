@@ -17,9 +17,19 @@ from distutils.command.build import build
 from distutils.errors import DistutilsOptionError
 
 
+try:
+    from Cython.Distutils import build_ext as _build_ext
+except ImportError:
+    fatal("Cannot find cython. Please install it using `pip install cython`.")
+
+
+
+
+
+
 # Directory where legacy f2c library will be downloaded and compiled if
 # required.
-LEGACY_F2C_DIR = 'f2c_sources'
+LEGACY_F2C_DIR = 'f2c_legacy'
 
 # URL for downloading a tarball containing ptools dependencies.
 PTOOLS_DEP_URL = 'https://codeload.github.com/ptools/ptools_dep/legacy.tar.gz'\
@@ -27,7 +37,7 @@ PTOOLS_DEP_URL = 'https://codeload.github.com/ptools/ptools_dep/legacy.tar.gz'\
 
 
 class CustomBuild(build):
-    
+
     user_options = build.user_options + [
         ('use-legacy-boost', None, "download an old version "
                                    "of boost headers"),
@@ -214,6 +224,12 @@ def install_cython():
 
 
 def install_legacy_f2c():
+    """Download and build legacy libf2c from ptools_dep repository.
+
+    Returns:
+        tuple(str, str): libf2c include directory and the absolute 
+            path to libf2c.a.
+    """
     def f2c_files(members):
         for tarinfo in members:
             if 'libf2c2-20090411' in tarinfo.name:
@@ -250,16 +266,36 @@ def install_legacy_f2c():
     with open(log, 'wt') as logfile:
         subprocess.call(args, stdout=logfile, stderr=subprocess.STDOUT)
 
-    libf2c = os.path.join(LEGACY_F2C_DIR, 'libf2c.a')
-    if not os.path.exists(libf2c):
+    tmpf2clib = os.path.join(LEGACY_F2C_DIR, 'libf2c.a')
+    if not os.path.exists(tmpf2clib):
         fatal("error occured during f2c compilation. "
               "Please check {}.".format(log))
     info("Compiling f2c done")
 
+    # Move header and library to pseudo install directory.
+    f2cdir = os.path.join(os.path.join(LEGACY_F2C_DIR, 'install', 'include'))
+    if not os.path.exists(f2cdir):
+        os.makedirs(f2cdir)
+    shutil.copyfile(os.path.join(LEGACY_F2C_DIR, 'f2c.h'),
+                    os.path.join(f2cdir, 'f2c.h'))
+
+
+    f2clibdir = os.path.join(os.path.join(LEGACY_F2C_DIR, 'install', 'lib'))
+    f2clib = os.path.join(f2clibdir, 'libf2c.a')
+    if not os.path.exists(f2clibdir):
+        os.makedirs(f2clibdir)
+    shutil.copyfile(tmpf2clib, f2clib)
+
+    return f2cdir, f2clib
+
 
 def find_boost():
     """Try to locate the boost include directory (look for
-    the shared_array.hpp header file)."""
+    the shared_array.hpp header file).
+
+    Returns:
+        str: boost include directory
+    """
     boostdir = find_directory('boost/shared_array.hpp',
                               [get_environ('BOOST_INCLUDE_DIR'),
                                '/usr/include', '/usr/local/include',
@@ -268,35 +304,38 @@ def find_boost():
         fatal("Boost not found. Specify headers location by using the "
               "BOOST_INCLUDE_DIR environment variable. If it is not "
               "installed, you can either install a recent version "
-              "or use the --use-legagy-boost option.")
+              "or use the --use-legacy-boost option.")
     return boostdir
 
 
 def find_f2c():
-    """Try to locate the libf2c include directory and libf2c.a library."""
+    """Try to locate the libf2c include directory and libf2c.a library.
+
+    Returns:
+        tuple(str, str): libf2c include directory and the absolute 
+            path to libf2c.a.
+    """
     # Search f2c.h.
     f2cdir = find_directory('f2c.h',
                             [get_environ('F2C_INCLUDE_DIR'),
-                             LEGACY_F2C_DIR,
                              '/usr/include', '/usr/local/include',
                              '/opt/local/include'])
     if not f2cdir:
         fatal("f2c.h not found. Specify headers location by using the "
               "F2C_INCLUDE_DIR environment variable. If it is not "
               "installed, you can either install a recent version "
-              "or use the --use-legagy-f2c option.")
+              "or use the --use-legacy-f2c option.")
 
     # Search libf2c.a.
-    f2clib = find_file('libf2c.a',
-                       [get_environ('F2C_LIBRARY'),
-                        LEGACY_F2C_DIR,
-                        '/usr/lib', '/usr/local/lib', '/opt/local/lib',
+    f2clib = get_environ('F2C_LIBRARY') or\
+             find_file('libf2c.a',
+                       ['/usr/lib', '/usr/local/lib', '/opt/local/lib',
                         '/usr/lib64', '/usr/local/lib64'])
     if not f2clib:
         fatal("libf2c.a not found. Specify its location by using the "
               "F2C_LIBRARY environment variable. If it is not "
               "installed, you can either install a recent version "
-              "or use the --use-legagy-f2c option.")
+              "or use the --use-legacy-f2c option.")
     return f2cdir, f2clib
 
 
@@ -304,27 +343,34 @@ def setup_package():
     a = setup(cmdclass={'build': CustomBuild})
     options = a.get_option_dict('build')
 
+    boost_include_dir = ''
+    f2c_include_dir = ''
+    f2c_library = ''
+
+    # Parse options to look for specific instruction concerning dependencies.
     if options:
-        print(options)
         if 'with_boost_include_dir' in options:
             boost_include_dir = options['with_boost_include_dir'][1]
-        else:
-            boost_include_dir = find_boost()
         if 'with_f2c_include_dir' in options:
-            f2c_include_dir = options['with_boost_include_dir']
-            f2clib = options['with_f2c_library']
-        if 'use_legagy_f2c' in options:
-            install_legacy_f2c()
+            f2c_include_dir = options['with_f2c_include_dir'][1]
+            f2c_library = options['with_f2c_library'][1]
+        if 'use_legacy_f2c' in options:
+            f2c_include_dir, f2c_library = install_legacy_f2c()
         if 'use_legacy_boost' in options:
             raise NotImplementedError('not implemented yet')
-    else:
+    
+    # Use the automatic find function to find dependencies if they have not
+    # been provided by the user.
+    if not boost_include_dir:
         boost_include_dir = find_boost()
-        f2c_include_dir, f2clib = find_f2c()
+    if not f2c_include_dir:
+        f2c_include_dir, f2c_library = find_f2c()
 
     info("Boost headers found at {}".format(boost_include_dir))
     info("f2c.h found at {}".format(f2c_include_dir))
-    info("libf2c.a found at {}".format(f2clib))
+    info("libf2c.a found at {}".format(f2c_library))
 
+    # Update version header.
     write_version_h('headers/gitrev.h')
 
     sources = ['src/cython_wrappers.cpp',
@@ -355,25 +401,25 @@ def setup_package():
     ptools = Extension('_ptools',
                        sources=sources,
                        language='c++',
-                       library_dirs=[boost_include_dir],
                        include_dirs=['headers',
                                      f2c_include_dir, boost_include_dir],
-                       extra_objects=[f2clib])
+                       extra_objects=[f2c_library])
 
     cgopt = Extension('cgopt',
                       sources=['PyAttract/cgopt.pyx',
                                'PyAttract/chrg_scorpion.c'],
                       language='c',
                       include_dirs=[f2c_include_dir, 'PyAttract'],
-                      extra_objects=[f2clib])
+                      extra_objects=[f2c_library])
 
     # At this stage, Cython should have been installed.
-    from Cython.Distutils import build_ext
+    
     setup(ext_modules=[ptools, cgopt],
           cmdclass={'build_ext': build_ext, 'build': CustomBuild},
           packages=['.'],
           name='ptools',
           version='1.2')
+
 
 
 if __name__ == '__main__':
