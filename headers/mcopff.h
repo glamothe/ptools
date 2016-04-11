@@ -59,7 +59,7 @@ public:
     void ReadmcopPDB(const std::string name);
     void ReadmcopPDB(std::istream& file, std::vector<Rigidbody>& protein);
     void ReadModelsPDB(std::istream& file, std::vector<Rigidbody>& protein);
-    bool isNewModel(const std::string & line);  
+    static bool isNewModel(const std::string & line);  
     
     void clear(){_copies.clear();};
 
