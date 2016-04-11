@@ -25,6 +25,13 @@ cdef extern from "mcopff.h" namespace "PTools":
         CppAttractRigidbody operator[](unsigned int)
         unsigned int size()
         void addCopy(CppAttractRigidbody&)
+    cdef cppclass CppMcoprigid "Ptools::Mcoprigid":
+        CppMcoprigid()
+        CppMcoprigid(string&)
+        CppMcoprigid(CppRigidbody&, vector(CppAttractMcop))
+        CppMcoprigid(CppMcoprigid&)
+        CppAttractMcop getRegion(unsigned int)
+        CppAttractRigidbody getCore()
 
 
 cdef class Mcop:
@@ -131,7 +138,7 @@ cdef class AttractMcop (Mcop):
                 print "FATAL; this should never happen"
 
         else:
-            raise RuntimeError("invalid argument in Mcop()")
+            raise RuntimeError("invalid argument in AttractMcop()")
     
     def __dealloc__(self):
         if self.thisptr:
@@ -162,3 +169,40 @@ cdef class AttractMcop (Mcop):
      
     def __len__(self):
         return self.thisptr2.size()
+        
+cdef class Mcoprigid:
+    cdef CppMcoprigid* thisptr
+    
+    def __cinit__(self, filename='', arg2=''):
+        cdef CppMcoprigid* oldptr
+        cdef Mcoprigid oldmcoprigid
+        cdef char* name
+        cdef string *cppname
+        cdef CppMcoprigid* newmcoprigid
+        
+        if isinstance(filename, str):
+            if filename == '':
+                self.thisptr = new CppMcoprigid()
+            else:
+                # there is a filename, loading the pdb file
+                name = filename
+                cppname = new string(name)
+                newmcoprigid = new CppMcoprigid(deref(cppname))
+                del cppname
+                self.thisptr = newmcoprigid
+            
+        elif isinstance(filename, Mcoprigid):
+            oldmcoprigid = <Mcoprigid> filename
+            oldptr = <CppMcoprigid*> oldmcoprigid.thisptr
+            self.thisptr = new CppMcoprigid(deref(oldptr))
+            if not self.thisptr:
+                print "FATAL: this should never happen"
+        
+        # if filename is AttractRigibody and arg2 is list of AttractMcop
+        # elif isinstance(arg2, AttractRigidbody) and isinstance(filename, (list, tuple)) and all(isinstance(elem, AttractMcop) for elem in arg2):
+            # TODO 
+        
+        else:
+            raise RunetimeError("invalid argument in Mcoprigid()")
+        
+                
