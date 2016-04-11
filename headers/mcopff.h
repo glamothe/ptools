@@ -118,6 +118,10 @@ public:
     void ReadMcoprigidPDB(std::istream& file, AttractRigidbody& core, std::vector<AttractMcop>& regions);
     uint line_to_region_number(std::string line);
     uint line_to_copy_number(std::string line);
+    
+    AttractRigidbody& getCore(){return _core;};
+    AttractMcop& getRegion(int i){return _vregion[i];};
+    size_t size() const {return _vregion.size();};
 
 
 private:
