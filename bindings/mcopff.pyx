@@ -204,5 +204,10 @@ cdef class Mcoprigid:
         
         else:
             raise RunetimeError("invalid argument in Mcoprigid()")
+            
+    def __dealloc__(self):
+        if self.thisptr:
+            del self.thisptr
+            self.thisptr = <CppMcoprigid*> 0
         
                 
