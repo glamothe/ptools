@@ -99,6 +99,7 @@ class Mcoprigid //multicopy rigidbody
 
 public:
     Mcoprigid();
+    Mcoprigid(std::string filename);
 
     //using default copy operator
 
@@ -112,6 +113,11 @@ public:
 
     void PrintWeights();
     std::vector <std::vector<dbl> > getWeights(){return _weights;};
+    
+    void ReadMcoprigidPDB(const std::string name);
+    void ReadMcoprigidPDB(std::istream& file, AttractRigidbody& core, std::vector<AttractMcop>& regions);
+    uint line_to_region_number(std::string line);
+    uint line_to_copy_number(std::string line);
 
 
 private:

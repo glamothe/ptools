@@ -5,15 +5,19 @@
 namespace PTools
 {
 
-/////////////////// -- Class McopRigid -- ////////////////////
+/////////////////// -- Class Mcoprigid -- ////////////////////
 
-Mcoprigid::Mcoprigid()
-{
+Mcoprigid::Mcoprigid(){
     _complete = false;
 
 };
 
+Mcoprigid::Mcoprigid(std::string filename){
 
+    ReadMcoprigidPDB(filename);
+    _center = _core.FindCenter();
+    
+}
 
 
 void Mcoprigid::setCore(AttractRigidbody& core) {
@@ -54,6 +58,58 @@ void Mcoprigid::Translate(const Coord3D& c)
 }
 
 
+void Mcoprigid::ReadMcoprigidPDB(const std::string name) {
+
+	// pointer toward the filename given in the constructor argument
+    std::ifstream file(name.c_str()); 
+    if (!file)
+    {
+        std::ostringstream oss;
+        throw std::invalid_argument("##### ReadPDB:Could not open file \"" + name + "\" #####") ;
+    }
+
+    ReadMcoprigidPDB(file, _core, _vregion);
+    file.close();
+
+}
+
+
+void Mcoprigid::ReadMcoprigidPDB(std::istream& file, AttractRigidbody& core, std::vector<AttractMcop>& regions){
+
+    uint region_num;
+    uint copy_num;
+    std::string line;
+    while(std::getline(file, line)){
+        if(Mcop::isNewModel(line)){
+            // The line is a new model
+            region_num = line_to_region_number(line);
+            copy_num = line_to_copy_number(line);
+            AttractRigidbody model;
+            while(std::getline(file,line)){
+                if(isAtom(line)){
+                    // The line is an atom
+                    Coord3D pos = pdbToCoords(line);
+                    Atomproperty a;
+                    pdbToAtomproperty(line, a);
+                    // if region_num is core, append attom to core
+                    if(region_num == 0) core.AddAtom(a,pos);
+                    else model.AddAtom(a,pos);
+                }
+                // if region_num is not core, add region copy
+                else if(region_num != 0){
+                    
+                    // if new region, add region to vector
+                    if(regions.size() < region_num)
+                        regions.push_back(AttractMcop());
+                    regions[copy_num-1].addCopy(model);
+                    //Just finished adding a region copy
+                    break;
+                }
+            }
+        }
+    }
+}
+
 
 void Mcoprigid::PrintWeights()
 {
@@ -68,6 +124,15 @@ void Mcoprigid::PrintWeights()
     }
 }
 
+uint Mcoprigid::line_to_region_number(std::string line){
+
+    return std::atoi(line.substr(12,1).c_str());    
+}
+
+uint Mcoprigid::line_to_copy_number(std::string line){
+
+    return std::atoi(line.substr(15,1).c_str());
+}
 
 /////////////////// -- Class Mcop -- ////////////////////
 
@@ -115,14 +180,13 @@ void Mcop::ReadModelsPDB(std::istream& file, std::vector<Rigidbody>& protein){
                 }
                 else{
                     protein.push_back(model);
-                    //Just finished writing a model
+                    //Just finished adding a model
                     break;
                 }
             }
         }
     }
 }
-
 
 
 bool Mcop::isNewModel(const std::string & line){
