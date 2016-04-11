@@ -36,9 +36,9 @@ PTOOLS_DEP_URL = 'https://codeload.github.com/ptools/ptools_dep/legacy.tar.gz'\
                  '/master'
 
 
-class CustomBuild(build):
+class build_ext(_build_ext):
 
-    user_options = build.user_options + [
+    user_options = _build_ext.user_options + [
         ('use-legacy-boost', None, "download an old version "
                                    "of boost headers"),
         ('use-legacy-f2c', None, "download and compile an old version "
@@ -49,7 +49,7 @@ class CustomBuild(build):
     ]
 
     def initialize_options(self):
-        build.initialize_options(self)
+        _build_ext.initialize_options(self)
         self.use_legacy_f2c = False
         self.use_legacy_boost = False
         self.with_boost_include_dir = ''
@@ -57,7 +57,7 @@ class CustomBuild(build):
         self.with_f2c_library = ''
 
     def finalize_options(self):
-        build.finalize_options(self)
+        _build_ext.finalize_options(self)
 
         # Cannot use '--use-legacy-f2c' with '--with-f2c-include-dir'
         if self.use_legacy_f2c and self.with_f2c_include_dir:
@@ -84,6 +84,39 @@ class CustomBuild(build):
             msg = '--with-f2c-include-dir and --with-f2c-library need to be '\
                   'both empty or both informed'
             raise DistutilsOptionError(msg)
+
+        boost_include_dir = ''
+        f2c_include_dir = ''
+        f2c_library = ''
+
+        if self.with_boost_include_dir:
+            boost_include_dir = self.with_boost_include_dir
+        if self.with_f2c_include_dir:
+            f2c_include_dir = self.with_f2c_include_dir
+            f2c_library = self.with_f2c_library
+        if self.use_legacy_f2c:
+            f2c_include_dir, f2c_library = install_legacy_f2c()
+        if self.use_legacy_boost:
+            raise NotImplementedError('not implemented yet')
+
+        # Use the automatic find functions to find dependencies if
+        # they have not been provided by the user.
+        if not boost_include_dir:
+            boost_include_dir = find_boost()
+        if not f2c_include_dir:
+            f2c_include_dir, f2c_library = find_f2c()
+
+        info("Boost headers found at {}".format(boost_include_dir))
+        info("f2c.h found at {}".format(f2c_include_dir))
+        info("libf2c.a found at {}".format(f2c_library))
+
+        self.include_dirs.extend([boost_include_dir, f2c_include_dir])
+        self.libraries.append(f2c_library)
+
+        print(self.include_dirs)
+        exit()
+
+
 
 
 # For compatibility with Python 2.6.
@@ -340,36 +373,6 @@ def find_f2c():
 
 
 def setup_package():
-    a = setup(cmdclass={'build': CustomBuild})
-    options = a.get_option_dict('build')
-
-    boost_include_dir = ''
-    f2c_include_dir = ''
-    f2c_library = ''
-
-    # Parse options to look for specific instruction concerning dependencies.
-    if options:
-        if 'with_boost_include_dir' in options:
-            boost_include_dir = options['with_boost_include_dir'][1]
-        if 'with_f2c_include_dir' in options:
-            f2c_include_dir = options['with_f2c_include_dir'][1]
-            f2c_library = options['with_f2c_library'][1]
-        if 'use_legacy_f2c' in options:
-            f2c_include_dir, f2c_library = install_legacy_f2c()
-        if 'use_legacy_boost' in options:
-            raise NotImplementedError('not implemented yet')
-    
-    # Use the automatic find function to find dependencies if they have not
-    # been provided by the user.
-    if not boost_include_dir:
-        boost_include_dir = find_boost()
-    if not f2c_include_dir:
-        f2c_include_dir, f2c_library = find_f2c()
-
-    info("Boost headers found at {}".format(boost_include_dir))
-    info("f2c.h found at {}".format(f2c_include_dir))
-    info("libf2c.a found at {}".format(f2c_library))
-
     # Update version header.
     write_version_h('headers/gitrev.h')
 
@@ -401,21 +404,20 @@ def setup_package():
     ptools = Extension('_ptools',
                        sources=sources,
                        language='c++',
-                       include_dirs=['headers',
-                                     f2c_include_dir, boost_include_dir],
-                       extra_objects=[f2c_library])
+                       include_dirs=['headers'],
+                       extra_objects=[])
 
     cgopt = Extension('cgopt',
                       sources=['PyAttract/cgopt.pyx',
                                'PyAttract/chrg_scorpion.c'],
                       language='c',
-                      include_dirs=[f2c_include_dir, 'PyAttract'],
-                      extra_objects=[f2c_library])
+                      include_dirs=['PyAttract'],
+                      extra_objects=[])
 
     # At this stage, Cython should have been installed.
     
     setup(ext_modules=[ptools, cgopt],
-          cmdclass={'build_ext': build_ext, 'build': CustomBuild},
+          cmdclass={'build_ext': build_ext},
           packages=['.'],
           name='ptools',
           version='1.2')
