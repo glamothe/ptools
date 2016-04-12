@@ -118,7 +118,8 @@ class build_ext(_build_ext):
             self.include_dirs.append(f2c_include_dir)
             info("f2c.h found at {}".format(f2c_include_dir))
         if f2c_library:
-            self.libraries.append(f2c_library)
+            for ext in self.extensions:
+                ext.extra_objects.append(f2c_library)
             info("libf2c.a found at {}".format(f2c_library))
 
 
@@ -357,10 +358,10 @@ def find_f2c():
                              '/usr/include', '/usr/local/include',
                              '/opt/local/include'])
     if not f2cdir:
-        fatal("f2c.h not found. Specify headers location by using the "
-              "F2C_INCLUDE_DIR environment variable. If it is not "
-              "installed, you can either install a recent version "
-              "or use the --use-legacy-f2c option.")
+        warning("f2c.h not found. Specify headers location by using the "
+                "F2C_INCLUDE_DIR environment variable. If it is not "
+                "installed, you can either install a recent version "
+                "or use the --use-legacy-f2c option.")
 
     # Search libf2c.a.
     f2clib = get_environ('F2C_LIBRARY') or\
@@ -407,15 +408,13 @@ def setup_package():
     ptools = Extension('_ptools',
                        sources=sources,
                        language='c++',
-                       include_dirs=['headers'],
-                       extra_objects=[])
+                       include_dirs=['headers'])
 
     cgopt = Extension('cgopt',
                       sources=['PyAttract/cgopt.pyx',
                                'PyAttract/chrg_scorpion.c'],
                       language='c',
-                      include_dirs=['PyAttract'],
-                      extra_objects=[])
+                      include_dirs=['PyAttract'])
 
     # At this stage, Cython should have been installed.
     
