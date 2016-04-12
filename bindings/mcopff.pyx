@@ -30,8 +30,8 @@ cdef extern from "mcopff.h" namespace "PTools":
         CppMcoprigid(string&) except+
         #CppMcoprigid(CppRigidbody&, vector(CppAttractMcop))
         CppMcoprigid(CppMcoprigid&)
-        #CppAttractMcop getRegion(unsigned int)
-        #CppAttractRigidbody getCore()
+        CppAttractMcop getRegion(unsigned int)
+        CppAttractRigidbody getCore()
 
 
 cdef class Mcop:
@@ -214,20 +214,20 @@ cdef class Mcoprigid:
             del self.thisptr
             self.thisptr = <CppMcoprigid*> 0
     
-    def getCore()
-        cdef CppAttractRigidbody cpp_core = self.thisptr.getCore(i)
+    def getCore(self):
+        cdef CppAttractRigidbody cpp_core = self.thisptr.getCore()
         cdef AttractRigidbody core = AttractRigidbody()
-        cdef CppAttractRigbody* new_core = new CppAttractRigidbody(cpp_core)
+        cdef CppAttractRigidbody* new_core = new CppAttractRigidbody(cpp_core)
         del core.thisptr
-        core.thisptr = new_core
+        core.thisptr = <CppRigidbody*> new_core
         return core    
         
-    def getRegion(i)
+    def getRegion(self,i):
         cdef CppAttractMcop cpp_region = self.thisptr.getRegion(i)
         cdef AttractMcop region = AttractMcop()
         cdef CppAttractMcop* new_region = new CppAttractMcop(cpp_region)
         del region.thisptr
-        region.thisptr = new_region
+        region.thisptr2 = new_region
         return region
         
         
