@@ -109,14 +109,14 @@ class build_ext(_build_ext):
 
         if boost_include_dir:
             self.include_dirs.append(boost_include_dir)
-            info("Boost headers found at {}".format(boost_include_dir))
+            info("Boost headers found at {0}".format(boost_include_dir))
         if f2c_include_dir:
             self.include_dirs.append(f2c_include_dir)
-            info("f2c.h found at {}".format(f2c_include_dir))
+            info("f2c.h found at {0}".format(f2c_include_dir))
         if f2c_library:
             for ext in self.extensions:
                 ext.extra_objects.append(f2c_library)
-            info("libf2c.a found at {}".format(f2c_library))
+            info("libf2c.a found at {0}".format(f2c_library))
 
 
 # For compatibility with Python 2.6.
@@ -285,7 +285,7 @@ def install_legacy_f2c():
     tmpf2clib = os.path.join(LEGACY_F2C_DIR, 'libf2c.a')
     if not os.path.exists(tmpf2clib):
         fatal("error occured during f2c compilation. "
-              "Please check {}.".format(log))
+              "Please check {0}.".format(log))
     info("Compiling f2c done")
 
     # Move header and library to pseudo install directory.
