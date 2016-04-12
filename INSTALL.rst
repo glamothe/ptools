@@ -1,8 +1,31 @@
-.. highlight: shell
 
 *****************************
 Installing the Ptools library
 *****************************
+
+.. contents::
+    :backlinks: none
+
+Quick setup guide
+=================
+
+This is the very minimal set of instructions required to install Ptools
+in a Python virtual environment.
+It assumes all Ptools dependencies have been duly installed::
+
+    $ virtualenv ptools-env
+    $ source ptools-env/bin/activate
+    (ptools-env) $ pip install cython
+    (ptools-env) $ git clone https://github.com/ptools/ptools.git    
+    (ptools-env) $ cd ptools
+    (ptools-env) $ python setup.py install
+
+
+For more details, see the full documented procedure described below.
+
+
+Building and installing Ptools
+==============================
 
 The Ptools library has few dependencies namely :
 
@@ -15,92 +38,143 @@ The Ptools library has few dependencies namely :
 - the pip_ Python package will be required to install more Python packages.
 
 
-Installing the dependencies
-===========================
+Installing Ptools dependencies
+------------------------------
+
+GCC, Python & Git
+^^^^^^^^^^^^^^^^^
 
 Here is the set of instructions required to install all Ptools dependencies 
-on a Debian like system (including Ubuntu)::
+on a Debian-based system (including Ubuntu)::
 
-    $ sudo apt-get update
-    $ sudo apt-get install g++ libboost-dev libf2c2-dev python-dev git python-pip
+    $ apt-get update
+    $ apt-get install g++ python-dev python-pip git 
 
-Alternatively you can use the Boost and f2c library legacy version (see
-`Building with boost and f2c legacy`_)
+Those instructions can be easily adapted to other systems (e.g. RedHat)
 
-We also recommand using a virtual environment. Virtual environments are usefull
+
+Boost & F2C libraries
+^^^^^^^^^^^^^^^^^^^^^
+
+The standard way to install those libraries would be to use the system packages
+in the same fashion as we did for ``gcc``, ``python`` and ``git``::
+
+    $ apt-get install libboost-dev libf2c2-dev
+
+Alternatively, you can use the Ptools approved legacy versions of 
+the Boost and f2c libraries (see details in `Building Ptools with legacy Boost and f2c libraries`_.
+
+
+Ptools itself
+-------------
+
+We recommand using a virtual environment. Virtual environments are usefull
 to isolate Python packages from the rest of the Python packages installed
 on your system. Hence, it dramatically limits the potential conflicts.
 If ``virtualenv`` is not already present on your system, install it using ``pip``::
 
     $ pip install virtualenv
 
-
-Building and installing Ptools
-==============================
-
-Quick setup guide
------------------
-
 Assuming all dependencies are installed in standard locations, here is
 the set of instructions required to build Ptools.
 
-1. First you need to setup a virtual environment in which Ptools will be 
-installed::
+1. First you need to setup a virtual environment in which Ptools will be installed::
 
     $ virtualenv ptools-env
     $ source ptools-env/bin/activate
-    $ pip install cython
 
-    Note that, as you are now running in a virtual environment, Python packages
-    that you install are not installed system-wide but only in your local
-    environment.
+2. Install ``Cython``::
 
-2. Retrieve Ptools sources from its GitHub repository::
+    (ptools-env) $ pip install cython
 
-    $ git clone https://github.com/ptools/ptools.git
+   Note that, as you are running in a virtual environment, from now
+   Python packages that you install are not installed system-wide but
+   only in your local environment.
 
-3. Build and install Ptools::
+3. Retrieve Ptools sources from its GitHub repository::
 
-    $ cd ptools
-    $ python setup.py install
+    (ptools-env) $ git clone https://github.com/ptools/ptools.git
 
-Ptools has been installed to your ``ptools-env`` environment. To use it in a
-new terminal, just type::
+4. Build and install Ptools::
+
+    (ptools-env) $ cd ptools
+    (ptools-env) $ python setup.py install
+
+
+Using Ptools once it has been installed
+=======================================
+
+If you used ``virtualenv``, Ptools has been installed to your ``ptools-env``
+environment. To use it in a new terminal, you need to activate the virtual
+environment::
 
     $ source ptools-env/bin/activate
-    
-    You will then be able to import it in your Python scripts
+
+To check everything worked fine::
+
+    (ptools-env) $ python -c 'import ptools'
+
+
+
+
+Building Ptools with legacy Boost and f2c libraries
+===================================================
+
+First retrieve ptools sources (see `quick setup guide`_).
+Then the procedure has been made quite straight forward by Ptools developers team::
+
+    (ptools-env) $ cd ptools
+    (ptools-env) $ python setup.py build_ext --use-legacy-f2c
+    (ptools-env) $ python setup.py install
 
 
 Troubleshooting
 ===============
-
 
 boost/shared_array.hpp: No such file or directory
 -------------------------------------------------
 
 Ptools did not find the boost headers. You can explicitely tell Ptools where
 to find it using the ``--with-boost-include-dir`` option at build time.
-In this example, boost has been installed in the directory ``/opt/boost``::
+In this example, ``Boost`` has been installed in the directory ``/opt/boost``::
 
-    $ python setup.py build_ext --with-boost-include-dir=/opt/boost/include
-    $ python setup.py install
+    (ptools-env) $ python setup.py build_ext --with-boost-include-dir=/opt/boost/include
+    (ptools-env) $ python setup.py install
 
 Alternatively, you can use the ``BOOST_INCLUDE_DIR`` environment variable::
 
-    $ export BOOST_INCLUDE_DIR=/opt/boost/include
-    $ python setup.py install
+    (ptools-env) $ export BOOST_INCLUDE_DIR=/opt/boost/include
+    (ptools-env) $ python setup.py install
 
 
-Building with Boost and f2c legacy
-===================================
+f2c.h: No such file or directory
+--------------------------------
 
-You might want to build Ptools using Ptools approved legacy versions of 
-``Boost`` and ``f2c`` libraries.
-Doing so has been made quite straight forward by Ptools developers team::
+Ptools did not find the f2c headers. You can explicitely tell Ptools where
+to find it using the ``--with-f2c-include-dir`` option at build time.
+Importantly, this option is paired with the ``--with-f2c-library`` which
+informs the location of the ``libf2c.a`` library.
+In this example, ``f2c`` has been installed in the directory ``/opt/f2c``::
 
-    $ python setup.py build_ext --use-legacy-f2c
-    $ python setup.py install
+    (ptools-env) $ python setup.py build_ext --with-f2c-include-dir=/opt/f2c/include/ --with-f2c-library=/opt/f2c/lib/libf2c.a
+    (ptools-env) $ python setup.py install
+
+Alternatively, you can use the ``F2C_INCLUDE_DIR`` and ``F2C_LIBRARY``
+environment variable::
+
+    (ptools-env) $ export F2C_INCLUDE_DIR=/opt/f2c/include
+    (ptools-env) $ export F2C_LIBRARY=/opt/f2c/lib/libf2c.a
+    (ptools-env) $ python setup.py install
+
+
+ImportError: [...]_ptools.so: undefined symbol: etime\_
+-------------------------------------------------------
+
+This error message occurs when importing ``ptools``. It is due to an error with
+the linkage with the f2c library. To solve this problem, specify ``libf2c.a``
+location as described in `f2c.h: No such file or directory`_.
+
+
 
 
 
