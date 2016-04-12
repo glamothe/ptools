@@ -11,20 +11,16 @@ import StringIO
 import sys
 import textwrap
 
-from distutils.core import setup, Command
+from distutils.core import setup
 from distutils.extension import Extension
-from distutils.command.build import build
 from distutils.errors import DistutilsOptionError
-
 
 try:
     from Cython.Distutils import build_ext as _build_ext
 except ImportError:
-    fatal("Cannot find cython. Please install it using `pip install cython`.")
-
-
-
-
+    print("Cannot find cython. Please install it using `pip install cython`.",
+          file=sys.stderr)
+    exit(1)
 
 
 # Directory where legacy f2c library will be downloaded and compiled if
@@ -85,7 +81,7 @@ class build_ext(_build_ext):
         # '--with-f2c-include-dir' and 'with-f2c-library' need to be both
         # empty or filled.
         if any((self.with_f2c_library, self.with_f2c_include_dir)) and not\
-             all((self.with_f2c_library, self.with_f2c_include_dir)):
+           all((self.with_f2c_library, self.with_f2c_include_dir)):
             msg = '--with-f2c-include-dir and --with-f2c-library need to be '\
                   'both empty or both informed'
             raise DistutilsOptionError(msg)
@@ -243,28 +239,11 @@ def find_executable(filename):
     return find_file(filename, os.environ['PATH'].split(':'))
 
 
-def pip_install(package):
-    try:
-        import pip
-    except ImportError:
-        fatal('pip not found, cannot install Cython')
-    else:
-        pip.main(['install', package])
-
-
-def install_cython():
-    try:
-        import Cython
-    except ImportError:
-        info('Cython not found, trying to install it with pip')
-        pip_install('Cython')
-
-
 def install_legacy_f2c():
     """Download and build legacy libf2c from ptools_dep repository.
 
     Returns:
-        tuple(str, str): libf2c include directory and the absolute 
+        tuple(str, str): libf2c include directory and the absolute
             path to libf2c.a.
     """
     def f2c_files(members):
@@ -316,7 +295,6 @@ def install_legacy_f2c():
     shutil.copyfile(os.path.join(LEGACY_F2C_DIR, 'f2c.h'),
                     os.path.join(f2cdir, 'f2c.h'))
 
-
     f2clibdir = os.path.join(os.path.join(LEGACY_F2C_DIR, 'install', 'lib'))
     f2clib = os.path.join(f2clibdir, 'libf2c.a')
     if not os.path.exists(f2clibdir):
@@ -349,7 +327,7 @@ def find_f2c():
     """Try to locate the libf2c include directory and libf2c.a library.
 
     Returns:
-        tuple(str, str): libf2c include directory and the absolute 
+        tuple(str, str): libf2c include directory and the absolute
             path to libf2c.a.
     """
     # Search f2c.h.
@@ -365,9 +343,9 @@ def find_f2c():
 
     # Search libf2c.a.
     f2clib = get_environ('F2C_LIBRARY') or\
-             find_file('libf2c.a',
-                       ['/usr/lib', '/usr/local/lib', '/opt/local/lib',
-                        '/usr/lib64', '/usr/local/lib64'])
+        find_file('libf2c.a',
+                  ['/usr/lib', '/usr/local/lib', '/opt/local/lib',
+                   '/usr/lib64', '/usr/local/lib64'])
     if not f2clib:
         warning("libf2c.a not found. Specify its location by using the "
                 "F2C_LIBRARY environment variable. If it is not "
@@ -416,14 +394,11 @@ def setup_package():
                       language='c',
                       include_dirs=['PyAttract'])
 
-    # At this stage, Cython should have been installed.
-    
     setup(ext_modules=[ptools, cgopt],
           cmdclass={'build_ext': build_ext},
           packages=['.'],
           name='ptools',
           version='1.2')
-
 
 
 if __name__ == '__main__':
