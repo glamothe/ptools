@@ -1,8 +1,7 @@
-.. highlight:: shell
 
-============
+************
 Contributing
-============
+************
 
 Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
@@ -10,10 +9,10 @@ little bit helps, and credit will always be given.
 You can contribute in many ways:
 
 Types of Contributions
-----------------------
+======================
 
 Report Bugs
-~~~~~~~~~~~
+-----------
 
 Report bugs at https://github.com/ptools/ptools/issues.
 
@@ -24,19 +23,19 @@ If you are reporting a bug, please include:
 * Detailed steps to reproduce the bug.
 
 Fix Bugs
-~~~~~~~~
+--------
 
 Look through the GitHub issues for bugs. Anything tagged with "bug"
 is open to whoever wants to implement it.
 
 Implement Features
-~~~~~~~~~~~~~~~~~~
+------------------
 
 Look through the GitHub issues for features. Anything tagged with "feature"
 is open to whoever wants to implement it.
 
 Submit Feedback
-~~~~~~~~~~~~~~~
+---------------
 
 The best way to send feedback is to file an issue at https://github.com/ptools/ptools/issues.
 
@@ -48,7 +47,7 @@ If you are proposing a feature:
   are welcome :)
 
 Get Started!
-------------
+============
 
 Ready to contribute? Here's how to set up `ptools` for local development.
 
@@ -57,30 +56,41 @@ Ready to contribute? Here's how to set up `ptools` for local development.
 
     $ git clone git@github.com:ptools/ptools.git
 
-3. We recommand using docker_ to build, install and run tests. This is how you would do::
-
-    $ docker build -t ptools:dev ./dev
-
-4. Create a branch for local development::
+3. Create a branch for local development::
 
     $ git checkout -b name-of-your-bugfix-or-feature
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass the tests::
+4. When you're done making changes, check that your changes pass the tests::
 
-    $ docker run --rm -v $(pwd):/src/ptools ptools:dev
+    $ python setup.py install
+    $ cd Tests
+    $ python unittest1.py
 
-6. Commit your changes and push your branch to GitHub::
+5. Commit your changes and push your branch to GitHub::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-7. Submit a pull request through the GitHub website.
+6. Submit a pull request through the GitHub website.
+   
+
+Alternatively, you can use Docker_ to build a specific container for Ptools and
+run unit tests::
+
+    $ git clone git@github.com:ptools/ptools.git
+    $ cd ptools
+    $ docker build -t ptools:dev ./dev
+    $ # Make a branch then some changes
+    $ # [...]
+    $ # Run the unit tests
+    $ docker run --rm -v $(pwd):/src/ptools ptools:dev
+
 
 Pull Request Guidelines
------------------------
+=======================
 
 Before you submit a pull request, check that it meets these guidelines:
 
@@ -91,4 +101,4 @@ Before you submit a pull request, check that it meets these guidelines:
    and make sure that the tests pass.
 
 
-.. _docker: https://www.docker.com/
+.. _Docker: https://www.docker.com/
