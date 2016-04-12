@@ -25,19 +25,20 @@ cdef extern from "mcopff.h" namespace "PTools":
         CppAttractRigidbody operator[](unsigned int)
         unsigned int size()
         void addCopy(CppAttractRigidbody&)
-    cdef cppclass CppMcoprigid "Ptools::Mcoprigid":
+    cdef cppclass CppMcoprigid "PTools::Mcoprigid":
         CppMcoprigid()
-        CppMcoprigid(string&)
-        CppMcoprigid(CppRigidbody&, vector(CppAttractMcop))
+        CppMcoprigid(string&) except+
+        #CppMcoprigid(CppRigidbody&, vector(CppAttractMcop))
         CppMcoprigid(CppMcoprigid&)
-        CppAttractMcop getRegion(unsigned int)
-        CppAttractRigidbody getCore()
+        #CppAttractMcop getRegion(unsigned int)
+        #CppAttractRigidbody getCore()
 
 
 cdef class Mcop:
     cdef CppMcop* thisptr
     
     def __cinit__(self, filename=''):
+    
         cdef CppMcop* oldptr
         cdef Mcop oldmcop
         cdef char* name
@@ -169,11 +170,13 @@ cdef class AttractMcop (Mcop):
      
     def __len__(self):
         return self.thisptr2.size()
-        
+   
+  
 cdef class Mcoprigid:
     cdef CppMcoprigid* thisptr
     
     def __cinit__(self, filename='', arg2=''):
+    
         cdef CppMcoprigid* oldptr
         cdef Mcoprigid oldmcoprigid
         cdef char* name
@@ -198,9 +201,10 @@ cdef class Mcoprigid:
             if not self.thisptr:
                 print "FATAL: this should never happen"
         
-        # if filename is AttractRigibody and arg2 is list of AttractMcop
-        # elif isinstance(arg2, AttractRigidbody) and isinstance(filename, (list, tuple)) and all(isinstance(elem, AttractMcop) for elem in arg2):
-            # TODO 
+        #if filename is AttractRigibody and arg2 is list of AttractMcop
+        elif isinstance(arg2, AttractRigidbody) and isinstance(filename, (list, tuple)) and all(isinstance(elem, AttractMcop) for elem in arg2):
+            print 'test'
+            # TODO
         
         else:
             raise RunetimeError("invalid argument in Mcoprigid()")
@@ -209,5 +213,21 @@ cdef class Mcoprigid:
         if self.thisptr:
             del self.thisptr
             self.thisptr = <CppMcoprigid*> 0
+    
+    def getCore()
+        cdef CppAttractRigidbody cpp_core = self.thisptr.getCore(i)
+        cdef AttractRigidbody core = AttractRigidbody()
+        cdef CppAttractRigbody* new_core = new CppAttractRigidbody(cpp_core)
+        del core.thisptr
+        core.thisptr = new_core
+        return core    
         
-                
+    def getRegion(i)
+        cdef CppAttractMcop cpp_region = self.thisptr.getRegion(i)
+        cdef AttractMcop region = AttractMcop()
+        cdef CppAttractMcop* new_region = new CppAttractMcop(cpp_region)
+        del region.thisptr
+        region.thisptr = new_region
+        return region
+        
+        
