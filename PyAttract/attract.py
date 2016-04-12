@@ -192,6 +192,7 @@ parser.add_option("-s", "--single", action="store_true", dest="single", default=
 parser.add_option("--ref", action="store", type="string", dest="reffile", help="reference ligand for rmsd" )
 parser.add_option("-t", "--translation", action="store", type="int", dest="transnb", help="translation number (distributed mode) starting from 0 for the first one!")
 parser.add_option("--start1", action="store_true", default=False, dest="start1", help="(only useful with -t), use 1 for the first translation point")
+parser.add_option("--mcop", action="store_true", default=False, help="mcop option for multi-copy rigid-body docking")
 (options, args) = parser.parse_args()
 
 
