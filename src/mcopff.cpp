@@ -76,14 +76,17 @@ void Mcoprigid::ReadMcoprigidPDB(const std::string name) {
 
 void Mcoprigid::ReadMcoprigidPDB(std::istream& file, AttractRigidbody& core, std::vector<AttractMcop>& regions){
 
-    uint region_num;
-    uint copy_num;
+    uint region_num = 0;
+    uint copy_num = 0;
     std::string line;
     while(std::getline(file, line)){
         if(Mcop::isNewModel(line)){
             // The line is a new model
-            region_num = line_to_region_number(line);
-            copy_num = line_to_copy_number(line);
+            printf("Line size = %i\n",line.size());
+            if(line.size() > 12) region_num = line_to_region_number(line);
+            printf("Region number = %i\n", region_num);
+            if(line.size() > 15) copy_num = line_to_copy_number(line);
+            printf("Copy number = %i\n", copy_num);
             AttractRigidbody model;
             while(std::getline(file,line)){
                 if(isAtom(line)){
@@ -95,13 +98,16 @@ void Mcoprigid::ReadMcoprigidPDB(std::istream& file, AttractRigidbody& core, std
                     if(region_num == 0) core.AddAtom(a,pos);
                     else model.AddAtom(a,pos);
                 }
-                // if region_num is not core, add region copy
-                else if(region_num != 0){
-                    
-                    // if new region, add region to vector
-                    if(regions.size() < region_num)
-                        regions.push_back(AttractMcop());
-                    regions[copy_num-1].addCopy(model);
+                
+                else{  
+                    // if region_num is not core, add region copy
+                    if(region_num != 0){
+                        // if new region, add region to vector before adding region copy
+                        if(regions.size() < region_num)
+                            regions.push_back(AttractMcop());
+                        // copy
+                        regions[region_num-1].addCopy(model);
+                    }
                     //Just finished adding a region copy
                     break;
                 }
@@ -131,7 +137,7 @@ uint Mcoprigid::line_to_region_number(std::string line){
 
 uint Mcoprigid::line_to_copy_number(std::string line){
 
-    return std::atoi(line.substr(15,1).c_str());
+    return std::atoi(line.substr(15,line.size()-15).c_str());
 }
 
 /////////////////// -- Class Mcop -- ////////////////////
