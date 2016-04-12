@@ -11,6 +11,7 @@ import StringIO
 import sys
 import textwrap
 
+from distutils import log
 from distutils.core import setup
 from distutils.extension import Extension
 from distutils.errors import DistutilsOptionError
@@ -109,14 +110,14 @@ class build_ext(_build_ext):
 
         if boost_include_dir:
             self.include_dirs.append(boost_include_dir)
-            info("Boost headers found at {0}".format(boost_include_dir))
+            log.info("Boost headers found at {0}".format(boost_include_dir))
         if f2c_include_dir:
             self.include_dirs.append(f2c_include_dir)
-            info("f2c.h found at {0}".format(f2c_include_dir))
+            log.info("f2c.h found at {0}".format(f2c_include_dir))
         if f2c_library:
             for ext in self.extensions:
                 ext.extra_objects.append(f2c_library)
-            info("libf2c.a found at {0}".format(f2c_library))
+            log.info("libf2c.a found at {0}".format(f2c_library))
 
 
 # For compatibility with Python 2.6.
@@ -126,25 +127,6 @@ else:
     def _check_output(args):
         return subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
     check_output = _check_output
-
-
-def info(s, prefix='--', file=sys.stderr, width=80):
-    s = textwrap.fill(s, width)
-    print(prefix, s, file=file)
-    file.flush()
-
-
-def fatal(s, prefix='ERROR:', file=sys.stderr, width=80, status=1):
-    s = textwrap.fill(s, width)
-    print(prefix, s, file=file)
-    file.flush()
-    exit(status)
-
-
-def warning(s, prefix='WARNING:', file=sys.stderr, width=80):
-    s = textwrap.fill(s, width)
-    print(prefix, s, file=file)
-    file.flush()
 
 
 def git_version():
@@ -166,7 +148,7 @@ def write_version_h(filename):
             "While the library will compile correcly, informations about"\
             "the current ptools version will be missing. Please use git to"\
             "download PTools and get reliable versioning informations."
-        warning(s)
+        log.warn(s)
 
     content = textwrap.dedent("""
         /*
@@ -254,7 +236,7 @@ def install_legacy_f2c():
     def download_legacy_f2c():
         url = PTOOLS_DEP_URL
         tarball_f2c_dir = 'ptools-ptools_dep-66b145b/libf2c2-20090411'
-        info("Downloading f2c")
+        log.info("Downloading f2c")
         response = urllib2.urlopen(url)
         compressed = StringIO.StringIO(response.read())
         tar = tarfile.open(fileobj=compressed, mode='r:gz')
@@ -262,12 +244,12 @@ def install_legacy_f2c():
         tar.close()
         shutil.move(tarball_f2c_dir, LEGACY_F2C_DIR)
         shutil.rmtree(tarball_f2c_dir.split('/')[0])
-        info("Downloading f2c done")
+        log.info("Downloading f2c done")
 
     if not os.path.exists(LEGACY_F2C_DIR):
         download_legacy_f2c()
 
-    info("Compiling f2c")
+    log.info("Compiling f2c")
     cflags = 'CFLAGS=-ansi -g -O2 -fomit-frame-pointer -D_GNU_SOURCE '\
              '-fPIC -DNON_UNIX_STDIO -Df2c'
 
@@ -278,15 +260,15 @@ def install_legacy_f2c():
     # Library compilation (write log).
     args = ['make', '-C', LEGACY_F2C_DIR, '-f', 'makefile.u', cflags,
             'libf2c.a']
-    log = os.path.join(LEGACY_F2C_DIR, 'compile.log')
-    with open(log, 'wt') as logfile:
+    logfilename = os.path.join(LEGACY_F2C_DIR, 'compile.log')
+    with open(logfilename, 'wt') as logfile:
         subprocess.call(args, stdout=logfile, stderr=subprocess.STDOUT)
 
     tmpf2clib = os.path.join(LEGACY_F2C_DIR, 'libf2c.a')
     if not os.path.exists(tmpf2clib):
-        fatal("error occured during f2c compilation. "
-              "Please check {0}.".format(log))
-    info("Compiling f2c done")
+        log.fatal("error occured during f2c compilation. "
+                  "Please check {0}.".format(log))
+    log.info("Compiling f2c done")
 
     # Move header and library to pseudo install directory.
     f2cdir = os.path.join(os.path.join(LEGACY_F2C_DIR, 'install', 'include'))
@@ -316,10 +298,10 @@ def find_boost():
                                '/usr/include', '/usr/local/include',
                                '/opt/local/include'])
     if not boostdir:
-        warning("Boost not found. Specify headers location by using the "
-                "BOOST_INCLUDE_DIR environment variable. If it is not "
-                "installed, you can either install a recent version "
-                "or use the --use-legacy-boost option.")
+        log.warn("Boost not found. Specify headers location by using the "
+                 "BOOST_INCLUDE_DIR environment variable. If it is not "
+                 "installed, you can either install a recent version "
+                 "or use the --use-legacy-boost option.")
     return boostdir
 
 
@@ -336,10 +318,10 @@ def find_f2c():
                              '/usr/include', '/usr/local/include',
                              '/opt/local/include'])
     if not f2cdir:
-        warning("f2c.h not found. Specify headers location by using the "
-                "F2C_INCLUDE_DIR environment variable. If it is not "
-                "installed, you can either install a recent version "
-                "or use the --use-legacy-f2c option.")
+        log.warn("f2c.h not found. Specify headers location by using the "
+                 "F2C_INCLUDE_DIR environment variable. If it is not "
+                 "installed, you can either install a recent version "
+                 "or use the --use-legacy-f2c option.")
 
     # Search libf2c.a.
     f2clib = get_environ('F2C_LIBRARY') or\
@@ -347,10 +329,10 @@ def find_f2c():
                   ['/usr/lib', '/usr/local/lib', '/opt/local/lib',
                    '/usr/lib64', '/usr/local/lib64'])
     if not f2clib:
-        warning("libf2c.a not found. Specify its location by using the "
-                "F2C_LIBRARY environment variable. If it is not "
-                "installed, you can either install a recent version "
-                "or use the --use-legacy-f2c option.")
+        log.warn("libf2c.a not found. Specify its location by using the "
+                 "F2C_LIBRARY environment variable. If it is not "
+                 "installed, you can either install a recent version "
+                 "or use the --use-legacy-f2c option.")
     return f2cdir, f2clib
 
 
