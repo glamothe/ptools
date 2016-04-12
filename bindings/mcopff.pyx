@@ -32,6 +32,7 @@ cdef extern from "mcopff.h" namespace "PTools":
         CppMcoprigid(CppMcoprigid&)
         CppAttractMcop getRegion(unsigned int)
         CppAttractRigidbody getCore()
+        unsigned int size()
 
 
 cdef class Mcop:
@@ -202,8 +203,7 @@ cdef class Mcoprigid:
                 print "FATAL: this should never happen"
         
         #if filename is AttractRigibody and arg2 is list of AttractMcop
-        elif isinstance(arg2, AttractRigidbody) and isinstance(filename, (list, tuple)) and all(isinstance(elem, AttractMcop) for elem in arg2):
-            print 'test'
+        #elif isinstance(arg2, AttractRigidbody) and isinstance(filename, (list, tuple)) and all(isinstance(elem, AttractMcop) for elem in arg2):
             # TODO
         
         else:
@@ -229,5 +229,8 @@ cdef class Mcoprigid:
         del region.thisptr
         region.thisptr2 = new_region
         return region
+
+    def __len__(self):
+        return self.thisptr.size()
         
         
