@@ -192,7 +192,7 @@ parser.add_option("-s", "--single", action="store_true", dest="single", default=
 parser.add_option("--ref", action="store", type="string", dest="reffile", help="reference ligand for rmsd" )
 parser.add_option("-t", "--translation", action="store", type="int", dest="transnb", help="translation number (distributed mode) starting from 0 for the first one!")
 parser.add_option("--start1", action="store_true", default=False, dest="start1", help="(only useful with -t), use 1 for the first translation point")
-parser.add_option("--mcop", action="store_true", default=False, help="mcop option for multi-copy rigid-body docking")
+parser.add_option("--mcop", action="store_true", default=False, dest="regions", help="mcop option for multi-copy rigid-body docking")
 (options, args) = parser.parse_args()
 
 
@@ -291,9 +291,12 @@ checkFile(ff_specs['ff_file'], "forcefield file is required.")
 
 #load receptor and ligand:
 rec=Rigidbody(options.receptor_name)
-lig=Rigidbody(options.ligand_name)
 rec=AttractRigidbody(rec)
-lig=AttractRigidbody(lig)
+if options.regions:
+    lig=Mcoprigid(lig)
+else:
+    lig=AttractRigidbody(lig)
+    lig=Rigidbody(options.ligand_name)
 print "Reading receptor (fixed): %s with %d particules" %( options.receptor_name, len(rec) )
 print "Reading  ligand (mobile): %s with %d particules" %( options.ligand_name,   len(lig) )
 
