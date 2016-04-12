@@ -82,11 +82,8 @@ void Mcoprigid::ReadMcoprigidPDB(std::istream& file, AttractRigidbody& core, std
     while(std::getline(file, line)){
         if(Mcop::isNewModel(line)){
             // The line is a new model
-            printf("Line size = %i\n",line.size());
             if(line.size() > 12) region_num = line_to_region_number(line);
-            printf("Region number = %i\n", region_num);
             if(line.size() > 15) copy_num = line_to_copy_number(line);
-            printf("Copy number = %i\n", copy_num);
             AttractRigidbody model;
             while(std::getline(file,line)){
                 if(isAtom(line)){
