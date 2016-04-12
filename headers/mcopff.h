@@ -75,11 +75,11 @@ private:
 
 public:
 
-    //Constructor : no arguments
+    //Constructor: no arguments
     AttractMcop(){ };
-    //Constructor : takes filename
+    //Constructor: takes filename
     AttractMcop(std::string filename);
-    //Constructor : takes mcop
+    //Constructor: takes mcop
     AttractMcop(const Mcop& mcop);
     
     virtual void addCopy(const AttractRigidbody& cop){attract_copies.push_back(cop);};
@@ -98,7 +98,9 @@ class Mcoprigid //multicopy rigidbody
 {
 
 public:
+    //Constructor: no arguments
     Mcoprigid();
+    //Constructor: takes filename
     Mcoprigid(std::string filename);
 
     //using default copy operator
