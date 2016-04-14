@@ -290,13 +290,13 @@ checkFile(ff_specs['ff_file'], "forcefield file is required.")
 
 
 #load receptor and ligand:
-rec=Rigidbody(options.receptor_name)
-rec=AttractRigidbody(rec)
+lig=Rigidbody(options.ligand_name)
+lig=AttractRigidbody(lig)
 if options.regions:
-    lig=Mcoprigid(lig)
+    rec=Mcoprigid(rec)
 else:
-    lig=AttractRigidbody(lig)
-    lig=Rigidbody(options.ligand_name)
+    rec=AttractRigidbody(rec)
+    rec=Rigidbody(options.receptor_name)
 print "Reading receptor (fixed): %s with %d particules" %( options.receptor_name, len(rec) )
 print "Reading  ligand (mobile): %s with %d particules" %( options.ligand_name,   len(lig) )
 
