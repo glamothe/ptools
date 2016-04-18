@@ -33,6 +33,7 @@ cdef extern from "mcopff.h" namespace "PTools":
         CppAttractMcop getRegion(unsigned int)
         CppAttractRigidbody getCore()
         unsigned int size()
+        void setCore(CppAttractRigidbody&)
 
 
 cdef class Mcop:
@@ -229,6 +230,9 @@ cdef class Mcoprigid:
         del region.thisptr
         region.thisptr2 = new_region
         return region
+
+    def setCore(self, AttractRigidbody core):
+        self.thisptr.setCore(deref(<CppAttractRigidbody*>core.thisptr))
 
     def __len__(self):
         return self.thisptr.size()
