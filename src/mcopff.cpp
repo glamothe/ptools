@@ -16,9 +16,20 @@ Mcoprigid::Mcoprigid(std::string filename){
 
     ReadMcoprigidPDB(filename);
     _center = _core.FindCenter();
+    iniWeights();
     
 }
 
+void Mcoprigid::iniWeights(){
+    for(int i=0; i < _vregion.size(); i++){
+        std::vector<dbl> newvector;
+        _weights.push_back(newvector);
+        for(int j=0; j < _vregion[i].size(); j++){
+            dbl weight = 1/_vregion[i].size();
+            _weights[i].push_back(weight);
+        }
+    }
+}
 
 void Mcoprigid::setCore(AttractRigidbody& core) {
     _core=core;

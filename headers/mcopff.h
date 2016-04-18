@@ -102,9 +102,9 @@ public:
     Mcoprigid();
     //Constructor: takes filename
     Mcoprigid(std::string filename);
-
     //using default copy operator
 
+    void iniWeights();
     void setCore(AttractRigidbody& core) ;
     void addEnsemble(const AttractMcop& reg){ _vregion.push_back(reg); std::vector<dbl> v; _weights.push_back(v);  };
 
