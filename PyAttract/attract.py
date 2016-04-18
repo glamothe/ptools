@@ -290,13 +290,16 @@ checkFile(ff_specs['ff_file'], "forcefield file is required.")
 
 
 #load receptor and ligand:
-lig=Rigidbody(options.ligand_name)
-lig=AttractRigidbody(lig)
 if options.regions:
-    rec=Mcoprigid(rec)
+    rec=Mcoprigid(options.receptor_name)
+    core=AttractRigidbody(options.ligand_name)
+    lig=Mcoprigid()
+    lig.seCore(core)
 else:
-    rec=AttractRigidbody(rec)
     rec=Rigidbody(options.receptor_name)
+    rec=AttractRigidbody(rec)
+    lig=Rigidbody(options.ligand_name)
+    lig=AttractRigidbody(lig)
 print "Reading receptor (fixed): %s with %d particules" %( options.receptor_name, len(rec) )
 print "Reading  ligand (mobile): %s with %d particules" %( options.ligand_name,   len(lig) )
 
@@ -381,10 +384,10 @@ for trans in translations:
 
             #performs single minimization on receptor and ligand, given maxiter=niter and restraint constant rstk
             forcefield=ff_specs['ff_class'](ff_specs['ff_file'], surreal(cutoff)   )
-            rec.setTranslation(False)
-            rec.setRotation(False)
+            rec.setTranslation(False) #TODO
+            rec.setRotation(False) #TODO
             
-            forcefield.AddLigand(rec)
+            forcefield.AddLigand(rec) #TODO
             forcefield.AddLigand(ligand)
             rstk=minim['rstk']  #restraint force
             #if rstk>0.0:
