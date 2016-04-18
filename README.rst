@@ -37,20 +37,17 @@ Then look into the html/ directory and find the index.html file generated...
 Very quick setup guide
 -----------------------
 
-.. code-block:: bash
+This is the very minimal set of instructions required to install Ptools
+in a Python virtual environment.
+It assumes all Ptools dependencies have been duly installed::
 
-    git clone https://github.com/ptools/ptools.git
-    cd ptools
-    sudo apt-get update
-    cat dev/requirements_system.txt | sudo xargs apt-get install -y
-    pip install virtualenv
-    virtualenv env
-    source env/bin/activate
-    pip install -r dev/requirements_python.txt
-    python setup.py build
-    sudo python setup.py install
+    $ virtualenv ptools-env
+    $ source ptools-env/bin/activate
+    (ptools-env) $ pip install cython
+    (ptools-env) $ git clone https://github.com/ptools/ptools.git    
+    (ptools-env) $ cd ptools
+    (ptools-env) $ python setup.py install
 
-    
 A more detailed version is in the official tutorial. 
 
 
