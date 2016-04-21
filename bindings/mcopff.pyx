@@ -39,6 +39,9 @@ cdef extern from "mcopff.h" namespace "PTools":
         void normalize_weights()
     cdef cppclass CppMcopForceField "PTools::McopForceField":
         CppMcopForceField(CppBaseAttractForceField&, double)
+        vector[vector[double]] getWeights()
+        void denormalize_weights()
+        void normalize_weights()
 
 
 cdef class Mcop:
@@ -270,3 +273,12 @@ cdef class McopForceField:
         if self.thisptr:
             del self.thisptr
             self.thisptr = <CppMcopForceField*> 0
+
+    def getWeights(self):
+        return self.thisptr.getWeights()
+
+    def denormalize_weights(self):
+        self.thisptr.denormalize_weights()
+
+    def normalize_weigths(self):
+        self.thisptr.normalize_weights()

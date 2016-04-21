@@ -173,6 +173,10 @@ public:
     uint ProblemSize() {return 6;};
     void initMinimization(){};
 
+    std::vector <std::vector<dbl> > getWeights(){return _receptor.getWeights();};
+    void denormalize_weights(){_receptor.denormalize_weights();};
+    void normalize_weights(){_receptor.normalize_weights();};
+
 private:
 
     BaseAttractForceField& _ff ;
