@@ -78,8 +78,8 @@ public:
     }
 
 
-    void setRotation(bool value) {hasrotation  = value;} ///< allow/disallow rotation
-    void setTranslation(bool value) {hastranslation = value;} ///< allow/disallow translation
+    virtual void setRotation(bool value) {hasrotation  = value;} ///< allow/disallow rotation
+    virtual void setTranslation(bool value) {hastranslation = value;} ///< allow/disallow translation
 
     void setDummyTypes(const std::vector<uint>& dummy); ///< set a list of ignored atom types
 

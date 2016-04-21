@@ -125,6 +125,8 @@ public:
     AttractMcop& getRegion(int i){return _vregion[i];};
     size_t size() const {return _vregion.size();};
 
+    virtual void setRotation(bool value) {_core.setRotation(value)} ///< allow/disallow rotation
+    virtual void setTranslation(bool value) {_core.setTranslation(value)} ///< allow/disallow translation
 
 private:
 
