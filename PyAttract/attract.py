@@ -397,7 +397,10 @@ for trans in translations:
             rstk=minim['rstk']  #restraint force
             #if rstk>0.0:
                 #forcefield.SetRestraint(rstk)
-            lbfgs_minimizer=ff_specs['minimizer_class'](forcefield)
+            if option.regions:
+                lbfgs_minimizer=Lbfgs(mcopff)
+            else :
+                lbfgs_minimizer=ff_specs['minimizer_class'](forcefield)
             lbfgs_minimizer.minimize(niter)
             X=lbfgs_minimizer.GetMinimizedVars()  #optimized freedom variables after minimization
 
