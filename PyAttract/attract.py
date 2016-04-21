@@ -294,7 +294,7 @@ if options.regions:
     rec=Mcoprigid(options.receptor_name)
     core=AttractRigidbody(options.ligand_name)
     lig=Mcoprigid()
-    lig.seCore(core)
+    lig.setCore(core)
 else:
     rec=Rigidbody(options.receptor_name)
     rec=AttractRigidbody(rec)
@@ -384,6 +384,7 @@ for trans in translations:
 
             #performs single minimization on receptor and ligand, given maxiter=niter and restraint constant rstk
             forcefield=ff_specs['ff_class'](ff_specs['ff_file'], surreal(cutoff)   )
+            mcopff = McopForceField(forcefield, surreal(cutoff))
             rec.setTranslation(False) #TODO
             rec.setRotation(False) #TODO
             
