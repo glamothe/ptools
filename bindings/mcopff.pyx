@@ -34,6 +34,8 @@ cdef extern from "mcopff.h" namespace "PTools":
         CppAttractRigidbody getCore()
         unsigned int size()
         void setCore(CppAttractRigidbody&)
+    cdef cppclass CppMcopForceField "PTools::McopForceField":
+        CppMcopForceField(CppBaseAttractForceField&, double)
 
 
 cdef class Mcop:
@@ -238,3 +240,21 @@ cdef class Mcoprigid:
         return self.thisptr.size()
         
         
+cdef class McopForceField:
+    cdef CppMcopForceField* thisptr
+
+    def __cinit__(self, ff, cutoff):
+
+        cdef BaseAttractForceField old_ff
+        cdef CppBaseAttractForceField c_ff
+        cdef CppBaseAttractForceField* c_ff_ptr
+    
+        old_ff = <BaseAttractForceField> ff
+        c_ff_ptr = <CppBaseAttractForceField*> old_ff.thisptr
+        self.thisptr = new CppMcopForceField(deref(c_ff_ptr), cutoff)
+
+
+    def __dealloc__(self):
+        if self.thisptr:
+            del self.thisptr
+            self.thisptr = <CppMcopForceField*> 0
