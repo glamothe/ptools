@@ -385,11 +385,15 @@ for trans in translations:
             #performs single minimization on receptor and ligand, given maxiter=niter and restraint constant rstk
             forcefield=ff_specs['ff_class'](ff_specs['ff_file'], surreal(cutoff)   )
             mcopff = McopForceField(forcefield, surreal(cutoff))
-            rec.setTranslation(False) #TODO
-            rec.setRotation(False) #TODO
+            rec.setTranslation(False)
+            rec.setRotation(False)
             
-            forcefield.AddLigand(rec) #TODO
-            forcefield.AddLigand(ligand)
+            if option.regions:
+                mcopff.setReceptor(rec)
+                mcopff.setLigand(lig)
+            else:
+                forcefield.AddLigand(rec)
+                forcefield.AddLigand(ligand)
             rstk=minim['rstk']  #restraint force
             #if rstk>0.0:
                 #forcefield.SetRestraint(rstk)
