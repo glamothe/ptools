@@ -115,6 +115,8 @@ public:
 
     void PrintWeights();
     std::vector <std::vector<dbl> > getWeights(){return _weights;};
+    void denormalize_weights();
+    void normalize_weights();
     
     void ReadMcoprigidPDB(const std::string name);
     void ReadMcoprigidPDB(std::istream& file, AttractRigidbody& core, std::vector<AttractMcop>& regions);
@@ -137,6 +139,7 @@ private:
     Coord3D _center ; ///<center of mass of the core region
 
     std::vector< std::vector <dbl> > _weights;
+    std::vector< std::vector <dbl> > _denorm_weights;
 
     friend class McopForceField;
 

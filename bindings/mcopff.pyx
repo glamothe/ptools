@@ -35,6 +35,8 @@ cdef extern from "mcopff.h" namespace "PTools":
         unsigned int size()
         void setCore(CppAttractRigidbody&)
         vector[vector[double]] getWeights()
+        void denormalize_weights()
+        void normalize_weights()
     cdef cppclass CppMcopForceField "PTools::McopForceField":
         CppMcopForceField(CppBaseAttractForceField&, double)
 
@@ -239,6 +241,12 @@ cdef class Mcoprigid:
 
     def getWeights(self):
         return self.thisptr.getWeights()
+
+    def denormalize_weights(self):
+        self.thisptr.denormalize_weights()
+
+    def normalize_weigths(self):
+        self.thisptr.normalize_weights()
 
     def __len__(self):
         return self.thisptr.size()
