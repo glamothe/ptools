@@ -1,6 +1,7 @@
 #include "mcopff.h"
 #include <cassert>
 #include <iostream>
+#include <math.h>
 
 namespace PTools
 {
@@ -24,10 +25,13 @@ void Mcoprigid::iniWeights(){
     for(int i=0; i < _vregion.size(); i++){
         std::vector<dbl> newvector;
         _weights.push_back(newvector);
+        _denorm_weights.push_back(newvector);
         for(int j=0; j < _vregion[i].size(); j++){
             dbl weight = 1/_vregion[i].size();
             _weights[i].push_back(weight);
+            _denorm_weights[i].push_back(0);
         }
+        denormalize_weights();
     }
 }
 
@@ -147,6 +151,29 @@ uint Mcoprigid::line_to_copy_number(std::string line){
 
     return std::atoi(line.substr(15,line.size()-15).c_str());
 }
+
+void Mcoprigid::denormalize_weights(){
+    for(uint i; i < _weights.size(); i++){
+        dbl max_weight = *max_element(_weights[i].begin(), _weights[i].end());
+        for(uint j; j < _weights[i].size(); j++){
+            _denorm_weights[i][j] = sqrt(_weights[i][j]/max_weight);
+        }
+    }
+}
+
+void Mcoprigid::normalize_weights(){
+
+    for(uint i; i < _denorm_weights.size(); i++){
+        dbl sum_squared_denorm_weights = 0;
+        for(uint j; j < _denorm_weights[i].size(); j++){
+            sum_squared_denorm_weights += pow(_denorm_weights[i][j], 2);
+        }
+        for(uint j; j < _denorm_weights[i].size(); j++){
+            _weights[i][j] = pow(_denorm_weights[i][j], 2)/sum_squared_denorm_weights;
+        }
+    }
+}
+
 
 /////////////////// -- Class Mcop -- ////////////////////
 
