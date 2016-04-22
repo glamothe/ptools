@@ -170,7 +170,7 @@ public:
 
     void calculate_weights(Mcoprigid& lig, bool print=false);
 
-    uint ProblemSize() {return 6;};
+    uint ProblemSize();
     void initMinimization(){};
 
     std::vector <std::vector<dbl> > getWeights(){return _receptor.getWeights();};

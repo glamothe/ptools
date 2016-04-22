@@ -326,7 +326,16 @@ void McopForceField::calculate_weights(Mcoprigid& lig, bool print)
 }
 
 
-
+uint McopForceField::ProblemSize()
+{
+    uint size = 0;
+    if (_centered_ligand.getCore().hastranslation) size += 3;
+    if (_centered_ligand.getCore().hasrotation) size += 3;
+    for(uint i=0; i<_centered_ligand.getWeights().size(); i++){
+        size += _centered_ligand.getWeights()[i].size();
+    }
+    return size;
+}
 
 
 /** \brief calculates energy of the system
