@@ -209,7 +209,25 @@ if (iter>=m_vars_over_time.size())
 return m_vars_over_time[iter];
 }
 
+void Lbfgs::denormalize_weights()
+{
+    if (McopForceField * p = dynamic_cast<McopForceField *>(&objToMinimize)){
+        // objToMinimize is or is of type McopForceField
+        objToMinimize.denormalize_weights();
+    }
+    //else
+        // objToMinimize is not a McopForceField
 
+};
+void Lbfgs::normalize_weights()
+{
+    if (McopForceField * p = dynamic_cast<McopForceField *>(&objToMinimize)){
+        // objToMinimize is or is of type McopForceField
+        objToMinimize.normalize_weights();
+    }
+    //else
+        // objToMinimize is not a McopForceField            
+};
 
 
 
