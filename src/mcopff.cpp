@@ -338,6 +338,7 @@ uint McopForceField::ProblemSize()
 }
 
 
+
 /** \brief calculates energy of the system
 *
 * this functions returns nonbonded energy of a receptor with multicopy and a ligand without copy.
@@ -345,6 +346,7 @@ uint McopForceField::ProblemSize()
 */
 dbl McopForceField::Function(const Vdouble & v)
 {
+    denormalize_weights();
 
     dbl ener = 0.0 ;
     dbl enercopy =0.0;
@@ -420,6 +422,7 @@ dbl McopForceField::Function(const Vdouble & v)
 
     }
 
+    normalize_weights();
     return ener + enercopy;
 
 }
