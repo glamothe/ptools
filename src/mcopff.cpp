@@ -348,7 +348,8 @@ dbl McopForceField::Function(const Vdouble & v)
 {
     denormalize_weights();
 
-    dbl ener = 0.0 ;
+    dbl ener_region = 0.0 ;
+    dbl ener_core = 0.0 ;
     dbl enercopy =0.0;
 
 // 1) put the objects to the right place
@@ -358,10 +359,28 @@ dbl McopForceField::Function(const Vdouble & v)
     Mcoprigid & lig = _moved_ligand ;
     assert(lig._vregion.size()==0);
 
-
+    //TODO: take into account if not rotation or no translation
     lig.AttractEulerRotate(v[0],v[1],v[2]);
     lig.Translate(Coord3D(v[3],v[4],v[5]));
 
+    assert(_receptor._vregion.size() == _receptor._weights.size());
+    assert(_receptor._vregion.size() == _receptor._denorm_weights.size());
+
+    //Update the denormalized weights
+    
+    uint k = 0;
+    for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
+        assert( ref_ensemble.size() == ref_denorm_weights.size());
+        AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
+        std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
+        for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++){
+            k++;
+            dbl& denorm_weight = ref_denorm_weights[copynb];
+            denorm_weight += v[5+k]; // ??? += or = ???
+        }
+    }
+
+    normalize_weights();
 
 //2) calculates the energy
 
@@ -369,11 +388,11 @@ dbl McopForceField::Function(const Vdouble & v)
     //2.1) core ligand body with core receptor
 
     AttractPairList pl (_receptor._core,   lig._core, _cutoff );
-    ener += _ff.nonbon8(_receptor._core, lig._core, pl );
+    ener_core += _ff.nonbon8(_receptor._core, lig._core, pl );
 
 
     //2.2) core lignd with receptor copies:
-    assert(_receptor._vregion.size() == _receptor._weights.size());
+
         
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++)
     {
@@ -383,14 +402,18 @@ dbl McopForceField::Function(const Vdouble & v)
 
 
         AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
+        std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
         std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
 
+        assert( ref_ensemble.size() == ref_denorm_weights.size());
         assert( ref_ensemble.size() == ref_weights.size());
+
+        dbl max_weight = *max_element(ref_weights.begin(), ref_weights.end());
 
         for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++)
         {
 
-            dbl& weight = ref_weights[copynb];
+            dbl& denorm_weight = ref_denorm_weights[copynb];
             AttractRigidbody& copy = ref_ensemble[copynb];
 
             AttractPairList cpl ( lig._core, copy, _cutoff );
@@ -399,8 +422,30 @@ dbl McopForceField::Function(const Vdouble & v)
 
 //             dbl e = _ff.nonbon8( lig._core, _receptor._vregion[loopregion][copy] , cpl );
             dbl e = _ff.nonbon8_forces(lig._core, copy, cpl, coreforce, copyforce);
-            enercopy += e * weight;//lig._weights[loopregion][copy];
+            //TODO : vecteur Eik 
+            enercopy += e*pow(denorm_weight, 2);//lig._denorm_weights[loopregion][copy];
 
+           
+
+
+        }
+        ener_region += max_weight*enercopy;
+
+    }
+
+
+    for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++)
+    {
+        AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
+        std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
+
+        for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++)
+        {
+            dbl& weight = ref_weights[copynb];
+            AttractRigidbody& copy = ref_ensemble[copynb];
+            std::vector<Coord3D> copyforce(copy.Size());
+            std::vector<Coord3D> coreforce(lig._core.Size());
+            
             //multiply forces by copy weight:
             for(uint i=0; i<copyforce.size(); i++)
             { copyforce[i] = weight*copyforce[i]; }
@@ -415,15 +460,9 @@ dbl McopForceField::Function(const Vdouble & v)
             assert(copy.Size()==copyforce.size());
             for(uint i=0; i<copyforce.size(); i++)
                copy.m_forces[i]+=copyforce[i];
-
-
         }
-
-
-    }
-
-    normalize_weights();
-    return ener + enercopy;
+    }   
+    return ener_core + ener_region;
 
 }
 
