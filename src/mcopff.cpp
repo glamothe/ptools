@@ -416,6 +416,7 @@ dbl McopForceField::Function(const Vdouble & v)
         {
 
             dbl& denorm_weight = ref_denorm_weights[copynb];
+            dbl& weight = ref_weights[copynb];
             AttractRigidbody& copy = ref_ensemble[copynb];
 
             AttractPairList cpl ( lig._core, copy, _cutoff );
@@ -427,28 +428,7 @@ dbl McopForceField::Function(const Vdouble & v)
             //TODO : vecteur Eik 
             enercopy += e*pow(denorm_weight, 2);//lig._denorm_weights[loopregion][copy];
 
-           
-
-
-        }
-        ener_region += max_weight*enercopy;
-
-    }
-
-
-    for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++)
-    {
-        AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
-        std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
-
-        for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++)
-        {
-            dbl& weight = ref_weights[copynb];
-            AttractRigidbody& copy = ref_ensemble[copynb];
-            std::vector<Coord3D> copyforce(copy.Size());
-            std::vector<Coord3D> coreforce(lig._core.Size());
-            
-            //multiply forces by copy weight:
+             //multiply forces by copy weight:
             for(uint i=0; i<copyforce.size(); i++)
             { copyforce[i] = weight*copyforce[i]; }
             for(uint i=0; i<coreforce.size(); i++)
@@ -463,7 +443,8 @@ dbl McopForceField::Function(const Vdouble & v)
             for(uint i=0; i<copyforce.size(); i++)
                copy.m_forces[i]+=copyforce[i];
         }
-    }   
+        ener_region += max_weight*enercopy;
+    }
     return ener_core + ener_region;
 
 }
