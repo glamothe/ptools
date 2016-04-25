@@ -368,15 +368,17 @@ dbl McopForceField::Function(const Vdouble & v)
 
     //Update the denormalized weights
     
-    uint k = 0;
+    uint svptr = 0; // stateVars 'pointer'
+    if (lig.getCore().hasrotation) svptr += 3;
+    if (lig.getCore().hastranslation) svptr += 3;
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
         assert( ref_ensemble.size() == ref_denorm_weights.size());
         AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
         std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
         for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++){
-            k++;
+            svptr += 1;
             dbl& denorm_weight = ref_denorm_weights[copynb];
-            denorm_weight += v[5+k]; // ??? += or = ???
+            denorm_weight += v[svptr]; // ??? += or = ???
         }
     }
 
