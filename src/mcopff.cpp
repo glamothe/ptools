@@ -401,7 +401,8 @@ dbl McopForceField::Function(const Vdouble & v)
 
         //calculates interaction energy between receptor copies and ligand body:
 //         std::vector<dbl> Eik;
-
+        std::vector<dbl> newvector;
+        _mcop_E.push_back(newvector);
 
         AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
         std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
@@ -425,7 +426,8 @@ dbl McopForceField::Function(const Vdouble & v)
 
 //             dbl e = _ff.nonbon8( lig._core, _receptor._vregion[loopregion][copy] , cpl );
             dbl e = _ff.nonbon8_forces(lig._core, copy, cpl, coreforce, copyforce);
-            //TODO : vecteur Eik 
+            _mcop_E[copynb].push_back(e);
+
             enercopy += e*pow(denorm_weight, 2);//lig._denorm_weights[loopregion][copy];
 
              //multiply forces by copy weight:
@@ -553,8 +555,23 @@ if (lig.getCore().hastranslation){
     svptr += 3;
 }
 
+// Calculate de weight derivative
 
-
+assert(_receptor._vregion.size() == _mcop_E.size());
+uint k = 0;
+for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
+        
+        std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
+        std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
+        std::vector<dbl>& ref_mcop_E = _mcop_E[loopregion];
+        assert(ref_weights.size() == _ref_mcop_E.size());
+        
+        dbl max_weight = *max_element(ref_weights.begin(), ref_weights.end());
+        for(uint copynb; copynb < _mcop_E[loopregion].size(); copynb++){
+            // weight derivative function
+            g[svptr + k] = 2*max_weight*ref_denorm_weights[copynb]*_ref_mcop_E[copynb];
+            k++;
+        }
 
 /*Coord3D receptortransForces; //translational forces for the receptor:
 for(uint i=0; i<_receptor._core.Size(); i++)
