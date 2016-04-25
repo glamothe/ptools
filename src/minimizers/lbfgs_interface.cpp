@@ -1,4 +1,5 @@
 #include "lbfgs_interface.h"
+#include "mcopff.h"
 
 #include <string.h>
 #include <iostream>
@@ -213,21 +214,25 @@ void Lbfgs::denormalize_weights()
 {
     if (McopForceField * p = dynamic_cast<McopForceField *>(&objToMinimize)){
         // objToMinimize is or is of type McopForceField
-        objToMinimize.denormalize_weights();
+        ForceField& r_objToMinimize = objToMinimize;
+        McopForceField& r_Mcop_objToMinimize = dynamic_cast<McopForceField&>(r_objToMinimize);
+        r_Mcop_objToMinimize.denormalize_weights();
     }
     //else
         // objToMinimize is not a McopForceField
 
-};
+}
 void Lbfgs::normalize_weights()
 {
     if (McopForceField * p = dynamic_cast<McopForceField *>(&objToMinimize)){
         // objToMinimize is or is of type McopForceField
-        objToMinimize.normalize_weights();
+        ForceField& r_objToMinimize = objToMinimize;
+        McopForceField& r_Mcop_objToMinimize = dynamic_cast<McopForceField&>(r_objToMinimize);
+        r_Mcop_objToMinimize.normalize_weights();
     }
     //else
         // objToMinimize is not a McopForceField            
-};
+}
 
 
 
