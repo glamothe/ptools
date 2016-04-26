@@ -456,6 +456,7 @@ dbl McopForceField::Function(const Vdouble & v)
 void McopForceField::Derivatives(const Vdouble& v, Vdouble & g )
 {
 
+Mcoprigid & lig = _moved_ligand;
 uint svptr = 0; // stateVars 'pointer'
 
 // calculate de rotational forces:
@@ -472,16 +473,16 @@ if (lig.getCore().hasrotation){
     g[svptr+1] = 0;
     g[svptr+2] = 0;
 
-    cs=cos(ssi);
-    cp=cos(phi);
-    ss=sin(ssi);
-    sp=sin(phi);
+    cs=cos(v[svptr+1]);
+    cp=cos(v[svptr+0]);
+    ss=sin(v[svptr+1]);
+    sp=sin(v[svptr+0]);
     cscp=cs*cp;
     cssp=cs*sp;
     sscp=ss*cp;
     sssp=ss*sp;
-    crot=cos(rot);
-    srot=sin(rot);
+    crot=cos(v[svptr+2]);
+    srot=sin(v[svptr+2]);
 
     // for the x, y and z coordinates, we need
     // the coordinates of the centered, non-translated molecule
@@ -519,10 +520,11 @@ if (lig.getCore().hasrotation){
             pm[1][2]=yar*cssp-xar*cp ;
             pm[2][2]=-yar*ss ;
 
-
-            g[svptr + 0] += pm[0][j] * pLigMoved->m_forces[atomIndex].x * max_weight;
-            g[svptr + 1] += pm[1][j] * pLigMoved->m_forces[atomIndex].y * max_weight;
-            g[svptr + 2] += pm[2][j] * pLigMoved->m_forces[atomIndex].z * max_weight;
+            for(uint j=0; j < 3; j++){
+                g[svptr + j] += pm[0][j] * pLigMoved->m_forces[atomIndex].x * max_weight;
+                g[svptr + j] += pm[1][j] * pLigMoved->m_forces[atomIndex].y * max_weight;
+                g[svptr + j] += pm[2][j] * pLigMoved->m_forces[atomIndex].z * max_weight;
+            }
         }
 
     }
@@ -561,17 +563,18 @@ assert(_receptor._vregion.size() == _mcop_E.size());
 uint k = 0;
 for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
         
-        std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
-        std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
-        std::vector<dbl>& ref_mcop_E = _mcop_E[loopregion];
-        assert(ref_weights.size() == _ref_mcop_E.size());
+    std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
+    std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
+    std::vector<dbl>& ref_mcop_E = _mcop_E[loopregion];
+    assert(ref_weights.size() == _ref_mcop_E.size());
         
-        dbl max_weight = *max_element(ref_weights.begin(), ref_weights.end());
-        for(uint copynb; copynb < _mcop_E[loopregion].size(); copynb++){
-            // weight derivative function
-            g[svptr + k] = 2*max_weight*ref_denorm_weights[copynb]*_ref_mcop_E[copynb];
-            k++;
-        }
+    dbl max_weight = *max_element(ref_weights.begin(), ref_weights.end());
+    for(uint copynb; copynb < _mcop_E[loopregion].size(); copynb++){
+        // weight derivative function
+        g[svptr + k] = 2*max_weight*ref_denorm_weights[copynb]*ref_mcop_E[copynb];
+        k++;
+    }
+}
 
 /*Coord3D receptortransForces; //translational forces for the receptor:
 for(uint i=0; i<_receptor._core.Size(); i++)

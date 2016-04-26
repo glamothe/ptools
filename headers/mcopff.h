@@ -187,7 +187,7 @@ private:
     Mcoprigid _centered_ligand ;
     Mcoprigid _moved_ligand ;
     Mcoprigid _receptor;
-    std::vecor< std::vector<dbl> > _mcop_E; //Energies
+    std::vector< std::vector<dbl> > _mcop_E; //Energies
 
 
     
