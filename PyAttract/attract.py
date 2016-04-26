@@ -391,7 +391,7 @@ for trans in translations:
             rec.setTranslation(False)
             rec.setRotation(False)
             
-            if option.regions:
+            if options.regions:
                 mcopff.setReceptor(rec)
                 mcopff.setLigand(lig)
             else:
