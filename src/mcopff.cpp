@@ -27,7 +27,7 @@ void Mcoprigid::iniWeights(){
         _weights.push_back(newvector);
         _denorm_weights.push_back(newvector);
         for(int j=0; j < _vregion[i].size(); j++){
-            dbl weight = 1/_vregion[i].size();
+            dbl weight = 1/(double)_vregion[i].size();
             _weights[i].push_back(weight);
             _denorm_weights[i].push_back(0);
         }
@@ -377,7 +377,7 @@ dbl McopForceField::Function(const Vdouble & v)
         std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
         for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++){
             dbl& denorm_weight = ref_denorm_weights[copynb];
-            denorm_weight += v[svptr]; // ??? += or = ???
+            denorm_weight = v[svptr] + 1/(double)ref_denorm_weights.size(); //delta weight + original weight 
             svptr += 1;
         }
     }
