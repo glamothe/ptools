@@ -368,7 +368,10 @@ for trans in translations:
         rotnb+=1
         print "----- Rotation nb %i -----"%rotnb
         minimcounter=0
-        ligand=AttractRigidbody(lig)
+        if options.regions:
+            ligand=AttractRigidbody(lig.getCore())
+        else:
+            ligand=AttractRigidbody(lig)
 
         center=ligand.FindCenter()
         ligand.Translate(Coord3D()-center) #set ligand center of mass to 0,0,0
