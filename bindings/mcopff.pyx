@@ -284,10 +284,12 @@ cdef class Mcoprigid:
         return self.thisptr.size()
         
         
-cdef class McopForceField:
-    cdef CppMcopForceField* thisptr
+cdef class McopForceField(ForceField):
 
     def __cinit__(self, ff, cutoff):
+        # deallocate
+        del self.thisptr
+        self.thisptr = <CppForceField*> 0
 
         cdef BaseAttractForceField old_ff
         cdef CppBaseAttractForceField c_ff
@@ -295,25 +297,30 @@ cdef class McopForceField:
     
         old_ff = <BaseAttractForceField> ff
         c_ff_ptr = <CppBaseAttractForceField*> old_ff.thisptr
-        self.thisptr = new CppMcopForceField(deref(c_ff_ptr), cutoff)
+        self.thisptr = <CppForceField*> new CppMcopForceField(deref(c_ff_ptr), cutoff)
 
 
     def __dealloc__(self):
         if self.thisptr:
             del self.thisptr
-            self.thisptr = <CppMcopForceField*> 0
+            self.thisptr = <CppForceField*> 0
 
     def getWeights(self):
-        return self.thisptr.getWeights()
+        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
+        return cpp_ptr.getWeights()
 
     def denormalize_weights(self):
-        self.thisptr.denormalize_weights()
+        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
+        cpp_ptr.denormalize_weights()
 
     def normalize_weigths(self):
-        self.thisptr.normalize_weights()
+        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
+        cpp_ptr.normalize_weights()
 
     def setReceptor(self, Mcoprigid rec):
-        self.thisptr.setReceptor(deref(rec.thisptr))
+        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
+        cpp_ptr.setReceptor(deref(rec.thisptr))
 
     def setLigand(self, Mcoprigid lig):
-        self.thisptr.setLigand(deref(lig.thisptr))
+        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
+        cpp_ptr.setLigand(deref(lig.thisptr))
