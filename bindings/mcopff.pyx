@@ -37,6 +37,7 @@ cdef extern from "mcopff.h" namespace "PTools":
         vector[vector[double]] getWeights()
         void denormalize_weights()
         void normalize_weights()
+        Coord3D FindCenter()
     cdef cppclass CppMcopForceField "PTools::McopForceField":
         CppMcopForceField(CppBaseAttractForceField&, double)
         vector[vector[double]] getWeights()
@@ -250,6 +251,9 @@ cdef class Mcoprigid:
 
     def normalize_weigths(self):
         self.thisptr.normalize_weights()
+
+    def FindCenter(self):
+        return self.FindCenter()
 
     def __len__(self):
         return self.thisptr.size()

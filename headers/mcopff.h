@@ -111,7 +111,7 @@ public:
 
     void AttractEulerRotate(const dbl& phi, const dbl& ssi, const dbl& rot);
     void Translate(const Coord3D& c);
-
+    Coord3D FindCenter(){_core.FindCenter();};
 
     void PrintWeights();
     std::vector <std::vector<dbl> > getWeights(){return _weights;};
