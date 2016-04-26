@@ -253,7 +253,13 @@ cdef class Mcoprigid:
         self.thisptr.normalize_weights()
 
     def FindCenter(self):
-        return self.FindCenter()
+        #cdef Coord3D c = Coord3D()
+        #cdef CppCoord3D cpp = self.thisptr.FindCenter()
+        #c.x = cpp.x
+        #c.y = cpp.y
+        #c.z = cpp.z
+        #return c
+        return self.getCore().FindCenter()
 
     def __len__(self):
         return self.thisptr.size()
