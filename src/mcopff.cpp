@@ -359,7 +359,7 @@ dbl McopForceField::Function(const Vdouble & v)
     Mcoprigid & lig = _moved_ligand ;
     assert(lig._vregion.size()==0);
 
-    //TODO: take into account if not rotation or no translation
+    //TODO: take into account if no rotation or no translation
     lig.AttractEulerRotate(v[0],v[1],v[2]);
     lig.Translate(Coord3D(v[3],v[4],v[5]));
 
