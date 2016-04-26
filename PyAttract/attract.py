@@ -400,7 +400,7 @@ for trans in translations:
             rstk=minim['rstk']  #restraint force
             #if rstk>0.0:
                 #forcefield.SetRestraint(rstk)
-            if option.regions:
+            if options.regions:
                 lbfgs_minimizer=Lbfgs(mcopff)
                 lbfgs_minimizer.minimize(niter)
                 lbfgs_minimizer.normalize_weights()
