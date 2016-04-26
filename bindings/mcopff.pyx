@@ -48,6 +48,8 @@ cdef extern from "mcopff.h" namespace "PTools":
         vector[vector[double]] getWeights()
         void denormalize_weights()
         void normalize_weights()
+        void setReceptor(CppMcoprigid&)
+        void setLigand(CppMcoprigid&)
 
 
 cdef class Mcop:
@@ -309,3 +311,9 @@ cdef class McopForceField:
 
     def normalize_weigths(self):
         self.thisptr.normalize_weights()
+
+    def setReceptor(self, Mcoprigid rec):
+        self.thisptr.setReceptor(deref(rec.thisptr))
+
+    def setLigand(self, Mcoprigid lig):
+        self.thisptr.setLigand(deref(lig.thisptr))
