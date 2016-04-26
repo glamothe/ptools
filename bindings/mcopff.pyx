@@ -38,6 +38,11 @@ cdef extern from "mcopff.h" namespace "PTools":
         void denormalize_weights()
         void normalize_weights()
         Coord3D FindCenter()
+        void setTranslation(int)
+        void setRotation(int)
+        void Translate(CppCoord3D&)
+        void AttractEulerRotate(double, double, double)
+
     cdef cppclass CppMcopForceField "PTools::McopForceField":
         CppMcopForceField(CppBaseAttractForceField&, double)
         vector[vector[double]] getWeights()
@@ -260,6 +265,18 @@ cdef class Mcoprigid:
         #c.z = cpp.z
         #return c
         return self.getCore().FindCenter()
+
+    def setTranslation(self, flag):
+        self.thisptr.setTranslation(flag)
+
+    def setRotation(self, flag):
+        self.thisptr.setRotation(flag)
+
+    def AttractEulerRotate(self, double phi, double ssi, double rot):
+        self.thisptr.AttractEulerRotate(phi, ssi, rot)
+
+    def Translate(self, Coord3D tr):
+        self.thisptr.Translate(deref(tr.thisptr))
 
     def __len__(self):
         return self.thisptr.size()
