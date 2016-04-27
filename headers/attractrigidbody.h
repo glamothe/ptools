@@ -57,7 +57,6 @@ public:
     };
 
     virtual bool isAtomActive(uint i) const {
-
        uint atomtype = this->m_atomTypeNumber[i];
        for(uint j=0; j<m_dummytypes.size(); j++)
          if(m_dummytypes[j]==atomtype)
@@ -86,6 +85,9 @@ public:
     bool operator==(const AttractRigidbody& at) {return false;}; //don't use it, needed to expose vector<AttractRigidobdy> to python by boost::vector indexing suite. 
 
     void updateActiveList();
+
+    void AddAtom(const Atom& at);
+    void AddAtom(const Atomproperty& at, Coord3D co);
 
 private:
 
