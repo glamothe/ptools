@@ -21,13 +21,14 @@ Mcoprigid::Mcoprigid(std::string filename){
     
 }
 
+// Normalized weight initialized at 1/(number of copies) and denormalized weights initialized at 0.
 void Mcoprigid::iniWeights(){
     for(int i=0; i < _vregion.size(); i++){
         std::vector<dbl> newvector;
         _weights.push_back(newvector);
         _denorm_weights.push_back(newvector);
         for(int j=0; j < _vregion[i].size(); j++){
-            dbl weight = 1/(double)_vregion[i].size();
+            dbl weight = 1.0/(double)_vregion[i].size();
             _weights[i].push_back(weight);
             _denorm_weights[i].push_back(0);
         }
@@ -331,8 +332,8 @@ uint McopForceField::ProblemSize()
     uint size = 0;
     if (_centered_ligand.getCore().hastranslation) size += 3;
     if (_centered_ligand.getCore().hasrotation) size += 3;
-    for(uint i=0; i<_centered_ligand.getWeights().size(); i++){
-        size += _centered_ligand.getWeights()[i].size();
+    for(uint i=0; i<_receptor.getWeights().size(); i++){
+        size += _receptor.getWeights()[i].size();
     }
     return size;
 }
@@ -362,7 +363,6 @@ dbl McopForceField::Function(const Vdouble & v)
     //TODO: take into account if no rotation or no translation
     lig.AttractEulerRotate(v[0],v[1],v[2]);
     lig.Translate(Coord3D(v[3],v[4],v[5]));
-
     assert(_receptor._vregion.size() == _receptor._weights.size());
     assert(_receptor._vregion.size() == _receptor._denorm_weights.size());
 
@@ -377,21 +377,20 @@ dbl McopForceField::Function(const Vdouble & v)
         std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
         for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++){
             dbl& denorm_weight = ref_denorm_weights[copynb];
-            denorm_weight = v[svptr] + 1/(double)ref_denorm_weights.size(); //delta weight + original weight 
+            denorm_weight = v[svptr] + 1.0/ref_denorm_weights.size(); //delta weight + original weight 
             svptr += 1;
         }
     }
 
     normalize_weights();
-
 //2) calculates the energy
 
 
     //2.1) core ligand body with core receptor
-
-    AttractPairList pl (_receptor._core,   lig._core, _cutoff );
+    AttractPairList pl (_receptor._core, lig._core, _cutoff );
+    std::cout  << "AttractPairList" << std::endl;
     ener_core += _ff.nonbon8(_receptor._core, lig._core, pl );
-
+    std::cout  << "nonbon8" << std::endl;
 
     //2.2) core lignd with receptor copies:
 
