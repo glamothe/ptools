@@ -269,6 +269,15 @@ AttractMcop::AttractMcop(const Mcop& mcop){
 ///////////////////////////////////////////////////
 
 
+void McopForceField::ini_energies(){
+    for(int i=0; i < _receptor.getRegions().size(); i++){
+        std::vector<dbl> newvector;
+        _mcop_E.push_back(newvector);
+        for(int j=0; j < _receptor.getRegions()[i].size(); j++){
+            _mcop_E[i].push_back(0);
+        }
+    }
+}
 
 void McopForceField::calculate_weights(Mcoprigid& lig, bool print)
 {
@@ -388,9 +397,7 @@ dbl McopForceField::Function(const Vdouble & v)
 
     //2.1) core ligand body with core receptor
     AttractPairList pl (_receptor._core, lig._core, _cutoff );
-    std::cout  << "AttractPairList" << std::endl;
     ener_core += _ff.nonbon8(_receptor._core, lig._core, pl );
-    std::cout  << "nonbon8" << std::endl;
 
     //2.2) core lignd with receptor copies:
 
@@ -400,8 +407,6 @@ dbl McopForceField::Function(const Vdouble & v)
 
         //calculates interaction energy between receptor copies and ligand body:
 //         std::vector<dbl> Eik;
-        std::vector<dbl> newvector;
-        _mcop_E.push_back(newvector);
 
         AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
         std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
@@ -425,10 +430,9 @@ dbl McopForceField::Function(const Vdouble & v)
 
 //             dbl e = _ff.nonbon8( lig._core, _receptor._vregion[loopregion][copy] , cpl );
             dbl e = _ff.nonbon8_forces(lig._core, copy, cpl, coreforce, copyforce);
-            _mcop_E[copynb].push_back(e);
+            _mcop_E[loopregion][copynb] = e;
 
             enercopy += e*pow(denorm_weight, 2);//lig._denorm_weights[loopregion][copy];
-
              //multiply forces by copy weight:
             for(uint i=0; i<copyforce.size(); i++)
             { copyforce[i] = pow(denorm_weight,2)*copyforce[i]; }

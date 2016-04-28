@@ -124,6 +124,7 @@ public:
     uint line_to_copy_number(std::string line);
     
     AttractRigidbody& getCore(){return _core;};
+    std::vector<AttractMcop>& getRegions(){return _vregion;};
     AttractMcop& getRegion(int i){return _vregion[i];};
     size_t size() const {return _vregion.size();};
 
@@ -159,14 +160,14 @@ public:
 
     McopForceField(BaseAttractForceField& ff, dbl cutoff)
             :_ff(ff), _cutoff(cutoff) {};
-
+    void ini_energies();
 
     dbl Function(const Vdouble&);
     void Derivatives(const Vdouble& v, Vdouble & g );
 
 
-    void setReceptor(const Mcoprigid& rec) {_receptor = rec;};
-    void setLigand(const Mcoprigid& lig) { _centered_ligand = lig;  };
+    void setReceptor(const Mcoprigid& rec) {_receptor = rec; ini_energies();};
+    void setLigand(const Mcoprigid& lig) { _centered_ligand = lig;};
 
     void calculate_weights(Mcoprigid& lig, bool print=false);
 
