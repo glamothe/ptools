@@ -47,5 +47,5 @@ cdef class Lbfgs:
     def denormalize_weights(self):
         self.thisptr.denormalize_weights()
 
-    def normalize_weigths(self):
+    def normalize_weights(self):
         self.thisptr.normalize_weights()
