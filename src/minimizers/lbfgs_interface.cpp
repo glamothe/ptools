@@ -72,17 +72,14 @@ inline std::vector<double> todbl(std::vector<surreal> & vcplx)
 
 void Lbfgs::minimize(int maxiter)
 {
-
     int n = objToMinimize.ProblemSize();
     std::cout  << "number of free variables for the minimizer: " << n << std::endl;
-
-
     std::vector<double> l(n);
     std::vector<double> u(n);
     Vint nbd(n);
-
     x.resize(n);
     g.resize(n);
+
 
     for (int i=0;i<n; i++)
     {
@@ -94,14 +91,12 @@ void Lbfgs::minimize(int maxiter)
     }  //unconstrained problem
 
 
-
     int rc;
 
     int m = 5;
 
     m_opt = lbfgsb_create(n, m, &l[0], &u[0], &nbd[0]);
     assert(m_opt);
-
 
     m_opt->iprint=-1;
 
@@ -167,10 +162,8 @@ void Lbfgs::minimize(int maxiter)
             tocplx(x,vdblx);
             std::vector<dbl> vdblg;
             tocplx(g,vdblg);
-
             f = objToMinimize.Function(vdblx);
             objToMinimize.Derivatives(vdblx,vdblg);
-
             g=todbl(vdblg);
 
 //                 std::cout << "analytical derivatives: \n";
