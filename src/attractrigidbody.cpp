@@ -103,6 +103,7 @@ void AttractRigidbody::AddAtom(const Atomproperty& at, Coord3D co)
     iss >> atcategory >> atcharge ;
     m_atomTypeNumber.push_back(atcategory-1);  // -1 to directly use the atomTypeNumber into C-array
     m_charge.push_back(atcharge);
+    m_forces.push_back(Coord3D());
 }
 
 } //namespace PTools
