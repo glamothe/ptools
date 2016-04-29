@@ -32,8 +32,8 @@ void Mcoprigid::iniWeights(){
             _weights[i].push_back(weight);
             _denorm_weights[i].push_back(0);
         }
-        denormalize_weights();
     }
+    denormalize_weights();
 }
 
 void Mcoprigid::setCore(AttractRigidbody& core) {
@@ -367,6 +367,7 @@ dbl McopForceField::Function(const Vdouble & v)
 
     Mcoprigid & lig = _moved_ligand ;
     assert(lig._vregion.size()==0);
+    //std::vector< std::vector<dbl> > weights;
 
     //TODO: take into account if no rotation or no translation
     lig.AttractEulerRotate(v[0],v[1],v[2]);
@@ -379,18 +380,20 @@ dbl McopForceField::Function(const Vdouble & v)
     uint svptr = 0; // stateVars 'pointer'
     if (lig.getCore().hasrotation) svptr += 3;
     if (lig.getCore().hastranslation) svptr += 3;
+    std::vector< std::vector<dbl> > denorm_weights = _receptor._denorm_weights;
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
         assert( ref_ensemble.size() == ref_denorm_weights.size());
         AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
-        std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
+        std::vector<dbl> & denorm_weights_loop  = denorm_weights[loopregion];
         for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++){
-            dbl& denorm_weight = ref_denorm_weights[copynb];
-            denorm_weight = v[svptr] + 1.0/ref_denorm_weights.size(); //delta weight + original weight 
+            dbl & denorm_weight = denorm_weights_loop[copynb];
+            denorm_weight = v[svptr] + denorm_weight; //delta weight + original weight 
             svptr += 1;
         }
     }
 
     normalize_weights();
+    std::vector< std::vector<dbl> > weights = _receptor._weights;
 //2) calculates the energy
 
 
@@ -409,19 +412,18 @@ dbl McopForceField::Function(const Vdouble & v)
 
         dbl enercopy =0.0;
         AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
-        std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
-        std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
+        std::vector<dbl>& denorm_weights_loop = denorm_weights[loopregion];
+        std::vector<dbl>& weights_loop = weights[loopregion];
 
-        assert( ref_ensemble.size() == ref_denorm_weights.size());
-        assert( ref_ensemble.size() == ref_weights.size());
+        assert( ref_ensemble.size() == denorm_weights_loop.size());
+        assert( ref_ensemble.size() == weights_loop.size());
 
-        dbl max_weight = *max_element(ref_weights.begin(), ref_weights.end());
+        dbl max_weight = *max_element(weights_loop.begin(), weights_loop.end());
 
         for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++)
         {
 
-            dbl& denorm_weight = ref_denorm_weights[copynb];
-            //dbl& weight = ref_weights[copynb];
+            dbl& denorm_weight = denorm_weights_loop[copynb];
             AttractRigidbody& copy = ref_ensemble[copynb];
 
             AttractPairList cpl ( lig._core, copy, _cutoff );
@@ -451,6 +453,8 @@ dbl McopForceField::Function(const Vdouble & v)
 
         ener_region += max_weight*enercopy;
     }
+    _receptor._buffer_weights = weights;
+    _receptor._buffer_denorm_weights = denorm_weights;
     return ener_core + ener_region;
 
 }
@@ -531,7 +535,7 @@ if (lig.getCore().hasrotation){
 
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
         
-        std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
+        std::vector<dbl>& ref_weights = _receptor._buffer_weights[loopregion];
         dbl max_weight = *max_element(ref_weights.begin(), ref_weights.end());
 
         for (uint i=0; i< pLigCentered->m_activeAtoms.size(); i++)
@@ -578,7 +582,7 @@ if (lig.getCore().hastranslation){
 
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
         
-        std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
+        std::vector<dbl>& ref_weights = _receptor._buffer_weights[loopregion];
         dbl max_weight = *max_element(ref_weights.begin(), ref_weights.end());
         Coord3D ligtransForces; //translational forces for the ligand from loopregion
         
@@ -600,10 +604,10 @@ assert(_receptor._vregion.size() == _mcop_E.size());
 uint k = 0;
 for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
         
-    std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
-    std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
+    std::vector<dbl>& ref_weights = _receptor._buffer_weights[loopregion];
+    std::vector<dbl>& ref_denorm_weights = _receptor._buffer_denorm_weights[loopregion];
     std::vector<dbl>& ref_mcop_E = _mcop_E[loopregion];
-    assert(ref_weights.size() == _ref_mcop_E.size());
+    assert(ref_weights.size() == ref_mcop_E.size());
         
     dbl max_weight = *max_element(ref_weights.begin(), ref_weights.end());
     for(uint copynb; copynb < _mcop_E[loopregion].size(); copynb++){

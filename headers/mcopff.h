@@ -141,6 +141,9 @@ private:
 
     std::vector< std::vector <dbl> > _weights;
     std::vector< std::vector <dbl> > _denorm_weights;
+    std::vector< std::vector <dbl> > _buffer_weights;
+    std::vector< std::vector <dbl> > _buffer_denorm_weights;
+
 
     friend class McopForceField;
 
