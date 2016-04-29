@@ -23,11 +23,11 @@ Mcoprigid::Mcoprigid(std::string filename){
 
 // Normalized weight initialized at 1/(number of copies) and denormalized weights initialized at 0.
 void Mcoprigid::iniWeights(){
-    for(int i=0; i < _vregion.size(); i++){
+    for(uint i=0; i < _vregion.size(); i++){
         std::vector<dbl> newvector;
         _weights.push_back(newvector);
         _denorm_weights.push_back(newvector);
-        for(int j=0; j < _vregion[i].size(); j++){
+        for(uint j=0; j < _vregion[i].size(); j++){
             dbl weight = 1.0/(double)_vregion[i].size();
             _weights[i].push_back(weight);
             _denorm_weights[i].push_back(0);
@@ -154,9 +154,9 @@ uint Mcoprigid::line_to_copy_number(std::string line){
 }
 
 void Mcoprigid::denormalize_weights(){
-    for(uint i; i < _weights.size(); i++){
+    for(uint i=0; i < _weights.size(); i++){
         dbl max_weight = *max_element(_weights[i].begin(), _weights[i].end());
-        for(uint j; j < _weights[i].size(); j++){
+        for(uint j=0; j < _weights[i].size(); j++){
             _denorm_weights[i][j] = sqrt(_weights[i][j]/max_weight);
         }
     }
@@ -164,12 +164,12 @@ void Mcoprigid::denormalize_weights(){
 
 void Mcoprigid::normalize_weights(){
 
-    for(uint i; i < _denorm_weights.size(); i++){
+    for(uint i=0; i < _denorm_weights.size(); i++){
         dbl sum_squared_denorm_weights = 0;
-        for(uint j; j < _denorm_weights[i].size(); j++){
+        for(uint j=0; j < _denorm_weights[i].size(); j++){
             sum_squared_denorm_weights += pow(_denorm_weights[i][j], 2);
         }
-        for(uint j; j < _denorm_weights[i].size(); j++){
+        for(uint j=0; j < _denorm_weights[i].size(); j++){
             _weights[i][j] = pow(_denorm_weights[i][j], 2)/sum_squared_denorm_weights;
         }
     }
@@ -177,8 +177,8 @@ void Mcoprigid::normalize_weights(){
 
 void Mcoprigid::updateWeights(const std::vector<dbl>& v, int svptr){
     //svptr: state variable "pointer"
-    for (uint loopregion=0; loopregion < _vregion.size() ; loopregion++){
-        for (uint copynb = 0; copynb < _vregion[loopregion].size(); copynb++){
+    for(uint loopregion=0; loopregion < _vregion.size() ; loopregion++){
+        for(uint copynb = 0; copynb < _vregion[loopregion].size(); copynb++){
             dbl & d_w = _denorm_weights[loopregion][copynb];
             d_w = v[svptr] + d_w; //delta weight + original weight 
             svptr += 1;
@@ -254,7 +254,7 @@ bool Mcop::isNewModel(const std::string & line){
 AttractMcop::AttractMcop(std::string filename){
     
     Mcop copies(filename);
-    for(int i=0; i < copies.size(); i++){
+    for(uint i=0; i < copies.size(); i++){
         Rigidbody copy = copies.getCopy(i);
         AttractRigidbody attcopy = AttractRigidbody(copy);
         attract_copies.push_back(attcopy);
@@ -265,7 +265,7 @@ AttractMcop::AttractMcop(std::string filename){
 AttractMcop::AttractMcop(const Mcop& mcop){
     
     Mcop copies = mcop;
-    for(int i=0; i < copies.size(); i++){
+    for(uint i=0; i < copies.size(); i++){
         Rigidbody copy = copies.getCopy(i);
         AttractRigidbody attcopy = AttractRigidbody(copy);
         attract_copies.push_back(attcopy);
@@ -282,10 +282,10 @@ AttractMcop::AttractMcop(const Mcop& mcop){
 
 
 void McopForceField::ini_energies(){
-    for(int i=0; i < _receptor.getRegions().size(); i++){
+    for(uint i=0; i < _receptor.getRegions().size(); i++){
         std::vector<dbl> newvector;
         _mcop_E.push_back(newvector);
-        for(int j=0; j < _receptor.getRegions()[i].size(); j++){
+        for(uint j=0; j < _receptor.getRegions()[i].size(); j++){
             _mcop_E[i].push_back(0);
         }
     }
@@ -399,7 +399,7 @@ dbl McopForceField::Function(const Vdouble & v)
         std::vector<dbl> & denorm_weights_loop  = denorm_weights[loopregion];
         for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++){
             dbl & denorm_weight = denorm_weights_loop[copynb];
-            denorm_weight = v[svptr] + denorm_weight; //delta weight + original weight 
+            denorm_weight = v[svptr] + denorm_weight; //delta weight + original weight
             svptr += 1;
         }
     }
@@ -455,7 +455,7 @@ dbl McopForceField::Function(const Vdouble & v)
 
             //add force to ligand and receptor copy
             assert(lig._core.Size() == coreforce.size());
-            for (uint i=0; i<lig._core.Size(); i++)
+            for(uint i=0; i<lig._core.Size(); i++)
                lig._core.m_forces[i]+=coreforce[i];
 
             assert(copy.Size()==copyforce.size());
@@ -622,7 +622,7 @@ for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
     assert(ref_weights.size() == ref_mcop_E.size());
         
     dbl max_weight = *max_element(ref_weights.begin(), ref_weights.end());
-    for(uint copynb; copynb < _mcop_E[loopregion].size(); copynb++){
+    for(uint copynb=0; copynb < _mcop_E[loopregion].size(); copynb++){
         // weight derivative function
         g[svptr + k] = 2*max_weight*ref_denorm_weights[copynb]*ref_mcop_E[copynb];
         k++;
