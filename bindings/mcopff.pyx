@@ -1,5 +1,6 @@
 from cython.operator cimport dereference as deref
 from libcpp.string cimport string
+from cpython cimport bool
 
 cdef extern from "<sstream>" namespace "std":
     cdef cppclass stringstream:
@@ -35,11 +36,14 @@ cdef extern from "mcopff.h" namespace "PTools":
         unsigned int size()
         void setCore(CppAttractRigidbody&)
         vector[vector[double]] getWeights()
+        void updateWeights(vector[double], int)
         void denormalize_weights()
         void normalize_weights()
         Coord3D FindCenter()
         void setTranslation(int)
         void setRotation(int)
+        bool checkTranslation()
+        bool checkRotation()
         void Translate(CppCoord3D&)
         void AttractEulerRotate(double, double, double)
 
@@ -255,6 +259,9 @@ cdef class Mcoprigid:
     def getWeights(self):
         return self.thisptr.getWeights()
 
+    def updateWeights(self, vector[double] v, int svptr):
+        self.thisptr.updateWeights(v, svptr)
+
     def denormalize_weights(self):
         self.thisptr.denormalize_weights()
 
@@ -275,6 +282,12 @@ cdef class Mcoprigid:
 
     def setRotation(self, flag):
         self.thisptr.setRotation(flag)
+
+    def checkTranslation(self):
+        return self.thisptr.checkTranslation()
+
+    def checkRotation(self):
+        return self.thisptr.checkRotation();
 
     def AttractEulerRotate(self, double phi, double ssi, double rot):
         self.thisptr.AttractEulerRotate(phi, ssi, rot)

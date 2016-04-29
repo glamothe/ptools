@@ -117,6 +117,7 @@ public:
     std::vector <std::vector<dbl> > getWeights(){return _weights;};
     void denormalize_weights();
     void normalize_weights();
+    void updateWeights(const std::vector<dbl>& v, int svptr);
     
     void ReadMcoprigidPDB(const std::string name);
     void ReadMcoprigidPDB(std::istream& file, AttractRigidbody& core, std::vector<AttractMcop>& regions);
@@ -130,6 +131,8 @@ public:
 
     virtual void setRotation(bool value) {_core.setRotation(value);}; ///< allow/disallow rotation
     virtual void setTranslation(bool value) {_core.setTranslation(value);}; ///< allow/disallow translation
+    bool checkRotation(){return _core.checkRotation();};
+    bool checkTranslation(){return _core.checkTranslation();};
 
 private:
 
@@ -139,10 +142,10 @@ private:
     bool _complete ;
     Coord3D _center ; ///<center of mass of the core region
 
-    std::vector< std::vector <dbl> > _weights;
-    std::vector< std::vector <dbl> > _denorm_weights;
-    std::vector< std::vector <dbl> > _buffer_weights;
-    std::vector< std::vector <dbl> > _buffer_denorm_weights;
+    std::vector< std::vector<dbl> > _weights;
+    std::vector< std::vector<dbl> > _denorm_weights;
+    std::vector< std::vector<dbl> > _buffer_weights;
+    std::vector< std::vector<dbl> > _buffer_denorm_weights;
 
 
     friend class McopForceField;

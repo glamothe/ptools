@@ -79,6 +79,8 @@ public:
 
     virtual void setRotation(bool value) {hasrotation  = value;} ///< allow/disallow rotation
     virtual void setTranslation(bool value) {hastranslation = value;} ///< allow/disallow translation
+    bool checkRotation(){return hasrotation;};
+    bool checkTranslation(){return hastranslation;};
 
     void setDummyTypes(const std::vector<uint>& dummy); ///< set a list of ignored atom types
 

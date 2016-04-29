@@ -175,6 +175,18 @@ void Mcoprigid::normalize_weights(){
     }
 }
 
+void Mcoprigid::updateWeights(const std::vector<dbl>& v, int svptr){
+    //svptr: state variable "pointer"
+    for (uint loopregion=0; loopregion < _vregion.size() ; loopregion++){
+        for (uint copynb = 0; copynb < _vregion[loopregion].size(); copynb++){
+            dbl & d_w = _denorm_weights[loopregion][copynb];
+            d_w = v[svptr] + d_w; //delta weight + original weight 
+            svptr += 1;
+        }
+    }
+    normalize_weights();
+}
+
 
 /////////////////// -- Class Mcop -- ////////////////////
 
