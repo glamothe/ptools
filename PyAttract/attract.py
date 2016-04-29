@@ -31,6 +31,18 @@ def PrintVect(vect):
         print vect[i], " | ",
     print ''
 
+def printWeights(w):
+    print "### WEIGHTS BEGIN"
+    for region in xrange(0, len(w)):
+        sum = 0
+        print "###       Start Region %d" %(region+1)
+        for copy in xrange(0, len(w[region])):
+            sum += w[region][copy]
+            print "WEIGHT    REGION %d COPY %d = %f" %(region+1, copy+1, w[region][copy])
+        print "WEIGHT    SUM OF WEIGHTS = %f" %sum
+        print "###       End Region %d" %(region+1)
+    print "### WEIGHTS END"
+
 
 
 class Rotation:
@@ -367,8 +379,10 @@ for trans in translations:
         minimcounter=0
         if options.regions:
             ligand=Mcoprigid(lig)
+            receptor=Mcoprigid(rec)
         else:
             ligand=AttractRigidbody(lig)
+            receptor=AttractRigidbody(rec)
 
         center=ligand.FindCenter()
         ligand.Translate(Coord3D()-center) #set ligand center of mass to 0,0,0
@@ -386,26 +400,22 @@ for trans in translations:
             forcefield=ff_specs['ff_class'](ff_specs['ff_file'], surreal(cutoff)   )
             if options.regions: 
                 mcopff = McopForceField(forcefield, surreal(cutoff))
-            rec.setTranslation(False)
-            rec.setRotation(False)
+            receptor.setTranslation(False)
+            receptor.setRotation(False)
             
             if options.regions:
-                mcopff.setReceptor(rec)
-                mcopff.setLigand(lig)
+                mcopff.setReceptor(receptor)
+                mcopff.setLigand(ligand)
             else:
-                forcefield.AddLigand(rec)
+                forcefield.AddLigand(receptor)
                 forcefield.AddLigand(ligand)
             rstk=minim['rstk']  #restraint force
             #if rstk>0.0:
                 #forcefield.SetRestraint(rstk)
             if options.regions:
-                print "debug"
                 lbfgs_minimizer=Lbfgs(mcopff)
-                print "debug2"
                 lbfgs_minimizer.minimize(niter)
-                print "debug3"
                 lbfgs_minimizer.normalize_weights()
-                print "debug4"
             else :
                 lbfgs_minimizer=ff_specs['minimizer_class'](forcefield)
                 lbfgs_minimizer.minimize(niter)
@@ -416,8 +426,10 @@ for trans in translations:
             #TODO: test and use CenterToOrigin() !
             if options.regions:
                 output=Mcoprigid(ligand)
+                receptor.updateWeights(X, svptr=6)
             else:
                 output=AttractRigidbody(ligand)
+
             center=output.FindCenter()
             output.Translate(Coord3D()-center)
             output.AttractEulerRotate(surreal(X[0]), surreal(X[1]), surreal(X[2]))
@@ -450,11 +462,12 @@ for trans in translations:
         forcefield=ff_specs['ff_class'](ff_specs['ff_file'],  surreal(500))
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
         if options.regions:
-            print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, mcopff.CalcEnergy(rec,ligand,forcefield,500), str(rms))
+            print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, mcopff.CalcEnergy(receptor,ligand,forcefield,500), str(rms))
             output.getCore().PrintMatrix() #getCore because PrintMatrix works on AttractRigidy and not Mcoprigid
+            printWeights(receptor.getWeights())
         else:
-            pl = AttractPairList(rec, ligand,surreal(500))
-            print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
+            pl = AttractPairList(receptor, ligand,surreal(500))
+            print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(receptor,ligand,pl), str(rms))
             output.PrintMatrix()
 
 
