@@ -215,6 +215,7 @@ void Lbfgs::denormalize_weights()
         // objToMinimize is not a McopForceField
 
 }
+
 void Lbfgs::normalize_weights()
 {
     if (McopForceField * p = dynamic_cast<McopForceField *>(&objToMinimize)){
@@ -227,6 +228,16 @@ void Lbfgs::normalize_weights()
         // objToMinimize is not a McopForceField            
 }
 
+std::vector< std::vector<dbl> > Lbfgs::getWeights(){
+    if (McopForceField * p = dynamic_cast<McopForceField *>(&objToMinimize)){
+        // objToMinimize is or is of type McopForceField
+        ForceField& r_objToMinimize = objToMinimize;
+        McopForceField& r_Mcop_objToMinimize = dynamic_cast<McopForceField&>(r_objToMinimize);
+        r_Mcop_objToMinimize.getWeights();
+    }
+    //else
+        // objToMinimize is not a McopForceField
+}
 
 
 

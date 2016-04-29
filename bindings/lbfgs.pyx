@@ -10,6 +10,7 @@ cdef extern from "lbfgs_interface.h" namespace "PTools":
         int GetNumberIter()
         void denormalize_weights()
         void normalize_weights()
+        vector[vector[double]] getWeights()
 
 cdef class Lbfgs:
     
@@ -49,3 +50,6 @@ cdef class Lbfgs:
 
     def normalize_weights(self):
         self.thisptr.normalize_weights()
+
+    def getWeights(self):
+        self.thisptr.getWeights()

@@ -29,6 +29,8 @@ class Lbfgs
             int GetNumberIter() {return m_opt->niter;}
             void denormalize_weights();
             void normalize_weights();
+            std::vector< std::vector<dbl> > getWeights();
+
 
 
 
