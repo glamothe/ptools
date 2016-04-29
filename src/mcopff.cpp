@@ -360,7 +360,6 @@ dbl McopForceField::Function(const Vdouble & v)
 
     dbl ener_region = 0.0 ;
     dbl ener_core = 0.0 ;
-    dbl enercopy =0.0;
 
 // 1) put the objects to the right place
 
@@ -408,6 +407,7 @@ dbl McopForceField::Function(const Vdouble & v)
         //calculates interaction energy between receptor copies and ligand body:
 //         std::vector<dbl> Eik;
 
+        dbl enercopy =0.0;
         AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
         std::vector<dbl>& ref_denorm_weights = _receptor._denorm_weights[loopregion];
         std::vector<dbl>& ref_weights = _receptor._weights[loopregion];
@@ -453,6 +453,40 @@ dbl McopForceField::Function(const Vdouble & v)
     }
     return ener_core + ener_region;
 
+}
+
+// To calculation interaction energy between an Mcoprigid receptor with variable region(s) 
+// and an Mcoprigid ligand without variable regions.
+// Uses the receptor's normalized weights and a given forcefeild and cutoff. 
+dbl McopForceField::CalcEnergy(Mcoprigid & receptor, Mcoprigid & ligand, BaseAttractForceField & ff, dbl cutoff){
+
+    dbl ener_region = 0.0 ;
+    dbl ener_core = 0.0 ;
+
+    AttractPairList pl (receptor._core, ligand._core, cutoff );
+    ener_core += ff.nonbon8(receptor._core, ligand._core, pl );
+
+    //calculates interaction energy between receptor copies and ligand body:
+    for(uint loopregion=0; loopregion < receptor.getRegions().size(); loopregion++){
+        
+        dbl enercopy =0.0;
+        
+        for(uint copynb=0; copynb < receptor.getRegion(loopregion).size(); copynb++){
+            
+            dbl weight = receptor.getWeights()[loopregion][copynb];
+            AttractRigidbody& copy = receptor.getRegion(loopregion).getCopy(copynb);
+            AttractPairList cpl (ligand._core, copy, cutoff);
+
+            std::vector<Coord3D> copyforce(copy.Size());
+            std::vector<Coord3D> coreforce(ligand._core.Size());
+            
+            dbl e = ff.nonbon8_forces(ligand._core, copy, cpl, coreforce, copyforce);
+            enercopy += e*weight;
+        }
+        
+        ener_region += enercopy;
+    }
+    return ener_core + ener_region;
 }
 
 

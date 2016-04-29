@@ -11,8 +11,6 @@ import string
 import bz2  #for compression of Ligand and receptor data
 import base64 #compressed ligand and receptor as base64 strings
 
-
-
 def surreal(i):
     return i
 
@@ -195,7 +193,6 @@ parser.add_option("--start1", action="store_true", default=False, dest="start1",
 parser.add_option("--mcop", action="store_true", default=False, dest="regions", help="mcop option for multi-copy rigid-body docking")
 (options, args) = parser.parse_args()
 
-
 #receptor_name=args[0]
 #ligand_name=args[1]
 
@@ -288,7 +285,6 @@ checkFile(ff_specs['ff_file'], "forcefield file is required.")
 
 
 
-
 #load receptor and ligand:
 if options.regions:
     rec=Mcoprigid(options.receptor_name)
@@ -300,6 +296,7 @@ else:
     rec=AttractRigidbody(rec)
     lig=Rigidbody(options.ligand_name)
     lig=AttractRigidbody(lig)
+# TODO: Redo message for mcop
 print "Reading receptor (fixed): %s with %d particules" %( options.receptor_name, len(rec) )
 print "Reading  ligand (mobile): %s with %d particules" %( options.ligand_name,   len(lig) )
 
@@ -369,7 +366,7 @@ for trans in translations:
         print "----- Rotation nb %i -----"%rotnb
         minimcounter=0
         if options.regions:
-            ligand=AttractRigidbody(lig.getCore())
+            ligand=Mcoprigid(lig)
         else:
             ligand=AttractRigidbody(lig)
 
@@ -387,7 +384,8 @@ for trans in translations:
 
             #performs single minimization on receptor and ligand, given maxiter=niter and restraint constant rstk
             forcefield=ff_specs['ff_class'](ff_specs['ff_file'], surreal(cutoff)   )
-            mcopff = McopForceField(forcefield, surreal(cutoff))
+            if options.regions: 
+                mcopff = McopForceField(forcefield, surreal(cutoff))
             rec.setTranslation(False)
             rec.setRotation(False)
             
@@ -401,9 +399,13 @@ for trans in translations:
             #if rstk>0.0:
                 #forcefield.SetRestraint(rstk)
             if options.regions:
+                print "debug"
                 lbfgs_minimizer=Lbfgs(mcopff)
+                print "debug2"
                 lbfgs_minimizer.minimize(niter)
+                print "debug3"
                 lbfgs_minimizer.normalize_weights()
+                print "debug4"
             else :
                 lbfgs_minimizer=ff_specs['minimizer_class'](forcefield)
                 lbfgs_minimizer.minimize(niter)
@@ -412,14 +414,20 @@ for trans in translations:
 
 
             #TODO: test and use CenterToOrigin() !
-            output=AttractRigidbody(ligand)
+            if options.regions:
+                output=Mcoprigid(ligand)
+            else:
+                output=AttractRigidbody(ligand)
             center=output.FindCenter()
             output.Translate(Coord3D()-center)
             output.AttractEulerRotate(surreal(X[0]), surreal(X[1]), surreal(X[2]))
             output.Translate(Coord3D(surreal(X[3]),surreal(X[4]),surreal(X[5])))
             output.Translate(center)
 
-            ligand=AttractRigidbody(output)
+            if options.regions:
+                ligand=Mcoprigid(output)
+            else:
+                ligand=AttractRigidbody(output)
             if (options.single):
                 ntraj=lbfgs_minimizer.GetNumberIter()
                 for iteration in range(ntraj):
@@ -441,9 +449,13 @@ for trans in translations:
         #with the new ligand position
         forcefield=ff_specs['ff_class'](ff_specs['ff_file'],  surreal(500))
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
-        pl = AttractPairList(rec, ligand,surreal(500))
-        print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
-        output.PrintMatrix()
+        if options.regions:
+            print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, mcopff.CalcEnergy(rec,ligand,forcefield,500), str(rms))
+            output.getCore().PrintMatrix() #getCore because PrintMatrix works on AttractRigidy and not Mcoprigid
+        else:
+            pl = AttractPairList(rec, ligand,surreal(500))
+            print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(rec,ligand,pl), str(rms))
+            output.PrintMatrix()
 
 
 #output compressed ligand and receptor:

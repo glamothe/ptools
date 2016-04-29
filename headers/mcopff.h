@@ -163,6 +163,7 @@ public:
     void ini_energies();
 
     dbl Function(const Vdouble&);
+    dbl CalcEnergy(Mcoprigid & receptor,Mcoprigid & ligand, BaseAttractForceField & ff, dbl cutoff);
     void Derivatives(const Vdouble& v, Vdouble & g );
 
 
