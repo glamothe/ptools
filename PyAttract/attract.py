@@ -452,7 +452,10 @@ for trans in translations:
 
         #computes RMSD if reference structure available
         if (options.reffile):
-            rms=Rmsd_alias(ref, output)
+            if(options.regions):
+                rms=Rmsd_alias(ref, output.getCore())
+            else: 
+                rms=Rmsd_alias(ref, output)
         else:
             rms="XXXX"
 
