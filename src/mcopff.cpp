@@ -444,9 +444,9 @@ dbl McopForceField::Function(const Vdouble & v)
 
 //             dbl e = _ff.nonbon8( lig._core, _receptor._vregion[loopregion][copy] , cpl );
             dbl e = _ff.nonbon8_forces(lig._core, copy, cpl, coreforce, copyforce);
-            _mcop_E[loopregion][copynb] = e*pow(denorm_weight, 2);
+            _mcop_E[loopregion][copynb] = e;
 
-            enercopy += e;//lig._denorm_weights[loopregion][copy];
+            enercopy += e*pow(denorm_weight, 2);//lig._denorm_weights[loopregion][copy];
 
             //add force to ligand
             assert(lig._core.Size() == coreforce.size());
