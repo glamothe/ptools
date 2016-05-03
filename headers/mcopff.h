@@ -117,6 +117,8 @@ public:
     std::vector <std::vector<dbl> > getWeights(){return _weights;};
     void denormalize_weights();
     void normalize_weights();
+    void denormalize_buffer_weights();
+    void normalize_buffer_weights();
     void updateWeights(const std::vector<dbl>& v, int svptr);
     
     void ReadMcoprigidPDB(const std::string name);
@@ -184,6 +186,8 @@ public:
     std::vector <std::vector<dbl> > getWeights(){return _receptor.getWeights();};
     void denormalize_weights(){_receptor.denormalize_weights();};
     void normalize_weights(){_receptor.normalize_weights();};
+    void denormalize_buffer_weights(){_receptor.denormalize_buffer_weights();};
+    void normalize_buffer_weights(){_receptor.normalize_buffer_weights();};
 
 private:
 

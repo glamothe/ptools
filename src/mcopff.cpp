@@ -34,6 +34,8 @@ void Mcoprigid::iniWeights(){
         }
     }
     denormalize_weights();
+    _buffer_denorm_weights = _denorm_weights;
+    _buffer_weights = _weights;
 }
 
 void Mcoprigid::setCore(AttractRigidbody& core) {
@@ -162,6 +164,15 @@ void Mcoprigid::denormalize_weights(){
     }
 }
 
+void Mcoprigid::denormalize_buffer_weights(){
+    for(uint i=0; i < _buffer_weights.size(); i++){
+        dbl max_weight = *max_element(_buffer_weights[i].begin(), _buffer_weights[i].end());
+        for(uint j=0; j < _buffer_weights[i].size(); j++){
+            _buffer_denorm_weights[i][j] = sqrt(_buffer_weights[i][j]/max_weight);
+        }
+    }
+}
+
 void Mcoprigid::normalize_weights(){
 
     for(uint i=0; i < _denorm_weights.size(); i++){
@@ -171,6 +182,19 @@ void Mcoprigid::normalize_weights(){
         }
         for(uint j=0; j < _denorm_weights[i].size(); j++){
             _weights[i][j] = pow(_denorm_weights[i][j], 2)/sum_squared_denorm_weights;
+        }
+    }
+}
+
+void Mcoprigid::normalize_buffer_weights(){
+
+    for(uint i=0; i < _buffer_denorm_weights.size(); i++){
+        dbl sum_squared_denorm_weights = 0;
+        for(uint j=0; j < _buffer_denorm_weights[i].size(); j++){
+            sum_squared_denorm_weights += pow(_buffer_denorm_weights[i][j], 2);
+        }
+        for(uint j=0; j < _buffer_denorm_weights[i].size(); j++){
+            _buffer_weights[i][j] = pow(_buffer_denorm_weights[i][j], 2)/sum_squared_denorm_weights;
         }
     }
 }
@@ -185,6 +209,8 @@ void Mcoprigid::updateWeights(const std::vector<dbl>& v, int svptr){
         }
     }
     normalize_weights();
+    _buffer_denorm_weights = _denorm_weights;
+    _buffer_weights = _weights;
 }
 
 
@@ -368,7 +394,6 @@ uint McopForceField::ProblemSize()
 */
 dbl McopForceField::Function(const Vdouble & v)
 {
-    denormalize_weights();
 
     dbl ener_region = 0.0 ;
     dbl ener_core = 0.0 ;
@@ -392,10 +417,11 @@ dbl McopForceField::Function(const Vdouble & v)
     uint svptr = 0; // stateVars 'pointer'
     if (lig.getCore().hasrotation) svptr += 3;
     if (lig.getCore().hastranslation) svptr += 3;
+    //dnorm_weights is not a reference therefore we are manipulating a new set of denorm_weights
     std::vector< std::vector<dbl> > denorm_weights = _receptor._denorm_weights;
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
-        assert( ref_ensemble.size() == ref_denorm_weights.size());
         AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
+        assert( ref_ensemble.size() == ref_denorm_weights.size());
         std::vector<dbl> & denorm_weights_loop  = denorm_weights[loopregion];
         for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++){
             dbl & denorm_weight = denorm_weights_loop[copynb];
@@ -403,9 +429,9 @@ dbl McopForceField::Function(const Vdouble & v)
             svptr += 1;
         }
     }
-
-    normalize_weights();
-    std::vector< std::vector<dbl> > weights = _receptor._weights;
+    _receptor._buffer_denorm_weights = denorm_weights;
+    normalize_buffer_weights();
+    std::vector< std::vector<dbl> >& weights = _receptor._buffer_weights;
 //2) calculates the energy
 
 
@@ -462,8 +488,7 @@ dbl McopForceField::Function(const Vdouble & v)
 
         ener_region += enercopy*max_weight;
     }
-    _receptor._buffer_weights = weights;
-    _receptor._buffer_denorm_weights = denorm_weights;
+    
     return ener_core + ener_region;
 
 }
