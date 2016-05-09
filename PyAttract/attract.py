@@ -31,14 +31,14 @@ def PrintVect(vect):
         print vect[i], " | ",
     print ''
 
-def printWeights(w):
+def printWeights(w, e):
     print "### WEIGHTS BEGIN"
     for region in xrange(0, len(w)):
         sum = 0
         print "###       Start Region %d" %(region+1)
         for copy in xrange(0, len(w[region])):
             sum += w[region][copy]
-            print "WEIGHT    REGION %d COPY %d = %f" %(region+1, copy+1, w[region][copy])
+            print "WEIGHT    REGION %d COPY %d = %f    (Energy = %f)" %(region+1, copy+1, w[region][copy], e[region][copy])
         print "WEIGHT    SUM OF WEIGHTS = %f" %sum
         print "###       End Region %d" %(region+1)
     print "### WEIGHTS END"
@@ -467,7 +467,7 @@ for trans in translations:
         if options.regions:
             print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, mcopff.CalcEnergy(receptor,ligand,forcefield,500), str(rms))
             output.getCore().PrintMatrix() #getCore because PrintMatrix works on AttractRigidy and not Mcoprigid
-            printWeights(receptor.getWeights())
+            printWeights(receptor.getWeights(), mcopff.getMcopE())
         else:
             pl = AttractPairList(receptor, ligand,surreal(500))
             print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(receptor,ligand,pl), str(rms))

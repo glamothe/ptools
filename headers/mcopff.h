@@ -184,6 +184,7 @@ public:
     void initMinimization(){};
 
     std::vector <std::vector<dbl> > getWeights(){return _receptor.getWeights();};
+    std::vector <std::vector<dbl> > getMcopE(){return _mcop_E;};
     void denormalize_weights(){_receptor.denormalize_weights();};
     void normalize_weights(){_receptor.normalize_weights();};
     void denormalize_buffer_weights(){_receptor.denormalize_buffer_weights();};
