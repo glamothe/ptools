@@ -615,24 +615,47 @@ if (lig.getCore().hastranslation){
     g[svptr+1] = 0;
     g[svptr+2] = 0;
 
+    dbl flim = 1.0e18;
+    dbl ftr1, ftr2, ftr3, fbetr;
+    ftr1=0.0;
+    ftr2=0.0;
+    ftr3=0.0;
 
-    for (uint loopregion=0; loopregion < _receptor._vregion.size(); loopregion++){
 
-        Coord3D ligtransForces; //translational forces for the ligand from loopregion
-        
-        for(uint i=0; i<_moved_ligand._core.Size(); i++){
-             ligtransForces += _moved_ligand._core.m_forces[i];
-        }
-
-        g[svptr+0] += ligtransForces.x;
-        g[svptr+1] += ligtransForces.y;
-        g[svptr+2] += ligtransForces.z;
-        //printf("vector v[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, v[svptr+0], v[svptr+1], v[svptr+2]);
-        //printf("vector g[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, g[svptr+0], g[svptr+1], g[svptr+2]);
+    Coord3D ligtransForces; //translational forces for the ligand from loopregion
+    
+    for(uint i=0; i<_moved_ligand._core.Size(); i++){
+         ligtransForces += _moved_ligand._core.m_forces[i];
     }
+
+    ftr1 = ligtransForces.x;
+    ftr2 = ligtransForces.y;
+    ftr3 = ligtransForces.z;
+    //printf("vector v[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, v[svptr+0], v[svptr+1], v[svptr+2]);
+    //printf("vector g[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, g[svptr+0], g[svptr+1], g[svptr+2]);
+
    
     svptr += 3;
+
+    // force reduction, some times helps in case of very "bad" start structure
+    for (uint i=0; i<3; i++)
+    {
+        fbetr=ftr1*ftr1 +ftr2*ftr2 +ftr3*ftr3;
+        if (fbetr > flim)
+        {
+            ftr1=.01*ftr1;
+            ftr2=.01*ftr2;
+            ftr3=.01*ftr3;
+        }
+    }
+
+    assert(svptr+2 < g.size());
+    g[svptr+0] = ftr1;
+    g[svptr+1] = ftr2;
+    g[svptr+2] = ftr3;
 }
+
+
 
 // Calculate de weight derivative
 
