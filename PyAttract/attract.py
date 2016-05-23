@@ -331,6 +331,15 @@ if (options.reffile):
     else:
         Rmsd_alias = rmsdca
 
+firstr = 0
+ff = open("translation.dat",'r')
+for line in ff: 
+    if "ATOM" in line:
+        spl = line.split()
+        firstr = int(spl[1])-1
+        break
+ff.close()
+
 if (not options.single):
     #systematic docking with default translations and rotations
     # check for rotation.dat and translation.dat
@@ -354,16 +363,10 @@ if (options.transnb!=None):
     checkFile("rotation.dat", "rotation file is required.")
     checkFile("translation.dat", "translation file is required.\nFormer users may rename translat.dat into translation.dat.")
     trans=Rigidbody("translation.dat")
-
+    co=trans.GetCoords(options.transnb)
+    translations=[[options.transnb+1,co]]
     transnb=options.transnb
-
-    if options.start1 is True:
-       transnb -= 1
-
-    co=trans.getCoords(transnb)
-    translations=[[transnb+1,co]]
-
-    if transnb!= len(trans)-1:
+    if transnb!=trans.Size()-1:
         printFiles=False #don't append ligand, receptor, etc. unless this is the last translation point of the simulation
 
 
@@ -371,7 +374,7 @@ if (options.transnb!=None):
 # core attract algorithm
 for trans in translations:
     transnb+=1
-    print "@@@@@@@ Translation nb %i @@@@@@@" %(transnb)
+    print "@@@@@@@ Translation nb %i @@@@@@@" %(transnb+firstr)
     rotnb=0
     for rot in rotations:
         rotnb+=1
@@ -465,12 +468,12 @@ for trans in translations:
         forcefield=ff_specs['ff_class'](ff_specs['ff_file'],  surreal(500))
         print "%4s %6s %6s %13s %13s"  %(" ","Trans", "Rot", "Ener", "RmsdCA_ref")
         if options.regions:
-            print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, mcopff.CalcEnergy(receptor,ligand,forcefield,500), str(rms))
+            print "%-4s %6d %6d %13.7f %13s" %("==", transnb + firstr, rotnb, mcopff.CalcEnergy(receptor,ligand,forcefield,500), str(rms))
             output.getCore().PrintMatrix() #getCore because PrintMatrix works on AttractRigidy and not Mcoprigid
             printWeights(receptor.getWeights(), mcopff.getMcopE())
         else:
             pl = AttractPairList(receptor, ligand,surreal(500))
-            print "%-4s %6d %6d %13.7f %13s" %("==", transnb, rotnb, forcefield.nonbon8(receptor,ligand,pl), str(rms))
+            print "%-4s %6d %6d %13.7f %13s" %("==", transnb + firstr, rotnb, forcefield.nonbon8(receptor,ligand,pl), str(rms))
             output.PrintMatrix()
 
 
