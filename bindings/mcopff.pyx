@@ -55,9 +55,7 @@ cdef extern from "mcopff.h" namespace "PTools":
         void normalize_weights()
         void setReceptor(CppMcoprigid&)
         void setLigand(CppMcoprigid&)
-        double CalcEnergy(CppMcoprigid&, CppMcoprigid&, CppScorpionForceField&, double)
-        double CalcEnergy(CppMcoprigid&, CppMcoprigid&, CppAttractForceField1&, double)
-        double CalcEnergy(CppMcoprigid&, CppMcoprigid&, CppAttractForceField2&, double)
+        double CalcEnergy(CppMcoprigid&, CppMcoprigid&, CppBaseAttractForceField&, double)
 
 cdef class Mcop:
     cdef CppMcop* thisptr
@@ -345,26 +343,14 @@ cdef class McopForceField(ForceField):
         cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
         cpp_ptr.setLigand(deref(lig.thisptr))
 
-    
-    def CalcEnergy(self, Mcoprigid rec, Mcoprigid lig, ScorpionForceField ff, double cutoff):
-        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
-        cdef CppScorpionForceField* cppff_scorp
-        cppff_scorp = <CppScorpionForceField*>ff.thisptr
-        return cpp_ptr.CalcEnergy(deref(rec.thisptr), deref(lig.thisptr), deref(cppff_scorp), cutoff)
-
-    def CalcEnergy(self, Mcoprigid rec, Mcoprigid lig, AttractForceField1 ff, double cutoff):
-        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
-        cdef CppAttractForceField1* cppff_att1
-        cppff_scorp = <CppAttractForceField1*>ff.thisptr
-        return cpp_ptr.CalcEnergy(deref(rec.thisptr), deref(lig.thisptr), deref(cppff_att1), cutoff)
-
-    def CalcEnergy(self, Mcoprigid rec, Mcoprigid lig, AttractForceField2 ff, double cutoff):
-        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
-        cdef CppAttractForceField2* cppff_att2
-        cppff_scorp = <CppAttractForceField2*>ff.thisptr
-        return cpp_ptr.CalcEnergy(deref(rec.thisptr), deref(lig.thisptr), deref(cppff_att2), cutoff)
-
-
+    def CalcEnergy(self, Mcoprigid rec, Mcoprigid lig, BaseAttractForceField ff, double cutoff):
         
+        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
+        cdef CppBaseAttractForceField* cppff
+        
+        cppff = <CppBaseAttractForceField*>ff.thisptr
+        return cpp_ptr.CalcEnergy(deref(rec.thisptr), deref(lig.thisptr), deref(cppff), cutoff)
+
+
 
         

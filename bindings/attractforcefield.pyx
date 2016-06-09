@@ -1,6 +1,7 @@
 from cython.operator cimport dereference as deref
 from libcpp.string cimport string
 
+
 cdef extern from "<vector>" namespace "std":
     cdef cppclass vector[T]:
         cppclass iterator:

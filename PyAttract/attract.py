@@ -258,7 +258,7 @@ if rec_ff != lig_ff:
 allff_specs = {
              'SCORPION': {'ff_file': 'scorpion.par', 
                           'ff_class': ScorpionForceField,
-                          'minimizer_class': ScorpionLbfgs
+                          'minimizer_class': Lbfgs
                           },
 
              'ATTRACT1': {'ff_file': 'aminon.par', 
