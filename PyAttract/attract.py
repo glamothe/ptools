@@ -319,6 +319,8 @@ if (options.single and options.transnb):
 trjname = "minimization.trj"
 if (options.single):
     ftraj = open(trjname, "w")
+    if(options.regions):
+        weight_variation = open("weight_variation.dat", "w")
 
 if (options.reffile):
     checkFile(options.reffile, "")
@@ -407,8 +409,8 @@ for trans in translations:
             receptor.setRotation(False)
             
             if options.regions:
-                mcopff.setReceptor(receptor)
                 mcopff.setLigand(ligand)
+                mcopff.setReceptor(receptor)
             else:
                 forcefield.AddLigand(receptor)
                 forcefield.AddLigand(ligand)
@@ -447,10 +449,18 @@ for trans in translations:
                 ntraj=lbfgs_minimizer.GetNumberIter()
                 for iteration in range(ntraj):
                     traj = lbfgs_minimizer.GetMinimizedVarsAtIter(iteration)
-                    for t in traj:
+                    for t in traj[0:6]:
                         ftraj.write("%f "%t)
                     ftraj.write("\n")
                 ftraj.write("~~~~~~~~~~~~~~\n")
+                if (options.regions):
+                    for iteration in range(ntraj):
+                        traj = lbfgs_minimizer.GetMinimizedVarsAtIter(iteration)
+                        for t in traj[6:]:
+                            weight_variation.write("%f "%t)
+                        weight_variation.write("\n")
+                    weight_variation.write("~~~~~~~~~~~~~~\n")
+                
 
 
         #computes RMSD if reference structure available
@@ -489,6 +499,8 @@ if ( not options.single and printFiles==True):
 # close trajectory file for single minimization 
 if (options.single):
     ftraj.close()
+    if (options.regions):
+        weight_variation.close()
     print "Saved all minimization variables (translations/rotations) in %s" %(trjname)
 
 # print end and elapsed time

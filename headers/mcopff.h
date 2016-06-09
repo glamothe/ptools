@@ -111,7 +111,7 @@ public:
 
     void AttractEulerRotate(const dbl& phi, const dbl& ssi, const dbl& rot);
     void Translate(const Coord3D& c);
-    Coord3D FindCenter(){_core.FindCenter();};
+    Coord3D FindCenter(){return _core.FindCenter();};
 
     void PrintWeights();
     std::vector <std::vector<dbl> > getWeights(){return _weights;};
@@ -175,8 +175,8 @@ public:
     void Derivatives(const Vdouble& v, Vdouble & g );
 
 
-    void setReceptor(const Mcoprigid& rec) {_receptor = rec; ini_energies();};
-    void setLigand(const Mcoprigid& lig) { _centered_ligand = lig;};
+    void setReceptor(Mcoprigid& rec);
+    void setLigand(Mcoprigid& lig);
 
     void calculate_weights(Mcoprigid& lig, bool print=false);
 

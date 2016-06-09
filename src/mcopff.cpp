@@ -64,6 +64,7 @@ void Mcoprigid::AttractEulerRotate(const dbl& phi, const dbl& ssi, const dbl& ro
 
 void Mcoprigid::Translate(const Coord3D& c)
 {
+
 //translates the core body:
     _core.Translate(c);
 
@@ -305,6 +306,29 @@ AttractMcop::AttractMcop(const Mcop& mcop){
 //     Forcefield implementation
 ///////////////////////////////////////////////////
 
+void McopForceField::setReceptor( Mcoprigid& rec){
+
+    Mcoprigid centeredrec = rec;
+    //Coord3D center = rec.FindCenter();
+    //rec._center = center;
+    Coord3D center = _moved_ligand._center;
+
+    centeredrec.Translate(Coord3D()-center);
+    _receptor = centeredrec;
+   
+    ini_energies();
+}
+
+void McopForceField::setLigand( Mcoprigid& lig){
+
+    Mcoprigid centeredlig = lig;
+    Coord3D center = lig.FindCenter();
+    lig._center = center;
+    _moved_ligand = lig;
+
+    centeredlig.Translate(Coord3D()-center);
+    _centered_ligand = centeredlig;
+}
 
 void McopForceField::ini_energies(){
     for(uint i=0; i < _receptor.getRegions().size(); i++){
@@ -315,6 +339,8 @@ void McopForceField::ini_energies(){
         }
     }
 }
+
+
 
 void McopForceField::calculate_weights(Mcoprigid& lig, bool print)
 {
@@ -375,6 +401,7 @@ void McopForceField::calculate_weights(Mcoprigid& lig, bool print)
 
 uint McopForceField::ProblemSize()
 {
+
     uint size = 0;
     if (_centered_ligand.getCore().hastranslation) size += 3;
     if (_centered_ligand.getCore().hasrotation) size += 3;
@@ -398,7 +425,7 @@ dbl McopForceField::Function(const Vdouble & v)
     dbl ener_core = 0.0 ;
 
 // 1) put the objects to the right place
-
+        
     _moved_ligand = _centered_ligand;
 
     Mcoprigid & lig = _moved_ligand ;
@@ -550,6 +577,13 @@ if (lig.getCore().hasrotation){
     g[svptr+1] = 0;
     g[svptr+2] = 0;
 
+    for (uint i=0; i<3;i++)
+    {
+        g[i+svptr]=0.0;
+        for (uint j=0;j<3;j++)
+            pm[i][j]=0.0 ;
+    }
+
     cs=cos(v[svptr+1]);
     cp=cos(v[svptr+0]);
     ss=sin(v[svptr+1]);
@@ -561,56 +595,84 @@ if (lig.getCore().hasrotation){
     crot=cos(v[svptr+2]);
     srot=sin(v[svptr+2]);
 
+    //std::cout << "cs" << cs << std::endl;
+    //std::cout << "cp" << cp << std::endl;
+    //std::cout << "ss" << ss << std::endl;
+    //std::cout << "sp" << sp << std::endl;
+    //std::cout << "cscp" << cscp << std::endl;
+    //std::cout << "cssp" << cssp << std::endl;
+    //std::cout << "sscp" << sscp << std::endl;
+    //std::cout << "sssp" << sssp << std::endl;
+    //std::cout << "crot" << crot << std::endl;
+    //std::cout << "srot" << srot << std::endl;
+
     // for the x, y and z coordinates, we need
     // the coordinates of the centered, non-translated molecule
 
     AttractRigidbody * pLigCentered = & _centered_ligand._core; // pointer to the centered ligand
     AttractRigidbody * pLigMoved  = & _moved_ligand._core; // pointer to the rotated/translated ligand (for forces)
 
+    dbl add = 0;
+    dbl add2 = 0;
+    //printf("pLigCentered->m_activeAtoms.size() = %d\n", pLigCentered->m_activeAtoms.size());
+    //for (uint i=0; i< pLigCentered->m_activeAtoms.size(); i++)
+    for(uint atomIndex=0; atomIndex<_moved_ligand._core.Size(); atomIndex++){
+        //uint atomIndex = pLigCentered->m_activeAtoms[i];
 
-    for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
-        
-        //printf("pLigCentered->m_activeAtoms.size() = %d\n", pLigCentered->m_activeAtoms.size());
-        //for (uint i=0; i< pLigCentered->m_activeAtoms.size(); i++)
-        for(uint atomIndex=0; atomIndex<_moved_ligand._core.Size(); atomIndex++){
-            //uint atomIndex = pLigCentered->m_activeAtoms[i];
 
-            Coord3D coords = pLigCentered->GetCoords(atomIndex);
-            X = coords.x;
-            Y = coords.y;
-            Z = coords.z;
+        Coord3D coords = pLigCentered->GetCoords(atomIndex);
 
-            xar=X*crot+Y*srot;
-            yar=-X*srot+Y*crot;
-            pm[0][0]=-xar*cssp-yar*cp-Z*sssp ;
-            pm[1][0]=xar*cscp-yar*sp+Z*sscp ;
-            pm[2][0]=0.0 ;
+        X = coords.x;
+        Y = coords.y;
+        Z = coords.z;
 
-            pm[0][1]=-xar*sscp+Z*cscp ;
-            pm[1][1]=-xar*sssp+Z*cssp ;
-            pm[2][1]=-xar*cs-Z*ss ;
+        //std::cout << "X " << X << std::endl;
 
-            pm[0][2]=yar*cscp+xar*sp ;
-            pm[1][2]=yar*cssp-xar*cp ;
-            pm[2][2]=-yar*ss ;
+        xar=X*crot+Y*srot;
+        yar=-X*srot+Y*crot;
 
-            for(uint j=0; j < 3; j++){
-                g[svptr + j] += pm[0][j] * pLigMoved->m_forces[atomIndex].x;
-                g[svptr + j] += pm[1][j] * pLigMoved->m_forces[atomIndex].y;
-                g[svptr + j] += pm[2][j] * pLigMoved->m_forces[atomIndex].z;
-            }
-            //printf("vector v[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, v[svptr+0], v[svptr+1], v[svptr+2]);
-            //printf("vector g[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, g[svptr+0], g[svptr+1], g[svptr+2]);
+        pm[0][0]=-xar*cssp-yar*cp-Z*sssp ;
+        pm[1][0]=xar*cscp-yar*sp+Z*sscp ;
+        pm[2][0]=0.0 ;
+
+        pm[0][1]=-xar*sscp+Z*cscp ;
+        pm[1][1]=-xar*sssp+Z*cssp ;
+        pm[2][1]=-xar*cs-Z*ss ;
+
+        pm[0][2]=yar*cscp+xar*sp ;
+        pm[1][2]=yar*cssp-xar*cp ;
+        pm[2][2]=-yar*ss ;
+
+        //std::cout << "xar " << xar << std::endl;
+        //std::cout << "yar " << yar << std::endl;
+        //std::cout << "pm[0][0] " << pm[0][0] << std::endl;
+        //std::cout << "pm[1][0] " << pm[1][0] << std::endl;
+        //std::cout << "pm[2][0] " << pm[2][0] << std::endl;
+        //std::cout << "pm[0][1] " << pm[0][1] << std::endl;
+        //std::cout << "pm[1][1] " << pm[1][1] << std::endl;
+        //std::cout << "pm[2][1] " << pm[2][1] << std::endl;
+        //std::cout << "pm[0][2] " << pm[0][2] << std::endl;
+        //std::cout << "pm[1][2] " << pm[1][2] << std::endl;
+        //std::cout << "pm[2][2] " << pm[2][2] << std::endl;
+
+        for(uint j=0; j < 3; j++){
+            g[svptr + j] += pm[0][j] * pLigMoved->m_forces[atomIndex].x;
+            g[svptr + j] += pm[1][j] * pLigMoved->m_forces[atomIndex].y;
+            g[svptr + j] += pm[2][j] * pLigMoved->m_forces[atomIndex].z;
         }
-
+        //printf("vector v[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, v[svptr+0], v[svptr+1], v[svptr+2]);
+        //printf("vector g[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, g[svptr+0], g[svptr+1], g[svptr+2]);
     }
+
+
     svptr += 3;
+
 
 }
 
 //sum the forces over x, y and z: calculate de translational forces
 if (lig.getCore().hastranslation){
-    //printf("hastranslation\n");
+
     g[svptr+0] = 0;
     g[svptr+1] = 0;
     g[svptr+2] = 0;
@@ -620,7 +682,6 @@ if (lig.getCore().hastranslation){
     ftr1=0.0;
     ftr2=0.0;
     ftr3=0.0;
-
 
     Coord3D ligtransForces; //translational forces for the ligand from loopregion
     
@@ -635,8 +696,6 @@ if (lig.getCore().hastranslation){
     //printf("vector g[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, g[svptr+0], g[svptr+1], g[svptr+2]);
 
    
-    svptr += 3;
-
     // force reduction, some times helps in case of very "bad" start structure
     for (uint i=0; i<3; i++)
     {
@@ -649,10 +708,13 @@ if (lig.getCore().hastranslation){
         }
     }
 
+
     assert(svptr+2 < g.size());
     g[svptr+0] = ftr1;
     g[svptr+1] = ftr2;
     g[svptr+2] = ftr3;
+
+    svptr += 3;
 }
 
 
