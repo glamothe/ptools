@@ -116,6 +116,12 @@ void Lbfgs::minimize(int maxiter)
             break;
         } else if (rc == 1) {
 
+            //for(int i=0; i<x.size(); i++){
+            //    std::cout << "x" << i << " = " << x[i] << std::endl;
+            //}
+            //for(int i=0; i<g.size(); i++){
+            //    std::cout << "g" << i << " = " << g[i] << std::endl;
+            //}
 
 
 /*
@@ -163,8 +169,12 @@ void Lbfgs::minimize(int maxiter)
             std::vector<dbl> vdblg;
             tocplx(g,vdblg);
             f = objToMinimize.Function(vdblx);
+            //std::cout << "f = " << f << std::endl;
             objToMinimize.Derivatives(vdblx,vdblg);
             g=todbl(vdblg);
+            //for(int i=0; i<g.size(); i++){
+            //    std::cout << "newg" << i << " = " << g[i] << std::endl;
+            //}
 
 //                 std::cout << "analytical derivatives: \n";
 //                 for(uint i=0; i<g.size(); i++)
