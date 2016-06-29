@@ -498,7 +498,7 @@ dbl McopForceField::Function(const Vdouble & v)
             dbl e = _ff.nonbon8_forces(lig._core, copy, cpl, coreforce, copyforce);
             _mcop_E[loopregion][copynb] = e;
 
-            enercopy += e*pow(denorm_weight, 2);
+            enercopy += e*denorm_weight*denorm_weight;
             //printf("weight/energy for reg %d copy %d = %f/%f\n", loopregion, copynb, weights_loop[copynb], enercopy);
 
             //add force to ligand
@@ -547,7 +547,7 @@ dbl McopForceField::CalcEnergy(Mcoprigid & receptor, Mcoprigid & ligand, BaseAtt
             
             dbl e = ff.nonbon8_forces(ligand._core, copy, cpl, coreforce, copyforce);
             enercopy += e*weight;
-            _mcop_E[loopregion][copynb] = enercopy;
+            _mcop_E[loopregion][copynb] = e;
         }
         
         ener_region += enercopy;
