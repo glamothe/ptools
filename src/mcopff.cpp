@@ -612,8 +612,6 @@ if (lig.getCore().hasrotation){
     AttractRigidbody * pLigCentered = & _centered_ligand._core; // pointer to the centered ligand
     AttractRigidbody * pLigMoved  = & _moved_ligand._core; // pointer to the rotated/translated ligand (for forces)
 
-    dbl add = 0;
-    dbl add2 = 0;
     //printf("pLigCentered->m_activeAtoms.size() = %d\n", pLigCentered->m_activeAtoms.size());
     //for (uint i=0; i< pLigCentered->m_activeAtoms.size(); i++)
     for(uint atomIndex=0; atomIndex<_moved_ligand._core.Size(); atomIndex++){
