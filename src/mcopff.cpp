@@ -178,10 +178,10 @@ void Mcoprigid::normalize_weights(){
     for(uint i=0; i < _denorm_weights.size(); i++){
         dbl sum_squared_denorm_weights = 0;
         for(uint j=0; j < _denorm_weights[i].size(); j++){
-            sum_squared_denorm_weights += pow(_denorm_weights[i][j], 2);
+            sum_squared_denorm_weights += _denorm_weights[i][j]*_denorm_weights[i][j];
         }
         for(uint j=0; j < _denorm_weights[i].size(); j++){
-            _weights[i][j] = pow(_denorm_weights[i][j], 2)/sum_squared_denorm_weights;
+            _weights[i][j] = (_denorm_weights[i][j]*_denorm_weights[i][j])/sum_squared_denorm_weights;
         }
     }
 }
@@ -191,10 +191,10 @@ void Mcoprigid::normalize_buffer_weights(){
     for(uint i=0; i < _buffer_denorm_weights.size(); i++){
         dbl sum_squared_denorm_weights = 0;
         for(uint j=0; j < _buffer_denorm_weights[i].size(); j++){
-            sum_squared_denorm_weights += pow(_buffer_denorm_weights[i][j], 2);
+            sum_squared_denorm_weights += _buffer_denorm_weights[i][j]*_buffer_denorm_weights[i][j];
         }
         for(uint j=0; j < _buffer_denorm_weights[i].size(); j++){
-            _buffer_weights[i][j] = pow(_buffer_denorm_weights[i][j], 2)/sum_squared_denorm_weights;
+            _buffer_weights[i][j] = (_buffer_denorm_weights[i][j]*_buffer_denorm_weights[i][j])/sum_squared_denorm_weights;
         }
     }
 }
@@ -490,12 +490,12 @@ dbl McopForceField::Function(const Vdouble & v)
             dbl& denorm_weight = denorm_weights_loop[copynb];
             AttractRigidbody& copy = ref_ensemble[copynb];
 
-            AttractPairList cpl ( lig._core, copy, _cutoff );
+            AttractPairList cpl (copy, lig._core, _cutoff );
             std::vector<Coord3D> copyforce(copy.Size());
             std::vector<Coord3D> coreforce(lig._core.Size());
 
 //             dbl e = _ff.nonbon8( lig._core, _receptor._vregion[loopregion][copy] , cpl );
-            dbl e = _ff.nonbon8_forces(lig._core, copy, cpl, coreforce, copyforce);
+            dbl e = _ff.nonbon8_forces(copy, lig._core, cpl, copyforce, coreforce);
             _mcop_E[loopregion][copynb] = e;
 
             enercopy += e*denorm_weight*denorm_weight;
@@ -505,7 +505,7 @@ dbl McopForceField::Function(const Vdouble & v)
             assert(lig._core.Size() == coreforce.size());
             for(uint i=0; i<lig._core.Size(); i++)
                 
-                lig._core.m_forces[i]+=coreforce[i]*pow(denorm_weight, 2)*max_weight;
+                lig._core.m_forces[i]+=coreforce[i]*denorm_weight*denorm_weight*max_weight;
                 
             // add force to receptor copy
             //assert(copy.Size()==copyforce.size());
