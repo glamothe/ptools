@@ -199,7 +199,7 @@ void Mcoprigid::normalize_buffer_weights(){
     }
 }
 
-void Mcoprigid::updateWeights(const std::vector<dbl>& v, int svptr){
+void Mcoprigid::updateWeights(const std::vector<dbl>& v, int svptr, int descriminate){
     //svptr: state variable "pointer"
     for(uint loopregion=0; loopregion < _vregion.size() ; loopregion++){
         for(uint copynb = 0; copynb < _vregion[loopregion].size(); copynb++){
@@ -209,8 +209,18 @@ void Mcoprigid::updateWeights(const std::vector<dbl>& v, int svptr){
         }
     }
     normalize_weights();
-    //_buffer_denorm_weights = _denorm_weights;
-    //_buffer_weights = _weights;
+    if(descriminate == 1){
+        for(uint loopregion=0; loopregion < _vregion.size() ; loopregion++){
+            for(uint copynb = 0; copynb < _vregion[loopregion].size(); copynb++){
+                dbl & w = _weights[loopregion][copynb];
+                if(w == *max_element(_weights[loopregion].begin(), _weights[loopregion].end()))
+                    w = 1;
+                else
+                    w = 0;
+            }
+        }
+        denormalize_weights();
+    }
 }
 
 

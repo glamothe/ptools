@@ -36,7 +36,7 @@ cdef extern from "mcopff.h" namespace "PTools":
         unsigned int size()
         void setCore(CppAttractRigidbody&)
         vector[vector[double]] getWeights()
-        void updateWeights(vector[double], int)
+        void updateWeights(vector[double], int, int)
         void denormalize_weights()
         void normalize_weights()
         Coord3D FindCenter()
@@ -258,8 +258,8 @@ cdef class Mcoprigid:
     def getWeights(self):
         return self.thisptr.getWeights()
 
-    def updateWeights(self, vector[double] v, int svptr):
-        self.thisptr.updateWeights(v, svptr)
+    def updateWeights(self, vector[double] v, int svptr, int descriminate):
+        self.thisptr.updateWeights(v, svptr, descriminate)
 
     def denormalize_weights(self):
         self.thisptr.denormalize_weights()

@@ -119,7 +119,7 @@ public:
     void normalize_weights();
     void denormalize_buffer_weights();
     void normalize_buffer_weights();
-    void updateWeights(const std::vector<dbl>& v, int svptr);
+    void updateWeights(const std::vector<dbl>& v, int svptr, int descriminate);
     
     void ReadMcoprigidPDB(const std::string name);
     void ReadMcoprigidPDB(std::istream& file, AttractRigidbody& core, std::vector<AttractMcop>& regions);

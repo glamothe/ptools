@@ -44,7 +44,6 @@ def printWeights(w, e):
     print "### WEIGHTS END"
 
 
-
 class Rotation:
     
     class _Rot:
@@ -438,7 +437,10 @@ for trans in translations:
             #TODO: test and use CenterToOrigin() !
             if options.regions:
                 output=Mcoprigid(ligand)
-                receptor.updateWeights(X, svptr=6)
+                if minim == minimlist[len(minimlist)-2] and len(minimlist)>1:
+                    receptor.updateWeights(X, svptr=6, descriminate = 1)
+                else:
+                    receptor.updateWeights(X, svptr=6, descriminate = 0)
             else:
                 output=AttractRigidbody(ligand)
 
