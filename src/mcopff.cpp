@@ -2,6 +2,7 @@
 #include <cassert>
 #include <iostream>
 #include <math.h>
+#include <float.h>
 
 namespace PTools
 {
@@ -26,15 +27,15 @@ void Mcoprigid::iniWeights(){
     for(uint i=0; i < _vregion.size(); i++){
         std::vector<dbl> newvector;
         _weights.push_back(newvector);
-        _denorm_weights.push_back(newvector);
+        //_denorm_weights.push_back(newvector);
         for(uint j=0; j < _vregion[i].size(); j++){
             dbl weight = 1.0/(double)_vregion[i].size();
             _weights[i].push_back(weight);
-            _denorm_weights[i].push_back(1);
+            //_denorm_weights[i].push_back(1);
         }
     }
-    _buffer_denorm_weights = _denorm_weights;
-    _buffer_weights = _weights;
+    //_buffer_denorm_weights = _denorm_weights;
+    //_buffer_weights = _weights;
 }
 
 void Mcoprigid::setCore(AttractRigidbody& core) {
@@ -155,7 +156,7 @@ uint Mcoprigid::line_to_copy_number(std::string line){
     return std::atoi(line.substr(15,line.size()-15).c_str());
 }
 
-void Mcoprigid::denormalize_weights(){
+/*void Mcoprigid::denormalize_weights(){
     for(uint i=0; i < _weights.size(); i++){
         dbl max_weight = *max_element(_weights[i].begin(), _weights[i].end());
         for(uint j=0; j < _weights[i].size(); j++){
@@ -222,6 +223,8 @@ void Mcoprigid::updateWeights(const std::vector<dbl>& v, int svptr, int descrimi
         denormalize_weights();
     }
 }
+
+*/
 
 
 /////////////////// -- Class Mcop -- ////////////////////
@@ -343,16 +346,27 @@ void McopForceField::setLigand( Mcoprigid& lig){
 void McopForceField::ini_energies(){
     for(uint i=0; i < _receptor.getRegions().size(); i++){
         std::vector<dbl> newvector;
-        _mcop_E.push_back(newvector);
-        for(uint j=0; j < _receptor.getRegions()[i].size(); j++){
-            _mcop_E[i].push_back(0);
+        std::vector< std::vector<Coord3D> > newcoordsvecvec;
+        std::vector<dbl> threezeros(3, 0.0);
+        _Eik.push_back(newvector);
+        _Z.push_back(0);
+        _Zprime.push_back(0);
+        _Eregion.push_back(0);
+        //_dz.push_back(threezeros);
+        //_dzprime.push_back(threezeros);
+        _dEik.push_back(newcoordsvecvec);
+        for(uint k=0; k < _receptor.getRegions()[i].size(); k++){
+            //Coord3D coords;
+            _Eik[i].push_back(0);
+            std::vector<Coord3D> newcoordsvec;
+            _dEik[i].push_back(newcoordsvec);
         }
     }
 }
 
 
 
-void McopForceField::calculate_weights(Mcoprigid& lig, bool print)
+/*void McopForceField::calculate_weights(Mcoprigid& lig, bool print)
 {
 
 
@@ -389,7 +403,6 @@ void McopForceField::calculate_weights(Mcoprigid& lig, bool print)
             sumweights += e ;
         }
 
-        //normalize weights
 
         for (uint i=0; i< weights.size(); i++)
         {
@@ -407,7 +420,7 @@ void McopForceField::calculate_weights(Mcoprigid& lig, bool print)
 
 
 }
-
+*/
 
 uint McopForceField::ProblemSize()
 {
@@ -415,9 +428,9 @@ uint McopForceField::ProblemSize()
     uint size = 0;
     if (_centered_ligand.getCore().hastranslation) size += 3;
     if (_centered_ligand.getCore().hasrotation) size += 3;
-    for(uint i=0; i<_receptor.getWeights().size(); i++){
+    /*for(uint i=0; i<_receptor.getWeights().size(); i++){
         size += _receptor.getWeights()[i].size();
-    }
+    }*/
     return size;
 }
 
@@ -428,7 +441,7 @@ uint McopForceField::ProblemSize()
 * this functions returns nonbonded energy of a receptor with multicopy and a ligand without copy.
 *
 */
-dbl McopForceField::Function(const Vdouble & v)
+dbl McopForceField::Function(Vdouble & v)
 {
 
     dbl ener_region = 0.0 ;
@@ -448,7 +461,7 @@ dbl McopForceField::Function(const Vdouble & v)
     assert(_receptor._vregion.size() == _receptor._weights.size());
 
     //Update the denormalized weights
-    
+    /*
     uint svptr = 0; // stateVars 'pointer'
     if (lig.getCore().hasrotation) svptr += 3;
     if (lig.getCore().hastranslation) svptr += 3;
@@ -468,6 +481,8 @@ dbl McopForceField::Function(const Vdouble & v)
     normalize_buffer_weights();
     denormalize_buffer_weights();
     std::vector< std::vector<dbl> >& weights = _receptor._buffer_weights;
+    */
+
 //2) calculates the energy
 
 
@@ -477,7 +492,18 @@ dbl McopForceField::Function(const Vdouble & v)
 
     //2.2) core lignd with receptor copies:
 
-        
+    std::vector< std::vector<dbl> >& weights = _receptor._weights; 
+    std::vector< std::vector<dbl> >& Eik = _Eik;
+    std::vector< std::vector< std::vector<Coord3D> > >& dEik = _dEik;
+    std::vector<dbl>& Z = _Z;
+    std::vector<dbl>& Zprime = _Zprime;
+    dbl& E = _E;
+    std::vector<dbl>& Eregion = _Eregion;
+    ///dbl& beta = _beta;
+    dbl& beta = v[6];
+    //beta = 1.6948;
+
+
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++)
     {
 
@@ -485,85 +511,164 @@ dbl McopForceField::Function(const Vdouble & v)
 //         std::vector<dbl> Eik;
 
         dbl enercopy =0.0;
-        AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
-        std::vector<dbl>& denorm_weights_loop = denorm_weights[loopregion];
-        std::vector<dbl>& weights_loop = weights[loopregion];
+        dbl& Z_i = Z[loopregion];
+        dbl& Zprime_i = Zprime[loopregion];
 
-        assert( ref_ensemble.size() == denorm_weights_loop.size());
+        Z_i = 0.0;
+        Zprime_i = 0.0;
+        bool clash = true;
+        double beta_temp = beta;
+
+        AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
+        std::vector<dbl>& weights_loop = weights[loopregion];
+        
         assert( ref_ensemble.size() == weights_loop.size());
 
-        dbl max_weight = *max_element(weights_loop.begin(), weights_loop.end());
-
+        double Emin = DBL_MAX;
         for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++)
         {
 
-            dbl& denorm_weight = denorm_weights_loop[copynb];
+            
             AttractRigidbody& copy = ref_ensemble[copynb];
 
             AttractPairList cpl (copy, lig._core, _cutoff );
             std::vector<Coord3D> copyforce(copy.Size());
             std::vector<Coord3D> coreforce(lig._core.Size());
 
-//             dbl e = _ff.nonbon8( lig._core, _receptor._vregion[loopregion][copy] , cpl );
-            dbl e = _ff.nonbon8_forces(copy, lig._core, cpl, copyforce, coreforce);
-            _mcop_E[loopregion][copynb] = e;
+            enercopy = _ff.nonbon8_forces(copy, lig._core, cpl, copyforce, coreforce);
+            Eik[loopregion][copynb] = enercopy;
+            if(enercopy < Emin) Emin = enercopy;
 
-            enercopy += e*denorm_weight*denorm_weight;
-            //printf("weight/energy for reg %d copy %d = %f/%f\n", loopregion, copynb, weights_loop[copynb], enercopy);
+            ///std::cout << "Eik" << copynb << " " << enercopy << std::endl;
 
+            /*if(beta*enercopy > 700){
+                if(700/enercopy < beta_temp){
+                    beta_temp = 700/enercopy;
+                }
+            }
+            else{
+                clash = false;
+            }*/
+
+            ///Z_i += exp(-beta*enercopy);
+            ///Zprime_i += -enercopy*exp(-beta*enercopy);
+
+
+            
             //add force to ligand
             assert(lig._core.Size() == coreforce.size());
-            for(uint i=0; i<lig._core.Size(); i++)
-                
-                lig._core.m_forces[i]+=coreforce[i]*denorm_weight*denorm_weight*max_weight;
-                
+            
+            dEik[loopregion][copynb] = coreforce;
+            //for(uint bead=0; bead<lig._core.Size(); bead++)
+            //    dEik[loopregion][copynb] += coreforce[bead];
+            
             // add force to receptor copy
             //assert(copy.Size()==copyforce.size());
             //for(uint i=0; i<copyforce.size(); i++)
             //   copy.m_forces[i]+=copyforce[i];
         }
+        /*if(clash = true)
+            beta = beta_temp;*/
+        ///std::cout << "beta " << beta << std::endl;
 
-        ener_region += enercopy*max_weight;
+        for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++){
+            /*Z_i += exp(-beta*Eik[loopregion][copynb]);
+            Zprime_i += -Eik[loopregion][copynb]*exp(-beta*Eik[loopregion][copynb]);*/
+            Z_i += exp(-beta*(Eik[loopregion][copynb] - Emin));
+            Zprime_i += -Eik[loopregion][copynb]*exp(-beta*(Eik[loopregion][copynb] - Emin));
+        }
+
+        for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++)
+        {
+            dbl& weight = weights_loop[copynb];
+            weight = exp(-beta*(Eik[loopregion][copynb] - Emin))/Z_i;
+            //weight = exp(-beta*Eik[loopregion][copynb])/Z_i;
+            ///if(isnan(weight)) weight = 0;
+            ///std::cout << "Wik" << copynb << " " << weight << std::endl;
+        }
+        Eregion[loopregion] = -Zprime_i/Z_i;
+        //if(isnan(Eregion[loopregion])) Eregion[loopregion] = 0;
+        ener_region += Eregion[loopregion];
+        ///std::cout << "Energie région " << ener_region << std::endl;
     }
-    
-    return ener_core + ener_region;
+    E = ener_core + ener_region;
+    ///std::cout << "Energie totale " << E << std::endl;
+    return E;
 
 }
 
 // To calculation interaction energy between an Mcoprigid receptor with variable region(s) 
 // and an Mcoprigid ligand without variable regions.
 // Uses the receptor's normalized weights and a given forcefeild and cutoff. 
-dbl McopForceField::CalcEnergy(Mcoprigid & receptor, Mcoprigid & ligand, BaseAttractForceField & ff, dbl cutoff){
+
+dbl McopForceField::CalcEnergy(Mcoprigid & receptor, Mcoprigid & lig, BaseAttractForceField & ff, dbl cutoff){
 
     dbl ener_region = 0.0 ;
     dbl ener_core = 0.0 ;
 
-    AttractPairList pl (receptor._core, ligand._core, cutoff );
-    ener_core += ff.nonbon8(receptor._core, ligand._core, pl );
+//2) calculates the energy
 
-    //calculates interaction energy between receptor copies and ligand body:
-    for(uint loopregion=0; loopregion < receptor.getRegions().size(); loopregion++){
-        
+    //2.1) core ligand body with core receptor
+    AttractPairList pl (receptor._core, lig._core, cutoff );
+    ener_core += ff.nonbon8(receptor._core, lig._core, pl );
+
+    //2.2) core lignd with receptor copies:
+
+    std::vector< std::vector<dbl> >& weights = receptor._weights; 
+    std::vector< std::vector<dbl> >& Eik = _Eik;
+    std::vector<dbl>& Z = _Z;
+    std::vector<dbl>& Zprime = _Zprime;
+    dbl& E = _E;
+    dbl beta = 1;
+
+
+    for (uint loopregion=0; loopregion < receptor._vregion.size() ; loopregion++)
+    {
+
+        //calculates interaction energy between receptor copies and ligand body:
+//         std::vector<dbl> Eik;
+
         dbl enercopy =0.0;
-        
-        for(uint copynb=0; copynb < receptor.getRegion(loopregion).size(); copynb++){
-            
-            dbl weight = receptor.getWeights()[loopregion][copynb];
-            AttractRigidbody& copy = receptor.getRegion(loopregion).getCopy(copynb);
-            AttractPairList cpl (ligand._core, copy, cutoff);
+        dbl& Z_i = Z[loopregion];
+        dbl& Zprime_i = Zprime[loopregion];
 
-            std::vector<Coord3D> copyforce(copy.Size());
-            std::vector<Coord3D> coreforce(ligand._core.Size());
-            
-            dbl e = ff.nonbon8_forces(ligand._core, copy, cpl, coreforce, copyforce);
-            enercopy += e*weight;
-            _mcop_E[loopregion][copynb] = e;
-        }
+        Z_i = 0.0;
+        Zprime_i = 0.0;
+
+
+        AttractMcop& ref_ensemble = receptor._vregion[loopregion];
+        std::vector<dbl>& weights_loop = weights[loopregion];
         
-        ener_region += enercopy;
+        assert( ref_ensemble.size() == weights_loop.size());
+
+
+        for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++)
+        {
+
+            AttractRigidbody& copy = ref_ensemble[copynb];
+
+            AttractPairList cpl (copy, lig._core, cutoff );
+            std::vector<Coord3D> copyforce(copy.Size());
+            std::vector<Coord3D> coreforce(lig._core.Size());
+
+            enercopy = ff.nonbon8_forces(copy, lig._core, cpl, copyforce, coreforce);
+            Eik[loopregion][copynb] = enercopy;
+
+            Z_i += exp(-beta*enercopy);
+            Zprime_i += -enercopy*exp(-beta*enercopy);
+
+        }
+        for (uint copynb = 0; copynb < ref_ensemble.size(); copynb++)
+        {
+            dbl& weight = weights_loop[copynb];
+            weight = exp(-beta*Eik[loopregion][copynb])/Z_i;
+        }
+        ener_region += -Zprime_i/Z_i;
     }
-    return ener_core + ener_region;
+    E = ener_core + ener_region;
+    return E;
 }
+
 
 
 void McopForceField::Derivatives(const Vdouble& v, Vdouble & g )
@@ -571,11 +676,33 @@ void McopForceField::Derivatives(const Vdouble& v, Vdouble & g )
 
 Mcoprigid & lig = _moved_ligand;
 uint svptr = 0; // stateVars 'pointer'
+//std::vector<dbl>& Z = _Z;
+//std::vector<dbl>& Zprime = _Zprime;
+//std::vector< std::vector<dbl> >& dz = _dz;
+//std::vector< std::vector<dbl> >& dzprime = _dzprime;
+std::vector< std::vector< std::vector<Coord3D> > >& dEik = _dEik;
+std::vector< std::vector<dbl> >& Eik = _Eik;
+dbl E = _E;
+std::vector<dbl>& Eregion = _Eregion;
+std::vector< std::vector<dbl> > & weights = _receptor._weights;
+//dbl beta = _beta;
+dbl beta = v[6];
+
+std::vector< std::vector<dbl> > coef;
+std::vector<dbl> newvector;
+// iterate through loop regions
+for(uint i=0; i < dEik.size(); i++){
+    coef.push_back(newvector);
+    // iterate through loop copies
+    for(uint k=0; k < dEik[i].size(); k++){
+        coef[i].push_back((1+beta*(Eregion[i] - Eik[i][k]))*weights[i][k]);
+    }
+}
 
 // calculate de rotational forces:
 if (lig.getCore().hasrotation){
     //printf("hasrotation\n");
-    dbl  cs,cp,ss,sp,cscp,sscp,sssp,crot,srot,xar,yar,cssp,X,Y,Z ;
+    dbl  cs,cp,ss,sp,cscp,sscp,sssp,crot,srot,xar,yar,cssp,x,y,z;
     dbl  pm[3][3];
 
     // !c     calculates orientational force contributions
@@ -583,9 +710,9 @@ if (lig.getCore().hasrotation){
     // !c     component 2: ssi-angle
     // !c     component 3: rot-angle
 
-    g[svptr+0] = 0;
-    g[svptr+1] = 0;
-    g[svptr+2] = 0;
+    g[svptr+0] = 0.0;
+    g[svptr+1] = 0.0;
+    g[svptr+2] = 0.0;
 
     for (uint i=0; i<3;i++)
     {
@@ -622,6 +749,10 @@ if (lig.getCore().hasrotation){
     AttractRigidbody * pLigCentered = & _centered_ligand._core; // pointer to the centered ligand
     AttractRigidbody * pLigMoved  = & _moved_ligand._core; // pointer to the rotated/translated ligand (for forces)
 
+    //initializing derivative variables
+    std::vector<dbl> dEcore(3, 0.0);
+    std::vector<dbl> dEloops(3, 0.0);
+
     //printf("pLigCentered->m_activeAtoms.size() = %d\n", pLigCentered->m_activeAtoms.size());
     //for (uint i=0; i< pLigCentered->m_activeAtoms.size(); i++)
     for(uint atomIndex=0; atomIndex<_moved_ligand._core.Size(); atomIndex++){
@@ -630,22 +761,22 @@ if (lig.getCore().hasrotation){
 
         Coord3D coords = pLigCentered->GetCoords(atomIndex);
 
-        X = coords.x;
-        Y = coords.y;
-        Z = coords.z;
+        x = coords.x;
+        y = coords.y;
+        z = coords.z;
 
         //std::cout << "X " << X << std::endl;
 
-        xar=X*crot+Y*srot;
-        yar=-X*srot+Y*crot;
+        xar=x*crot+y*srot;
+        yar=-x*srot+y*crot;
 
-        pm[0][0]=-xar*cssp-yar*cp-Z*sssp ;
-        pm[1][0]=xar*cscp-yar*sp+Z*sscp ;
+        pm[0][0]=-xar*cssp-yar*cp-z*sssp ;
+        pm[1][0]=xar*cscp-yar*sp+z*sscp ;
         pm[2][0]=0.0 ;
 
-        pm[0][1]=-xar*sscp+Z*cscp ;
-        pm[1][1]=-xar*sssp+Z*cssp ;
-        pm[2][1]=-xar*cs-Z*ss ;
+        pm[0][1]=-xar*sscp+z*cscp ;
+        pm[1][1]=-xar*sssp+z*cssp ;
+        pm[2][1]=-xar*cs-z*ss ;
 
         pm[0][2]=yar*cscp+xar*sp ;
         pm[1][2]=yar*cssp-xar*cp ;
@@ -663,15 +794,32 @@ if (lig.getCore().hasrotation){
         //std::cout << "pm[1][2] " << pm[1][2] << std::endl;
         //std::cout << "pm[2][2] " << pm[2][2] << std::endl;
 
+        //adding the derivatives for the core:
         for(uint j=0; j < 3; j++){
-            g[svptr + j] += pm[0][j] * pLigMoved->m_forces[atomIndex].x;
-            g[svptr + j] += pm[1][j] * pLigMoved->m_forces[atomIndex].y;
-            g[svptr + j] += pm[2][j] * pLigMoved->m_forces[atomIndex].z;
+            dEcore[j] += pm[0][j] * pLigMoved->m_forces[atomIndex].x;
+            dEcore[j] += pm[1][j] * pLigMoved->m_forces[atomIndex].y;
+            dEcore[j] += pm[2][j] * pLigMoved->m_forces[atomIndex].z;
         }
-        //printf("vector v[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, v[svptr+0], v[svptr+1], v[svptr+2]);
-        //printf("vector g[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, g[svptr+0], g[svptr+1], g[svptr+2]);
+
+        // iterate through loop regions
+        for(uint i=0; i < dEik.size(); i++){
+            // iterate through loop copies
+            for(uint k=0; k < dEik[i].size(); k++){
+                // iterate through the three rotation angles
+                for(uint j=0; j < 3; j++){
+                    dEloops[j] += coef[i][k] * pm[0][j] * dEik[i][k][atomIndex].x;
+                    dEloops[j] += coef[i][k] * pm[1][j] * dEik[i][k][atomIndex].y;
+                    dEloops[j] += coef[i][k] * pm[2][j] * dEik[i][k][atomIndex].z;
+                }
+            }
+        }
     }
 
+
+    for(uint j=0; j < 3; j++){
+        g[svptr+j] += dEcore[j] + dEloops[j];
+        ///std::cout << "Dériv rot " << j << " " << g[svptr+j] << std::endl;
+    }
 
     svptr += 3;
 
@@ -681,9 +829,9 @@ if (lig.getCore().hasrotation){
 //sum the forces over x, y and z: calculate de translational forces
 if (lig.getCore().hastranslation){
 
-    g[svptr+0] = 0;
-    g[svptr+1] = 0;
-    g[svptr+2] = 0;
+    g[svptr+0] = 0.0;
+    g[svptr+1] = 0.0;
+    g[svptr+2] = 0.0;
 
     dbl flim = 1.0e18;
     dbl ftr1, ftr2, ftr3, fbetr;
@@ -693,16 +841,33 @@ if (lig.getCore().hastranslation){
 
     Coord3D ligtransForces; //translational forces for the ligand from loopregion
     
-    for(uint i=0; i<_moved_ligand._core.Size(); i++){
-         ligtransForces += _moved_ligand._core.m_forces[i];
+    //initializing derivative variables
+    std::vector<dbl> dEcore(3, 0.0);
+    std::vector<dbl> dEloops(3, 0.0);
+
+    //adding derivatives
+    for(uint atomIndex=0; atomIndex<_moved_ligand._core.Size(); atomIndex++){
+        ligtransForces += _moved_ligand._core.m_forces[atomIndex];
+        for(uint i=0; i < dEik.size(); i++){
+            for(uint k=0; k < dEik[i].size(); k++){ 
+                dEloops[0] += coef[i][k] * dEik[i][k][atomIndex].x;
+                dEloops[1] += coef[i][k] * dEik[i][k][atomIndex].y;
+                dEloops[2] += coef[i][k] * dEik[i][k][atomIndex].z;
+            }
+        }
     }
 
-    ftr1 = ligtransForces.x;
-    ftr2 = ligtransForces.y;
-    ftr3 = ligtransForces.z;
-    //printf("vector v[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, v[svptr+0], v[svptr+1], v[svptr+2]);
-    //printf("vector g[%d, %d, %d] = %f, %f, %f\n",svptr+0, svptr+1, svptr+2, g[svptr+0], g[svptr+1], g[svptr+2]);
+    dEcore[0] = ligtransForces.x;
+    dEcore[1] = ligtransForces.y;
+    dEcore[2] = ligtransForces.z;
 
+
+    ftr1 = dEcore[0] + dEloops[0];
+    ftr2 = dEcore[1] + dEloops[1];
+    ftr3 = dEcore[2] + dEloops[2];
+    //ftr1 =g[svptr+0];
+    //ftr2 =g[svptr+1];
+    //ftr3 =g[svptr+2];
    
     // force reduction, some times helps in case of very "bad" start structure
     for (uint i=0; i<3; i++)
@@ -721,7 +886,9 @@ if (lig.getCore().hastranslation){
     g[svptr+0] = ftr1;
     g[svptr+1] = ftr2;
     g[svptr+2] = ftr3;
-
+    //std::cout << "Dériv trans " << 1 << " " << ftr1 << std::endl;
+    //std::cout << "Dériv trans " << 2 << " " << ftr2 << std::endl;
+    //std::cout << "Dériv trans " << 3 << " " << ftr3 << std::endl;
     svptr += 3;
 }
 
@@ -729,50 +896,26 @@ if (lig.getCore().hastranslation){
 
 // Calculate de weight derivative
 
-assert(_receptor._vregion.size() == _mcop_E.size());
+/*assert(_receptor._vregion.size() == _Eik.size());
 uint k = 0;
 for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++){
         
     std::vector<dbl>& ref_weights = _receptor._buffer_weights[loopregion];
     std::vector<dbl>& ref_denorm_weights = _receptor._buffer_denorm_weights[loopregion];
-    std::vector<dbl>& ref_mcop_E = _mcop_E[loopregion];
-    assert(ref_weights.size() == ref_mcop_E.size());
+    std::vector<dbl>& ref_Eik = _Eik[loopregion];
+    assert(ref_weights.size() == ref_Eik.size());
         
     dbl max_weight = *max_element(ref_weights.begin(), ref_weights.end());
-    for(uint copynb=0; copynb < _mcop_E[loopregion].size(); copynb++){
+    for(uint copynb=0; copynb < _Eik[loopregion].size(); copynb++){
         // weight derivative function
-        g[svptr + k] = 2*max_weight*ref_denorm_weights[copynb]*ref_mcop_E[copynb];
+        g[svptr + k] = 2*max_weight*ref_denorm_weights[copynb]*ref_Eik[copynb];
         //printf("vector v[%d] = %f\n",svptr+k, v[svptr+k]);
         //printf("vector g[%d] = %f\n",svptr+k, g[svptr+k]);
         k++;
     }
-}
+}*/
 
-/*Coord3D receptortransForces; //translational forces for the receptor:
-for(uint i=0; i<_receptor._core.Size(); i++)
-{
-    receptortransForces+= _receptor._core.m_forces[i]; 
-}
 
-for (uint i=0; i <_receptor._vregion.size(); i++)
-{
-   AttractMcop& ens = _receptor._vregion[i];
-   std::vector<dbl> & weights =  _receptor._weights[i];
-
-   for(uint j=0; j<ens.size(); j++)
-   {
-     AttractRigidbody& copy = ens[j];
-       for (uint atomnb=0; atomnb < copy.Size(); ++atomnb)
-       {
-            receptortransForces += weights[j] * copy.m_forces[atomnb];
-       }
-
-   }
-
-//TODO DEBUG:
-std::cout << "differences between the two forces: " <<  (ligtransForces - receptortransForces).toString() << std::endl ;
-
- }*/
 
 
 

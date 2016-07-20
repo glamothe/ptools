@@ -105,6 +105,12 @@ void Lbfgs::minimize(int maxiter)
     m_opt->max_iter = maxiter;
 
     int last_iter = 0;
+    int sub_iter = 0;
+
+    double grad = 0;
+    //double new_beta = 1;
+    //x.push_back(new_beta);
+    //double & beta = x[x.size()-1];
 
     /*    opt->iprint = 0;*/
     while (1) {
@@ -116,53 +122,22 @@ void Lbfgs::minimize(int maxiter)
             break;
         } else if (rc == 1) {
 
-            //for(int i=0; i<x.size(); i++){
-            //    std::cout << "x" << i << " = " << x[i] << std::endl;
-            //}
-            //for(int i=0; i<g.size(); i++){
-            //    std::cout << "g" << i << " = " << g[i] << std::endl;
-            //}
-
-
-/*
-//check analytical derivatives with surreal:
-{
-            std::vector<dbl> vdblx;
-            tocplx(x,vdblx);
-            std::vector<dbl> vdblg;
-            tocplx(g,vdblg);
-
-            f = objToMinimize.Function(vdblx);
-            objToMinimize.Derivatives(vdblx,vdblg);
-
-            g=todbl(vdblg);
-
-
-            for (uint i=0; i<x.size(); i++)
-            {
-                std::vector<surreal> svdblx = vdblx ;
-                svdblx[i]+=surreal(0,1);
-                std::cout <<"check: " << svdblx[i] << std::endl;
-
-                std::cout << g[i] << "==" << imag(objToMinimize.Function(svdblx)) << "  " ;
-            }
-            std::cout << std::endl;
-}
-//end check derivatives
-*/
-
-
-
-
             if (last_iter < m_opt->niter)
             {
                 //this is a new iteration
                 last_iter = m_opt->niter;
+                sub_iter = 0;
                 //saves the minimizer variables for each iteration (can be useful for generating animations)
                 m_vars_over_time.push_back(x);
+                ///std::cout << "########################## NEW ITERATION " << m_opt->niter << std::endl;
 
             }
-
+            
+            double sum = 0;
+            for(int i=0; i < g.size(); i++){
+                sum += g[i]*g[i];
+            }
+            
 
             std::vector<dbl> vdblx;
             tocplx(x,vdblx);
@@ -172,17 +147,28 @@ void Lbfgs::minimize(int maxiter)
             //std::cout << "f = " << f << std::endl;
             objToMinimize.Derivatives(vdblx,vdblg);
             g=todbl(vdblg);
-            //for(int i=0; i<g.size(); i++){
-            //    std::cout << "newg" << i << " = " << g[i] << std::endl;
-            //}
 
-//                 std::cout << "analytical derivatives: \n";
-//                 for(uint i=0; i<g.size(); i++)
-//                 {
-//                     std::cout << "deriv[" << i << "]: " << g[i] << std::endl;
-//                 }
-//                 objToMinimize.NumDerivatives(x,g,true);
+            grad = sqrt(sum);
+            ///std::cout << "GRAD " << grad << std::endl;
+            ///std::cout << "ENERGY " << f << std::endl;
+            
+            // Too get things moving if the gradient is stuck. 
+            /*if(grad - sqrt(sum) > -0.0001 && grad - sqrt(sum) < 0.0001){
+            //if(sub_iter > 20){
+                //f += 10;
+                //std::cout << "STUCK " << grad - sqrt(sum) << std::endl;
+                //std::cout << "GRAD " << grad << std::endl;
+                //beta = 10;
+                //f += 10;
+                //grad = 0;
+                //sub_iter = 15;
+            }
+            else{
+                //grad = sqrt(sum);
+                beta = 1;
+            }*/
 
+            sub_iter ++;
 
         } else {
             assert(!"can not reach here");
@@ -213,7 +199,7 @@ if (iter>=m_vars_over_time.size())
 return m_vars_over_time[iter];
 }
 
-void Lbfgs::denormalize_weights()
+/*void Lbfgs::denormalize_weights()
 {
     if (McopForceField * p = dynamic_cast<McopForceField *>(&objToMinimize)){
         // objToMinimize is or is of type McopForceField
@@ -237,6 +223,7 @@ void Lbfgs::normalize_weights()
     //else
         // objToMinimize is not a McopForceField            
 }
+*/
 
 std::vector< std::vector<dbl> > Lbfgs::getWeights(){
     if (McopForceField * p = dynamic_cast<McopForceField *>(&objToMinimize)){

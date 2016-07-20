@@ -27,8 +27,8 @@ class Lbfgs
 
             std::vector<double> GetMinimizedVarsAtIter(uint iter);
             int GetNumberIter() {return m_opt->niter;}
-            void denormalize_weights();
-            void normalize_weights();
+            //void denormalize_weights();
+            //void normalize_weights();
             std::vector< std::vector<dbl> > getWeights();
 
 

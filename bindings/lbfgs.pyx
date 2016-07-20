@@ -8,8 +8,8 @@ cdef extern from "lbfgs_interface.h" namespace "PTools":
         vector[double] GetMinimizedVars()
         vector[double] GetMinimizedVarsAtIter(int)
         int GetNumberIter()
-        void denormalize_weights()
-        void normalize_weights()
+        #void denormalize_weights()
+        #void normalize_weights()
         vector[vector[double]] getWeights()
 
 cdef class Lbfgs:
@@ -45,11 +45,11 @@ cdef class Lbfgs:
             out.append(vars[i])
         return out
 
-    def denormalize_weights(self):
-        self.thisptr.denormalize_weights()
+    #def denormalize_weights(self):
+    #    self.thisptr.denormalize_weights()
 
-    def normalize_weights(self):
-        self.thisptr.normalize_weights()
+    #def normalize_weights(self):
+    #    self.thisptr.normalize_weights()
 
     def getWeights(self):
         self.thisptr.getWeights()

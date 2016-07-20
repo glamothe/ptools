@@ -36,9 +36,10 @@ cdef extern from "mcopff.h" namespace "PTools":
         unsigned int size()
         void setCore(CppAttractRigidbody&)
         vector[vector[double]] getWeights()
-        void updateWeights(vector[double], int, int)
-        void denormalize_weights()
-        void normalize_weights()
+        #void setWeights(vector[vector[double]]&)
+        #void updateWeights(vector[double], int, int)
+        #void denormalize_weights()
+        #void normalize_weights()
         Coord3D FindCenter()
         void setTranslation(int)
         void setRotation(int)
@@ -51,8 +52,8 @@ cdef extern from "mcopff.h" namespace "PTools":
         CppMcopForceField(CppBaseAttractForceField&, double)
         vector[vector[double]] getWeights()
         vector[vector[double]] getMcopE()
-        void denormalize_weights()
-        void normalize_weights()
+        #void denormalize_weights()
+        #void normalize_weights()
         void setReceptor(CppMcoprigid&)
         void setLigand(CppMcoprigid&)
         double CalcEnergy(CppMcoprigid&, CppMcoprigid&, CppBaseAttractForceField&, double)
@@ -258,14 +259,17 @@ cdef class Mcoprigid:
     def getWeights(self):
         return self.thisptr.getWeights()
 
-    def updateWeights(self, vector[double] v, int svptr, int descriminate):
-        self.thisptr.updateWeights(v, svptr, descriminate)
+    #def setWeights(self, weights vector[vector[double]]):
+    #    self.thisptr.setWeights(weights)
 
-    def denormalize_weights(self):
-        self.thisptr.denormalize_weights()
+    #def updateWeights(self, vector[double] v, int svptr, int descriminate):
+    #    self.thisptr.updateWeights(v, svptr, descriminate)
 
-    def normalize_weigths(self):
-        self.thisptr.normalize_weights()
+    #def denormalize_weights(self):
+    #    self.thisptr.denormalize_weights()
+
+    #def normalize_weigths(self):
+    #    self.thisptr.normalize_weights()
 
     def FindCenter(self):
         #cdef Coord3D c = Coord3D()
@@ -327,13 +331,13 @@ cdef class McopForceField(ForceField):
         cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
         return cpp_ptr.getMcopE()
 
-    def denormalize_weights(self):
-        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
-        cpp_ptr.denormalize_weights()
+    #def denormalize_weights(self):
+    #   cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
+    #    cpp_ptr.denormalize_weights()
 
-    def normalize_weigths(self):
-        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
-        cpp_ptr.normalize_weights()
+    #def normalize_weigths(self):
+    #    cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
+    #    cpp_ptr.normalize_weights()
 
     def setReceptor(self, Mcoprigid rec):
         cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr

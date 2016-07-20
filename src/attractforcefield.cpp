@@ -329,7 +329,7 @@ void AttractForceField2::loadParams(const std::string & filename, dbl cutoff)
 }
 
 
-dbl BaseAttractForceField::Function(const Vdouble& stateVars )
+dbl BaseAttractForceField::Function(Vdouble& stateVars )
 {
 
     assert(m_centeredligand.size() >=1);
@@ -398,7 +398,7 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
 
 
 
-
+    ///std::cout << "Energie totale " << enernon << std::endl;
 
 
     return enernon;
@@ -605,6 +605,10 @@ void BaseAttractForceField::Trans(uint molIndex, Vdouble & delta, uint shift,  b
     delta[1+shift]=ftr2;
     delta[2+shift]=ftr3;
 
+    ///std::cout << "Dériv trans " << 1 << " " << delta[0+shift] << std::endl;
+    ///std::cout << "Dériv trans " << 2 << " " << delta[1+shift] << std::endl;
+    ///std::cout << "Dériv trans " << 3 << " " << delta[2+shift] << std::endl;
+
     //debug:
     if (print) std::cout <<  "translational forces: " << ftr1 <<"  "<< ftr2 <<"  " << ftr3 << std::endl;
     return ;
@@ -715,6 +719,11 @@ void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdoubl
             delta[j+shift] += pm[2][j] * pLigMoved->m_forces[atomIndex].z ;
         }
     }
+
+    ///std::cout << "Dériv rot " << 1 << " " << delta[0+shift] << std::endl;
+    ///std::cout << "Dériv rot " << 2 << " " << delta[1+shift] << std::endl;
+    ///std::cout << "Dériv rot " << 3 << " " << delta[2+shift] << std::endl;
+
 
 
     if (print) std::cout << "Rotational forces: " << delta[shift] << " " << delta[shift+1] << " " << delta[shift+2] << std::endl;

@@ -426,7 +426,7 @@ for trans in translations:
             if options.regions:
                 lbfgs_minimizer=Lbfgs(mcopff)
                 lbfgs_minimizer.minimize(niter)
-                lbfgs_minimizer.normalize_weights()
+                #lbfgs_minimizer.normalize_weights()
             else :
                 lbfgs_minimizer=ff_specs['minimizer_class'](forcefield)
                 lbfgs_minimizer.minimize(niter)
@@ -437,10 +437,11 @@ for trans in translations:
             #TODO: test and use CenterToOrigin() !
             if options.regions:
                 output=Mcoprigid(ligand)
-                if minim == minimlist[len(minimlist)-2] and len(minimlist)>1:
-                    receptor.updateWeights(X, svptr=6, descriminate = 1)
-                else:
-                    receptor.updateWeights(X, svptr=6, descriminate = 0)
+                ##weights = mcopff.getWeights()
+                #if minim == minimlist[len(minimlist)-2] and len(minimlist)>1:
+                #    receptor.updateWeights(X, svptr=6, descriminate = 0)
+                #else:
+                #    receptor.updateWeights(X, svptr=6, descriminate = 0)
             else:
                 output=AttractRigidbody(ligand)
 

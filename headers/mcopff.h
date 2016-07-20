@@ -115,11 +115,12 @@ public:
 
     void PrintWeights();
     std::vector <std::vector<dbl> > getWeights(){return _weights;};
-    void denormalize_weights();
-    void normalize_weights();
-    void denormalize_buffer_weights();
-    void normalize_buffer_weights();
-    void updateWeights(const std::vector<dbl>& v, int svptr, int descriminate);
+    //void setWeights(vector[vector[double]]& w){_weights = w;};
+    //void denormalize_weights();
+    //void normalize_weights();
+    //void denormalize_buffer_weights();
+    //void normalize_buffer_weights();
+    //void updateWeights(const std::vector<dbl>& v, int svptr, int descriminate);
     
     void ReadMcoprigidPDB(const std::string name);
     void ReadMcoprigidPDB(std::istream& file, AttractRigidbody& core, std::vector<AttractMcop>& regions);
@@ -145,9 +146,9 @@ private:
     Coord3D _center ; ///<center of mass of the core region
 
     std::vector< std::vector<dbl> > _weights;
-    std::vector< std::vector<dbl> > _denorm_weights;
-    std::vector< std::vector<dbl> > _buffer_weights;
-    std::vector< std::vector<dbl> > _buffer_denorm_weights;
+    //std::vector< std::vector<dbl> > _denorm_weights;
+    //std::vector< std::vector<dbl> > _buffer_weights;
+    //std::vector< std::vector<dbl> > _buffer_denorm_weights;
 
 
     friend class McopForceField;
@@ -170,25 +171,27 @@ public:
             :_ff(ff), _cutoff(cutoff) {};
     void ini_energies();
 
-    dbl Function(const Vdouble&);
-    dbl CalcEnergy(Mcoprigid & receptor,Mcoprigid & ligand, BaseAttractForceField & ff, dbl cutoff);
+    dbl Function(Vdouble&);
+    dbl CalcEnergy(Mcoprigid & receptor,Mcoprigid & lig, BaseAttractForceField & ff, dbl cutoff);
     void Derivatives(const Vdouble& v, Vdouble & g );
 
 
     void setReceptor(Mcoprigid& rec);
     void setLigand(Mcoprigid& lig);
 
-    void calculate_weights(Mcoprigid& lig, bool print=false);
+    //void calculate_weights(Mcoprigid& lig, bool print=false);
 
     uint ProblemSize();
     void initMinimization(){};
 
     std::vector <std::vector<dbl> > getWeights(){return _receptor.getWeights();};
-    std::vector <std::vector<dbl> > getMcopE(){return _mcop_E;};
-    void denormalize_weights(){_receptor.denormalize_weights();};
-    void normalize_weights(){_receptor.normalize_weights();};
-    void denormalize_buffer_weights(){_receptor.denormalize_buffer_weights();};
-    void normalize_buffer_weights(){_receptor.normalize_buffer_weights();};
+    std::vector <std::vector<dbl> > getMcopE(){return _Eik;};
+    //void denormalize_weights(){_receptor.denormalize_weights();};
+    //void normalize_weights(){_receptor.normalize_weights();};
+    //void denormalize_buffer_weights(){_receptor.denormalize_buffer_weights();};
+    //void normalize_buffer_weights(){_receptor.normalize_buffer_weights();};
+
+
 
 private:
 
@@ -200,7 +203,15 @@ private:
     Mcoprigid _centered_ligand ;
     Mcoprigid _moved_ligand ;
     Mcoprigid _receptor;
-    std::vector< std::vector<dbl> > _mcop_E; //Energies
+    std::vector< std::vector<dbl> > _Eik; //Loop interaction energies
+    std::vector< std::vector< std::vector<Coord3D> > > _dEik;
+    dbl _E; //Total interaction energy
+    std::vector<dbl> _Eregion;
+    std::vector<dbl> _Z; // one Z per loop region
+    std::vector<dbl> _Zprime;
+    std::vector< std::vector<dbl> > _dz;
+    std::vector< std::vector<dbl> > _dzprime;
+    dbl _beta;
 
 
     
