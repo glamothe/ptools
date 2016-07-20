@@ -441,7 +441,7 @@ uint McopForceField::ProblemSize()
 * this functions returns nonbonded energy of a receptor with multicopy and a ligand without copy.
 *
 */
-dbl McopForceField::Function(Vdouble & v)
+dbl McopForceField::Function(const Vdouble & v)
 {
 
     dbl ener_region = 0.0 ;
@@ -499,9 +499,8 @@ dbl McopForceField::Function(Vdouble & v)
     std::vector<dbl>& Zprime = _Zprime;
     dbl& E = _E;
     std::vector<dbl>& Eregion = _Eregion;
-    ///dbl& beta = _beta;
-    dbl& beta = v[6];
-    //beta = 1.6948;
+    dbl& beta = _beta;
+    beta = 1.6948;
 
 
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++)
@@ -516,8 +515,6 @@ dbl McopForceField::Function(Vdouble & v)
 
         Z_i = 0.0;
         Zprime_i = 0.0;
-        bool clash = true;
-        double beta_temp = beta;
 
         AttractMcop& ref_ensemble = _receptor._vregion[loopregion];
         std::vector<dbl>& weights_loop = weights[loopregion];

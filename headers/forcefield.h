@@ -23,7 +23,7 @@ class ForceField
 public:
 
     ///the function to optimize
-    virtual dbl Function(Vdouble&)=0;
+    virtual dbl Function(const Vdouble&)=0;
 
     /// analytical derivative of the function above
     virtual void Derivatives(const Vdouble& StateVars, Vdouble& delta)

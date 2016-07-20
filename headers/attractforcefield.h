@@ -24,7 +24,7 @@ public:
     ///analytical derivative
     void Derivatives(const Vdouble&, Vdouble&);
     uint ProblemSize();
-    dbl Function(Vdouble&);
+    dbl Function(const Vdouble&);
 
     ///add a new ligand to the ligand list...
     void AddLigand(AttractRigidbody & lig);
@@ -137,7 +137,7 @@ class TestForceField: public ForceField
         return 2;
     };
 
-    virtual dbl Function(Vdouble& X)
+    virtual dbl Function(const Vdouble& X)
     {
         PrintVec(X);
         return X[0]*X[0] + (X[1]-2)*(X[1]-2) ;

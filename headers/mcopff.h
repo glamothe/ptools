@@ -171,7 +171,7 @@ public:
             :_ff(ff), _cutoff(cutoff) {};
     void ini_energies();
 
-    dbl Function(Vdouble&);
+    dbl Function(const Vdouble&);
     dbl CalcEnergy(Mcoprigid & receptor,Mcoprigid & lig, BaseAttractForceField & ff, dbl cutoff);
     void Derivatives(const Vdouble& v, Vdouble & g );
 

@@ -329,7 +329,7 @@ void AttractForceField2::loadParams(const std::string & filename, dbl cutoff)
 }
 
 
-dbl BaseAttractForceField::Function(Vdouble& stateVars )
+dbl BaseAttractForceField::Function(const Vdouble& stateVars )
 {
 
     assert(m_centeredligand.size() >=1);
