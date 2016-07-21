@@ -443,7 +443,6 @@ uint McopForceField::ProblemSize()
 */
 dbl McopForceField::Function(const Vdouble & v)
 {
-
     dbl ener_region = 0.0 ;
     dbl ener_core = 0.0 ;
 
@@ -500,15 +499,14 @@ dbl McopForceField::Function(const Vdouble & v)
     dbl& E = _E;
     std::vector<dbl>& Eregion = _Eregion;
     dbl& beta = _beta;
-    beta = 1.6948;
 
+    //std::cout << "BETA " << beta << std::endl;
 
     for (uint loopregion=0; loopregion < _receptor._vregion.size() ; loopregion++)
     {
 
         //calculates interaction energy between receptor copies and ligand body:
 //         std::vector<dbl> Eik;
-
         dbl enercopy =0.0;
         dbl& Z_i = Z[loopregion];
         dbl& Zprime_i = Zprime[loopregion];
@@ -618,7 +616,6 @@ dbl McopForceField::CalcEnergy(Mcoprigid & receptor, Mcoprigid & lig, BaseAttrac
     dbl& E = _E;
     dbl beta = 1;
 
-
     for (uint loopregion=0; loopregion < receptor._vregion.size() ; loopregion++)
     {
 
@@ -659,6 +656,8 @@ dbl McopForceField::CalcEnergy(Mcoprigid & receptor, Mcoprigid & lig, BaseAttrac
         {
             dbl& weight = weights_loop[copynb];
             weight = exp(-beta*Eik[loopregion][copynb])/Z_i;
+            ///if(copynb == 0) weight = 1;
+            ///else weight = 0;
         }
         ener_region += -Zprime_i/Z_i;
     }
@@ -682,8 +681,7 @@ std::vector< std::vector<dbl> >& Eik = _Eik;
 dbl E = _E;
 std::vector<dbl>& Eregion = _Eregion;
 std::vector< std::vector<dbl> > & weights = _receptor._weights;
-//dbl beta = _beta;
-dbl beta = v[6];
+dbl& beta = _beta;
 
 std::vector< std::vector<dbl> > coef;
 std::vector<dbl> newvector;

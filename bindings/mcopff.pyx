@@ -57,6 +57,7 @@ cdef extern from "mcopff.h" namespace "PTools":
         void setReceptor(CppMcoprigid&)
         void setLigand(CppMcoprigid&)
         double CalcEnergy(CppMcoprigid&, CppMcoprigid&, CppBaseAttractForceField&, double)
+        vector[vector[vector[double]]] getSavedWeights() 
 
 cdef class Mcop:
     cdef CppMcop* thisptr
@@ -355,6 +356,10 @@ cdef class McopForceField(ForceField):
         cppff = <CppBaseAttractForceField*>ff.thisptr
         return cpp_ptr.CalcEnergy(deref(rec.thisptr), deref(lig.thisptr), deref(cppff), cutoff)
 
+    def getSavedWeights(self):
+
+        cdef CppMcopForceField* cpp_ptr = <CppMcopForceField*> self.thisptr
+        return cpp_ptr.getSavedWeights()
 
 
         

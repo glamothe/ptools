@@ -464,10 +464,17 @@ for trans in translations:
                     ftraj.write("\n")
                 ftraj.write("~~~~~~~~~~~~~~\n")
                 if (options.regions):
+                    savedWeights = mcopff.getSavedWeights()
+                    for i, region in enumerate(savedWeights[0]):
+                        weight_variation.write("Region %i\t"%(i+1))
+                        for k, copy in enumerate(region):
+                            weight_variation.write("Copy %i\t"%(k+1))
+                    weight_variation.write("\n\n")
                     for iteration in range(ntraj):
-                        traj = lbfgs_minimizer.GetMinimizedVarsAtIter(iteration)
-                        for t in traj[6:]:
-                            weight_variation.write("%f "%t)
+                        for region in savedWeights[iteration]:
+                            weight_variation.write("\t\t")
+                            for copy in region:
+                                weight_variation.write("%f\t"%t)
                         weight_variation.write("\n")
                     weight_variation.write("~~~~~~~~~~~~~~\n")
                 

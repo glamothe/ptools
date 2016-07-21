@@ -129,6 +129,7 @@ void Lbfgs::minimize(int maxiter)
                 sub_iter = 0;
                 //saves the minimizer variables for each iteration (can be useful for generating animations)
                 m_vars_over_time.push_back(x);
+                objToMinimize.saveWeights(); //Only saves weights if objToMinimize is McopForceField. 
                 ///std::cout << "########################## NEW ITERATION " << m_opt->niter << std::endl;
 
             }

@@ -168,7 +168,7 @@ class McopForceField: public ForceField
 public:
 
     McopForceField(BaseAttractForceField& ff, dbl cutoff)
-            :_ff(ff), _cutoff(cutoff) {};
+            :_ff(ff), _cutoff(cutoff) { _beta = 1; };
     void ini_energies();
 
     dbl Function(const Vdouble&);
@@ -183,6 +183,8 @@ public:
 
     uint ProblemSize();
     void initMinimization(){};
+    virtual void saveWeights(){_savedWeights.push_back(_receptor.getWeights());};
+    std::vector< std::vector< std::vector<dbl> > > getSavedWeights(){ return _savedWeights;}
 
     std::vector <std::vector<dbl> > getWeights(){return _receptor.getWeights();};
     std::vector <std::vector<dbl> > getMcopE(){return _Eik;};
@@ -212,6 +214,7 @@ private:
     std::vector< std::vector<dbl> > _dz;
     std::vector< std::vector<dbl> > _dzprime;
     dbl _beta;
+    std::vector< std::vector< std::vector<dbl> > > _savedWeights;
 
 
     
