@@ -397,10 +397,6 @@ dbl BaseAttractForceField::Function(const Vdouble& stateVars )
         }
 
 
-
-    ///std::cout << "Energie totale " << enernon << std::endl;
-
-
     return enernon;
 
 }
@@ -506,7 +502,6 @@ dbl AttractForceField2::nonbon8_forces(AttractRigidbody& rec, AttractRigidbody& 
 
 
         dbl charge= rec.m_charge[i]* lig.m_charge[j];  //charge product of the two atoms
-        //std::cout << "charge: " << charge << std::endl;
 
         rec.unsafeGetCoords(i,a); lig.unsafeGetCoords(j,b);
 
@@ -605,10 +600,6 @@ void BaseAttractForceField::Trans(uint molIndex, Vdouble & delta, uint shift,  b
     delta[1+shift]=ftr2;
     delta[2+shift]=ftr3;
 
-    ///std::cout << "Dériv trans " << 1 << " " << delta[0+shift] << std::endl;
-    ///std::cout << "Dériv trans " << 2 << " " << delta[1+shift] << std::endl;
-    ///std::cout << "Dériv trans " << 3 << " " << delta[2+shift] << std::endl;
-
     //debug:
     if (print) std::cout <<  "translational forces: " << ftr1 <<"  "<< ftr2 <<"  " << ftr3 << std::endl;
     return ;
@@ -654,17 +645,6 @@ void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdoubl
     crot=cos(rot);
     srot=sin(rot);
 
-    //std::cout << "cs" << cs << std::endl;
-    //std::cout << "cp" << cp << std::endl;
-    //std::cout << "ss" << ss << std::endl;
-    //std::cout << "sp" << sp << std::endl;
-    //std::cout << "cscp" << cscp << std::endl;
-    //std::cout << "cssp" << cssp << std::endl;
-    //std::cout << "sscp" << sscp << std::endl;
-    //std::cout << "sssp" << sssp << std::endl;
-    //std::cout << "crot" << crot << std::endl;
-    //std::cout << "srot" << srot << std::endl;
-
     // for the x, y and z coordinates, we need
     // the coordinates of the centered, non-translated molecule
 
@@ -682,7 +662,6 @@ void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdoubl
         Y = coords.y;
         Z = coords.z;
 
-        //std::cout << "X " << X << std::endl;
 
         xar=X*crot+Y*srot;
         yar=-X*srot+Y*crot;
@@ -700,17 +679,6 @@ void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdoubl
         pm[1][2]=yar*cssp-xar*cp ;
         pm[2][2]=-yar*ss ;
 
-        //std::cout << "xar " << xar << std::endl;
-        //std::cout << "yar " << yar << std::endl;
-        //std::cout << "pm[0][0] " << pm[0][0] << std::endl;
-        //std::cout << "pm[1][0] " << pm[1][0] << std::endl;
-        //std::cout << "pm[2][0] " << pm[2][0] << std::endl;
-        //std::cout << "pm[0][1] " << pm[0][1] << std::endl;
-        //std::cout << "pm[1][1] " << pm[1][1] << std::endl;
-        //std::cout << "pm[2][1] " << pm[2][1] << std::endl;
-        //std::cout << "pm[0][2] " << pm[0][2] << std::endl;
-        //std::cout << "pm[1][2] " << pm[1][2] << std::endl;
-        //std::cout << "pm[2][2] " << pm[2][2] << std::endl;
 
         for (uint j=0;j<3;j++)
         {
@@ -719,11 +687,6 @@ void BaseAttractForceField::Rota(uint molIndex, dbl phi,dbl ssi, dbl rot, Vdoubl
             delta[j+shift] += pm[2][j] * pLigMoved->m_forces[atomIndex].z ;
         }
     }
-
-    ///std::cout << "Dériv rot " << 1 << " " << delta[0+shift] << std::endl;
-    ///std::cout << "Dériv rot " << 2 << " " << delta[1+shift] << std::endl;
-    ///std::cout << "Dériv rot " << 3 << " " << delta[2+shift] << std::endl;
-
 
 
     if (print) std::cout << "Rotational forces: " << delta[shift] << " " << delta[shift+1] << " " << delta[shift+2] << std::endl;

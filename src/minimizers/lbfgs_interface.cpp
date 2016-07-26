@@ -108,11 +108,7 @@ void Lbfgs::minimize(int maxiter)
     int sub_iter = 0;
 
     double grad = 0;
-    //double new_beta = 1;
-    //x.push_back(new_beta);
-    //double & beta = x[x.size()-1];
 
-    /*    opt->iprint = 0;*/
     while (1) {
         rc = lbfgsb_run(m_opt, &x[0], &f, &g[0]);
         if (rc == 0) {
@@ -130,8 +126,6 @@ void Lbfgs::minimize(int maxiter)
                 //saves the minimizer variables for each iteration (can be useful for generating animations)
                 m_vars_over_time.push_back(x);
                 objToMinimize.saveWeights(); //Only saves weights if objToMinimize is McopForceField. 
-                ///std::cout << "########################## NEW ITERATION " << m_opt->niter << std::endl;
-
             }
             
             double sum = 0;
@@ -145,30 +139,9 @@ void Lbfgs::minimize(int maxiter)
             std::vector<dbl> vdblg;
             tocplx(g,vdblg);
             f = objToMinimize.Function(vdblx);
-            //std::cout << "f = " << f << std::endl;
             objToMinimize.Derivatives(vdblx,vdblg);
             g=todbl(vdblg);
-
             grad = sqrt(sum);
-            ///std::cout << "GRAD " << grad << std::endl;
-            ///std::cout << "ENERGY " << f << std::endl;
-            
-            // Too get things moving if the gradient is stuck. 
-            /*if(grad - sqrt(sum) > -0.0001 && grad - sqrt(sum) < 0.0001){
-            //if(sub_iter > 20){
-                //f += 10;
-                //std::cout << "STUCK " << grad - sqrt(sum) << std::endl;
-                //std::cout << "GRAD " << grad << std::endl;
-                //beta = 10;
-                //f += 10;
-                //grad = 0;
-                //sub_iter = 15;
-            }
-            else{
-                //grad = sqrt(sum);
-                beta = 1;
-            }*/
-
             sub_iter ++;
 
         } else {
@@ -200,41 +173,13 @@ if (iter>=m_vars_over_time.size())
 return m_vars_over_time[iter];
 }
 
-/*void Lbfgs::denormalize_weights()
-{
-    if (McopForceField * p = dynamic_cast<McopForceField *>(&objToMinimize)){
-        // objToMinimize is or is of type McopForceField
-        ForceField& r_objToMinimize = objToMinimize;
-        McopForceField& r_Mcop_objToMinimize = dynamic_cast<McopForceField&>(r_objToMinimize);
-        r_Mcop_objToMinimize.denormalize_weights();
-    }
-    //else
-        // objToMinimize is not a McopForceField
-
-}
-
-void Lbfgs::normalize_weights()
-{
-    if (McopForceField * p = dynamic_cast<McopForceField *>(&objToMinimize)){
-        // objToMinimize is or is of type McopForceField
-        ForceField& r_objToMinimize = objToMinimize;
-        McopForceField& r_Mcop_objToMinimize = dynamic_cast<McopForceField&>(r_objToMinimize);
-        r_Mcop_objToMinimize.normalize_weights();
-    }
-    //else
-        // objToMinimize is not a McopForceField            
-}
-*/
-
 std::vector< std::vector<dbl> > Lbfgs::getWeights(){
     if (McopForceField * p = dynamic_cast<McopForceField *>(&objToMinimize)){
-        // objToMinimize is or is of type McopForceField
+        // objToMinimize is of type McopForceField
         ForceField& r_objToMinimize = objToMinimize;
         McopForceField& r_Mcop_objToMinimize = dynamic_cast<McopForceField&>(r_objToMinimize);
         r_Mcop_objToMinimize.getWeights();
     }
-    //else
-        // objToMinimize is not a McopForceField
 }
 
 

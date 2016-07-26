@@ -208,8 +208,6 @@ parser.add_option("--start1", action="store_true", default=False, dest="start1",
 parser.add_option("--mcop", action="store_true", default=False, dest="regions", help="mcop option for multi-copy rigid-body docking")
 (options, args) = parser.parse_args()
 
-#receptor_name=args[0]
-#ligand_name=args[1]
 
 print """
 **********************************************************************
@@ -226,7 +224,7 @@ import locale
 
 #locale.setlocale(locale.LC_ALL, 'fr_FR')
 time_start = datetime.datetime.now()
-#print now,"(",now.strftime("%A %B %d %Y, %H:%M"),")"
+
 print "Start time:", time_start
 
 
@@ -311,7 +309,7 @@ else:
     rec=AttractRigidbody(rec)
     lig=Rigidbody(options.ligand_name)
     lig=AttractRigidbody(lig)
-# TODO: Redo message for mcop
+
 print "Reading receptor (fixed): %s with %d particules" %( options.receptor_name, len(rec) )
 print "Reading  ligand (mobile): %s with %d particules" %( options.ligand_name,   len(lig) )
 
@@ -426,7 +424,6 @@ for trans in translations:
             if options.regions:
                 lbfgs_minimizer=Lbfgs(mcopff)
                 lbfgs_minimizer.minimize(niter)
-                #lbfgs_minimizer.normalize_weights()
             else :
                 lbfgs_minimizer=ff_specs['minimizer_class'](forcefield)
                 lbfgs_minimizer.minimize(niter)
@@ -434,14 +431,8 @@ for trans in translations:
             X=lbfgs_minimizer.GetMinimizedVars()  #optimized freedom variables after minimization
 
 
-            #TODO: test and use CenterToOrigin() !
             if options.regions:
                 output=Mcoprigid(ligand)
-                ##weights = mcopff.getWeights()
-                #if minim == minimlist[len(minimlist)-2] and len(minimlist)>1:
-                #    receptor.updateWeights(X, svptr=6, descriminate = 0)
-                #else:
-                #    receptor.updateWeights(X, svptr=6, descriminate = 0)
             else:
                 output=AttractRigidbody(ligand)
 
@@ -474,7 +465,7 @@ for trans in translations:
                         for region in savedWeights[iteration]:
                             weight_variation.write("\t\t")
                             for copy in region:
-                                weight_variation.write("%f\t"%t)
+                                weight_variation.write("%f\t"%copy)
                         weight_variation.write("\n")
                     weight_variation.write("~~~~~~~~~~~~~~\n")
                 
